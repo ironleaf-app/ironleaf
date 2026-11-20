@@ -1057,7 +1057,7 @@ function ProjectShell({
                           <LayoutDashboard view={view} path={path} />
                           <Lifecycle view={view} files={fileList} open={lifeOpen} onOpen={setLifeOpen} />
 
-                          {allEmpty ? <FolioEmpty ctx={ctx} /> : <OverviewSection ctx={ctx} />}
+                          {allEmpty ? <FolioEmpty ctx={ctx} /> : <OverviewSection ctx={ctx} shown={active === 'overview'} />}
                         </>
                       ) : empty.has(t.id as FolioSection) ? (
                         <TabEmpty id={t.id as FolioSection} ctx={ctx} />

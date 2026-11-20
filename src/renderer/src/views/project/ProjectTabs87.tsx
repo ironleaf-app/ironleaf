@@ -1864,7 +1864,7 @@ function OvDateRow({ ctx, m, wentBy }: { ctx: TabsCtx; m: HubMilestone; wentBy?:
  *  as a compact row of names. Each block ends in "All N" for its tab (the kit arrow); the standing
  *  already reads in the fixed head above, never twice. Ticks and gone-by answers work where they show; the
  *  rest changes in its tab. */
-export function OverviewSection({ ctx }: { ctx: TabsCtx }) {
+export function OverviewSection({ ctx, shown = true }: { ctx: TabsCtx; /** Whether the Overview is the tab showing (its panel stays mounted, hidden, under the other tabs). */ shown?: boolean }) {
   const p = ctx.view.project;
   const byPath = useApp((s) => s.byPath);
   const mine = useMemo(() => ownOpen(ctx.hub), [ctx.hub]);
@@ -2022,8 +2022,11 @@ export function OverviewSection({ ctx }: { ctx: TabsCtx }) {
     {/* A roomy window (round 3, at 3440x1400: the overview ended a third of the way down): the project's notes and files,
         what is waiting on whom, and its activity fill the rest of the window as panes that scroll inside
         themselves. */}
+    {/* Panes only while the Overview shows (21 Nov 2026): its panel stays mounted, hidden, under the other tabs, and
+        a panes root anywhere in the page's scroller turns that scroller's own scrolling off (panes.css 1). Kept on,
+        Notes and files and every other tab of a big project would not scroll at all on a tall wide window. */}
     {roomy && (
-      <div className={`pj-ov-more${fills ? ' nv-panes-root' : ''}`}>
+      <div className={`pj-ov-more${fills && shown ? ' nv-panes-root' : ''}`}>
         <div className="pj-ov-pane">
           <NotesSection ctx={ctx} />
         </div>
