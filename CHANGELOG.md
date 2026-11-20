@@ -6,6 +6,10 @@ the website. `tools/release.mjs` takes a release's notes from here when `--notes
 
 Format: one `## <version> — <YYYY-MM-DD>` heading a release, then one `- ` line a change.
 
+## 2.0.9 — 2026-11-21
+
+- PDFs open about four times faster, and zooming and scrolling a big PDF no longer freeze the window: the page you're looking at is drawn first, and the selectable words are laid in one go.
+
 ## 2.0.8 — 2026-11-21
 
 - PDFs zoom smoothly: the pages stretch at once and sharpen when you stop, instead of every page being laid out again for each step of the wheel.
