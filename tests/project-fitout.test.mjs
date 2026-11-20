@@ -223,12 +223,7 @@ test('the gallery fit-out live: one page, every change read back from the files'
     await show('.pj-other-notes');
     const cells = await h.browser.ev(`[...document.querySelectorAll('.pj-other-notes table td')].map((el) => el.innerText.trim()).join('|')`);
     assert.ok(cells.includes('Materials, Northside, eight rooms') && cells.includes('$168,000'), 'the budget figures sit in cells');
-    // Its chats, continuing in one click.
-    await openTab('overview');
-    assert.equal(await h.browser.ev(`document.querySelectorAll('.pj-spark-row').length`), 2, 'both chats on the page');
-    await tapJs(`[...document.querySelectorAll('.pj-spark-row')][0]`);
-    await sleep(800);
-    assert.ok(h.services.opened.some((o) => o.what === 'conversation' && o.id === 'hall_sound_desk'), 'the chat continues');
+    // (The project's chats left the page with the AI chat, 20 Nov 2026: nothing to continue here now.)
     // A step ticked, assigned and dated in place — each read back from the project file.
     await openTab('whats-next');
     await tapSel('[data-item="next:0"] .check');
