@@ -180,6 +180,9 @@
   overflow: auto;
   /* Its size comes from the tab, never from the pages in it (the zoom follows its width, so the two must not chase). */
   contain: size;
+  /* The scrollbar's room is kept whether it shows or not: fit width follows clientWidth, and a scrollbar coming and
+     going would change it, re-fit the pages, and bring the scrollbar back (a loop that held the window busy). */
+  scrollbar-gutter: stable;
   background: var(--pdfv-desk);
   position: relative;
 }
@@ -361,6 +364,11 @@
   --min-font-size: 1;
   --text-scale-factor: calc(var(--total-scale-factor) * var(--min-font-size));
   --min-font-size-inv: calc(1 / var(--min-font-size));
+}
+
+/* The words laid for the zoom before: out of the layout until the new ones are laid (the drawing shows stretched meanwhile). */
+.pdfv-text.is-stale {
+  display: none;
 }
 
 .pdfv-text :is(span, br) {
