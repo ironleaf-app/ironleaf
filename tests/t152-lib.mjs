@@ -5,7 +5,7 @@
 // (no .test.mjs suffix).
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { startHarness } from './vault-controls-harness.mjs';
+import { openSettings, startHarness } from './vault-controls-harness.mjs';
 
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -488,6 +488,11 @@ export async function ctrlK(h) {
 
 /** Open a sidebar row, else its palette row (packs stay off: only shipped rows). */
 export async function openRoom(h, name) {
+  // Settings lives in the account menu (the chip at the sidebar's foot), not as a sidebar row.
+  if (name === 'Settings' && (await openSettings(h)) === 'CLICKED') {
+    await sleep(700);
+    return 'MENU';
+  }
   if ((await clickWords(h, name, '.sidebar.left, aside')) === 'CLICKED') {
     await sleep(700);
     return 'SIDEBAR';
@@ -587,7 +592,8 @@ export async function viaMore(h, ...items) {
 /** A sidebar row, sidebar-scoped: an unscoped click can hit a same-named
  *  control in main (the Templates page's own 'Projects' chip once ate the
  *  project sweep's way home, and it swept Templates under project names). */
-export const openSidebar = (h, name) => clickWords(h, name, '.sidebar.left, aside');
+// Settings lives in the account menu now (the chip at the sidebar's foot), not as a sidebar row.
+export const openSidebar = (h, name) => (name === 'Settings' ? openSettings(h) : clickWords(h, name, '.sidebar.left, aside'));
 
 /** Switch one pack on through Settings › Packs, the way a person does. */
 export async function switchPackOn(h, name) {

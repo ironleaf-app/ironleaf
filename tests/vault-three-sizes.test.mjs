@@ -24,7 +24,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { after, before, test } from 'node:test';
 import { pathToFileURL } from 'node:url';
-import { startHarness } from './vault-controls-harness.mjs';
+import { openSettings, startHarness } from './vault-controls-harness.mjs';
 
 const root = path.join(import.meta.dirname, '..');
 const read = (p) => readFileSync(path.join(root, p), 'utf8');
@@ -405,9 +405,9 @@ async function ctrlK(h) {
 const PAGES = [
   { id: 'today', room: true, open: (h) => openRoom(h, 'Today') },
   { id: 'projects', room: true, open: (h) => openRoom(h, 'Projects') },
-  { id: 'project', open: async (h) => { await openRoom(h, 'Projects'); assert.equal(await clickWords(h, 'Harbourline Cart Fix', 'main'), 'CLICKED', 'the project opens'); await sleep(1200); } },
+  { id: 'project', open: async (h) => { await openRoom(h, 'Projects'); await waitFor(h, `(document.querySelector('main')?.innerText ?? '').includes('Harbourline Cart Fix')`); assert.equal(await clickWords(h, 'Harbourline Cart Fix', 'main'), 'CLICKED', 'the project opens'); await sleep(1200); } },
   { id: 'people', room: true, open: (h) => openRoom(h, 'People') },
-  { id: 'person', room: true, open: async (h) => { await openRoom(h, 'People'); assert.equal(await clickWords(h, 'Alex Chen', 'main'), 'CLICKED', 'the person opens'); await sleep(1200); } },
+  { id: 'person', room: true, open: async (h) => { await openRoom(h, 'People'); await waitFor(h, `(document.querySelector('main')?.innerText ?? '').includes('Alex Chen')`); assert.equal(await clickWords(h, 'Alex Chen', 'main'), 'CLICKED', 'the person opens'); await sleep(1200); } },
   { id: 'notes', room: true, open: (h) => openRoom(h, 'Notes') },
   { id: 'folder', room: true, open: async (h) => { await openRoom(h, 'Notes'); assert.equal(await clickWords(h, 'Work', 'main'), 'CLICKED', 'the folder filters'); await sleep(1200); } },
   { id: 'note', open: async (h) => { await openRoom(h, 'Notes'); await ctrlK(h); assert.ok(await waitFor(h, `!!document.querySelector('.picker input')`, 5000), 'the palette opens for the note'); await h.browser.send('Input.insertText', { text: 'Kickoff note 1 with decisions' }); await sleep(900); assert.equal(await h.browser.ev(`(() => { const row = [...document.querySelectorAll('.picker-row')].find((x) => (x.querySelector('.picker-label')?.innerText || '').includes('Kickoff note 1')); if (!row) return 'NOTFOUND'; row.click(); return 'CLICKED'; })()`), 'CLICKED', 'the note opens'); await sleep(1500); } },
@@ -418,7 +418,7 @@ const PAGES = [
   { id: 'money', room: true, open: (h) => openRoom(h, 'Money') },
   { id: 'systems', room: true, open: (h) => openRoom(h, 'Systems') },
   { id: 'templates', room: true, open: (h) => openRoom(h, 'Templates') },
-  { id: 'settings', room: true, open: async (h) => { assert.equal(await clickWords(h, 'Settings', '.sidebar.left, aside'), 'CLICKED', 'Settings opens'); await sleep(1200); } },
+  { id: 'settings', room: true, open: async (h) => { assert.equal(await openSettings(h), 'CLICKED', 'Settings opens'); await sleep(1200); } },
   { id: 'more', open: async (h) => { await openRoom(h, 'Today'); assert.equal(await clickWords(h, 'More', '.sidebar.left, aside'), 'CLICKED', 'More opens'); await sleep(800); assert.ok(await h.browser.ev(`(() => { const m = document.querySelector('.menu[role="menu"]'); if (!m) return false; const r = m.getBoundingClientRect(); return r.width > 2 && r.height > 2; })()`), 'the menu shows'); } },
   { id: 'palette', open: async (h) => { await openRoom(h, 'Today'); await ctrlK(h); assert.ok(await waitFor(h, `!!document.querySelector('.picker input')`, 5000), 'the palette opens'); await h.browser.send('Input.insertText', { text: 'harbour' }); await sleep(900); } },
 ];

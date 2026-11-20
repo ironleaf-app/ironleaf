@@ -382,7 +382,8 @@ test('pack offers live in Settings › Packs, never on Today', { timeout: 420000
   const ev = h.browser.ev;
   await h.browser.send('Emulation.setDeviceMetricsOverride', { width: 1920, height: 1117, deviceScaleFactor: 1, mobile: false });
   await sleep(700);
-  await clickWords(h, 'Settings');
+  // Settings lives in the account menu (the chip at the sidebar's foot), not as a sidebar row.
+  await (await import('./vault-controls-harness.mjs')).openSettings(h);
   await waitFor(h, `!!document.querySelector('.settings-nav')`);
   await clickWords(h, 'Packs', '.settings-nav');
   await waitFor(h, `!!document.querySelector('.ms-list')`);

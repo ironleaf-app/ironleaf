@@ -1795,3 +1795,24 @@ export async function startHarness(opts = {}) {
     },
   };
 }
+
+/** Open Settings the way a person does now: Settings left the sidebar for the
+ *  account menu (the chip at the foot of the sidebar, or the avatar on the
+ *  folded rail). Returns 'CLICKED' once the menu's Settings row is pressed. */
+export async function openSettings(h) {
+  return h.browser.ev(`(async () => {
+    const vis = (el) => { const r = el.getBoundingClientRect(); return r.width > 2 && r.height > 2; };
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    let row = document.querySelector('.acct-menu [data-id="settings"]');
+    if (!row) {
+      const chip = [...document.querySelectorAll('.acct-chip, .acct-chip-rail')].find(vis);
+      if (!chip) return 'NOCHIP';
+      chip.click();
+      for (let i = 0; i < 20 && !row; i++) { await sleep(50); row = document.querySelector('.acct-menu [data-id="settings"]'); }
+      if (!row) return 'NOMENU';
+    }
+    row.click();
+    await sleep(400);
+    return 'CLICKED';
+  })()`);
+}

@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { after, test } from 'node:test';
-import { startHarness } from './vault-controls-harness.mjs';
+import { openSettings, startHarness } from './vault-controls-harness.mjs';
 
 const root = path.join(import.meta.dirname, '..');
 const read = (p) => readFileSync(path.join(root, p), 'utf8');
@@ -121,6 +121,8 @@ async function clickWords(h, words, scope = '') {
   })()`);
 }
 async function openRoom(h, name) {
+  // Settings lives in the account menu (the chip at the sidebar's foot), not as a sidebar row.
+  if (name === 'Settings' && (await openSettings(h)) === 'CLICKED') return;
   // t10 the quiet More (8 Nov 2026): packs left the side bar and More for Ctrl+K, each by its own name.
   if ((await clickWords(h, name, '.sidebar.left, aside')) === 'CLICKED') return;
   // Command-backed rooms answer by their command's name (t10: each command named once).

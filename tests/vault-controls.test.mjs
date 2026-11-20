@@ -16,7 +16,7 @@ import { after, test } from 'node:test';
 // The full sweep clicks every control on every view (10+ minutes): it runs when asked (NV_CONTROLS_SWEEP=1), so the
 // whole suite stays quick; the harness boot and the Edit regression always run.
 const SWEEP = { skip: process.env.NV_CONTROLS_SWEEP === '1' ? false : 'full sweep: set NV_CONTROLS_SWEEP=1' };
-import { startHarness } from './vault-controls-harness.mjs';
+import { openSettings, startHarness } from './vault-controls-harness.mjs';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const OUT = process.env.NV_CONTROLS_OUT || '';
@@ -282,7 +282,7 @@ test('opening a record form closes the pack tour', async () => {
 test('Open Locked shows the Locked place with no raw error', async () => {
   const h = await harness();
   await h.freshView();
-  assert.equal(await clickWords(h, 'Settings'), 'CLICKED', 'Settings opens');
+  assert.equal(await openSettings(h), 'CLICKED', 'Settings opens');
   await waitFor(h, `!!document.querySelector('main')`);
   await sleep(800);
   assert.equal(await clickWords(h, 'Privacy and secrets', 'main'), 'CLICKED', 'the Privacy section opens');
@@ -780,7 +780,7 @@ const OVERLAYS_JS = `(() => ({
 // nav shows no row for one that is off — the sweep cannot open them any other honest way).
 /** Switch one pack on through Settings › Packs. True when its Open button shows. */
 async function switchPackOn(h, name) {
-  await clickWords(h, 'Settings');
+  await openSettings(h);
   await waitFor(h, `!!document.querySelector('main')`);
   await sleep(800);
   await clickWords(h, 'Packs', 'main');
@@ -801,7 +801,7 @@ async function switchPackOn(h, name) {
 // Standalone the Bin's door is Settings › Backups and sync › Bin › Open (the More row shows only in the
 // former host app).
 async function gotoBin(h) {
-  await clickWords(h, 'Settings');
+  await openSettings(h);
   await waitFor(h, `!!document.querySelector('main')`);
   await sleep(800);
   await clickWords(h, 'Backups and sync', 'main');
@@ -1374,7 +1374,7 @@ test('Settings (and Packs): every control works', SWEEP, async () => {
   const h = await harness();
   await h.freshView();
   const open = async () => {
-    await clickWords(h, 'Settings');
+    await openSettings(h);
     await waitFor(h, `!!document.querySelector('main')`);
     await sleep(800);
   };
