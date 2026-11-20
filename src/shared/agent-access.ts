@@ -376,7 +376,7 @@ export const AGENT_TOOLS: AgentToolDef[] = [
     name: 'note_create',
     title: 'Make a note',
     level: 'edit',
-    description: 'Make a new note. path is from the top of the library, with folders (made as needed), e.g. "Projects/Studio Upgrade/Notes/Till audit.md". Markdown; properties first as YAML between --- lines; link notes as [[Note title]]. Search and read first: when a note for this already exists, update it in place (note_append, note_edit) instead of making another. Fails if the note is there (then use note_append).',
+    description: 'Make a new note. path is from the top of the library, with folders (made as needed), e.g. "Projects/Studio Upgrade/Notes/Gear audit.md". Markdown; properties first as YAML between --- lines; link notes as [[Note title]]. Search and read first: when a note for this already exists, update it in place (note_append, note_edit) instead of making another. Fails if the note is there (then use note_append).',
     input: { path: S('Where the note goes, ending in .md.'), content: S('The note, in Markdown.') },
     required: ['path', 'content'],
   },
