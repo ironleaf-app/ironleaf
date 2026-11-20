@@ -29,9 +29,9 @@ async function harness() {
     w('People/Sam Okafor.md', `---\ntype: person\nrole: Weekend manager\n---\n# Sam Okafor\n\nWeekend manager.\n`);
     w('People/June Park.md', `---\ntype: person\nrole: Bookkeeper\n---\n# June Park\n\nBookkeeper.\n`);
     w('People/Priya Nair.md', `---\ntype: person\nrole: Designer\n---\n# Priya Nair\n\nDesigner.\n`);
-    w(FLAG, `---\ntype: project\nstatus: active\nhealth: at risk\nowner: Alex Chen\ndue: 2026-11-20\n---\n# Harbourline Cart Fix\n\n## Summary\n\nThe shop's cart drops orders at payment.\n\n## What's next\n\n- [ ] Ring ShadeCo about the awning quote before it lapses — Alex Chen — due 2026-11-07\n- [ ] Retry the failed card payment twice — Alex Chen — due 2026-11-06\n- [ ] Set up the new till and train the Saturday crew — Sam and June — due 2026-11-13\n\n## Key dates\n\n- 2026-11-20: Cart fix done (milestone)\n\n## People\n\n- Alex Chen (owner)\n- Sam Okafor\n- June Park\n- Priya Nair\n\n## Notes\n\nKept for the fix.\n`);
-    w(M1, `---\ntype: meeting\ndate: 2026-11-10\nattendees: [Alex Chen, Sam Okafor]\nproject: ${FLAG}\n---\n# 2026-11-10 Tuesday standup\n\n## Actions\n\n- [ ] Ring ShadeCo about the awning quote — Alex Chen — due 2026-11-07\n- [ ] Retry the failed card payment twice — Alex Chen — due 2026-11-06\n\n## Decisions\n\n- Retry twice, then fail loud\n\n## Questions\n\n- Who signs off the till logs? (asked by June Park)\n`);
-    w(M2, `---\ntype: meeting\ndate: 2026-11-11\nattendees: [Alex Chen]\nproject: ${FLAG}\n---\n# 2026-11-11 Wednesday standup\n\n## Actions\n\n- [ ] Retry the failed card payment twice — Alex Chen — due 2026-11-06\n- [ ] Draft the December roster — me\n- [ ] File the BAS for October — Sam\n- [ ] Set up the new till — Sam and June\n\n## Decisions\n\n- None yet\n`);
+    w(FLAG, `---\ntype: project\nstatus: active\nhealth: at risk\nowner: Alex Chen\ndue: 2026-11-20\n---\n# Harbourline Cart Fix\n\n## Summary\n\nThe shop's cart drops orders at payment.\n\n## What's next\n\n- [ ] Ring ShadeCo about the awning quote before it lapses — Alex Chen — due 2026-11-07\n- [ ] Retry the failed card payment twice — Alex Chen — due 2026-11-06\n- [ ] Set up the new oven and train the Saturday crew — Sam and June — due 2026-11-13\n\n## Key dates\n\n- 2026-11-20: Cart fix done (milestone)\n\n## People\n\n- Alex Chen (owner)\n- Sam Okafor\n- June Park\n- Priya Nair\n\n## Notes\n\nKept for the fix.\n`);
+    w(M1, `---\ntype: meeting\ndate: 2026-11-10\nattendees: [Alex Chen, Sam Okafor]\nproject: ${FLAG}\n---\n# 2026-11-10 Tuesday standup\n\n## Actions\n\n- [ ] Ring ShadeCo about the awning quote — Alex Chen — due 2026-11-07\n- [ ] Retry the failed card payment twice — Alex Chen — due 2026-11-06\n\n## Decisions\n\n- Retry twice, then fail loud\n\n## Questions\n\n- Who signs off the oven logs? (asked by June Park)\n`);
+    w(M2, `---\ntype: meeting\ndate: 2026-11-11\nattendees: [Alex Chen]\nproject: ${FLAG}\n---\n# 2026-11-11 Wednesday standup\n\n## Actions\n\n- [ ] Retry the failed card payment twice — Alex Chen — due 2026-11-06\n- [ ] Draft the December roster — me\n- [ ] File the BAS for October — Sam\n- [ ] Set up the new oven — Sam and June\n\n## Decisions\n\n- None yet\n`);
     w(NOPROJ, `---\ntype: meeting\ndate: 2026-11-12\nattendees: [Alex Chen]\n---\n# 2026-11-12 Call with no project\n\n## Actions\n\n- [ ] Ring the bank about the card reader — Alex Chen\n`);
     await H.services.rescanAll();
     await H.browser.send('Page.navigate', { url: `${H.origin}/harness.html` });
@@ -221,7 +221,7 @@ test('owners me, first-name-only and joint read and merge', { timeout: 300000 },
   const rows = await h.browser.ev(`[...document.querySelectorAll('section[aria-label="Tasks in this note"] .mt-row')].map((r) => (r.innerText || '').replace(/\\s+/g, ' ').slice(0, 100))`);
   assert.ok(rows.some((t) => t.includes('Draft the December roster')), `me shows (${rows.join(' / ').slice(0, 200)})`);
   assert.ok(rows.some((t) => t.includes('File the BAS for October')), 'first-name-only shows');
-  assert.ok(rows.some((t) => t.includes('Set up the new till')), 'joint shows');
+  assert.ok(rows.some((t) => t.includes('Set up the new oven')), 'joint shows');
   // The joint pair merges to one row on Tasks (the step carries the detail).
   await openRoom(h, 'Tasks');
   await sleep(1200);
@@ -229,8 +229,8 @@ test('owners me, first-name-only and joint read and merge', { timeout: 300000 },
   await sleep(800);
   await h.browser.ev(`(async () => { for (const e of document.querySelectorAll('.tk-row')) { e.scrollIntoView({ block: 'center' }); await new Promise((r) => setTimeout(r, 60)); } })()`);
   await sleep(400);
-  const till = await h.browser.ev(`[...document.querySelectorAll('.tk-row')].filter((r) => (r.innerText || '').includes('Set up the new till')).length`);
-  assert.equal(till, 1, 'the joint pair draws once');
+  const oven = await h.browser.ev(`[...document.querySelectorAll('.tk-row')].filter((r) => (r.innerText || '').includes('Set up the new oven')).length`);
+  assert.equal(oven, 1, 'the joint pair draws once');
 });
 
 test('Ask with an empty question asks nothing; a 2,000-letter one lands whole', { timeout: 300000 }, async () => {
