@@ -266,8 +266,8 @@ try {
   // A note from a template, and a project shaped by a project template (Templates page, New project).
   const fromTemplate = await evaluate(`window.nv.templates.use('Templates/Notes/Meeting notes.md', 'Supplier catch-up', '').then(p => window.nv.notes.read(p).then(t => [p, t]))`);
   check('a note from a template: named, filled, the template’s description left out', fromTemplate[0] === 'Supplier catch-up.md' && /^type: meeting$/m.test(fromTemplate[1]) && !fromTemplate[1].includes('{{') && !/description:/.test(fromTemplate[1]));
-  const shaped = await evaluate(`window.nv.projects.create('Smoke rollout', '', 'Templates/Projects/IT rollout.md').then(p => window.nv.projects.view(p))`);
-  check('a project from a template starts with next steps, key dates and risks', shaped.project.name === 'Smoke rollout' && shaped.project.next.length >= 5 && shaped.project.dates.length >= 3 && shaped.project.risks.length >= 3);
+  const shaped = await evaluate(`window.nv.projects.create('Smoke laptops', '', 'Templates/Projects/IT rollout.md').then(p => window.nv.projects.view(p))`);
+  check('a project from a template starts with next steps, key dates and risks', shaped.project.name === 'Smoke laptops' && shaped.project.next.length >= 5 && shaped.project.dates.length >= 3 && shaped.project.risks.length >= 3);
   const saved = await evaluate(`window.nv.templates.saveAs(${JSON.stringify(shaped.path)}, 'Smoke shape').then(() => window.nv.templates.list()).then(r => r.templates.find(t => t.name === 'Smoke shape'))`);
   check('Save as template: a project becomes a project template', saved?.kind === 'project' && saved.path === 'Templates/Projects/Smoke shape.md' && saved.counts?.next >= 5);
 
