@@ -38,42 +38,42 @@ const KNOWN = ['June Park', 'Priya Nair', 'Tom Bradley', 'Lucy Hammond', 'Sam Or
 test('own role, once: their segments stay, others go, their own name comes off', () => {
   assert.equal(H.ownRole('Northgate requirements, plan and execution (Sam Ortega)', 'Sam Ortega', KNOWN), 'Northgate requirements, plan and execution');
   assert.equal(
-    H.ownRole('Eastwick (June Park); Priya Nair — Riverton (Priya Nair); Tom Bradley — Southmere; Lucy Hammond — Hillcrest and Bayview', 'June Park', KNOWN),
-    'Eastwick',
+    H.ownRole('Front beds (June Park); Priya Nair — Herb garden (Priya Nair); Tom Bradley — Compost; Lucy Hammond — Seed library and tool shed', 'June Park', KNOWN),
+    'Front beds',
   );
   assert.equal(
-    H.ownRole('Eastwick (June Park); Priya Nair — Riverton (Priya Nair); Tom Bradley — Southmere', 'Priya Nair', KNOWN),
-    'Riverton',
+    H.ownRole('Front beds (June Park); Priya Nair — Herb garden (Priya Nair); Tom Bradley — Compost', 'Priya Nair', KNOWN),
+    'Herb garden',
   );
   assert.equal(
     H.ownRole('Project Manager (agency temp, Boston): milestones, reporting, roadmap (Tom Bradley)', 'Tom Bradley', KNOWN),
     'Project Manager (agency temp, Boston): milestones, reporting, roadmap',
   );
-  assert.equal(H.ownRole('Riverton lead (Priya)', 'Priya Nair', KNOWN), 'Riverton lead', 'a first-name paren goes too');
+  assert.equal(H.ownRole('Herb garden lead (Priya)', 'Priya Nair', KNOWN), 'Herb garden lead', 'a first-name paren goes too');
 });
 
 test('anything else reads byte for byte as written', () => {
-  assert.equal(H.ownRole('Shop developer', 'Alex Chen', KNOWN), 'Shop developer');
-  assert.equal(H.ownRole('Northern regional fit-out point of contact; Responsible for the survey review', 'Priya Nair', KNOWN), 'Northern regional fit-out point of contact; Responsible for the survey review', 'several own parts stay');
+  assert.equal(H.ownRole('Garden coordinator', 'Alex Chen', KNOWN), 'Garden coordinator');
+  assert.equal(H.ownRole('Garden beds fit-out point of contact; Responsible for the survey review', 'Priya Nair', KNOWN), 'Garden beds fit-out point of contact; Responsible for the survey review', 'several own parts stay');
   assert.equal(H.ownRole('', 'Alex Chen', KNOWN), '');
-  assert.equal(H.ownRole('Riverton (Priya Nair)', 'June Park', KNOWN), 'Riverton (Priya Nair)', 'one segment never drops: only their own name comes off');
+  assert.equal(H.ownRole('Herb garden (Priya Nair)', 'June Park', KNOWN), 'Herb garden (Priya Nair)', 'one segment never drops: only their own name comes off');
   assert.equal(
-    H.ownRole('Riverton (Priya Nair); Southmere (Tom Bradley)', 'June Park', KNOWN),
-    'Riverton (Priya Nair); Southmere (Tom Bradley)',
+    H.ownRole('Herb garden (Priya Nair); Compost (Tom Bradley)', 'June Park', KNOWN),
+    'Herb garden (Priya Nair); Compost (Tom Bradley)',
     'nothing of theirs to keep: the words stay rather than hide',
   );
 });
 
 test('the hub reads every person that way, keeping the words as written for the edit box', () => {
   const p = F.parseProject(
-    `---\ntype: project\nstatus: active\nowner: Alex Chen\n---\n# Build\n\n## People\n\n- June Park — Eastwick (June Park); Priya Nair — Riverton (Priya Nair)\n- Priya Nair — Designer of the new receipts\n`,
+    `---\ntype: project\nstatus: active\nowner: Alex Chen\n---\n# Build\n\n## People\n\n- June Park — Front beds (June Park); Priya Nair — Herb garden (Priya Nair)\n- Priya Nair — Designer of the new receipts\n`,
     'Projects/Build/Build.md',
   );
   const hub = H.hubModel({ project: p, today: 20000, me: 'Alex Chen' });
   const june = hub.people.find((x) => x.name === 'June Park');
   const priya = hub.people.find((x) => x.name === 'Priya Nair');
-  assert.equal(june.role, 'Eastwick');
-  assert.equal(june.roleRaw, 'Eastwick (June Park); Priya Nair — Riverton (Priya Nair)');
+  assert.equal(june.role, 'Front beds');
+  assert.equal(june.roleRaw, 'Front beds (June Park); Priya Nair — Herb garden (Priya Nair)');
   assert.equal(priya.role, 'Designer of the new receipts');
   assert.equal(priya.roleRaw, undefined, 'untouched roles carry no second copy');
 });
@@ -105,7 +105,7 @@ async function harness() {
     };
     const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     const D = (off) => iso(new Date(Date.now() + off * 864e5));
-    w(BIG, `---\ntype: project\nstatus: active\nhealth: at risk\nowner: Alex Chen\ndue: ${D(14)}\n---\n# Harbour Festival Build\n\n## Summary\n\nThe summer festival build.\n\n## What's next\n\n- [ ] Ring the supplier about the invoice — Alex Chen — due ${D(-1)}\n\n## Key dates\n\n| Date | Milestone | Status |\n|---|---|---|\n| ${D(2)} | Rooms confirmed |  |\n\n## People\n\n- Alex Chen — Shop developer running the launches\n- Priya Nair — Northern regional fit-out point of contact; Responsible for the survey review, both action plans, equipment order and implementation\n- Sam Ortega — Northgate requirements, plan and execution (Sam Ortega)\n- June Park — Eastwick (June Park); Priya Nair — Riverton (Priya Nair); Tom Bradley — Southmere; Lucy Hammond — Hillcrest and Bayview; Mia Kaur — Sydney and Melbourne\n- Tom Bradley — Project Manager (agency temp, Boston): milestones, reporting, communications, roadmap (Tom Bradley)\n- Lucy Hammond — Accountable for the survey review, action plans, equipment and ordering; approves the harbour plan (Lucy Hammond)\n- Mia Kaur — Weekend manager at the museum with the keys to every room\n\n## Decisions\n\n- ${D(-12)}: Open on the north wharf\n\n## Notes\n\nBuild.\n`);
+    w(BIG, `---\ntype: project\nstatus: active\nhealth: at risk\nowner: Alex Chen\ndue: ${D(14)}\n---\n# Harbour Festival Build\n\n## Summary\n\nThe summer festival build.\n\n## What's next\n\n- [ ] Ring the supplier about the invoice — Alex Chen — due ${D(-1)}\n\n## Key dates\n\n| Date | Milestone | Status |\n|---|---|---|\n| ${D(2)} | Rooms confirmed |  |\n\n## People\n\n- Alex Chen — Garden coordinator running the open days\n- Priya Nair — Garden beds fit-out point of contact; Responsible for the survey review, both action plans, equipment order and implementation\n- Sam Ortega — Northgate requirements, plan and execution (Sam Ortega)\n- June Park — Front beds (June Park); Priya Nair — Herb garden (Priya Nair); Tom Bradley — Compost; Lucy Hammond — Seed library and tool shed; Mia Kaur — Mondays and Thursdays\n- Tom Bradley — Project Manager (agency temp, Boston): milestones, reporting, communications, roadmap (Tom Bradley)\n- Lucy Hammond — Accountable for the survey review, action plans, equipment and ordering; approves the harbour plan (Lucy Hammond)\n- Mia Kaur — Weekend manager at the museum with the keys to every room\n\n## Decisions\n\n- ${D(-12)}: Open on the north wharf\n\n## Notes\n\nBuild.\n`);
     await V.services.rescanAll();
     await V.browser.send('Page.navigate', { url: `${V.origin}/harness.html` });
     assert.ok(await waitFor(V, `!!document.querySelector('.app')`, 45000), 'the app boots');
@@ -144,8 +144,8 @@ test('long roles wrap whole inside their column, Open card keeps its place, each
         assert.ok(r.btnRight <= r.rowRight + 1, `${W}: Open card keeps its own place on ${r.name}`);
       }
       const june = rows.find((r) => r.name === 'June Park').text;
-      assert.ok(june.startsWith('Eastwick · ') || june === 'Eastwick', `June reads her own role, once (${june.slice(0, 60)})`);
-      assert.ok(!june.includes('Priya') && !june.includes('Southmere'), 'no other lines');
+      assert.ok(june.startsWith('Front beds · ') || june === 'Front beds', `June reads her own role, once (${june.slice(0, 60)})`);
+      assert.ok(!june.includes('Priya') && !june.includes('Compost'), 'no other lines');
       const sam = rows.find((r) => r.name === 'Sam Ortega').text;
       assert.ok(sam.includes('Northgate requirements, plan and execution') && !sam.includes('(Sam Ortega)'), `Sam names no self (${sam.slice(0, 60)})`);
     }
