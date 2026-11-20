@@ -174,16 +174,16 @@ test('Word and PowerPoint: words replaced across the runs they are split into, f
 
 // ── The assistant's tools on a real folder ────────────────────────────────────────────────────────────────────────
 
-const Launch = 'Projects/07 Wexley St Ashford (Launch)/07 Wexley St Ashford (Launch).md';
-const NEXT = 'Projects/08 Calloway Rd (Launch)/08 Calloway Rd (Launch).md';
+const Launch = 'Projects/Wexley St Bakery (Launch)/Wexley St Bakery (Launch).md';
+const NEXT = 'Projects/Calloway Rd Stall (Launch)/Calloway Rd Stall (Launch).md';
 const REMOTE = 'Projects/fileserver-01 · Site/fileserver-01 · Site.md';
 const RID = '0b6a9d2e-1c1f-4c8e-9a51-6f5c2d7e8a90';
 
 /** A library with two cafe-opening projects (folders on this PC) and one on a remote computer; the files index real. */
 async function setUp(name) {
   const base = path.join(work, name);
-  const launch = path.join(base, 'pc', '07 Wexley St Ashford (Launch)');
-  const next = path.join(base, 'pc', '08 Calloway Rd (Launch)');
+  const launch = path.join(base, 'pc', 'Wexley St Bakery (Launch)');
+  const next = path.join(base, 'pc', 'Calloway Rd Stall (Launch)');
   mkdirSync(path.join(launch, 'Checklist'), { recursive: true });
   mkdirSync(next, { recursive: true });
   writeFileSync(path.join(launch, 'Checklist', 'Cafe_Opening_Checklist_WexleySt.xlsx'), checklist());
@@ -192,8 +192,8 @@ async function setUp(name) {
   writeFileSync(path.join(launch, 'Floor plan.pdf'), Buffer.from('%PDF-1.4 not really'));
   writeFileSync(path.join(launch, 'Notes.md'), '# Notes\nKeys from the landlord on Friday.\n');
   const notes = {
-    [Launch]: `---\ntype: project\nstatus: active\nfolder: ${launch}\n---\n# 07 Wexley St Ashford (Launch)\n\n## Summary\nThe new cafe on Wexley St.\n`,
-    [NEXT]: `---\ntype: project\nstatus: planning\nfolder: ${next}\n---\n# 08 Calloway Rd (Launch)\n\n## Summary\nThe next new cafe.\n`,
+    [Launch]: `---\ntype: project\nstatus: active\nfolder: ${launch}\n---\n# Wexley St Bakery (Launch)\n\n## Summary\nThe new cafe on Wexley St.\n`,
+    [NEXT]: `---\ntype: project\nstatus: planning\nfolder: ${next}\n---\n# Calloway Rd Stall (Launch)\n\n## Summary\nThe bakery’s weekend market stall.\n`,
     [REMOTE]: `---\ntype: project\nneuralspark-project: "remote:${RID}:/home/deploy/site"\n---\n# fileserver-01 · Site\n`,
   };
   const index = new M.VaultIndex();
@@ -251,8 +251,8 @@ test('found by meaning: “the launch checklist” is the checklist in the proje
     const tools = new M.AgentTools(host, [], () => {});
     const r = await call(tools, 'search_project_files', { query: 'launch checklist' });
     assert.ok(!r.isError, r.text);
-    assert.match(r.text, /^No file has every one of those words\. “launch” is in the project’s name \(07 Wexley St Ashford \(Launch\), 08 Calloway Rd \(Launch\)\), so it counts for every file there\./);
-    assert.match(r.text, /07 Wexley St Ashford \(Launch\) · Checklist\/Cafe_Opening_Checklist_(WexleySt|MASTER)\.xlsx \(Excel workbook/);
+    assert.match(r.text, /^No file has every one of those words\. “launch” is in the project’s name \(Wexley St Bakery \(Launch\), Calloway Rd Stall \(Launch\)\), so it counts for every file there\./);
+    assert.match(r.text, /Wexley St Bakery \(Launch\) · Checklist\/Cafe_Opening_Checklist_(WexleySt|MASTER)\.xlsx \(Excel workbook/);
     assert.match(r.text, /link: \[Cafe_Opening_Checklist_WexleySt\.xlsx\]\(nv-file:/);
     assert.match(r.text, /matches: checklist/);
     const plural = await call(tools, 'search_project_files', { query: 'the Wexley St checklists file' });
@@ -272,19 +272,19 @@ test('copies and templates: a new file beside the original (or in another projec
     const tools = new M.AgentTools(host, [], (x) => steps.push(x), Launch);
     const look = await call(tools, 'read_spreadsheet', { path: 'Checklist/Cafe_Opening_Checklist_WexleySt.xlsx' });
     assert.ok(!look.isError, look.text);
-    assert.match(look.text, /^07 Wexley St Ashford \(Launch\) · Checklist\/Cafe_Opening_Checklist_WexleySt\.xlsx \(Excel workbook/);
+    assert.match(look.text, /^Wexley St Bakery \(Launch\) · Checklist\/Cafe_Opening_Checklist_WexleySt\.xlsx \(Excel workbook/);
     assert.match(look.text, /A reset clears \(filled in\): C Owner/);
     // Never in place: the person's own file.
-    const inPlace = await call(tools, 'edit_project_file', { project: '07 Wexley St', path: 'Checklist/Cafe_Opening_Checklist_WexleySt.xlsx', cells: [{ cell: 'Tasks!B2', value: 'x' }] });
+    const inPlace = await call(tools, 'edit_project_file', { project: 'Wexley St', path: 'Checklist/Cafe_Opening_Checklist_WexleySt.xlsx', cells: [{ cell: 'Tasks!B2', value: 'x' }] });
     assert.ok(inPlace.isError);
     assert.match(inPlace.text, /the person’s own file, so it is never changed in place\. Give save_as/);
     assert.equal(inPlace.shown, 'Cafe_Opening_Checklist_WexleySt.xlsx is your own file, so it isn’t changed in place.', 'the step says it to the person, not the model');
     // The template: reset, saved beside the original.
-    const made = await call(tools, 'edit_project_file', { project: '07 Wexley St', path: 'Checklist/Cafe_Opening_Checklist_WexleySt.xlsx', save_as: 'Launch template – Cafe Opening Checklist', reset: true });
+    const made = await call(tools, 'edit_project_file', { project: 'Wexley St', path: 'Checklist/Cafe_Opening_Checklist_WexleySt.xlsx', save_as: 'Launch template – Cafe Opening Checklist', reset: true });
     assert.ok(!made.isError, made.text);
     const tpl = path.join(launch, 'Checklist', 'Launch template – Cafe Opening Checklist.xlsx');
     assert.ok(existsSync(tpl), 'the extension is the original’s');
-    assert.match(made.text, /^Saved a new file, Checklist\/Launch template – Cafe Opening Checklist\.xlsx, in 07 Wexley St Ashford \(Launch\)’s folder/);
+    assert.match(made.text, /^Saved a new file, Checklist\/Launch template – Cafe Opening Checklist\.xlsx, in Wexley St Bakery \(Launch\)’s folder/);
     assert.match(made.text, /Cleared 12 filled-in cells back to blank — “Tasks”: C Owner \(3\), D Due \(3\), E Status \(3\), F Notes \(1\), B2 beside “Venue”, B3 beside “Opening date”\. Kept: the headings and titles, “Tasks”: A Phase, B Task, G Days to go \(formulas\)/);
     assert.match(made.text, /The original, Checklist\/Cafe_Opening_Checklist_WexleySt\.xlsx, is exactly as it was\./);
     const link = /link: \[(.+?)\]\((nv-file:[^)]+)\)/.exec(made.text);
@@ -313,11 +313,11 @@ test('copies and templates: a new file beside the original (or in another projec
     assert.match(fill.text, /^Changed Checklist\/Launch template – Cafe Opening Checklist\.xlsx/);
     assert.equal((await M.readWorkbook(readFileSync(tpl))).sheets[0].cells.get('A1').value, 'Launch Cafe Opening Checklist');
     // Used on a new one: copied into the next project's folder.
-    const use = await call(tools, 'copy_project_file', { path: 'Checklist/Launch template – Cafe Opening Checklist.xlsx', to: 'Cafe Opening Checklist – Calloway Rd.xlsx', to_project: '08 Calloway' });
+    const use = await call(tools, 'copy_project_file', { path: 'Checklist/Launch template – Cafe Opening Checklist.xlsx', to: 'Cafe Opening Checklist – Calloway Rd.xlsx', to_project: 'Calloway Rd' });
     assert.ok(!use.isError, use.text);
     assert.ok(existsSync(path.join(next, 'Cafe Opening Checklist – Calloway Rd.xlsx')));
-    assert.match(use.text, /in 08 Calloway Rd \(Launch\)’s folder/);
-    assert.deepEqual(tools.cards().map((c) => [c.projectName, c.title]), [['07 Wexley St Ashford (Launch)', 'Made for you · 2 files'], ['08 Calloway Rd (Launch)', 'Made for you']]);
+    assert.match(use.text, /in Calloway Rd Stall \(Launch\)’s folder/);
+    assert.deepEqual(tools.cards().map((c) => [c.projectName, c.title]), [['Wexley St Bakery (Launch)', 'Made for you · 2 files'], ['Calloway Rd Stall (Launch)', 'Made for you']]);
     // Word: words replaced in a copy, the original kept.
     const brief = await call(tools, 'edit_project_file', { path: 'Cafe brief.docx', save_as: 'Cafe brief – Calloway Rd.docx', replace: [{ find: 'Wexley St', text: 'Calloway Rd' }] });
     assert.match(brief.text, /Replaced “Wexley St” with “Calloway Rd” \(2 places\)\. The formatting is as it was\./);
@@ -351,7 +351,7 @@ test('never outside a project’s folder, never on a remote computer, never with
       ['copy_project_file', { path: 'Checklist/Cafe_Opening_Checklist_WexleySt.xlsx', to: 'Copy.xlsx', to_project: 'fileserver-01' }, /on fileserver-01, a remote computer: files there can be read but not written from here\. A copy can go into a project on this PC instead \(to_project\)/],
       ['edit_project_file', { project: 'fileserver-01', path: 'plan.xlsx', reset: true }, /never changed in place|can be read but not written from here/],
       ['edit_project_file', { project: 'fileserver-01', path: 'plan.docx', replace: [{ find: 'a', text: 'b' }] }, /never changed in place/],
-      ['copy_project_file', { path: 'Checklist/Nope.xlsx', to: 'x.xlsx' }, /There is no Checklist\/Nope\.xlsx in 07 Wexley St Ashford \(Launch\)’s folder\. List the folder/],
+      ['copy_project_file', { path: 'Checklist/Nope.xlsx', to: 'x.xlsx' }, /There is no Checklist\/Nope\.xlsx in Wexley St Bakery \(Launch\)’s folder\. List the folder/],
       ['edit_project_file', { path: 'Checklist/Cafe_Opening_Checklist_WexleySt.xlsx', save_as: 'y.xlsx', replace: [{ find: 'a', text: 'b' }] }, /For a workbook, set cells/],
       ['edit_project_file', { path: 'Cafe brief.docx', save_as: 'y.docx', reset: true }, /a reset is for Excel workbooks/],
       ['edit_project_file', { path: 'Cafe brief.docx', save_as: 'y.docx', replace: [{ find: 'zebra', text: 'b' }] }, /None of those words are in Cafe brief\.docx/],
@@ -367,12 +367,12 @@ test('never outside a project’s folder, never on a remote computer, never with
     assert.ok(!existsSync(path.join(base, 'stolen.xlsx')));
     // From a remote computer into a project on this PC: read through the former host app, written
     // here.
-    const fromRemote = await call(tools, 'copy_project_file', { project: 'fileserver-01', path: 'plan.xlsx', to: 'Plan from fileserver-01.xlsx', to_project: '07 Wexley St' });
+    const fromRemote = await call(tools, 'copy_project_file', { project: 'fileserver-01', path: 'plan.xlsx', to: 'Plan from fileserver-01.xlsx', to_project: 'Wexley St' });
     assert.ok(!fromRemote.isError, fromRemote.text);
     assert.ok(existsSync(path.join(launch, 'Plan from fileserver-01.xlsx')));
     // Agents' readers (agent-access.ts) have no fileWrites: nothing is written.
     const reader = new M.AgentTools({ ...host, fileWrites: undefined }, [], () => {});
-    const refused = await call(reader, 'copy_project_file', { project: '07 Wexley St', path: 'Notes.md', to: 'n2.md' });
+    const refused = await call(reader, 'copy_project_file', { project: 'Wexley St', path: 'Notes.md', to: 'n2.md' });
     assert.ok(refused.isError && /can’t be written here/.test(refused.text));
     // Undo: the files it made go to the Recycle Bin, one changed by the person since stays.
     const made = await call(tools, 'edit_project_file', { path: 'Checklist/Cafe_Opening_Checklist_WexleySt.xlsx', save_as: 'Blank.xlsx', reset: true });
@@ -412,14 +412,14 @@ test('the whole conversation, scripted: ask for the launch checklist as a templa
       if (asked.length === 1) return { text: '', stopReason: 'stop', toolCalls: [{ id: '1', name: 'search_project_files', arguments: JSON.stringify({ query: 'launch checklist' }) }] };
       if (asked.length === 2) {
         const file = /· (Checklist\/Cafe_Opening_Checklist_WexleySt\.xlsx) /.exec(last)[1];
-        return { text: 'Found it.', stopReason: 'stop', toolCalls: [{ id: '2', name: 'read_spreadsheet', arguments: JSON.stringify({ project: '07 Wexley St Ashford (Launch)', path: file }) }] };
+        return { text: 'Found it.', stopReason: 'stop', toolCalls: [{ id: '2', name: 'read_spreadsheet', arguments: JSON.stringify({ project: 'Wexley St Bakery (Launch)', path: file }) }] };
       }
       if (asked.length === 3) {
         assert.match(last, /A reset clears \(filled in\)/);
-        return { text: '', stopReason: 'stop', toolCalls: [{ id: '3', name: 'edit_project_file', arguments: JSON.stringify({ project: '07 Wexley St Ashford (Launch)', path: 'Checklist/Cafe_Opening_Checklist_WexleySt.xlsx', save_as: 'Launch template – Cafe Opening Checklist.xlsx', reset: true }) }] };
+        return { text: '', stopReason: 'stop', toolCalls: [{ id: '3', name: 'edit_project_file', arguments: JSON.stringify({ project: 'Wexley St Bakery (Launch)', path: 'Checklist/Cafe_Opening_Checklist_WexleySt.xlsx', save_as: 'Launch template – Cafe Opening Checklist.xlsx', reset: true }) }] };
       }
       const link = /link: (\[.+?\]\(nv-file:[^)]+\))/.exec(last)[1];
-      const text = `Done: I made ${link} in the Checklist folder of 07 Wexley St Ashford (Launch). It's the Wexley St checklist with the owners, dates, statuses, notes and the cafe's details cleared; the phases, tasks, headings and formulas are kept. Your Wexley St copy is untouched.`;
+      const text = `Done: I made ${link} in the Checklist folder of Wexley St Bakery (Launch). It's the Wexley St checklist with the owners, dates, statuses, notes and the cafe's details cleared; the phases, tasks, headings and formulas are kept. Your Wexley St copy is untouched.`;
       return { text, stopReason: 'stop' };
     };
     const run = await M.runAgent({
@@ -436,7 +436,7 @@ test('the whole conversation, scripted: ask for the launch checklist as a templa
     assert.ok(existsSync(tpl));
     assert.equal(sha(readFileSync(original)), sha(checklist()));
     assert.deepEqual(tools.cards().map((c) => [c.kind, c.entries.map((e) => e.name)]), [['made', ['Launch template – Cafe Opening Checklist.xlsx']]]);
-    assert.deepEqual(steps.filter((x) => x.kind !== 'say').map((x) => x.words), ['Searched the project files for “launch checklist”', 'Looked over every sheet of Cafe_Opening_Checklist_WexleySt.xlsx in 07 Wexley St Ashford (Launch)', 'Saved Launch template – Cafe Opening Checklist.xlsx']);
+    assert.deepEqual(steps.filter((x) => x.kind !== 'say').map((x) => x.words), ['Searched the project files for “launch checklist”', 'Looked over every sheet of Cafe_Opening_Checklist_WexleySt.xlsx in Wexley St Bakery (Launch)', 'Saved Launch template – Cafe Opening Checklist.xlsx']);
     assert.ok(!steps.some((x) => x.kind === 'error'), 'no step failed');
     assert.deepEqual(listAll(launch), ['Cafe brief.docx', 'Checklist/Cafe_Opening_Checklist_MASTER.xlsx', 'Checklist/Cafe_Opening_Checklist_WexleySt.xlsx', 'Checklist/Launch template – Cafe Opening Checklist.xlsx', 'Floor plan.pdf', 'Notes.md'], 'one new file, nothing else touched');
     assert.ok(statSync(tpl).size > 0);
