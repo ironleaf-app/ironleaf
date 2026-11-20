@@ -513,10 +513,10 @@ test('a second note on the same subject is refused until it has been read', asyn
 test('a near-named project is found, not started twice', async () => {
   const { access, files } = await setup();
   const a = agentOf('edit');
-  const one = await callAs(access, a, 'project_create', { name: 'Store' });
+  const one = await callAs(access, a, 'project_create', { name: 'Studio' });
   assert.equal(one.isError, true);
   assert.match(words(one), /There’s already a project called “Studio Upgrade”/);
-  assert.ok(![...files.keys()].some((k) => k === 'Projects/Store/Store.md'), 'no second project');
+  assert.ok(![...files.keys()].some((k) => k === 'Projects/Studio/Studio.md'), 'no second project');
   const depot = await callAs(access, a, 'project_create', { name: 'Depot' });
   assert.ok(!depot.isError, words(depot));
   assert.ok(files.has('Projects/Depot/Depot.md'), 'a name of its own goes ahead');
