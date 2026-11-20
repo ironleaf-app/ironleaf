@@ -497,7 +497,7 @@ export const TOOLS: ToolSpec[] = [
       properties: {
         project: { type: 'string', description: 'The project the file is in (default: the project open now).' },
         path: { type: 'string', description: 'The file’s path inside that project’s folder (the project’s own working copy when there is one).' },
-        for: { type: 'string', description: 'What the template is for, in the person’s words ("Rollout", "cafe opening"): it starts the name.' },
+        for: { type: 'string', description: 'What the template is for, in the person’s words ("Launch", "cafe opening"): it starts the name.' },
         name: { type: 'string', description: 'Only when the person gave a name: the new file’s name.' },
         folder: { type: 'string', description: 'Only when the person said where: a folder inside the project’s folder ("Templates").' },
         to_project: { type: 'string', description: 'Only when the person said so: another project to save it in.' },
@@ -2512,8 +2512,8 @@ export class AgentTools {
   }
 
   /**
-   * Files that match a search by meaning when none has every word (17 Oct 2026: "the launch checklist" was not found because
-   * no file is called that; its project is "07 Harbour St Rollout" and the file Cafe_Opening_Checklist_HarbourSt.xlsx).
+   * Files that match a search by meaning when none has every word ("the launch checklist" is not found by its words when
+   * no file is called that; its project is "Wexley St Bakery (Launch)" and the file Cafe_Opening_Checklist_WexleySt.xlsx).
    * Words that name a project count for every file in it (and keep the search to that project); words that are only
    * filler ("the", "file", "latest") are left out; a file is listed when it holds some of the rest, most first.
    */
@@ -2524,7 +2524,7 @@ export class AgentTools {
     if (!words.length) return '';
     const projects = pf.projects();
     const wordsOf = (p: { name: string; folder?: string }) => new Set(`${p.name} ${p.folder ? path.basename(p.folder.replace(/\\/g, '/')) : ''}`.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean));
-    // The projects the words name ("Rollout", "Harbour St"): the most words first.
+    // The projects the words name ("Launch", "Wexley St"): the most words first.
     const scored = (project ? projects.filter((p) => p.path === project) : projects).map((p) => {
       const own = wordsOf(p);
       return { p, named: words.filter((w) => own.has(w)) };
