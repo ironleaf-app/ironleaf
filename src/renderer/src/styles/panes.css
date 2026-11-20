@@ -1,0 +1,724 @@
+/* App panes (layout round 3, 20 Nov 2026). The monitor is a 3440x1400 ultrawide at 100%, Ironleaf maximised: every
+   page built like a document ended where its content ended, so the bottom half to two-thirds of the window stood
+   blank, and the Meetings detail crammed six tiny columns into its lower half. An app on a big monitor is panes
+   that fill the window, each scrolling inside itself (Outlook, Linear, a code editor):
+
+   1. A list-and-detail screen (components/ListDetail.tsx) is a full-window workspace: the page head compact at the
+      top, then the panes from there to the window's foot. The list pane scrolls inside itself and shows as many
+      rows as fit; the detail fills the rest of the width and height and scrolls inside itself.
+   2. The width is used for structure: from THREE_PANES of frame width (ListDetail.tsx, about a 2560 window with the
+      chat column shut) the detail's connections stand in a third pane, list | detail | context; narrower,
+      list | detail; narrower still (about a 1366 window), the list alone.
+   3. Fluid, never tuned to a few sizes: tracks are clamp() and minmax() of the frame, so every width from 1280 to
+      3440 and every height from 768 to 1440 reads composed.
+   4. No text under the type scale's body step in a pane's own content; meta lines keep the small step.
+   5. Every pane keeps the padding rule: --pad-card inside, rows --pad-row-y by --pad-row-x.
+   Loaded after compose.css: last of all. */
+
+:root {
+  /* The gap between panes and under the last one (the window's foot). */
+  --pane-gap: var(--space-4);
+  --pane-radius: var(--r-4, 10px);
+}
+
+/* ---------- 1. The fill chain: from the page's scroller down to the panes, every box takes the height left ---------- */
+:is(.vscroll, .nv-page-scroll, .tp-page):has(.nv-panes-root) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+:is(.vscroll, .nv-page-scroll, .tp-page):has(.nv-panes-root) :has(.nv-panes-root.nv-panes-root):not(.w2b-split) {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  align-items: stretch;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+/* What stands above the panes (the head, chips, the find) keeps its own height. */
+:is(.vscroll, .nv-page-scroll, .tp-page):has(.nv-panes-root) :has(.nv-panes-root.nv-panes-root) > :not(:has(.nv-panes-root)):not(.nv-panes-root) {
+  flex: none;
+}
+/* The frame's head a little tighter; the window's foot one gap under the panes (.nv-split's margin below). */
+:is(.nv-page, .vpage):has(.nv-panes-root) > .nv-page-head.nv-page-head {
+  padding-top: var(--space-5);
+  margin-bottom: var(--space-4);
+}
+.vpage.wide:has(.nv-panes-root) {
+  padding-top: var(--space-5);
+}
+.vpage.wide:has(.nv-panes-root) > .w2a-head {
+  margin-bottom: var(--space-4);
+}
+
+/* Notes: the folders rail beside the list keeps its grid, both as tall as the window. */
+.w2b-split:has(.nv-panes-root) {
+  flex: 1 1 auto;
+  min-height: 0;
+  grid-template-rows: minmax(0, 1fr);
+  align-items: stretch;
+}
+.w2b-split:has(.nv-panes-root) > .w2b-folders {
+  position: static;
+  max-height: none;
+  overflow: auto;
+}
+.w2b-split:has(.nv-panes-root) > .w2b-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.w2b-split:has(.nv-panes-root) > .w2b-main > :not(:has(.nv-panes-root)):not(.nv-panes-root) {
+  flex: none;
+}
+
+/* ---------- 2. The panes ---------- */
+.nv-split.nv-split.is-panes {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: var(--pane-gap);
+  align-items: stretch;
+  margin-bottom: var(--pane-gap);
+}
+.nv-split.is-panes > .nv-pane {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.nv-split.is-panes > .nv-split-main {
+  max-width: none;
+  scrollbar-gutter: stable;
+  padding-right: var(--space-1);
+}
+.nv-split.is-panes > .nv-split-side,
+.nv-split.is-panes > .nv-split-context {
+  display: none;
+  position: static;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: var(--pane-radius);
+  background: var(--bg-raised, var(--bg));
+}
+.nv-split.is-panes .nv-split-side-inner {
+  max-height: none;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  padding: var(--pad-card);
+}
+/* List | detail from about a 1600 window (the frame ~1240); the list never wider than its rows need. */
+@container frame (min-width: 1240px) {
+  .nv-split.nv-split.is-panes {
+    grid-template-columns: clamp(400px, 40%, 860px) minmax(0, 1fr);
+  }
+  .nv-split.is-panes > .nv-split-side {
+    display: block;
+  }
+}
+/* A detail with nothing for a third pane (a template's preview, a capture): the list takes more of a wide frame. */
+@container frame (min-width: 1240px) {
+  .nv-split.nv-split.is-panes.no-context {
+    grid-template-columns: clamp(400px, 44%, 1400px) minmax(0, 1fr);
+  }
+}
+/* List | detail | context (ListDetail sets .is-three from THREE_PANES of its own width). */
+.nv-split.nv-split.is-panes.is-three {
+  grid-template-columns: clamp(440px, 30%, 860px) minmax(0, 1fr) clamp(340px, 24%, 620px);
+}
+.nv-split.is-panes.is-three > .nv-split-side,
+.nv-split.is-panes.is-three > .nv-split-context {
+  display: block;
+}
+.nv-split.is-panes > .nv-split-context {
+  padding: var(--pad-card);
+}
+
+/* A short list keeps its panes side by side (round 2 put the detail under four rows; a pane now fills the height). */
+.nv-split.is-panes.is-short {
+  display: grid;
+}
+
+/* ---------- 3. The detail: its head, facts, connections, then the note itself as a reading pane ---------- */
+.nv-split.is-panes .nv-detail {
+  gap: var(--space-4);
+}
+.nv-split.is-panes .nv-detail-facts {
+  font-size: var(--fs-body);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: var(--space-2) var(--space-5);
+}
+.nv-split.is-panes .nv-detail-fact {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: baseline;
+}
+.nv-split.is-panes .nv-detail-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: var(--space-4) var(--space-5);
+  align-items: start;
+}
+.nv-split.is-panes .nv-detail-read {
+  flex: none;
+  overflow: visible;
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-4);
+}
+.nv-split.is-panes .nv-detail-read .reading-page {
+  padding: 0;
+  max-width: none;
+  margin: 0;
+}
+.nv-split.is-panes .nv-detail-read .reading-body {
+  font-size: var(--fs-reading);
+  /* Prose at a readable measure that grows with the pane; lists and tables take the pane's width. */
+  max-width: none;
+}
+.nv-split.is-panes .nv-detail-read .reading-body > :is(p, blockquote, h1, h2, h3, h4) {
+  max-width: clamp(60ch, 70%, 96ch);
+}
+/* The context pane: the connections, one group under another, at the body step. */
+.nv-context {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+h3.nv-context-head {
+  margin: 0;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.nv-context .nv-detail-groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+.nv-split.is-panes :is(.nv-detail-groups, .nv-context) .peek-list {
+  font-size: var(--fs-body);
+}
+
+/* A chip's count (Meetings' Upcoming 7, Every action 35): the numbers the old tiles held, drawn from data-n so the
+   chip's own words stay its name (its title reads the count). */
+.chip.has-n::after {
+  content: attr(data-n);
+  margin-left: 6px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+.chip.on.has-n::after {
+  color: inherit;
+  opacity: 0.75;
+}
+
+
+/* ---------- 4. The meeting page (views/modules/work/MeetingsPage.tsx AfterMeeting) ----------
+   at 3440x1400: the minutes card ran x 160 to 1670 with a 400 px summary and two 180 px columns at its left, the
+   recording far right, a spelling list down a narrow strip, and a huge empty middle. Now regions that fill the
+   window: minutes (summary at a reading measure that grows to about 100 characters, then decisions and actions in
+   two balanced columns that use the card), the recording and its transcript (open, scrolling in its own pane, full
+   height), and from about a 2560 window a far-right region: the words to check, the meeting note's counts and what
+   the meeting connects to. The minutes region is only as wide as its measure; the transcript takes the rest. Narrow
+   (.mt-regions without .nv-panes-root), one column that scrolls with the page. */
+.nv-page:has(> .w2b-meeting .nv-panes-root),
+.nv-page:has(> * > .w2b-meeting .nv-panes-root) {
+  padding-top: var(--space-5);
+}
+.w2b-meeting:has(> .nv-panes-root) > .metapills {
+  margin-bottom: 0;
+}
+.w2b-after.mt-regions.nv-panes-root {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: clamp(480px, 48%, 900px) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: var(--pane-gap);
+  align-items: stretch;
+  margin: var(--space-4) 0 var(--pane-gap);
+}
+.w2b-after.mt-regions.nv-panes-root.is-three {
+  grid-template-columns: clamp(520px, 30%, 900px) minmax(0, 1fr) clamp(340px, 19%, 560px);
+}
+.mt-regions.nv-panes-root > :is(.mt-minutes, .mt-record, .mt-context) {
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 0;
+  position: static;
+  border: 1px solid var(--border);
+  border-radius: var(--pane-radius);
+  background: var(--bg-raised, var(--bg));
+}
+.mt-regions.nv-panes-root > :is(.mt-minutes, .mt-context) {
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: var(--pad-card);
+  gap: var(--space-5);
+}
+.mt-regions.nv-panes-root > .mt-context {
+  display: flex;
+  flex-direction: column;
+}
+/* Every region's own cards read as the region's sections: no card in a card. */
+.mt-regions.nv-panes-root :is(.mt-minutes, .mt-context) > section > .card.w2b-card,
+.mt-regions.nv-panes-root :is(.mt-minutes, .mt-context) .mm {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+.mt-regions.nv-panes-root :is(.mt-minutes, .mt-context) > section > .card.w2b-card > .trow {
+  padding-left: 0;
+  padding-right: 0;
+}
+.mt-words-slot:empty {
+  display: none;
+}
+.mt-words-slot {
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--border);
+}
+.mt-links:empty,
+.mt-links:not(:has(*)) {
+  display: none;
+}
+.mt-links .nv-detail-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  gap: var(--space-4) var(--space-5);
+}
+.mt-context .mt-links .nv-detail-groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+.mt-links .peek-list {
+  font-size: var(--fs-body);
+}
+
+/* The minutes at the body step (the card read 13 px), the summary at a measure that grows with the region, and
+   decisions and actions in two balanced columns across the card. */
+:is(.mt-regions, .note-view) .mm {
+  font-size: var(--fs-body);
+  color: var(--text);
+}
+:is(.mt-regions, .note-view) .mm .mm-words,
+:is(.mt-regions, .note-view) .mm .mm-faint {
+  font-size: var(--fs-small);
+}
+.w2b-after.mt-regions .mm-minutes.mm-minutes,
+:is(.mt-regions, .note-view) .mm-minutes {
+  /* Flex, not an auto-fit grid: a summary spanning every track kept the empty tracks open, so decisions and actions
+     stood in two 300 px columns at the left of a wide card. Here they share the row whatever its width. */
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-6);
+  max-width: none;
+  align-items: flex-start;
+}
+:is(.mt-regions, .note-view) .mm-minutes > .mm-min-block {
+  flex: 1 1 300px;
+  min-width: 0;
+}
+:is(.mt-regions, .note-view) .mm-minutes > p {
+  flex: 1 1 100%;
+  max-width: 100ch;
+  font-size: var(--fs-reading);
+  line-height: 1.6;
+}
+:is(.mt-regions, .note-view) .mm-minutes ul {
+  gap: var(--space-2);
+}
+:is(.mt-regions, .note-view) .mm-minutes li {
+  line-height: 1.5;
+}
+:is(.mt-regions, .note-view) .mm-minutes .mm-faint {
+  font-weight: 600;
+  color: var(--text-muted);
+}
+:is(.mt-regions, .note-view) .mm-list {
+  max-width: none;
+}
+.mt-regions .mm-finish {
+  margin-top: var(--space-2);
+}
+
+/* The recording region: the player and the voices at its top, the transcript filling the rest and scrolling. */
+.mt-regions.nv-panes-root > .mt-record {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+  container: mt-record / inline-size;
+}
+.mt-regions.nv-panes-root > .mt-record > :is(.mr-stack, section) {
+  margin: 0;
+}
+.mt-regions.nv-panes-root > .mt-record > .mr-stack {
+  flex: 1 1 auto;
+  min-height: 0;
+  gap: 0;
+}
+.mt-regions.nv-panes-root > .mt-record .mr-stack > .mp {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font-size: var(--fs-body);
+}
+.mt-regions.nv-panes-root > .mt-record .mr-stack > .mr {
+  flex: none;
+  padding: var(--pad-row-y) var(--pad-card);
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+}
+.mt-regions.nv-panes-root > .mt-record .mp-part {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.mt-regions.nv-panes-root > .mt-record .mp-part > * {
+  flex: none;
+}
+.mt-regions.nv-panes-root > .mt-record .mp-player {
+  padding: var(--pad-row-y) var(--pad-card);
+}
+.mt-regions.nv-panes-root > .mt-record .mp-part > :is(.spk, .mp-rerun) {
+  padding-left: var(--pad-card);
+  padding-right: var(--pad-card);
+}
+.mt-regions.nv-panes-root > .mt-record .mp-part > .mp-transcript {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.mt-regions.nv-panes-root > .mt-record .mp-thead {
+  flex: none;
+  padding: var(--pad-row-y) var(--pad-card);
+}
+.mt-regions.nv-panes-root > .mt-record .mp-lines {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  padding: 0 var(--space-3) var(--space-3);
+  scrollbar-gutter: stable;
+}
+.mt-regions .mp-line {
+  font-size: var(--fs-body);
+  padding: 6px var(--space-3);
+}
+/* The voices as one compact row of chips above the transcript (the coordinator's review of a user's 3440 shot: a
+   voices column beside the transcript stood empty under three rows for the pane's whole height). The transcript
+   takes the pane's full width and height. */
+.mt-regions.nv-panes-root > .mt-record .spk {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-2);
+}
+.mt-regions.nv-panes-root > .mt-record .spk-head {
+  margin: 0;
+}
+.mt-regions.nv-panes-root > .mt-record .spk-rows {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+}
+.mt-regions.nv-panes-root > .mt-record .spk-row {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2) 2px var(--space-1);
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: var(--bg);
+}
+.mt-regions.nv-panes-root > .mt-record .spk-row > * {
+  grid-column: auto;
+}
+.mt-regions.nv-panes-root > .mt-record .mp-part > .mp-rerun {
+  padding-top: 0;
+  padding-bottom: var(--space-2);
+}
+.mt-regions.nv-panes-root > .mt-record .mp-part > .mp-player {
+  border-bottom: 1px solid var(--border);
+}
+
+/* Connections in a pane read at the body step (the round-2 detail's six columns were 12 px under 13 px heads). */
+.nv-panes-root .peek-row-title {
+  font-size: var(--fs-body);
+}
+.nv-panes-root .peek-row-meta,
+.nv-panes-root .peek-row-why {
+  font-size: var(--fs-small);
+}
+.nv-panes-root .peek-group-head {
+  font-size: var(--fs-md);
+}
+
+/* The rest of the meeting note under the minutes: the note's own words at the reading step, its lists and tables
+   across the region. */
+.mt-rest {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+.mt-rest-read.reading {
+  flex: none;
+  overflow: visible;
+}
+.mt-rest-read .reading-page {
+  padding: 0;
+  max-width: none;
+  margin: 0;
+}
+.mt-rest-read .reading-body > :first-child {
+  margin-top: 0;
+}
+.mt-rest-read .reading-body > :is(p, blockquote) {
+  max-width: 100ch;
+}
+/* The prep in a coming meeting's detail pane. */
+.nv-split.is-panes .nv-detail > section[aria-label='Prep, from your notes'] {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+.nv-split.is-panes .nv-detail .w2b-prep {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  font-size: var(--fs-body);
+}
+.w2b-none-line {
+  margin: 0 0 var(--space-3);
+  padding: var(--pad-row-y) var(--pad-row-x);
+  border: 1px dashed var(--border);
+  border-radius: var(--r-3);
+  color: var(--text-muted);
+}
+
+/* ---------- 5. The project's overview on a roomy window ----------
+   At 3440x1400 the overview stood three short rows per block and ~900 px blank below. Roomy (ListDetail.tsx
+   useRoomy): every block shows all it holds (in one row of blocks where the frame is wide), and under them the
+   project's notes and files, who it waits on and its activity fill the rest of the window as panes. */
+.pj-ov.pj-ov.is-roomy {
+  /* Flex, not an auto-fit grid: People spanning every track kept an empty track open beside the tiles. */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: var(--pane-gap);
+  margin-bottom: var(--space-4);
+}
+/* Each block a tile of the row's height, so a short block beside a long one reads as a tile, never a hole. */
+.pj-ov.is-roomy > .pj-ov-block:not(.pj-ov-people) {
+  box-sizing: border-box;
+  padding: var(--space-4) var(--pad-card);
+  border: 1px solid var(--border);
+  border-radius: var(--pane-radius);
+  background: var(--bg-raised, var(--bg));
+}
+.pj-ov.is-roomy > .pj-ov-block:not(.pj-ov-people) {
+  flex: 1 1 380px;
+  min-width: 0;
+  max-height: 34vh;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.pj-ov.is-roomy > .pj-ov-people {
+  flex: 1 1 100%;
+}
+.pj-ov.is-roomy .trow,
+.pj-ov.is-roomy .pj-ov-open {
+  font-size: var(--fs-body);
+}
+.pj-ov-more {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  grid-auto-rows: clamp(360px, 60vh, 640px);
+  gap: var(--pane-gap);
+  margin-bottom: var(--space-6);
+}
+.pj-ov-more.nv-panes-root {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  grid-template-rows: minmax(0, 1fr);
+  gap: var(--pane-gap);
+  margin-bottom: var(--pane-gap);
+}
+.pj-ov-pane {
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-4) var(--pad-card);
+  border: 1px solid var(--border);
+  border-radius: var(--pane-radius);
+  background: var(--bg-raised, var(--bg));
+}
+.pj-ov-pane:not(:has(*)) {
+  display: none;
+}
+.pj-ov-pane > .pj-folio-sec {
+  margin: 0;
+}
+.pj-ov-pane .card {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+
+/* ---------- 6. Today in three columns (components/Balance.tsx min3) ----------
+   A user's 3440: the work, the day, and what needs you with More for today, open, side by side. */
+.nv-bal.is-two.is-three {
+  grid-template-columns: minmax(0, 1.3fr) minmax(320px, 1fr) minmax(320px, 1fr);
+}
+.nv-bal-col.is-c {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.td-compose .nv-bal-col.is-c > .nv-bal-item > * {
+  margin: 0;
+}
+/* Today's rows at the body step (round 2 set them at 13 px for density; rule 4 of round 3: no text under the base
+   size to cram a column). Their sources and dates keep the small step. */
+.td-compose .td-row.tkrow .td-row-what,
+.td-compose .td-row-main > .td-row-what {
+  font-size: var(--fs-body);
+  line-height: 21px;
+}
+
+/* ---------- 7. A note on a wide window (a meeting note at 3440: the body a narrow column centred, ~600 px
+   blank at its left and more at its right, and its tasks, decisions and questions squeezed to the same width,
+   long lines wrapping to three while the screen stood empty). The "On this page" rail stays as it is. Fluid, not a
+   breakpoint: the column grows with the room (clamp of the note's own container), the type grows gently, the
+   prose keeps a readable measure that grows from about 68 to about 100 characters, and the structured blocks
+   (task and list lines, tables, the meeting's blocks, embeds) take the column's whole width. ---------- */
+.note-view.readable .nv-note-layout {
+  --note-wide: clamp(var(--page-column, 760px), calc(100cqw - 520px), 2000px);
+  --note-measure: clamp(680px, calc(28cqw + 240px), 1040px);
+}
+.note-view.readable .nv-note-main {
+  flex-basis: calc(var(--note-wide) + 112px);
+}
+.note-view.readable .nv-note-main .cm-content,
+.note-view.readable .nv-note-main .reading-page,
+.note-view.readable .note-editor .cm-content,
+.note-view.readable .note-head,
+.note-view.readable .reading.readable .reading-page {
+  max-width: calc(var(--note-wide) + 112px);
+}
+.note-view.readable .nv-note-main .cm-content {
+  font-size: max(1em, clamp(1em, calc(0.12cqw + 0.9em), 1.12em));
+}
+/* Prose lines keep the measure: their words stop at it, the line's box (and its hover) still spans the column. */
+.note-view.readable .nv-note-main .cm-content > .cm-line:not(.cm-nv-list-line):not(.cm-nv-codeblock):not(.cm-nv-column-mark) {
+  padding-right: max(var(--cm-line-pad, 6px), calc(100% - var(--note-measure)));
+}
+.note-view.readable .nv-note-main .reading-body > :is(p, h1, h2, h3, h4, h5, h6, blockquote) {
+  max-width: var(--note-measure);
+}
+
+/* The words to check in a wide note: side by side where the card has the room, never a narrow strip down it. */
+.note-view .mm-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+  gap: var(--space-4) var(--space-6);
+}
+/* A note's Connected at its foot: the groups share the column's width (auto-fit, never one narrow group beside
+   empty tracks) and a wide group's rows flow in columns. */
+.note-view .foot-connected {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+}
+.note-view .foot-connected .peek-list {
+  columns: auto 340px;
+  column-gap: var(--space-6);
+}
+.note-view .foot-connected .peek-list > * {
+  break-inside: avoid;
+}
+.note-view .foot-connected .peek-row-title {
+  font-size: var(--fs-body);
+}
+
+/* ---------- 8. Inbox and Templates as list and detail ---------- */
+.tp-inner.has-split {
+  container: frame / inline-size;
+}
+.tp-body:has(.nv-panes-root) {
+  display: flex;
+  flex-direction: column;
+}
+.nv-split.is-panes .tp-preview.in-pane {
+  position: static;
+  max-height: none;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+.nv-split.is-panes > .nv-split-side:has(.tp-preview.in-pane) > .nv-split-side-inner {
+  padding: 0;
+}
+/* The Inbox's captures read one under another in their pane (round 2 flowed them in columns across the page). */
+.nv-split.is-panes div[aria-label='Waiting to be filed'] {
+  columns: auto;
+}
+
+/* ---------- 9. Files and assets: the details pane beside the table grows with the room ---------- */
+.as-page {
+  --as-details: clamp(348px, 24vw, 720px);
+}
+.w4b-bm-page.has-split {
+  container: frame / inline-size;
+}
+
+/* A meeting with nothing in it yet: the ways to give it something, in the detail (its third pane folds away). */
+.mt-empty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--pad-card);
+  border: 1px dashed var(--border);
+  border-radius: var(--r-3);
+}
+.mt-empty-words {
+  margin: 0;
+  color: var(--text-muted);
+}
+.mt-empty-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}

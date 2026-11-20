@@ -1,0 +1,696 @@
+/* Quick capture (src/renderer/src/capture): the box over whatever the person is doing, its confirmation, and the
+   screenshot's own window. Ironleaf's tokens (styles.css), light and dark. The window is transparent around the box
+   (room for its shadow: .qc's padding is src/main/capture.ts MARGIN). */
+
+html.qc-box-page,
+html.qc-box-page body,
+html.qc-box-page #root {
+  background: transparent !important;
+  overflow: hidden;
+}
+
+.qc {
+  padding: 44px;
+}
+
+.qc-shell {
+  position: relative;
+  background: var(--bg-raised);
+  border: 1px solid color-mix(in srgb, var(--border-strong) 75%, transparent);
+  border-radius: var(--r-3);
+  box-shadow: 0 12px 32px rgba(20, 26, 46, 0.18), 0 2px 8px rgba(20, 26, 46, 0.08);
+  overflow: hidden;
+  color: var(--text);
+}
+
+:root[data-theme='dark'] .qc-shell {
+  border-color: #4a4844;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.qc-shell.is-snipping {
+  opacity: 0.6;
+}
+
+/* The top: Note or Task, and whose box this is. */
+.qc-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px 0 14px;
+}
+
+.qc-kinds {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--r-3);
+  background: var(--bg-side);
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+}
+
+.qc-kinds button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 11px;
+  border-radius: var(--r-2);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+
+.qc-kinds button:hover:not(.on) {
+  color: var(--text);
+}
+
+.qc-kinds button.on {
+  background: var(--bg-raised);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(20, 26, 46, 0.1), 0 0 0 1px color-mix(in srgb, var(--border) 60%, transparent);
+}
+
+:root[data-theme='dark'] .qc-kinds button.on {
+  background: var(--bg-active);
+}
+
+.qc-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  letter-spacing: 0.01em;
+}
+
+.qc-brand svg {
+  color: var(--accent-text);
+}
+
+/* The words (the kit's input, full width). */
+.qc-shell textarea.input.qc-field {
+  display: block;
+  width: calc(100% - 28px);
+  margin: 12px 14px 0;
+  font-size: var(--fs-body);
+  overflow-y: auto;
+}
+
+/* The keys, top right (as the quick-add mock-up reads them). */
+.qc-keys {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+/* The date heard in the words, with its way out. */
+.qc-heard {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+.qc-heard-x {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* What goes with it: the due date, screenshots, files. */
+.qc-extras {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 0 18px 12px;
+}
+
+.qc-due {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 4px 0 9px;
+  border-radius: var(--r-1);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: var(--fs-small);
+}
+
+.qc-due b {
+  font-weight: 600;
+}
+
+.qc-x {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  corner-shape: round;
+  color: inherit;
+  opacity: 0.6;
+}
+
+.qc-x:hover {
+  opacity: 1;
+  background: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.qc-pic {
+  position: relative;
+  width: 104px;
+  height: 68px;
+  border-radius: var(--r-3);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-side);
+  box-shadow: var(--shadow-card);
+}
+
+.qc-pic img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.qc-x.on-pic {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(20, 20, 20, 0.62);
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+.qc-pic:hover .qc-x.on-pic,
+.qc-x.on-pic:focus-visible {
+  opacity: 1;
+}
+
+.qc-file {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  max-width: 280px;
+  padding: 0 5px 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg);
+  color: var(--text-muted);
+}
+
+.qc-attach-dest {
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+}
+
+.qc-file-name {
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  color: var(--text);
+}
+
+/* Which project: the label above the kit's chips. */
+.qc-for {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px 12px;
+  border-top: 1px solid var(--border);
+}
+
+.qc-for-label {
+  flex: none;
+  line-height: 28px;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+}
+
+.qc-for-main {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.qc-for-hint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  line-height: 1.4;
+}
+
+.qc-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.qc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  max-width: 320px;
+  padding: 0 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.qc-chip:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.qc-chip.on {
+  padding-left: 9px;
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+  color: var(--text);
+}
+
+.qc-chip-check {
+  flex: none;
+  color: var(--accent-text);
+}
+
+.qc-chip-name {
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.qc-chip-why {
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+}
+
+.qc-chip-why::before {
+  content: '·';
+  margin-right: 6px;
+  color: var(--text-faint);
+}
+
+/* The chip's reason stays readable on the chosen chip's dark fill. */
+.chip.on .qc-chip-why,
+.chip.on .qc-chip-why::before {
+  color: inherit;
+  opacity: 0.75;
+}
+
+.qc-more {
+  border-style: dashed;
+  color: var(--text-faint);
+}
+
+.qc-more-icon {
+  transform: rotate(90deg);
+  transition: transform 0.15s;
+}
+
+.qc-more.on .qc-more-icon {
+  transform: rotate(-90deg);
+}
+
+/* Another project, by its name. */
+.qc-picker {
+  margin: -2px 14px 12px 52px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.qc-picker-find,
+.qc-picker-find:focus {
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  padding: 9px 12px;
+}
+
+.qc-picker-list {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.qc-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: var(--r-2);
+  text-align: left;
+}
+
+.qc-picker-row.at {
+  background: var(--bg-hover);
+}
+
+.qc-picker-row svg {
+  color: var(--accent-text);
+}
+
+.qc-picker-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.qc-picker-status {
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  text-transform: capitalize;
+}
+
+.qc-picker-none {
+  margin: 8px 10px;
+  color: var(--text-faint);
+}
+
+.qc-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--text-faint);
+}
+
+.qc-dot.status-active {
+  background: var(--ok);
+}
+
+.qc-dot.status-planning,
+.qc-dot.status-idea {
+  background: var(--graph-tag);
+}
+
+.qc-dot.status-on-hold {
+  background: var(--canvas-3);
+}
+
+.qc-dot.status-done {
+  background: var(--border-strong);
+}
+
+.qc-said {
+  margin: 0 18px 12px;
+  padding: 8px 12px;
+  border-radius: var(--r-3);
+  background: var(--bg-side);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+}
+
+/* The foot: screenshot, voice, assets; where it goes and Save. */
+.qc-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 12px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-side);
+}
+
+.qc-tools {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.qc-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: var(--r-3);
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.qc-tool:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.qc-hint {
+  margin-left: 6px;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  white-space: nowrap;
+}
+
+.qc-assets {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-left: 8px;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.qc-assets input {
+  accent-color: var(--accent);
+  margin: 0;
+}
+
+.qc-go {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  min-width: 0;
+}
+
+.qc-dest {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+}
+
+.qc-save {
+  gap: 9px;
+  height: 32px;
+  padding: 0 7px 0 14px;
+}
+
+.qc-kbd {
+  padding: 0 5px;
+  border-color: color-mix(in srgb, var(--on-primary) 30%, transparent);
+  background: transparent;
+  color: color-mix(in srgb, var(--on-primary) 72%, transparent);
+  font-size: var(--fs-caption);
+}
+
+.qc-drop {
+  position: absolute;
+  inset: 6px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 6px;
+  border: 2px dashed var(--accent-line);
+  border-radius: var(--r-3);
+  background: color-mix(in srgb, var(--bg-raised) 96%, transparent);
+  color: var(--accent-strong);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+/* Saved: what happened, Open and Undo; it goes by itself. */
+.qc-saved {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 16px 18px 18px;
+}
+
+.qc-saved-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: color-mix(in srgb, var(--ok) 15%, transparent);
+  color: var(--ok);
+}
+
+.qc-saved-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.qc-saved-words {
+  font-size: var(--fs-body);
+  font-weight: 600;
+}
+
+.qc-saved-detail {
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+}
+
+.qc-saved-actions {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+
+.qc-saved-timer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--accent);
+  opacity: 0.55;
+  transform-origin: left;
+  animation: qc-timer linear forwards;
+}
+
+.qc-saved:hover .qc-saved-timer {
+  opacity: 0;
+}
+
+@keyframes qc-timer {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* The screenshot's window. */
+html.qc-snip-page,
+html.qc-snip-page body {
+  background: #000;
+}
+
+.qc-snip {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  cursor: crosshair;
+  user-select: none;
+}
+
+.qc-snip-screen {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.qc-snip-dim {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 15, 14, 0.4);
+}
+
+.qc-snip-rect {
+  position: absolute;
+  outline: 1.5px solid #fff;
+  box-shadow: 0 0 0 9999px rgba(15, 15, 14, 0.48);
+}
+
+.qc-snip-size {
+  position: absolute;
+  left: -1px;
+  top: -27px;
+  padding: 3px 8px;
+  border-radius: var(--r-2);
+  background: rgba(24, 24, 22, 0.82);
+  color: var(--bg-side);
+  font: 600 var(--fs-caption) var(--font-ui);
+  white-space: nowrap;
+}
+
+.qc-snip-hint {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 9px 16px;
+  border-radius: var(--r-1);
+  background: rgba(24, 24, 22, 0.84);
+  color: var(--bg-side);
+  font-size: var(--fs-small);
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.qc-snip-hint span {
+  margin: 0 6px;
+  opacity: 0.45;
+}
+
+/* Settings › Capture: how the key stands. */
+.capture-status {
+  display: block;
+}
+
+.capture-status.ok::before,
+.capture-status.warn::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin: 0 7px 1px 0;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--ok);
+}
+
+.capture-status.warn::before {
+  background: var(--canvas-2);
+}
+
+/* A long project name clips inside its chip instead of stretching the row (p15): the chip never runs past the box, and the full name stays in its title. */
+.qc-for .chips .chip { max-width: 100%; min-width: 0; }
+.qc-for .chips .chip .qc-chip-name { flex: 1 1 auto; min-width: 0; }
+.qc-for .chips .chip .qc-chip-why { flex: none; }

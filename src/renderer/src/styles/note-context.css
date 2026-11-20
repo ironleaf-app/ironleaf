@@ -1,0 +1,317 @@
+/* The note as part of your work (8.0 section E, 29 Oct 2026): the context rail beside the note, the mention and
+   task chips in Live Preview, and the selection offers' words. Tokens only, light first, dark from the same tokens. */
+
+.nv-note-layout {
+  display: flex;
+  align-items: stretch;
+  /* The text and the rail centre as one group (p14, seen at their 3456 window): the rail sits beside the
+     text instead of far away at the window's edge, on a wide window and a narrow one alike. */
+  justify-content: center;
+  min-height: 0;
+  flex: 1;
+  position: relative;
+  container: nvnote / inline-size;
+}
+.nv-note-main {
+  /* The text keeps its reading column instead of stretching: whatever room is left sits outside the group. */
+  flex: 0 1 calc(var(--page-column, 760px) + 112px);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Chips in the editor ─────────────────────────────────────────────────────── */
+.cm-nv-mention {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 7px 0 2px;
+  border-radius: var(--r-1);
+  background: var(--bg-hover);
+  color: var(--text);
+  font-size: 0.92em;
+  line-height: 1.5;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.cm-nv-mention:hover { background: var(--bg-active, var(--bg-hover)); }
+.cm-nv-mention-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--bg-raised);
+  color: var(--text);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+}
+.cm-nv-mention.is-project .cm-nv-mention-mark { width: 8px; height: 8px; margin: 0 2px 0 5px; background: var(--text-faint); }
+.cm-nv-mention.is-meeting .cm-nv-mention-mark { width: 8px; height: 8px; margin: 0 2px 0 5px; border-radius: var(--r-1); background: var(--text-faint); }
+
+.cm-nv-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 6px;
+  padding: 0 7px;
+  border-radius: var(--r-1);
+  background: var(--bg-hover);
+  color: var(--text-muted);
+  font: 500 var(--fs-caption) / 1.7 var(--font-ui);
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+.cm-nv-chip-initial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--bg-raised);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+}
+.cm-nv-chip-due { cursor: pointer; }
+.cm-nv-chip-due:hover { color: var(--text); }
+.cm-nv-chip-due.is-today { background: var(--bg-hover); color: var(--text-muted); }
+.cm-nv-chip-due.is-overdue { background: color-mix(in srgb, var(--danger) 13%, transparent); color: var(--danger); }
+.cm-nv-chip-due.is-done { opacity: 0.6; }
+/* A done line's owner chips the same, muted (p16). */
+.cm-nv-chip-owner.is-done { opacity: 0.6; }
+
+/* ── The rail ────────────────────────────────────────────────────────────────── */
+/* Polish round 2 (ITEMS 3): the rail is a fixed 280 px beside the note, so the note keeps a comfortable reading
+   width and the rail's labels never squeeze. Its labels never break mid-word. A quiet panel, no box (5 Nov
+   2026, the huge right panel): no left border, so no line divides the page down the middle on a wide window;
+   the padding parts it from the note. */
+.nv-rail {
+  width: 280px;
+  flex: 0 0 280px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding: 14px 14px 28px;
+  background: var(--bg);
+  font-family: var(--font-ui);
+}
+.nv-rail-head > span,
+.nv-rail-section h3,
+.nv-rail-field > span {
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+.nv-note-main .cm-content,
+.nv-note-main .reading-page {
+  max-width: calc(var(--page-column, 760px) + 112px);
+}
+.nv-rail.is-shut {
+  width: 40px;
+  flex-basis: 40px;
+  padding: 10px 4px;
+}
+/* The shut bar is an icon with its tooltip (5 Nov 2026, the huge right panel): its "Context" words never fit
+   40 px, so they stay out, as the folded strip's do; the button, its title and its label stay. */
+.nv-rail.is-shut .nv-rail-toggle span { display: none; }
+.nv-rail-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 0;
+  border-radius: var(--r-3);
+  color: var(--text-faint);
+  font: 500 var(--fs-caption) / 1 var(--font-ui);
+}
+.nv-rail-toggle:hover { background: var(--bg-hover); color: var(--text); }
+
+/* ── The slim strip (8.7 w2b round 4, the mock-up's default beside a note): On this page and Tags as small grey
+   labels with plain rows under them, and a quiet way into Context. Empty groups stay out. Linked here left for the
+   foot (t22-note-once, 8 Nov 2026). */
+.nv-rail.is-strip { width: 280px; flex-basis: 280px; }
+.nv-strip-section { padding: 12px 2px 4px; }
+.nv-strip-section:first-child { padding-top: 2px; }
+.nv-strip-section h3 {
+  margin: 0 0 6px;
+  font: 600 var(--fs-caption) / 1.3 var(--font-ui);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.nv-strip-list { list-style: none; margin: 0; padding: 0; }
+.nv-strip-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 4px 6px;
+  border-radius: var(--r-2);
+  text-align: left;
+  color: var(--text);
+  font: var(--fs-small) / 1.4 var(--font-ui);
+}
+.nv-strip-row:hover { background: var(--bg-hover); }
+.nv-strip-row svg { flex: none; color: var(--text-faint); }
+.nv-strip-row span { overflow: hidden; text-overflow: clip; white-space: nowrap; }
+.nv-strip-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.nv-strip-tag {
+  padding: 2px 9px;
+  border-radius: var(--r-1);
+  background: var(--bg-hover);
+  color: var(--text-muted);
+  font: 500 var(--fs-small) / 1.7 var(--font-ui);
+}
+.nv-strip-tag:hover { background: var(--sel); color: var(--text); }
+.nv-strip-context {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 14px;
+  padding: 6px 8px;
+  border-radius: var(--r-3);
+  color: var(--text-faint);
+  font: 500 var(--fs-small) / 1.4 var(--font-ui);
+}
+.nv-strip-context:hover { background: var(--bg-hover); color: var(--text); }
+
+.nv-rail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font: 600 var(--fs-caption) / 1 var(--font-ui);
+  color: var(--text-muted);
+}
+.nv-rail-section { padding: 10px 0 12px; }
+
+.nv-rail-section h3 {
+  margin: 0 0 8px;
+  font: 600 var(--fs-small) / 1.3 var(--font-ui);
+  color: var(--text);
+}
+.nv-rail-count { color: var(--text-faint); font-weight: 500; }
+.nv-rail-field { display: block; margin-bottom: 8px; }
+.nv-rail-field span { display: block; margin-bottom: 3px; font-size: var(--fs-caption); color: var(--text-faint); }
+.nv-rail-field select {
+  width: 100%;
+  padding: 5px 7px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  color: var(--text);
+  font: var(--fs-small) / 1.3 var(--font-ui);
+}
+.nv-rail-list { list-style: none; margin: 0; padding: 0; }
+.nv-rail-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 5px 6px;
+  border-radius: var(--r-3);
+  text-align: left;
+  color: var(--text);
+  font: var(--fs-small) / 1.35 var(--font-ui);
+}
+.nv-rail-row:hover { background: var(--bg-hover); }
+.nv-rail-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--bg-hover);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+}
+.nv-rail-date { margin-left: auto; color: var(--text-faint); font-size: var(--fs-caption); }
+.nv-rail-empty { margin: 0; font-size: var(--fs-small); line-height: 1.45; color: var(--text-faint); }
+.nv-rail-task { display: flex; align-items: flex-start; gap: 7px; padding: 3px 0; }
+.nv-rail-task input { margin-top: 3px; }
+.nv-rail-task-words {
+  flex: 1;
+  text-align: left;
+  color: var(--text);
+  font: var(--fs-small) / 1.4 var(--font-ui);
+  border-radius: var(--r-3);
+  padding: 2px 4px;
+}
+.nv-rail-task-words:hover { background: var(--bg-hover); }
+.nv-rail-chips { display: flex; gap: 4px; margin-top: 3px; }
+.nv-rail-chip {
+  padding: 0 6px;
+  border-radius: var(--r-1);
+  background: var(--bg-hover);
+  color: var(--text-muted);
+  font: 500 var(--fs-caption) / 1.7 var(--font-ui);
+}
+.nv-rail-chip.is-due { color: var(--text); }
+
+/* The rail holds its width in a note (5 Nov 2026, the huge right panel): 280 px for the strip and the open rail, the
+   40 px bar shut, never taking spare width. The w2b note rule still says 220 px for every state, which left the
+   panel under width and the shut bar wide; this settles each state where the rail lives. Keyed off the wide
+   middle, so the narrow fold below keeps working untouched. */
+@container nvnote (min-width: 601px) {
+  .w2b-note .nv-rail:not(.is-shut) { width: 280px; flex: 0 0 280px; max-width: 280px; }
+  .w2b-note .nv-rail.is-shut { width: 40px; flex: 0 0 40px; max-width: 40px; }
+}
+
+/* A narrow middle folds the rail instead of crushing the note (10.0 third round F1: with the side chat docked
+   the window is 900 px but the middle is ~476 px, and the old window-keyed rule crushed the reading column to
+   ~220 px). Below a rail plus a readable note (280 + 300, with room), the strip folds to its 40 px bar (its
+   sections hide, the Context way in stays as its icon), and an opened rail draws over the note (its close still
+   folds it); the shut bar is already 40 px. Keyed off the middle's own width, as the project page is. */
+@container nvnote (max-width: 600px) {
+  .nv-rail.is-strip { width: 40px; flex-basis: 40px; padding: 10px 4px; }
+  .nv-rail.is-strip .nv-strip-section { display: none; }
+  .nv-rail.is-strip .nv-strip-context { justify-content: center; margin-top: 0; padding: 8px 0; }
+  .nv-rail.is-strip .nv-strip-context span { display: none; }
+  .nv-rail:not(.is-strip):not(.is-shut) {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    max-width: min(300px, 85%);
+    box-shadow: var(--e-2);
+  }
+}
+
+/* Belongs to when the note belongs to nothing (5 Nov 2026): one quiet line that opens the project and area
+   choice, in the rows' shape so it reads as the way in. */
+.nv-rail-belonging-none {
+  display: block;
+  width: 100%;
+  padding: 5px 6px;
+  border-radius: var(--r-3);
+  text-align: left;
+  color: var(--text-faint);
+  font: var(--fs-small) / 1.35 var(--font-ui);
+}
+.nv-rail-belonging-none:hover:not(:disabled) { background: var(--bg-hover); color: var(--text); }
+.nv-rail-belonging-none:disabled { cursor: default; }
+
+/* A note's scrollbar stays quiet until hovered or scrolling (Nov 2026 review: the pale blue bar ran down between
+   the note and the slim side panel and read as a divider line down the middle of a wide window). It sits at the far
+   edge of its scrolling area already, so quietness is the fix: the thumb is transparent at rest and shows on hover
+   or while moving (.is-scrolling, lib/quietScroll.ts), in every view of a note and a doc. The bar still works
+   throughout — wheel, keyboard, drag and jump all move it, and moving shows it. Never pinned on by focus: typing
+   would show it always. */
+.nv-note-main .cm-scroller,
+.nv-note-main .reading { scrollbar-color: transparent transparent; }
+.nv-note-main .cm-scroller::-webkit-scrollbar-thumb,
+.nv-note-main .reading::-webkit-scrollbar-thumb { background: transparent; border-color: transparent; }
+.nv-note-main .cm-scroller:hover,
+.nv-note-main .reading:hover,
+.nv-note-main .cm-scroller.is-scrolling,
+.nv-note-main .reading.is-scrolling { scrollbar-color: var(--scroll) transparent; }
+.nv-note-main .cm-scroller:hover::-webkit-scrollbar-thumb,
+.nv-note-main .reading:hover::-webkit-scrollbar-thumb,
+.nv-note-main .cm-scroller.is-scrolling::-webkit-scrollbar-thumb,
+.nv-note-main .reading.is-scrolling::-webkit-scrollbar-thumb { background: var(--scroll); }
+.nv-note-main .cm-scroller::-webkit-scrollbar-thumb:hover,
+.nv-note-main .reading::-webkit-scrollbar-thumb:hover { background: var(--scroll-hover); }

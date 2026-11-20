@@ -1,0 +1,15 @@
+# gitleaks configuration: the default rules, plus known non-secrets in this repository.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Test fixtures and vendored test material that look like secrets but are not"
+paths = [
+  # ssh2's vendored source carries a fixed test key used by its own key-parsing code paths.
+  '''src/main/vendor/ssh2\.cjs''',
+  # Made-up secrets planted on purpose for the secret scanner's tests (src/shared/secret-scan.ts).
+  '''tests/fixtures/secrets/planted\.md''',
+  # The secret scanner's own patterns and the tests that exercise them with made-up values.
+  '''src/shared/secret-scan\.ts''',
+  '''tests/secrets-remembered\.test\.mjs''',
+]

@@ -1,0 +1,189 @@
+/* The plan pieces in one place (29 Oct 2026, the plan "One set of plan pieces"): PlanRow, OwnerChip,
+   DatePill and StatusPill (src/renderer/src/components/plan/), for Today, Tasks, Projects and the project
+   page. Theme tokens only. Two sizes where the screens already had them: small is Today and Tasks' flat
+   look, the regular size is Projects' and the project page's bordered, tinted look. */
+
+/* ── Owner chip ───────────────────────────────────────────────────────────────────────────────────────────── */
+.plan-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  max-width: 180px;
+  padding: 2px 8px 2px 2px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+  background: var(--bg-raised);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-caption);
+  font-weight: 550;
+}
+button.plan-chip { cursor: pointer; }
+button.plan-chip:hover { background: var(--bg-hover); }
+.plan-chip.is-small {
+  gap: 5px;
+  max-width: none;
+  padding: 1px 7px 1px 2px;
+  border: none;
+  background: var(--bg-hover);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  white-space: nowrap;
+}
+button.plan-chip.is-small:hover { color: var(--text); background: var(--border); }
+.plan-chip .plan-chip-avatar { width: 22px; height: 22px; font-size: var(--fs-caption); }
+.plan-chip.is-small .plan-chip-avatar { width: 16px; height: 16px; font-size: var(--fs-caption); }
+.plan-chip-name { overflow: hidden; text-overflow: clip; white-space: nowrap; }
+
+/* ── Date and status pills ────────────────────────────────────────────────────────────────────────────────── */
+.plan-pill {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: var(--r-1);
+  background: var(--bg-hover);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.plan-pill.tone-late { color: var(--ns-attention-words); }
+/* Late, flat (4 Nov 2026: Next for you's "14 days late" showed as a pink block): the quiet chip with the one
+   attention dot — neutral slate, the dot carrying the attention, as sweep D's health chips.
+   p13-vault-status: the dot follows the person's accent, never fixed coral. */
+.plan-pill.tone-bad { display: inline-flex; align-items: center; color: var(--slate-tx); background: var(--slate-bg); font-weight: 700; }
+.plan-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ns-attention); flex: none; margin-right: 6px; }
+.plan-pill.tone-warn, .plan-pill.tone-today, .plan-pill.tone-week { color: var(--ns-attention-words); }
+.plan-pill.tone-ok, .plan-pill.tone-done { color: var(--ns-status); }
+.plan-pill.is-tinted { font-variant-numeric: normal; }
+.plan-pill.is-tinted.tone-bad, .plan-pill.is-tinted.tone-late { color: var(--ns-attention-words); background: color-mix(in srgb, var(--ns-attention) 16%, transparent); font-weight: 700; }
+.plan-pill.is-tinted.tone-warn, .plan-pill.is-tinted.tone-waiting, .plan-pill.is-tinted.tone-today, .plan-pill.is-tinted.tone-week { color: var(--ns-attention-words); background: color-mix(in srgb, var(--ns-attention) 12%, transparent); }
+.plan-pill.is-tinted.tone-ok, .plan-pill.is-tinted.tone-done { color: var(--ns-status); background: color-mix(in srgb, var(--ns-status) 10%, transparent); }
+.plan-pill.is-tinted.tone-later, .plan-pill.is-tinted.tone-none { color: var(--text-muted); background: color-mix(in srgb, var(--text) 6%, transparent); }
+.plan-status { font-size: var(--fs-caption); }
+
+/* ── One task row (p11 vault-care, Nov 2026: the task lists are "horrible to look at") ───────────────────
+   Every task list uses this grid — tick | title | who | when — so who and when share one x on every row.
+   Who and when are right-aligned columns of fixed width; the title wraps to two lines, then "…". */
+.trow.tkrow, .td-row.tkrow, .mt-row.tkrow {
+  --who-w: 148px;
+  --when-w: 170px;
+  position: relative;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) var(--who-w) var(--when-w);
+  gap: 12px;
+  align-items: center;
+  /* Rows past the fold skip layout and paint (t102, 9 Nov 2026, as the picker's): a hundred task rows. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 44px;
+}
+/* A row's hover actions overlay its end (as Today's do): in the grid they would steal a track and move who. */
+.tkrow > .pj-row-actions { position: absolute; right: 0; top: 50%; transform: translateY(-50%); margin: 0; }
+/* A timed row's time leads the tick (the Tasks day plan): fixed, always rendered, so the tick keeps its x. */
+.trow.tkrow.has-time, .td-row.tkrow.has-time {
+  grid-template-columns: 56px 20px minmax(0, 1fr) var(--who-w) var(--when-w);
+}
+.tkrow-time { font-size: var(--fs-small); color: var(--text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* The meeting rows' box centres in the tick track; a title's edit box fills the title track. */
+.mt-row.tkrow input[type='checkbox'] { justify-self: center; }
+.tkrow-title .pj-ed { display: block; }
+/* Today's titles wrap fully like every task title (t207 pass 2), at the one size, weight and line-height (t208, 11
+   Nov 2026, second look at real content: Today's read 13px beside Tasks' and the project page's 15px — one row
+   style, whatever the task's source). */
+.td-row.tkrow .td-row-what { overflow: hidden; white-space: normal; overflow-wrap: break-word; font-size: var(--fs-body); font-weight: 500; line-height: 1.4; }
+.td-row.tkrow .td-row-what .td-text { white-space: normal; overflow: visible; }
+/* One list, one set of dividers (t208: a note's line drew one through its record-row past, a step none — the
+   same border Tasks and the project page use between their rows, never one row's own). */
+.td-row.tkrow + .td-row.tkrow { border-top: 1px solid var(--border); }
+.tkrow .check { margin: 0; }
+.tkrow-title { min-width: 0; font-size: var(--fs-body); font-weight: 500; line-height: 21px; color: var(--text); }
+.tkrow-title .clip-2 { line-height: 1.4; }
+.tkrow-title.is-done { color: var(--text-faint); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--text-faint) 60%, transparent); }
+/* An edit box inside a cell shrink-wraps, so the cell's right edge stays the column's. */
+.tkrow .pj-ed { min-width: 0; max-width: 100%; }
+/* A block on its own line, wrapping whole words, never cut (t200 judged it on real long notes; t207 pass 2, the ).
+   Its own line either way, so nothing moves. */
+.tkrow-sub { display: block; margin-top: 1px; font-size: var(--fs-small); font-weight: 400; line-height: 18px; color: var(--text-muted); overflow-wrap: break-word; }
+/* A second line under the title (meeting actions' keep buttons): it spans what the title spans. */
+.tkrow-line2 { grid-column: 2 / -1; display: flex; align-items: center; gap: 10px; min-width: 0; }
+.tkrow-who, .tkrow-when { display: flex; align-items: center; justify-content: flex-end; min-width: 0; }
+.tkrow-who { font-size: var(--fs-small); font-weight: 550; color: var(--text-muted); }
+.tkrow-person { display: inline-flex; align-items: center; justify-content: flex-end; gap: 6px; min-width: 0; max-width: 100%; }
+.tkrow-name { overflow: hidden; text-overflow: clip; white-space: nowrap; }
+.tkrow-when { font-size: var(--fs-small); font-weight: 500; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tkrow-when.is-action { cursor: pointer; }
+.tkrow-moment.is-coral { color: var(--ns-attention-strong, var(--accent-strong, var(--accent-text))); font-weight: 650; }
+.tkrow-moment.is-quiet { color: var(--text-muted); font-weight: 500; }
+.tkrow-who.is-empty, .tkrow-when.is-empty { min-height: 20px; }
+/* A task list is a query container: where there is no room (a narrow card), who keeps its x with the
+   avatar alone (the full name stays on hover) and when tightens. The columns never move, only narrow. */
+.tklist { container: tklist / inline-size; }
+@container tklist (max-width: 640px) {
+  .trow.tkrow, .td-row.tkrow, .mt-row.tkrow { --who-w: 30px; --when-w: 118px; }
+  .tkrow-name { display: none; }
+}
+/* Squeezed windows narrow every list the same way. */
+@media (max-width: 760px) {
+  .trow.tkrow, .td-row.tkrow, .mt-row.tkrow { --who-w: 30px; --when-w: 118px; }
+  .tkrow-name { display: none; }
+}
+/* ── One task section head (Next steps, Waiting): words with weight, the count quiet, room above ────────── */
+.tksec { display: flex; align-items: baseline; gap: 8px; margin: 20px 0 2px; font-size: var(--fs-small); font-weight: 650; color: var(--text-strong); }
+.tksec:first-child, .tksec.is-first { margin-top: 8px; }
+.tksec .n { font-weight: 500; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.tkdone { margin-top: 20px; }
+.tkdone > summary { cursor: pointer; font-size: var(--fs-small); font-weight: 650; color: var(--text-muted); list-style: none; display: flex; align-items: baseline; gap: 8px; }
+.tkdone > summary::-webkit-details-marker { display: none; }
+.tkdone > summary .n { font-weight: 500; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+
+/* ── Plan row, the project page's list shape (Today's shape keeps its .td-row styles in today.css) ───────── */
+.plan-row--list { display: flex; align-items: flex-start; gap: 2px; list-style: none; }
+.plan-tick { display: inline-grid; place-items: center; flex: none; width: 17px; height: 17px; margin: 9px 0 0 8px; padding: 0; border: 1.5px solid var(--border-strong); border-radius: var(--r-2); background: var(--bg-raised); color: var(--on-primary); cursor: pointer; }
+.plan-tick:hover:not(:disabled) { border-color: var(--accent); }
+.plan-tick[aria-checked='true'] { border-color: var(--accent); background: var(--accent); }
+.plan-row-main { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; padding: 7px 8px; border: 0; border-radius: var(--r-3); background: none; color: var(--text); font: inherit; font-size: var(--fs-small); line-height: 1.4; text-align: left; cursor: pointer; }
+.plan-row-main:hover { background: var(--bg-hover); }
+.plan-row-main:focus-visible { outline: 2px solid var(--focus); outline-offset: -1px; }
+.plan-row--list.is-done .plan-row-title { color: var(--text-faint); text-decoration: line-through; }
+.plan-row-words { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.plan-row-title { overflow: hidden; text-overflow: clip; white-space: nowrap; }
+.plan-row-meta { color: var(--text-faint); font-size: var(--fs-caption); overflow: hidden; text-overflow: clip; white-space: nowrap; }
+
+/* ── Plain status words (5 Nov 2026, the plan "Vault: status in plain words") ─────────────────
+   Filled chips and pills that carry status are plain words in text colour: "2 days late" in the
+   attention colour, "Today" and "On track" muted. No fill, no dot, no border. Off track adds weight,
+   never a third hue (the status-colour rule, tests/status-colour.test.mjs). Theme tokens only. */
+.plan-status-words { flex: none; background: none; border: 0; padding: 0; font-size: var(--fs-small); font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.plan-status-words.is-attention { color: var(--ns-attention-strong, var(--accent-strong, var(--ns-attention-words))); font-weight: 650; }
+.plan-status-words.is-attention.is-strong { font-weight: 700; }
+.plan-status-words.is-muted { color: var(--text-muted); font-weight: 500; }
+/* Any straggler still wearing the old pill or chip renders plain too (the mechanism, never one case). */
+.plan-pill { flex: none; background: none; border: 0; padding: 0; color: var(--text-muted); font-size: var(--fs-caption); font-weight: 500; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.plan-pill.tone-bad, .plan-pill.tone-late, .plan-pill.tone-warn, .plan-pill.tone-today, .plan-pill.tone-week { color: var(--ns-attention-strong, var(--accent-strong, var(--ns-attention-words))); font-weight: 650; background: none; }
+.plan-pill.tone-bad { font-weight: 700; }
+.plan-pill.tone-ok, .plan-pill.tone-done { color: var(--text-muted); background: none; }
+.plan-pill.is-tinted { background: none; }
+.plan-pill .dot { display: none; }
+/* An owner in plain words: the face and the name, never a filled box. */
+.plan-owner-words { display: inline-flex; align-items: center; gap: 6px; flex: none; max-width: 180px; background: none; border: 0; padding: 0; color: var(--text); font: inherit; font-size: var(--fs-caption); font-weight: 550; }
+button.plan-owner-words { cursor: pointer; }
+button.plan-owner-words:hover .plan-owner-name { text-decoration: underline; }
+.plan-owner-words.is-small { color: var(--text-muted); max-width: none; white-space: nowrap; }
+button.plan-owner-words.is-small:hover { color: var(--text); }
+.plan-owner-words .plan-owner-avatar { width: 22px; height: 22px; font-size: var(--fs-caption); }
+.plan-owner-words.is-small .plan-owner-avatar { width: 16px; height: 16px; font-size: var(--fs-caption); }
+.plan-owner-name { overflow: hidden; text-overflow: clip; white-space: nowrap; }
+.plan-chip { display: inline-flex; align-items: center; gap: 6px; flex: none; background: none; border: 0; padding: 0; color: var(--text); font-size: var(--fs-caption); font-weight: 550; }
+
+/* ── The Tasks list's bulk tick (5 Nov 2026, Tick all plus a toolbar: the Inbox's bulk, reused) ──
+   Beside the done box, in the card's padding — never a grid track, so who and when keep their x on
+   every row. Seen on hover or focus, and always once anything is ticked. */
+.tklist .tkrow .tk-select { position: absolute; left: -18px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; margin: 0; accent-color: var(--text); cursor: pointer; opacity: 0; }
+.tklist .tkrow:hover .tk-select, .tklist .tkrow:focus-within .tk-select, .tklist .tkrow .tk-select:checked, .tklist .tkrow .tk-select:focus-visible { opacity: 1; }
+.tklist:has(.tk-select:checked) .tk-select { opacity: 1; }
+
+/* A loose "by when" wraps inside its column, never past its card (6 Nov 2026, e2: "by Thursday
+   morning" on one nowrap line poked past the meeting actions card). Firm days are short and
+   never wrap; only words a person still reads whole take the second line. */
+.tkrow-when { white-space: normal; text-align: right; }

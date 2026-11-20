@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/ironleaf-app/ironleaf/security/advisories/new
+    about: Report privately (or see SECURITY.md), never in a public issue.
+  - name: Teams and Enterprise
+    url: https://ironleaf.kaitiaki-it.com
+    about: Commercial licences, SSO, team vaults and support.

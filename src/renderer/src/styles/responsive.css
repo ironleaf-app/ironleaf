@@ -1,0 +1,271 @@
+/* Ironleaf at every window size (17 Oct 2026). The sides dock or open over the middle (src/shared/layout-fit.ts,
+   state/fit.ts); here: how a side looks as a drawer, the status line shortening as the middle narrows, and the pages and
+   panels reflowing with the room they have (container queries on the middle, .main, and on each side, .sidebar). */
+
+/* ── Sides as drawers ───────────────────────────────────────────────────────────────────────────────────────────── */
+
+.sidebar {
+  container: side / inline-size;
+}
+
+.sidebar.is-drawer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 36; /* under windows over the app (.overlay), menus and hover cards */
+  box-shadow: var(--shadow);
+  animation: nv-drawer-in 0.16s ease-out;
+}
+
+.sidebar.left.is-drawer {
+  left: 46px;
+  --drawer-from: -14px;
+}
+
+.sidebar.right.is-drawer {
+  right: 0;
+  /* Below the window buttons' band (8.6.1, 31 Oct 2026): at the top they covered the drawer's own Close. */
+  top: var(--wbtn-h, 40px);
+  --drawer-from: 14px;
+}
+
+@keyframes nv-drawer-in {
+  from {
+    opacity: 0;
+    transform: translateX(var(--drawer-from));
+  }
+}
+
+.side-scrim {
+  position: absolute;
+  inset: 0 0 0 46px;
+  z-index: 35;
+  background: color-mix(in srgb, var(--overlay) 55%, transparent);
+  animation: nv-fade-in 0.16s ease-out;
+}
+
+@keyframes nv-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar.is-drawer,
+  .side-scrim {
+    animation: none;
+  }
+}
+
+.ribbon-button.is-on {
+  background: var(--bg-active);
+  color: var(--text);
+}
+
+/* ── The status line shortens as the middle narrows ─────────────────────────────────────────────────────────────── */
+
+@container main (max-width: 680px) {
+  .status-chars {
+    display: none;
+  }
+}
+
+@container main (max-width: 560px) {
+  .status-tags {
+    display: none;
+  }
+}
+
+@container main (max-width: 420px) {
+  .status-backlinks,
+  .status-words {
+    display: none;
+  }
+}
+
+/* ── The side panels: controls keep their words, or give way neatly ─────────────────────────────────────────────── */
+
+.side-tab-more {
+  color: var(--text-faint);
+}
+
+.chat-bar {
+  min-width: 0;
+}
+
+/* (4 Nov 2026, p9-one-ask added 10:40: the model left the bar for the composer's foot, so the scope stretches
+   the bar — the old flex: none that kept it content-width beside the model is gone with it.) */
+.chat-bar .segmented {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-model > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.chat-input textarea {
+  min-width: 0;
+}
+
+/* A narrow side (a drawer on a small window, or dragged thin): tighter switches, the model's name gives way first. */
+@container side (max-width: 340px) {
+  .chat-bar {
+    gap: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .chat-bar .segmented button {
+    padding: 4px 8px;
+  }
+
+  .chat-input {
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+
+  .chat-modelfoot {
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+}
+
+/* ── Settings on a small window ─────────────────────────────────────────────────────────────────────────────────── */
+
+.settings-body {
+  container: settings / inline-size;
+}
+
+@media (max-width: 880px) {
+  .settings-nav {
+    width: 178px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+@media (max-height: 640px) {
+  .settings {
+    height: calc(100vh - 32px);
+    margin-top: 0;
+  }
+
+  /* The window's height is the box's: it sits 16 px from the top, not 12% down (its foot off the window). */
+  .overlay:has(> .settings) {
+    padding-top: 16px;
+  }
+}
+
+/* Too narrow for a setting's words and its control side by side: the control goes under the words. */
+@container settings (max-width: 520px) {
+  .setting-row {
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+
+  .setting-text {
+    flex-basis: 100%;
+  }
+
+  .setting-control {
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .setting-input {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .excluded-list {
+    justify-content: flex-start;
+    max-width: none;
+  }
+}
+
+/* ── Notes: a list property's add field stays on the line while it can ──────────────────────────────────────────── */
+
+.prop-add-wrap {
+  min-width: 28px;
+}
+
+.prop-add-wrap:focus-within {
+  min-width: 120px;
+}
+
+/* ── Pages ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+/* The Projects home's filters wrap; "Set up more from a folder…" stays whole (on its own line when it must). */
+.pj-filters .text-button {
+  flex: none;
+}
+
+/* A narrow project page: a file's date and size stack at the right, so its name keeps the room. */
+@container (max-width: 560px) {
+  .pj-page .pj-file {
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    grid-template-areas: 'kind words when' 'kind words size';
+    row-gap: 0;
+  }
+
+  .pj-page .pj-file > .pj-kind {
+    grid-area: kind;
+  }
+
+  .pj-page .pj-file > .pj-file-words {
+    grid-area: words;
+  }
+
+  .pj-page .pj-file > .pj-file-when {
+    grid-area: when;
+    align-self: end;
+  }
+
+  .pj-page .pj-file > .pj-file-size {
+    grid-area: size;
+    align-self: start;
+  }
+}
+
+/* A one-line field whose hint is longer than the room ends it with an ellipsis rather than cutting a word
+   (4 Nov 2026, p9-one-ask round 2, the reviewer: "the message box's placeholder wraps to a second line that
+   is clipped": a textarea hint wraps without nowrap, so the ellipsis never showed; the empty box stays one
+   line itself, so Chromium draws the …, while typed words wrap). */
+.home-ask input::placeholder,
+.chat-input textarea::placeholder {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+}
+.chat-input textarea:placeholder-shown {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+/* ── Panes side by side stack when the middle is too narrow for two readable columns ────────────────────────────── */
+
+.workspace-root {
+  container: panes / inline-size;
+}
+
+@container panes (max-width: 680px) {
+  .split.row {
+    flex-direction: column;
+  }
+
+  .split.row > .split-cell + .split-cell {
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Its divider drags sideways, which means nothing while stacked. */
+  .split.row > .split-cell > .split-handle.row {
+    display: none;
+  }
+}

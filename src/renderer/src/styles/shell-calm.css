@@ -1,0 +1,255 @@
+/* ── The calm shell (Ironleaf Calm, wave A; 20 Oct 2026) ───────────────────────────────────────────────────────────
+   The left side as a short calm list (Today, Search, your notes by kind with their counts, More), page headers whose
+   tools wait for the pointer or the keys, a quiet Ask, one page at a time when tabs are off, a little more room at the
+   top of a page, and saving that speaks up only when it matters. Imported just before feel.css (main.tsx), which stays
+   last. Light first; dark comes through the tokens. */
+
+:root {
+  /* The reading column for notes (views and canvases keep the full width). */
+  --page-column: 760px;
+  /* Room above a page's first line. */
+  --page-top: 40px;
+}
+
+/* ── The left side ─────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.sidebar.places-side.is-calm .calm-body {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+}
+
+.calm-places {
+  gap: 14px;
+  padding: 4px 8px 12px;
+  border-bottom: 0;
+}
+
+.calm-search kbd {
+  margin-left: auto;
+  font: 500 var(--fs-caption) var(--font-ui);
+  color: var(--text-faint);
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+  padding: 1px 5px;
+  opacity: 0.8;
+}
+
+.calm-kinds-head {
+  display: flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 4px 0 10px;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-faint);
+}
+
+.calm-kinds-head > span {
+  flex: 1;
+}
+
+.calm-kinds-add,
+.calm-kind-add {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-2);
+  color: var(--text-faint);
+}
+
+.calm-kinds-add:hover,
+.calm-kind-add:hover,
+.calm-kinds-add.menu-open {
+  background: var(--bg-active);
+  color: var(--text);
+}
+
+/* A kind's row: the whole row opens it; its + (a new one) shows on hover, or when the keys reach it. */
+.place.calm-kind {
+  padding: 0 4px 0 0;
+  gap: 0;
+}
+
+.calm-kind-open {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 6px 0 10px;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  border-radius: var(--r-2);
+}
+
+.calm-kind-open svg {
+  flex: none;
+  opacity: 0.85;
+}
+
+/* Each kind's icon in its own colour (5.2.0, "brighter up beat"): what's what is seen at a glance, as on its page. */
+.calm-kind[class*='nt-'] .calm-kind-open svg {
+  color: var(--type);
+  opacity: 1;
+}
+
+.calm-kind-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.calm-kind-count {
+  flex: none;
+  font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-faint);
+}
+
+.calm-kind-add {
+  opacity: 0;
+}
+
+.calm-kind:hover .calm-kind-add,
+.calm-kind:focus-within .calm-kind-add {
+  opacity: 1;
+}
+
+.calm-more {
+  padding-top: 2px;
+}
+
+/* ── A page's header ───────────────────────────────────────────────────────────────────────────────────────────── */
+
+.view-title {
+  font-size: var(--fs-caption);
+}
+
+/* The tools wait for the pointer on the header, or the keys in it; they are never taken out of the keys' way. What says
+   where you are (Private) or takes you to the other half of a page (Project page, Canvas) stays in sight. */
+.view-tools {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.view-tools > :not(.view-header-action, .view-private) {
+  opacity: 0;
+  transition: opacity 0.16s ease;
+}
+
+.view-header:hover .view-tools > *,
+.view-header:focus-within .view-tools > *,
+.view-tools:has(.menu-open) > * {
+  opacity: 1;
+}
+
+/* With no pointer to rest (a touch screen), the tools are simply there. */
+@media (hover: none) {
+  .view-tools > * {
+    opacity: 1;
+  }
+}
+
+.view-ask {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  margin-left: 4px;
+  padding: 0 11px 0 9px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+
+.view-ask:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.view-ask.is-on {
+  background: var(--accent-soft);
+  border-color: transparent;
+  color: var(--accent-strong);
+}
+
+/* Tabs off: the page's header is the window's top band (it drags the window and leaves the window's buttons room). */
+.view-header.is-band {
+  height: var(--band);
+  background: var(--bg);
+  border-bottom: 1px solid transparent;
+}
+
+.group.is-one-page > .view-header.is-band {
+  flex: none;
+}
+
+/* ── More room at the top of a page; the reading column for notes ──────────────────────────────────────────────── */
+
+.note-head-host {
+  padding-top: var(--page-top);
+}
+
+.reading-page {
+  padding-top: var(--page-top);
+}
+
+.note-view.readable .note-editor .cm-content,
+.reading.readable .reading-page {
+  max-width: calc(var(--page-column) + 112px);
+}
+
+/* ── Saving, quietly (App.tsx SaveCorner) ──────────────────────────────────────────────────────────────────────── */
+
+.save-corner {
+  position: absolute;
+  right: 16px;
+  bottom: 12px;
+  z-index: 25;
+  height: 24px;
+  padding: 0 11px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+  font: 500 var(--fs-caption) var(--font-ui);
+  color: var(--text-muted);
+  pointer-events: none;
+  animation: calm-fade 0.18s ease-out;
+}
+
+.save-corner.is-error {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 35%, var(--border));
+}
+
+@keyframes calm-fade {
+  from {
+    opacity: 0;
+    translate: 0 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view-tools > *,
+  .calm-kind-add {
+    transition: none;
+  }
+  .save-corner {
+    animation: none;
+  }
+}

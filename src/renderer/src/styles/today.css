@@ -1,0 +1,1186 @@
+/* Today (views/TodayView.tsx): the day's work across every project. Calm by default — words first, one line per thing,
+   the buttons on a line showing as the pointer (or the keys) reach it — and laid out by its own width (a narrow middle
+   between two sides, a laptop, a wide screen): two columns when there is room, one when there isn't. */
+
+.td-view {
+  /* The page draws its own header above this (10.0): the scroll area takes what is left. */
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background: var(--bg);
+  container: today / inline-size;
+  /* Both edges keep the scrollbar's gutter (4 Nov 2026): a classic scrollbar would otherwise pull the
+     centred column half its width off the header search's middle; with both gutters the two middles are
+     one, scrollbar or not, and the page never jumps when the bar appears. */
+  scrollbar-gutter: stable both-edges;
+  --td-gap: 18px;
+  --td-row-h: 46px;
+}
+
+:root[data-theme='dark'] .td-view {
+  --tone-ok: #74c69d;
+  --tone-warn: #e3b25e;
+  --tone-bad: #ee8b77;
+}
+
+.td-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: clamp(26px, 5vh, 56px) 36px 56px;
+}
+
+/* ── The head: the day, a greeting, the compact line ────────────────────────────────────────────────────────────── */
+
+.td-head {
+  margin-bottom: 18px;
+}
+
+/* The hero band (10.0 Endless Tech: Vault Today opens with one hero at most): the white-to-mist gradient, the date
+   in plain words, the 38 px greeting, one subtitle line with the key figures. The band breaks out to the column's
+   edges; the lists below keep their own room. The breakout and the
+   text inset derive from the column's own gutter token (10.0 rooms critique, 2 Nov 2026: a fixed -18px margin met a
+   16px viewport gutter at 900px and the band stuck out 2px a side, drawing a sideways scrollbar). */
+.nv-today-head.nv-hero {
+  position: relative;
+  overflow: hidden;
+  margin: 0 calc(var(--page-pad-side) * -1) 24px;
+  padding: 44px var(--page-pad-side) 34px;
+  background: linear-gradient(180deg, var(--hero-1), var(--hero-2));
+  border-bottom: 1px solid var(--border);
+}
+.nv-today-head.nv-hero > :not(.nv-heroart) {
+  position: relative;
+}
+
+.td-head-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.td-new {
+  flex: none;
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+}
+
+.td-new:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.td-head-top .td-date {
+  margin: 0;
+}
+
+.td-date {
+  margin: 0 0 12px;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.td-head h1 {
+  margin: 0;
+  /* Today's title in Geist 650, tight, like every page title (8.1; styles/page-frame.css settles it). */
+  font: 650 var(--fs-page)/1.15 var(--font-ui);
+  letter-spacing: -0.02em;
+  color: var(--text-strong);
+}
+
+.td-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 0;
+  margin: 12px 0 0;
+  /* No width cap (p28-today-line, 5 Nov 2026): the 620px cap from the first Today wrapped the line while the
+     column still had room; it uses the column's width now. */
+  font-size: var(--fs-reading);
+  color: var(--text-muted);
+}
+
+.td-sep {
+  margin: 0 8px;
+  color: var(--text-faint);
+}
+
+.td-line-item {
+  padding: 2px 0;
+  border-bottom: 1px solid transparent;
+  color: var(--text-muted);
+  font-weight: 550;
+}
+
+.td-line-item:hover,
+.td-line-item:focus-visible {
+  color: var(--text);
+  border-bottom-color: var(--border-strong);
+}
+
+.td-line-item.key-overdue {
+  color: var(--ns-attention-words);
+}
+
+.td-line-item.key-today {
+  color: var(--text);
+}
+
+.td-line-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ns-status);
+  font-weight: 550;
+}
+
+/* The one start to the day (10.0): the morning brief and the one Ask box, full width under the hero, then the
+   person's own cards closing the page with Change Home. */
+.td-brief {
+  margin: 0 0 var(--td-gap);
+}
+
+.td-inner > .ask {
+  margin: 0 0 var(--td-gap);
+}
+
+.td-extras {
+  display: flex;
+  flex-direction: column;
+  gap: var(--td-gap);
+  margin: var(--td-gap) 0 0;
+}
+
+/* ── Columns ────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.td-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: var(--td-gap);
+  align-items: start;
+}
+
+.td-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--td-gap);
+  min-width: 0;
+}
+
+/* kit.css's .side is the rail's rule (its width, background, border and padding): this column is not the rail. */
+.td-col.side { width: auto; flex: initial; padding: 0; border-right: 0; background: none; overflow: visible; }
+
+/* One column: the day (note, meetings, automations) first, then the work, then the rest. */
+@container today (max-width: 900px) {
+  .td-cols {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .td-col {
+    display: contents;
+  }
+
+  .td-review { order: 0; }
+  .td-day { order: 1; }
+  .td-clear { order: 2; }
+  [data-section='due'] { order: 3; }
+  [data-section='tasks'] { order: 4; }
+  [data-section='waiting'] { order: 5; }
+  [data-section='risk'] { order: 6; }
+  [data-section='changed'] { order: 7; }
+  .td-welcome { order: 2; }
+}
+
+@container today (max-width: 620px) {
+  /* The band shrinks rather than pushing the first task off the screen; the art stands down. The column's gutter
+     is the frame's token (polish-shell owns .td-inner's padding); the band's breakout follows it in the base rule. */
+  .nv-today-head.nv-hero {
+    margin-bottom: 16px;
+    padding-top: 32px;
+    padding-bottom: 26px;
+  }
+  .nv-heroart {
+    display: none;
+  }
+}
+
+/* ── Sections ───────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.td-section {
+  min-width: 0;
+  padding: 14px 8px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+  scroll-margin-top: 16px;
+}
+
+.td-section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 0 10px 8px;
+}
+
+.td-section-head h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: 650;
+  color: var(--text);
+}
+
+.td-count {
+  /* The one count (t218): plain tabular words, never a filled box. */
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.td-section-hint {
+  margin-left: auto;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+.td-group + .td-group {
+  margin-top: 6px;
+}
+
+.td-group h3,
+.td-day-group h3 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 10px 2px;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.td-group h3 span {
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.td-group.overdue h3 {
+  color: var(--ns-attention-words);
+}
+
+.td-group.today h3 {
+  color: var(--ns-attention-words);
+  font-weight: 600;
+}
+
+/* Folded lists (29 Oct 2026): dates that went by, and a project's late steps on one line. */
+.td-fold > summary {
+  cursor: pointer;
+  list-style: none;
+}
+.td-fold > summary::-webkit-details-marker {
+  display: none;
+}
+.td-group.passed > summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 10px 2px;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.td-group.passed > summary span {
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.td-fold-project > summary {
+  margin: 2px 10px;
+  padding: 6px 8px;
+  border-radius: var(--r-3);
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+.td-fold-project > summary:hover {
+  background: var(--bg-hover);
+}
+.td-fold-project[open] > summary {
+  color: var(--text);
+}
+
+.td-none {
+  margin: 2px 10px 8px;
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+}
+
+.td-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 2px 4px 4px;
+  padding: 5px 6px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-small);
+  font-weight: 550;
+  color: var(--text-muted);
+}
+
+.td-more:hover {
+  color: var(--text);
+  background: var(--bg-hover);
+}
+
+.td-more.files {
+  margin-left: 34px;
+  font-weight: 500;
+  color: var(--text-faint);
+}
+
+/* ── Lines ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.td-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: var(--td-row-h);
+  /* The one row rhythm (t218): 12px up and down, the kit's own; the card sides stay 10px. */
+  padding: 12px 10px;
+  border-radius: var(--r-3);
+  cursor: pointer;
+  outline: none;
+  transition: background var(--nv-motion-base) ease, opacity var(--nv-motion-base) ease;
+}
+
+.td-row:hover,
+.td-row:focus-visible,
+.td-row:focus-within {
+  background: var(--sel);
+}
+
+.td-row:focus-visible {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.td-row-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.td-row-what {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text);
+  font-size: var(--fs-small);
+  line-height: 1.35;
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+.td-row-what.strong {
+  font-weight: 600;
+}
+
+/* Words under a task's title wrap whole and grow, never cut mid-word (t249: a Today sub ending "late-ope" —
+   titles a person must read wrap whole, two lines fine; the t207 clip-without-dots rule stands for one-line
+   slots, never titles). */
+.td-row-sub {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  overflow: visible;
+  font-size: var(--fs-small);
+  line-height: 18px;
+  color: var(--text-muted);
+  white-space: normal;
+  flex-wrap: wrap;
+}
+
+.td-row-sub > * {
+  min-width: 0;
+}
+
+.td-row-sub .td-text {
+  white-space: normal;
+  overflow: visible;
+  overflow-wrap: break-word;
+}
+
+.td-faint {
+  color: var(--text-faint);
+}
+
+.td-project {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  /* Every source under a task's words reads muted (t208: one shade for the same kind of thing; t218: the one
+     sub line is muted in both apps, as the former host app's). */
+  color: var(--text-muted);
+}
+
+.td-dot {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--tone, var(--tone-none));
+}
+/* Today's project dots read the one set (p13-vault-status): on track neutral, at risk and off track attention. */
+.td-project.tone-ok {
+  --tone: var(--ns-status);
+}
+.td-project.tone-warn,
+.td-project.tone-bad {
+  --tone: var(--ns-attention);
+}
+.td-project.tone-ok .td-dot {
+  background: var(--ns-status);
+}
+.td-project.tone-warn .td-dot,
+.td-project.tone-bad .td-dot {
+  background: var(--ns-attention);
+}
+
+.td-who {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+}
+
+.td-who-name {
+  color: var(--text-muted);
+  font-weight: 550;
+}
+
+.td-avatar.small {
+  width: 20px;
+  height: 20px;
+  font-size: var(--fs-caption);
+}
+
+.td-row-sub .td-avatar {
+  width: 16px;
+  height: 16px;
+  font-size: var(--fs-caption);
+}
+
+.td-wait > .td-avatar {
+  width: 26px;
+  height: 26px;
+  font-size: var(--fs-caption);
+}
+
+/* The tick box: round, quiet until reached. */
+.td-check {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  flex: none;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 50%;
+  corner-shape: round;
+  color: transparent;
+  background: var(--bg-raised);
+  transition:
+    border-color var(--nv-motion-base) ease,
+    background var(--nv-motion-base) ease,
+    color var(--nv-motion-base) ease;
+}
+
+.td-check:hover:not(:disabled),
+.td-check:focus-visible {
+  border-color: var(--tone-ok);
+  color: var(--tone-ok);
+}
+
+.td-check.on {
+  border-color: var(--tone-ok);
+  background: var(--tone-ok);
+  color: var(--paper);
+}
+
+.td-glyph {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  flex: none;
+  color: var(--text-faint);
+}
+
+.td-glyph.flag {
+  color: var(--accent-text);
+}
+
+.td-row.is-done {
+  opacity: 0.5;
+}
+
+/* A tick lands as one beat (5 Nov 2026 feel-motion: the box filled, the strike snapped, then the row drifted for
+   300ms): the box and the fade share 160ms, and the strike draws in with them — its colour fades in over the same
+   beat, since the line itself cannot transition. Without movement the strike simply is there. */
+.td-row.is-done .td-row-what {
+  text-decoration: line-through;
+  text-decoration-color: var(--text-faint);
+  animation: td-strike-in var(--nv-motion-base) var(--nv-ease-fade) both;
+}
+@keyframes td-strike-in {
+  from {
+    text-decoration-color: transparent;
+  }
+}
+
+.td-when {
+  flex: none;
+  font-size: var(--fs-small);
+  font-weight: 550;
+  color: var(--text-muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.td-when.tone-bad {
+  color: var(--ns-attention-words);
+  font-weight: 650;
+}
+
+.td-when.tone-warn {
+  color: var(--ns-attention-words);
+}
+
+.td-when.small {
+  font-size: var(--fs-caption);
+}
+
+/* A line's buttons: over its right end as it is reached, so the words keep the room. */
+.td-actions {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  display: flex;
+  gap: 2px;
+  padding-left: 22px;
+  transform: translateY(-50%);
+  background: linear-gradient(to right, transparent, var(--bg-hover) 18px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+
+.td-row:hover .td-actions,
+.td-row:focus-within .td-actions,
+.td-row:focus-visible .td-actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.td-act {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-2);
+  color: var(--text-muted);
+}
+
+.td-act:hover,
+.td-act:focus-visible,
+.td-act[aria-expanded='true'] {
+  background: var(--bg-active);
+  color: var(--text);
+}
+
+/* ── At risk ────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.td-health {
+  width: 9px;
+  height: 9px;
+  flex: none;
+  margin: 0 5px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--tone-none);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tone-none) 18%, transparent);
+}
+
+.td-health.tone-ok { background: var(--ns-status); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ns-status) 18%, transparent); }
+.td-health.tone-warn { background: var(--ns-attention); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ns-attention) 20%, transparent); }
+.td-health.tone-bad { background: var(--ns-attention); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ns-attention) 28%, transparent); }
+
+.td-health-words {
+  flex: none;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--tone);
+}
+
+.td-risk-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.td-risk-line > span:not(.td-faint) {
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.td-level {
+  flex: none;
+  padding: 0 6px;
+  border-radius: var(--r-1);
+  font-size: var(--fs-caption);
+  font-weight: 650;
+  line-height: 17px;
+  color: var(--ns-attention-words);
+  background: color-mix(in srgb, var(--ns-attention) 13%, transparent);
+}
+
+.td-level.critical {
+  color: var(--ns-attention-words);
+  background: color-mix(in srgb, var(--ns-attention) 20%, transparent);
+  font-weight: 700;
+}
+
+.td-risk-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  flex: none;
+}
+
+.td-mini {
+  display: block;
+  width: 54px;
+  height: 4px;
+  overflow: hidden;
+  border-radius: var(--r-1);
+  background: var(--bg-active);
+}
+
+.td-mini > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--tone, var(--text-faint));
+}
+.td-mini > span.tone-ok {
+  background: var(--ns-status);
+}
+.td-mini > span.tone-warn,
+.td-mini > span.tone-bad {
+  background: var(--ns-attention);
+}
+
+.td-mini > span.tone-none {
+  background: var(--text-faint);
+}
+
+/* ── Changed since yesterday ────────────────────────────────────────────────────────────────────────────────────── */
+
+.td-change + .td-change {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+
+.td-change-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  padding: 4px 10px 2px;
+  border-radius: var(--r-2);
+  text-align: left;
+}
+
+.td-change-head:hover .td-change-name {
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+}
+
+.td-change-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.td-change-head .td-faint {
+  flex: none;
+  font-size: var(--fs-caption);
+}
+
+.td-row.td-change-line {
+  min-height: 34px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  gap: 9px;
+}
+
+.td-change-line .td-row-what {
+  font-size: var(--fs-small);
+}
+
+.td-change-icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  border-radius: var(--r-2);
+  color: var(--text-muted);
+  background: var(--bg-hover);
+}
+
+.td-change-icon.kind-update {
+  color: var(--accent-text);
+  background: var(--accent-soft);
+}
+
+.td-change-icon.kind-activity {
+  color: var(--accent-strong);
+  background: var(--accent-softer);
+}
+
+.td-ext {
+  font-size: var(--fs-caption);
+  font-weight: 750;
+}
+
+.td-row:hover .td-change-icon {
+  background: var(--bg-active);
+}
+
+.td-time {
+  flex: none;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── The day: today's note, meetings, automations ───────────────────────────────────────────────────────────────── */
+
+.td-day {
+  padding: 8px;
+}
+
+.td-day-note {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px;
+  border-radius: var(--r-4);
+  text-align: left;
+  color: var(--text-muted);
+}
+
+.td-day-note:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.td-day-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: var(--r-4);
+  color: var(--accent-text);
+  background: var(--accent-soft);
+}
+
+.td-day-group {
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+
+.td-time-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  min-width: 58px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: var(--r-1);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  text-align: center;
+  color: var(--text-muted);
+  background: var(--bg-hover);
+  font-variant-numeric: tabular-nums;
+}
+
+.td-row:hover .td-time-chip {
+  background: var(--bg-active);
+}
+
+.td-time-chip.auto {
+  color: var(--text-muted);
+  background: var(--bg-hover);
+}
+
+.td-row.td-meeting,
+.td-row.td-auto {
+  min-height: 40px;
+}
+
+/* ── Quiet states ───────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.td-clear {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+}
+
+.td-clear h2 {
+  margin: 0 0 2px;
+  font: 400 var(--fs-section)/1.2 var(--font-display);
+  color: var(--text);
+}
+
+.td-clear p {
+  margin: 0;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.td-clear-icon,
+.td-welcome-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 50%;
+  corner-shape: round;
+  color: var(--ns-status);
+  background: color-mix(in srgb, var(--ns-status) 12%, transparent);
+}
+
+.td-welcome {
+  padding: 26px 24px 24px;
+}
+
+.td-welcome-icon {
+  color: var(--accent-text);
+  background: var(--accent-soft);
+}
+
+.td-welcome h2 {
+  margin: 14px 0 6px;
+  font: 400 var(--fs-section)/1.2 var(--font-display);
+  color: var(--text);
+}
+
+.td-welcome p {
+  max-width: 54ch;
+  margin: 0 0 16px;
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.td-welcome-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.td-error {
+  color: var(--danger);
+  font-size: var(--fs-small);
+}
+
+.td-loading {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: var(--td-gap);
+}
+
+.td-loading span {
+  height: 180px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: linear-gradient(100deg, var(--bg-raised) 40%, var(--bg-hover) 50%, var(--bg-raised) 60%) 0 0 / 300% 100%;
+  animation: nv-shimmer var(--nv-shimmer) ease-in-out infinite;
+}
+
+.td-loading span:first-child {
+  grid-row: span 2;
+  height: 376px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .td-loading span {
+    animation: none;
+  }
+
+  .td-row,
+  .td-actions,
+  .td-check {
+    transition: none;
+  }
+}
+
+@container today (max-width: 900px) {
+  .td-loading {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ── The weekly review: up front from the review day, else a quiet line under today's note ─────────────────────── */
+
+.td-review {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 12px;
+  padding: 16px;
+  border-color: color-mix(in srgb, var(--accent) 34%, var(--border));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 7%, var(--bg-raised)), var(--bg-raised) 70%);
+}
+
+.td-review-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-4);
+  color: var(--accent-text);
+  background: var(--accent-soft);
+}
+
+.td-review-words h2 {
+  margin: 1px 0 4px;
+  font-size: var(--fs-body);
+  font-weight: 650;
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.td-review-words p {
+  margin: 0;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.td-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-top: 12px;
+}
+
+.td-day-icon.quiet {
+  color: var(--text-muted);
+  background: var(--bg-hover);
+}
+
+.td-day-note + .td-day-review {
+  margin-top: 2px;
+}
+
+/* A way on from a section (Due and overdue › Timeline): quiet until the pointer rests on it. */
+.td-section-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  padding: 3px 8px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.td-section-hint + .td-section-link {
+  margin-left: 4px;
+}
+
+.td-section-link:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.td-section-link:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Words in a line's flex rows wrap to whole words and grow, never cut (t207 pass 2). */
+.td-text {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.td-next { margin-bottom: var(--td-gap); }
+/* Short windows: the calm screen's chrome yields so the quiet line still shows at a glance (t215 pass 2,
+   11 Nov 2026: at 1219x709 one wrapped title put "N things need a look" 14px past the fold; the rows and
+   their wraps stay exactly as t208 and t207 drew them). */
+@media (max-height: 800px) {
+  .td-view .td-head { margin-bottom: 16px; }
+  .td-view .td-areas { margin-top: 10px; }
+  .td-section.td-next { padding-top: 14px; padding-bottom: 14px; }
+  /* Short windows wear the kit's named compact rhythm on the Next card (t225, 11 Nov 2026: t218's 12px
+     rhythm stood the five Next rows ~40px taller and the quiet line fell 24px past the fold at 1219x709).
+     Tall windows keep the standard 12px untouched; no words hidden, no rows folded, fonts unchanged. */
+  .td-section.td-next .td-row { padding-top: 8px; padding-bottom: 8px; }
+}
+/* Next for you's rows are the one task row (tick, title, who, when), so their hover buttons overlay the title's end and
+ * never take a line of their own or cover who and when, which stay clickable (4 Nov 2026, seen at their 3456 window). */
+.td-row.tkrow .td-actions { right: calc(var(--who-w) + var(--when-w) + 24px); }
+/* The one Today count on the heading (4 Nov 2026, p12-today-focus): quiet, as the rail reads it. */
+.td-head-count { font-weight: 550; color: var(--text-muted); }
+/* The rest past Next for you under one quiet line, and Waiting folded (4 Nov 2026, p12-today-focus). */
+.td-rest, .td-wait-fold { margin-bottom: var(--td-gap); }
+/* The fold's line belongs to the list it continues, right under it. */
+.td-next + .td-rest { margin-top: calc(10px - var(--td-gap)); padding: 0 2px; }
+.td-rest-line, .td-wait-line { color: var(--text-faint); font-weight: 500; }
+/* Round 4: the fold's quiet line with the All tasks link beside it (the Due card is gone). */
+.td-rest-line-row { display: flex; align-items: center; gap: 12px; }
+.td-rest-line-row .th-all-tasks { margin-left: auto; }
+.td-rest-groups { margin-top: 4px; }
+.td-wait-fold .td-section { margin-top: 4px; margin-bottom: 0; }
+.td-wait-group + .td-wait-group { margin-top: 8px; }
+.td-wait-head {
+  display: flex; align-items: center; gap: 8px; padding: 6px 10px 2px;
+}
+.td-chase {
+  margin-left: auto; display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px; border-radius: var(--r-2); font-size: var(--fs-caption); font-weight: 550; color: var(--text-muted);
+}
+.td-chase:hover { color: var(--text); background: var(--bg-hover); }
+.td-passed-end { margin-top: var(--td-gap); padding: 10px 8px; border: 1px solid var(--border); border-radius: var(--r-3); background: var(--bg-raised); }
+.td-setup-line {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 10px;
+  padding: 4px 2px; font-size: var(--fs-small); color: var(--text-faint);
+}
+.td-setup-line:hover { color: var(--text); }
+.td-setup-overlay {
+  position: fixed; inset: 0; z-index: 60; display: grid; place-items: start center;
+  padding: 8vh 16px 16px; background: rgba(0, 0, 0, 0.28); overflow: auto;
+}
+.td-setup-dialog {
+  width: min(680px, 100%); max-height: 82vh; overflow: auto; padding: 14px;
+  border-radius: var(--r-4); background: var(--bg-raised); box-shadow: var(--shadow-card);
+}
+.td-setup-close { margin-top: 8px; }
+/* A quiet button's second line wraps instead of cutting off with "…" (4 Nov 2026, p15-today-rest: the tidy
+   button's words were clipped in the side column; nothing is ever cut off). */
+.td-day-note .td-row-sub, .td-day-note .td-row-sub > * { white-space: normal; overflow: visible; }
+/* Ultra-wide lives in polish-shell.css (it owns .td-inner's frame and loads last, so a container rule here could
+   never win): the dashboard uses the width instead of a narrow strip mid-screen. */
+
+/* Today pack cards never cut a word in half (5 Nov 2026, packs uplift item 1: "Video tomorrow at 10:00:
+   Product designe…" and "Family wagon: service overdue by 2,300 k…" clipped mid-word on one line; t207 pass 2:
+   the two-line clamp drew dots, so names and details wrap whole at word edges instead). Amounts, counts, dates
+   and buttons keep one line. Scoped under .rm-today-main so it beats the one-line rules' specificity whatever
+   order the stylesheets load in. */
+.rm-today-main .rm-today-name,
+.rm-today-main .rm-today-sub,
+.wmt-row-name,
+.wmt-row-sub {
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: clip;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+/* ── The day's shape (5 Nov 2026, Today is the day's shape): one sentence, one column, one fold ── */
+
+/* One sentence under the greeting: warm, plain, never five numbers. */
+.td-line.td-sentence { font-size: var(--fs-body); color: var(--text-muted); margin-top: 6px; }
+
+/* Single column: everything flows below, nothing beside (no side column). */
+.td-single { display: flex; flex-direction: column; gap: var(--td-gap); }
+
+/* Today's meetings, after Next: the calendar and the meeting notes as one section. */
+.th-meetings { margin-bottom: var(--td-gap); }
+.th-meetings .td-section-head { margin-bottom: 8px; }
+
+/* One quiet line for what is due and matters (the weekly review, tidy): a single line, never a card. */
+.td-quiet-line {
+  display: inline-flex; align-items: center; gap: 7px; margin: 2px 0;
+  padding: 4px 2px; font-size: var(--fs-small); color: var(--text-faint);
+  background: none; border: 0; cursor: pointer; text-align: left;
+}
+.td-quiet-line:hover { color: var(--text); }
+
+/* The one fold for the full list: the rows first, then the day's sections, the day's note and the week. */
+.td-else { margin-bottom: var(--td-gap); }
+.td-else-groups { display: flex; flex-direction: column; gap: var(--td-gap); margin-top: 12px; }
+.th-day-note-fold { margin-top: 4px; }
+
+/* The "things need a look" list (8 Nov 2026, calm Today): everything that was its own block is a row here —
+   the nags, the vault rows, the projects waiting, the packs' rows, the turned-on cards. Shut, the rows stay
+   rendered but hidden, so the line's count is what opening shows (the guard beats any display rule). */
+.td-look-open[hidden] { display: none; }
+.td-look-items { display: flex; flex-direction: column; margin-top: 12px; }
+/* The nags stack as full rows in the list (they ran inline above the fold before). */
+.td-look-items .td-quiet-line { display: flex; width: 100%; padding: 7px 8px; border-radius: var(--r-3); }
+.td-look-items .td-quiet-line:hover { background: var(--bg-hover); }
+/* The packs' cards uncard into quiet row groups under their own heads (every pack, whatever shell it draws). */
+.td-look-items .tm-modules { display: flex; flex-direction: column; gap: 2px; margin: 8px 0 0; }
+.td-look-items .tm-modules > section { border: 0; background: none; box-shadow: none; padding: 8px 0 2px; }
+.td-look-items .tm-modules > section > header { margin-bottom: 2px; padding: 0 8px; }
+.td-look-items .tm-modules .td-section-head h2,
+.td-look-items .tm-modules .fy-today-head h2,
+.td-look-items .tm-modules .pb-today-head h2 { font-size: var(--fs-small); }
+/* A row that opens to its full card (components/LookRow.tsx): its title words, then the card itself. */
+.td-look-row { border-radius: var(--r-3); }
+.td-look-sum { display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: var(--r-3); cursor: pointer; list-style: none; font-size: var(--fs-small); color: var(--text); }
+.td-look-sum::-webkit-details-marker { display: none; }
+.td-look-sum:hover { background: var(--bg-hover); }
+.td-look-ic { flex: none; display: grid; place-items: center; color: var(--text-muted); }
+.td-look-title { flex: 1; min-width: 0; }
+.td-look-go { flex: none; color: var(--text-faint); }
+.td-look-row[open] > .td-look-sum .td-look-go { transform: rotate(90deg); }
+.td-look-body { padding: 2px 0 8px; }
+.td-look-body > .td-section, .td-look-body > .vh-warn { margin: 4px 0 0; }
+
+/* The one fold line names what folds (5 Nov 2026): on a full day the names run long, so the line wraps
+   under its links instead of squeezing All tasks and Timeline off the row. */
+.td-rest-line-row { flex-wrap: wrap; }
+.td-rest-line-row .td-rest-line { flex: 1 1 300px; text-align: left; }

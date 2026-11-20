@@ -1,0 +1,164 @@
+/* A project's folder on another PC (views/project/FolderHere.tsx): one calm card under the summary — where the folder is,
+   and what to do on this PC. Neutral and settled, like the page's own cards: never an error colour. */
+
+.pjfh-card {
+  container-type: inline-size;
+  margin: -4px 0 20px;
+  padding: 16px 18px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.pjfh-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;
+}
+
+.pjfh-mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-4);
+  color: var(--accent-text);
+  background: var(--accent-soft);
+}
+
+.pjfh-words {
+  flex: 1;
+  min-width: 0;
+}
+
+.pjfh-title {
+  margin: 1px 0 3px;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.pjfh-text,
+.pjfh-lost {
+  margin: 0;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.pjfh-lost {
+  margin-top: 6px;
+  font-size: var(--fs-small);
+}
+
+.pjfh-path {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  margin: 9px 0 0;
+  padding: 4px 9px;
+  border-radius: var(--r-2);
+  background: var(--bg-hover, color-mix(in srgb, var(--text) 5%, transparent));
+  font-family: var(--font-mono, ui-monospace, 'Cascadia Mono', Consolas, monospace);
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+.pjfh-path svg {
+  flex: none;
+  opacity: 0.75;
+}
+
+.pjfh-path bdi,
+.pjfh-found bdi {
+  overflow: hidden;
+  min-width: 0;
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+.pjfh-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 0 52px;
+}
+
+.pjfh-actions .button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pjfh-quiet {
+  padding: 6px 8px;
+  border: 0;
+  border-radius: var(--r-2);
+  background: none;
+  font: inherit;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.pjfh-quiet:hover:not(:disabled) {
+  color: var(--text);
+  background: var(--bg-hover, color-mix(in srgb, var(--text) 6%, transparent));
+}
+
+.pjfh-quiet:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.pjfh-found {
+  margin: 12px 0 0 52px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.pjfh-found p {
+  margin: 0 0 8px;
+  font-size: var(--fs-small);
+  color: var(--text);
+}
+
+.pjfh-found ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pjfh-found li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.pjfh-found li bdi {
+  flex: 1;
+  font-family: var(--font-mono, ui-monospace, 'Cascadia Mono', Consolas, monospace);
+}
+
+.pjfh-found li svg {
+  flex: none;
+}
+
+/* A narrow page: the choices under the words, full width. */
+@container (max-width: 520px) {
+  .pjfh-actions,
+  .pjfh-found {
+    margin-left: 0;
+  }
+}

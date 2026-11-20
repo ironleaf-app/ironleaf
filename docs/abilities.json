@@ -1,0 +1,728 @@
+{
+  "groups": [
+    {
+      "id": "write",
+      "title": "Write",
+      "words": "Notes, docs, drawings and everything inside them."
+    },
+    {
+      "id": "organise",
+      "title": "Organise",
+      "words": "Folders, tags, links and canvases that keep it tidy."
+    },
+    {
+      "id": "views",
+      "title": "Views and databases",
+      "words": "Tables, boards, calendars and cards over your notes."
+    },
+    {
+      "id": "projects",
+      "title": "Projects and tasks",
+      "words": "Projects, their dates, and every tick box."
+    },
+    {
+      "id": "meetings",
+      "title": "Meetings",
+      "words": "Notes, recordings, series and prep packs."
+    },
+    {
+      "id": "packs",
+      "title": "Packs",
+      "words": "Eighteen life areas, each switched on when you need it."
+    },
+    {
+      "id": "find",
+      "title": "Find and ask",
+      "words": "Search, the graph, notebooks and the helper."
+    },
+    {
+      "id": "capture",
+      "title": "Capture and import",
+      "words": "Quick notes in, and other apps out of your way."
+    },
+    {
+      "id": "private",
+      "title": "Private and safe",
+      "words": "Locked notes, secrets, versions and backups."
+    },
+    {
+      "id": "spark",
+      "title": "AI and other apps",
+      "words": "Your AI connections, agents, plugins and exports."
+    }
+  ],
+  "abilities": [
+    {
+      "id": "notes",
+      "group": "write",
+      "title": "Notes",
+      "words": "Plain Markdown notes with links, pictures and files."
+    },
+    {
+      "id": "daily-notes",
+      "group": "write",
+      "title": "Daily notes",
+      "words": "One note per day, today’s a key away."
+    },
+    {
+      "id": "note-templates",
+      "group": "write",
+      "title": "Note templates",
+      "words": "Meetings, updates and today’s note, pre-shaped."
+    },
+    {
+      "id": "note-types",
+      "group": "write",
+      "title": "Note types",
+      "words": "Notes, people, meetings, ideas and docs, each with its fields."
+    },
+    {
+      "id": "docs",
+      "group": "write",
+      "title": "Docs",
+      "words": "How something is set up and run, step by step."
+    },
+    {
+      "id": "tables",
+      "group": "write",
+      "title": "Tables in notes",
+      "words": "Tables you edit cell by cell, with rows and columns that move."
+    },
+    {
+      "id": "callouts",
+      "group": "write",
+      "title": "Callouts and quotes",
+      "words": "Tinted panels for warnings and tips, quotes for feedback."
+    },
+    {
+      "id": "maths",
+      "group": "write",
+      "title": "Maths (LaTeX)",
+      "words": "Maths blocks that typeset themselves as you type."
+    },
+    {
+      "id": "diagrams",
+      "group": "write",
+      "title": "Diagrams (Mermaid)",
+      "words": "Flowcharts and diagrams from a few typed lines."
+    },
+    {
+      "id": "code",
+      "group": "write",
+      "title": "Code blocks",
+      "words": "Code with highlighting, fenced and copyable."
+    },
+    {
+      "id": "footnotes",
+      "group": "write",
+      "title": "Footnotes",
+      "words": "Asides that gather at the foot of the note."
+    },
+    {
+      "id": "drawings",
+      "group": "write",
+      "title": "Drawings",
+      "words": "Freehand, shapes, arrows and labels on a free page."
+    },
+    {
+      "id": "pdf-read",
+      "group": "write",
+      "title": "Read and highlight PDFs",
+      "words": "Pages, zoom and find in the document; highlights and clips kept in a note beside the PDF."
+    },
+    {
+      "id": "embeds",
+      "group": "write",
+      "title": "Embeds",
+      "words": "See another note, block or picture inside this one."
+    },
+    {
+      "id": "block-refs",
+      "group": "write",
+      "title": "Block references",
+      "words": "Link to a heading or a block inside any note."
+    },
+    {
+      "id": "synced-blocks",
+      "group": "write",
+      "title": "Synced blocks",
+      "words": "One block shown in several notes, changed everywhere at once."
+    },
+    {
+      "id": "page-columns",
+      "group": "write",
+      "title": "Columns on a page",
+      "words": "Lay blocks side by side, two to four across."
+    },
+    {
+      "id": "folders",
+      "group": "organise",
+      "title": "Folders and files",
+      "words": "Notes in folders, nested as deep as you like."
+    },
+    {
+      "id": "tags",
+      "group": "organise",
+      "title": "Tags",
+      "words": "Tag notes, then rename, merge or retire tags in one place."
+    },
+    {
+      "id": "areas",
+      "group": "organise",
+      "title": "Areas of life",
+      "words": "Work, home and the rest, each with its folders."
+    },
+    {
+      "id": "fold-area",
+      "group": "organise",
+      "title": "Move an area into another",
+      "words": "Fold one area into another, every file and link moved, with one Undo after."
+    },
+    {
+      "id": "people-page",
+      "group": "organise",
+      "title": "People and organisations",
+      "words": "Everyone you know, with what connects to them."
+    },
+    {
+      "id": "canvases",
+      "group": "organise",
+      "title": "Canvases",
+      "words": "Lay notes and ideas out on a free canvas."
+    },
+    {
+      "id": "relations",
+      "group": "organise",
+      "title": "Relations between notes",
+      "words": "See how the open note connects to everything else."
+    },
+    {
+      "id": "backlinks",
+      "group": "organise",
+      "title": "Backlinks",
+      "words": "Every note that links here, listed beside it."
+    },
+    {
+      "id": "outgoing",
+      "group": "organise",
+      "title": "Outgoing links",
+      "words": "Everything this note points to, in one list."
+    },
+    {
+      "id": "bookmarks-page",
+      "group": "organise",
+      "title": "Bookmarks",
+      "words": "Pin notes, folders and searches where you can reach them."
+    },
+    {
+      "id": "assets-page",
+      "group": "organise",
+      "title": "Files and assets",
+      "words": "Logos, pictures and files, kept once and reused."
+    },
+    {
+      "id": "starters",
+      "group": "organise",
+      "title": "Starter templates",
+      "words": "A CRM, habits, reading and seven more, each in one click."
+    },
+    {
+      "id": "weekly-tidy",
+      "group": "organise",
+      "title": "Weekly tidy",
+      "words": "One tidy list a week. Duplicates merged, broken links fixed, empty notes binned, each with Undo."
+    },
+    {
+      "id": "tables-view",
+      "group": "views",
+      "title": "Table views",
+      "words": "Notes as a table by their properties, with sums."
+    },
+    {
+      "id": "boards-view",
+      "group": "views",
+      "title": "Board views",
+      "words": "Drag notes between columns; the note keeps the move."
+    },
+    {
+      "id": "calendars-view",
+      "group": "views",
+      "title": "Calendar views",
+      "words": "Notes on a month grid by the day they hold."
+    },
+    {
+      "id": "cards-view",
+      "group": "views",
+      "title": "Cards and lists",
+      "words": "The same notes as cards or a plain list."
+    },
+    {
+      "id": "formulas",
+      "group": "views",
+      "title": "Formulas in views",
+      "words": "New columns worked out from other properties."
+    },
+    {
+      "id": "rollups",
+      "group": "views",
+      "title": "Rollups in views",
+      "words": "Totals across linked records, such as a project’s hours."
+    },
+    {
+      "id": "view-forms",
+      "group": "views",
+      "title": "Forms from views",
+      "words": "A form from a view’s fields, each answer a new record."
+    },
+    {
+      "id": "saved-views",
+      "group": "views",
+      "title": "Saved views",
+      "words": "Every view is a file you own: it syncs and opens like a note."
+    },
+    {
+      "id": "records-views",
+      "group": "views",
+      "title": "Views across projects",
+      "words": "Build your own tables, boards, timelines and charts."
+    },
+    {
+      "id": "all-actions",
+      "group": "views",
+      "title": "Every action",
+      "words": "All actions across projects, in one view."
+    },
+    {
+      "id": "all-meetings-view",
+      "group": "views",
+      "title": "Every meeting",
+      "words": "All meetings across projects, in one view."
+    },
+    {
+      "id": "people-across",
+      "group": "views",
+      "title": "Everyone across projects",
+      "words": "All people across projects, in one view."
+    },
+    {
+      "id": "all-files",
+      "group": "views",
+      "title": "Every file",
+      "words": "All files by what each is for, in one view."
+    },
+    {
+      "id": "projects-home",
+      "group": "projects",
+      "title": "Projects",
+      "words": "Every project at a glance: health, next steps, due days."
+    },
+    {
+      "id": "new-project",
+      "group": "projects",
+      "title": "New projects from shapes",
+      "words": "Start from a shape with steps, dates and risks ready."
+    },
+    {
+      "id": "tasks-page",
+      "group": "projects",
+      "title": "Tasks",
+      "words": "Every tick box in your notes, filtered and ticked here."
+    },
+    {
+      "id": "today-page",
+      "group": "projects",
+      "title": "Today",
+      "words": "The day’s work across every project."
+    },
+    {
+      "id": "project-timeline",
+      "group": "projects",
+      "title": "Project timelines",
+      "words": "Every project’s dates on one line, clashes called out."
+    },
+    {
+      "id": "week-review",
+      "group": "projects",
+      "title": "Weekly review",
+      "words": "What moved, what slipped and what to chase, weekly."
+    },
+    {
+      "id": "workspace",
+      "group": "projects",
+      "title": "Project workspaces",
+      "words": "A project’s actions, files, people and notes as views."
+    },
+    {
+      "id": "portfolio",
+      "group": "projects",
+      "title": "Portfolio board",
+      "words": "Every project on one canvas."
+    },
+    {
+      "id": "project-canvas",
+      "group": "projects",
+      "title": "Projects as canvases",
+      "words": "A project’s pieces laid out to move by hand."
+    },
+    {
+      "id": "meetings-page",
+      "group": "meetings",
+      "title": "Meetings",
+      "words": "Upcoming and past, with attendees and follow-ups."
+    },
+    {
+      "id": "new-meeting",
+      "group": "meetings",
+      "title": "Meeting notes",
+      "words": "Agenda, notes, decisions and actions, kept together."
+    },
+    {
+      "id": "record",
+      "group": "meetings",
+      "title": "Record meetings",
+      "words": "Record from the note, with transcripts brought in. Voices are told apart as Speaker 1, Speaker 2 and so on, named once each."
+    },
+    {
+      "id": "series",
+      "group": "meetings",
+      "title": "Meeting series",
+      "words": "Meetings that come round, each started from the last."
+    },
+    {
+      "id": "prep",
+      "group": "meetings",
+      "title": "Prep packs",
+      "words": "Before a meeting, what is open with the people coming."
+    },
+    {
+      "id": "event-to-note",
+      "group": "meetings",
+      "title": "Turn events into meeting notes",
+      "words": "Any event becomes a meeting note with one click."
+    },
+    {
+      "id": "search-notes",
+      "group": "find",
+      "title": "Search everything",
+      "words": "Inside notes too, with filters for kind and day."
+    },
+    {
+      "id": "picture-words",
+      "group": "find",
+      "title": "Find words in pictures and scans",
+      "words": "Photos of receipts and scanned pages are read and searched, with where each line sits."
+    },
+    {
+      "id": "jump",
+      "group": "find",
+      "title": "Jump to any note",
+      "words": "Find a note by its name, or start a new one."
+    },
+    {
+      "id": "graph-page",
+      "group": "find",
+      "title": "Graph",
+      "words": "How your notes link, drawn as one map."
+    },
+    {
+      "id": "ask-help",
+      "group": "find",
+      "title": "Ask the assistant",
+      "words": "Ask in plain words, with sources for every claim."
+    },
+    {
+      "id": "chat-notes",
+      "group": "find",
+      "title": "Chat with notes",
+      "words": "A longer talk with the vault beside you."
+    },
+    {
+      "id": "notebooks",
+      "group": "find",
+      "title": "Notebooks",
+      "words": "Ask a whole folder, with cited answers."
+    },
+    {
+      "id": "flashcards",
+      "group": "find",
+      "title": "Flashcards",
+      "words": "Cards from a notebook, back for review when due."
+    },
+    {
+      "id": "related",
+      "group": "find",
+      "title": "Related notes",
+      "words": "Notes like this one, suggested beside it."
+    },
+    {
+      "id": "autolink",
+      "group": "find",
+      "title": "Suggested links",
+      "words": "Links this note should probably make."
+    },
+    {
+      "id": "outline",
+      "group": "find",
+      "title": "Outlines",
+      "words": "Long notes with their headings as a map."
+    },
+    {
+      "id": "quick",
+      "group": "capture",
+      "title": "Quick capture",
+      "words": "A note from anywhere, filed later from the Inbox."
+    },
+    {
+      "id": "capture-to",
+      "group": "capture",
+      "title": "Capture to a project",
+      "words": "Straight into a project’s log, the Inbox or a note."
+    },
+    {
+      "id": "inbox-page",
+      "group": "capture",
+      "title": "Inbox",
+      "words": "Captures waiting to be filed, each in one click."
+    },
+    {
+      "id": "dictate",
+      "group": "capture",
+      "title": "Dictation",
+      "words": "Speak and the words land where the cursor is."
+    },
+    {
+      "id": "import-apps",
+      "group": "capture",
+      "title": "Import from other apps",
+      "words": "Notion, Evernote, Google Keep, Readwise, Logseq and Roam."
+    },
+    {
+      "id": "import-csv",
+      "group": "capture",
+      "title": "Import spreadsheets",
+      "words": "Each row a note, with a table of them."
+    },
+    {
+      "id": "open-pc-file",
+      "group": "capture",
+      "title": "Open files from the PC",
+      "words": "Markdown files from anywhere, opened where they sit."
+    },
+    {
+      "id": "private-notes",
+      "group": "private",
+      "title": "Private notes",
+      "words": "Encrypted notes only this vault opens."
+    },
+    {
+      "id": "lock",
+      "group": "private",
+      "title": "Lock private notes",
+      "words": "One click locks them until you return."
+    },
+    {
+      "id": "secrets-page",
+      "group": "private",
+      "title": "Secrets",
+      "words": "Keys and passwords in a locked store, never in notes."
+    },
+    {
+      "id": "secrets-scan",
+      "group": "private",
+      "title": "Find secrets in notes",
+      "words": "Secrets pasted by accident, found and moved to safety."
+    },
+    {
+      "id": "audit",
+      "group": "private",
+      "title": "Audit trail",
+      "words": "Who read what, and when."
+    },
+    {
+      "id": "privacy-levels",
+      "group": "private",
+      "title": "Privacy levels",
+      "words": "Who reads each level: you, the helper, or an agent."
+    },
+    {
+      "id": "versions",
+      "group": "private",
+      "title": "Earlier versions",
+      "words": "Bring back how any note used to read."
+    },
+    {
+      "id": "bin-page",
+      "group": "private",
+      "title": "Bin",
+      "words": "Thirty days to change your mind."
+    },
+    {
+      "id": "backups",
+      "group": "private",
+      "title": "Backups and sync",
+      "words": "Copies kept safe, and folders kept in step."
+    },
+    {
+      "id": "export-everything",
+      "group": "private",
+      "title": "Export everything",
+      "words": "Every note, file and table in one zip you keep: no lock-in."
+    },
+    {
+      "id": "agents-page",
+      "group": "spark",
+      "title": "Agents",
+      "words": "Your agents, what each may do, and what they ask."
+    },
+    {
+      "id": "locked",
+      "group": "private",
+      "title": "Keep private notes and secrets locked",
+      "words": "One locked place on this PC: unlock once and both open. Nothing else reads them."
+    },
+    {
+      "id": "shared-spaces",
+      "group": "organise",
+      "title": "Share a space with your household or team",
+      "words": "A space you share with the people you choose: today’s shared dates, open tasks and who owes what, kept in one folder the bot looks after. Everything else stays private."
+    },
+    {
+      "id": "change-sets",
+      "group": "spark",
+      "title": "Review changes waiting for you",
+      "words": "Several edits the side chat or an agent proposed, waiting as one set: see each before and after, accept or reject."
+    },
+    {
+      "id": "other-ai-apps",
+      "group": "spark",
+      "title": "Use the Vault from other AI apps",
+      "words": "Claude Code, Claude Desktop, Cursor and VS Code read your notes, or change them with Undo, as far as you allow."
+    },
+    {
+      "id": "plugins",
+      "group": "spark",
+      "title": "Plugins",
+      "words": "Small add-ons with a command and a Home card each, off until you switch them on."
+    },
+    {
+      "id": "export-pdf",
+      "group": "spark",
+      "title": "Export to PDF",
+      "words": "A note laid out as pages, saved where you say."
+    },
+    {
+      "id": "present",
+      "group": "spark",
+      "title": "Present as slides",
+      "words": "A note as slides, straight from the page."
+    },
+    {
+      "id": "publish-site",
+      "group": "spark",
+      "title": "Publish as a website",
+      "words": "Chosen pages as a finished site, in a folder or on your own host."
+    },
+    {
+      "id": "pack-health",
+      "group": "packs",
+      "title": "Health",
+      "words": "Training, sleep, food, habits and check-ins."
+    },
+    {
+      "id": "pack-family",
+      "group": "packs",
+      "title": "Family",
+      "words": "Who is where, milestones, rewards and albums."
+    },
+    {
+      "id": "pack-finance",
+      "group": "packs",
+      "title": "Money",
+      "words": "Bills, spending, accounts and budgets."
+    },
+    {
+      "id": "pack-documents",
+      "group": "packs",
+      "title": "Papers",
+      "words": "Passports, licences and policies, each found fast."
+    },
+    {
+      "id": "pack-house",
+      "group": "packs",
+      "title": "House",
+      "words": "Appliances, upkeep and warranty reminders."
+    },
+    {
+      "id": "pack-vehicles",
+      "group": "packs",
+      "title": "Cars",
+      "words": "Cars with fuel, servicing and rego reminders."
+    },
+    {
+      "id": "pack-career",
+      "group": "packs",
+      "title": "Career",
+      "words": "Applications, interviews and follow-ups."
+    },
+    {
+      "id": "pack-travel",
+      "group": "packs",
+      "title": "Trips",
+      "words": "Trips with bookings, budgets and reminders."
+    },
+    {
+      "id": "pack-meetings",
+      "group": "packs",
+      "title": "Meetings",
+      "words": "Agenda, notes, decisions and actions, kept together."
+    },
+    {
+      "id": "pack-weekly",
+      "group": "packs",
+      "title": "Weekly",
+      "words": "A short update each week, due when you say."
+    },
+    {
+      "id": "pack-sites",
+      "group": "packs",
+      "title": "Sites",
+      "words": "Sites with rooms, devices and patch points."
+    },
+    {
+      "id": "pack-vendors",
+      "group": "packs",
+      "title": "Suppliers",
+      "words": "Suppliers with quotes, orders and contracts."
+    },
+    {
+      "id": "pack-business",
+      "group": "packs",
+      "title": "Business",
+      "words": "Customers, campaigns, posts and support."
+    },
+    {
+      "id": "pack-systems",
+      "group": "packs",
+      "title": "Systems",
+      "words": "Machines and services with runbooks and checks."
+    },
+    {
+      "id": "pack-goals",
+      "group": "packs",
+      "title": "Goals",
+      "words": "Goals with habits, milestones and reviews."
+    },
+    {
+      "id": "pack-lists",
+      "group": "packs",
+      "title": "Lists",
+      "words": "Shopping and other lists, on Today while open."
+    },
+    {
+      "id": "pack-publications",
+      "group": "packs",
+      "title": "Publications",
+      "words": "Books and papers from draft to release."
+    }
+  ]
+}

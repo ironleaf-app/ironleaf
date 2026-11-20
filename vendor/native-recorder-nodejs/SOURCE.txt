@@ -1,0 +1,22 @@
+native-recorder-nodejs 1.2.0, vendored 6 Nov 2026 (m6-any-speaker-capture: the far side of a call on any
+output, not just the Windows default).
+
+Upstream: https://github.com/Yidadaa/Native-Recorder-NodeJS (author Yidadaa), MIT licence (LICENSE, kept
+verbatim; folded into the embed's THIRD_PARTY_NOTICES.txt by tools/vault-notices.mjs).
+Tarball: https://registry.npmjs.org/native-recorder-nodejs/-/native-recorder-nodejs-1.2.0.tgz
+
+Why vendored, not a dependency: the package's own install step (`prebuild-install || npm run build:native`)
+downloads a binary from GitHub at install time and otherwise builds with CMake and a C++ compiler. As a
+dependency, `npm ci` on the Windows build PC could reach the network or fall back to a compiler. Vendored,
+no install step ever runs: these exact files ship.
+
+What is kept (the only files the Windows capture needs; the macOS prebuilds, sources and build files stay out):
+  dist/index.js, dist/bindings.js — the loader and API (verbatim; bindings.js loads
+    ../prebuilds/<platform>-<arch>/NativeAudioSDK.node, so the layout matters).
+  prebuilds/win32-x64/NativeAudioSDK.node — the prebuilt N-API capture binary (WASAPI loopback of a chosen
+    output device), 279552 bytes, sha256 f49b2bd22903be2d5de8844be516e956eda2e2643264db28cd4f7bb54c3539f5.
+  package.json — name, version and licence, for the notices and this note.
+  LICENSE — the MIT text (verbatim).
+
+What loads it: src/main/extra-loopback-child.cjs, run in its own contained process (a crash there cannot take
+the app or the recording down), shipped beside the embed by tools/build-embedded.mjs. Nothing else requires it.

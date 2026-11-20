@@ -1,0 +1,360 @@
+/* Files agents delivered (components/DeliveredFile.tsx), and the files a remote project keeps in Ironleaf
+   (views/project/Files.tsx SavedHere). Light first; dark follows the tokens. */
+
+/* ── The delivered-file card ── */
+.dv-card {
+  position: relative;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+  min-width: 0;
+}
+
+.dv-card.is-gone {
+  opacity: 0.7;
+}
+
+/* The body is the size container (components/DeliveredFile.tsx): the card's own width lays it out, wherever the card is
+   (Today's two columns, a project's Updates, What agents did). Wide: the buttons sit under the words beside the
+   picture. Narrow: they take the card's whole width under it. Never wrapped onto a second line. */
+.dv-body {
+  container: dv-card / inline-size;
+  min-width: 0;
+}
+
+.dv-grid {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    'thumb main'
+    'thumb actions';
+  grid-template-rows: auto 1fr;
+  column-gap: 14px;
+  row-gap: 8px;
+  align-items: start;
+}
+
+.dv-grid > .dv-thumb-button {
+  grid-area: thumb;
+}
+
+.dv-grid > .dv-main {
+  grid-area: main;
+}
+
+.dv-grid > .dv-actions {
+  grid-area: actions;
+}
+
+/* The put-away ✕ sits in the corner: the words beside it keep clear of it. */
+.dv-card.has-away .dv-main {
+  padding-right: 24px;
+}
+
+.dv-thumb-button {
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  border-radius: var(--r-3);
+}
+
+.dv-thumb-button:disabled {
+  cursor: default;
+}
+
+.dv-thumb-button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.dv-thumb {
+  display: grid;
+  place-items: center;
+  width: 74px;
+  height: 96px;
+  overflow: hidden;
+  border-radius: var(--r-3);
+  background: var(--bg-side, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dv-thumb-button:not(:disabled):hover .dv-thumb {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(20, 24, 40, 0.12);
+}
+
+.dv-thumb .dv-page {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  background: #fff;
+}
+
+.dv-thumb.is-picture img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dv-thumb .pf-art {
+  height: 70%;
+}
+
+.dv-main {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+  align-content: start;
+}
+
+.dv-who {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: var(--fs-small);
+  line-height: 1.4;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+  min-width: 0;
+}
+
+.dv-who > :first-child {
+  flex: none;
+}
+
+/* Who delivered what, where: up to two lines, then an ellipsis (the file's name is the line under it). */
+.dv-who > span:last-child {
+  min-width: 0;
+  padding-top: 1px;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.dv-when {
+  color: var(--text-faint);
+}
+
+.dv-name {
+  justify-self: start;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.dv-name:not(:disabled):hover {
+  color: var(--accent-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.dv-name:disabled {
+  cursor: default;
+}
+
+.dv-what {
+  margin: 0;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--text);
+  overflow: hidden; overflow-wrap: break-word;
+}
+
+.dv-meta {
+  margin: 0;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+.dv-actions {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.dv-actions .button {
+  flex: none;
+  height: 28px;
+  padding: 0 10px;
+  font-size: var(--fs-small);
+  white-space: nowrap;
+}
+
+/* Too narrow for the three buttons beside the picture: they go under it, sharing the card's whole width. */
+@container dv-card (max-width: 400px) {
+  .dv-grid {
+    grid-template-areas:
+      'thumb main'
+      'actions actions';
+    grid-template-rows: auto auto;
+  }
+  .dv-actions .button {
+    flex: 1 1 auto;
+    min-width: 0;
+    justify-content: center;
+    padding: 0 8px;
+  }
+}
+
+/* Very narrow (a phone-width panel): the buttons' words alone. */
+@container dv-card (max-width: 290px) {
+  .dv-actions .button svg {
+    display: none;
+  }
+}
+
+.dv-away {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+/* Compact: in a list (What agents did, the top of Updates). */
+.dv-card.is-compact {
+  padding: 10px 12px;
+  box-shadow: none;
+  background: var(--bg);
+}
+
+.dv-card.is-compact .dv-grid {
+  column-gap: 12px;
+  row-gap: 6px;
+}
+
+.dv-card.is-compact .dv-thumb {
+  width: 54px;
+  height: 70px;
+}
+
+.dv-card.is-compact .dv-actions .button {
+  height: 26px;
+  padding: 0 9px;
+  font-size: var(--fs-caption);
+}
+
+.dv-list,
+.dv-today,
+.dv-updates {
+  display: grid;
+  gap: 10px;
+}
+
+/* Two cards side by side only when each gets the room a whole card needs (its header, name and three buttons). */
+.dv-today {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr));
+  margin-bottom: 10px;
+}
+
+.dv-updates {
+  margin-bottom: 12px;
+}
+
+.ag-act-file {
+  margin-top: 8px;
+  max-width: 560px;
+}
+
+/* ── A remote project's files kept in Ironleaf ── */
+.pf-saved {
+  margin-top: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  overflow: hidden;
+}
+
+.pf-saved-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 12px;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+  background: var(--bg-hover);
+}
+
+.pf-saved-why {
+  font-weight: 400;
+  color: var(--text-faint);
+}
+
+.pf-saved ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pf-saved-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+}
+
+.pf-saved-row + .pf-saved-row {
+  border-top: 1px solid var(--border);
+}
+
+.pf-saved-name {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: var(--fs-small);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.pf-saved-name:hover {
+  color: var(--accent-text);
+  text-decoration: underline;
+}
+
+.pf-saved-meta {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+/* The project's own Files in Ironleaf (no folder on this PC), in the Files card's corner. */
+.pj-own-folder {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* A file an update names, opening with a click. */
+.pj-named-file {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 6px;
+}
+
+/* What agents did: a line with a file card keeps its face and its Undo at the top. */
+.ag-act:has(.ag-act-file) {
+  align-items: flex-start;
+}

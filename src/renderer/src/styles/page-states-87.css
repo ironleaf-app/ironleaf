@@ -1,0 +1,188 @@
+/* Every page's four states (8.7 wave 2, design C; the kit's own files are frozen this wave, so the state
+   shapes live here, on the kit's classes and tokens). Empty: one muted ring with a glyph, one bold head, one grey
+   line, one navy button. Error: the same centred in a card, the ring tinted red. Loading: grey blocks in the page's
+   real shape, pulsing gently (still when the person asked for less motion). All surfaces are tokens, so dark mode
+   follows the dark mock-ups. Narrow windows are the frame's folded rail plus these pages' own stacking below. */
+
+.w4b-empty { text-align: center; padding: 34px 20px; }
+.w4b-ering {
+  width: 64px; height: 64px; border-radius: 50%; background: var(--bg-side);
+  display: grid; place-items: center; margin: 0 auto 14px; color: var(--text-faint);
+}
+.w4b-ering.is-bad { background: var(--red-bg); color: var(--red-tx); }
+.w4b-empty h3 { font-size: var(--fs-reading); font-weight: 700; }
+.w4b-empty p { font-size: var(--fs-body); color: var(--text-muted); margin: 4px 0 14px; }
+.w4b-empty-actions { display: flex; gap: 10px; justify-content: center; align-items: center; }
+.w4b-empty-go { height: 38px; }
+.w4b-err { text-align: center; padding: 44px 30px; max-width: 520px; margin: 30px auto 0; }
+.w4b-err h3 { font-size: var(--fs-card); font-weight: 700; }
+.w4b-err p { font-size: var(--fs-body); color: var(--text-muted); margin: 6px 0 18px; }
+.w4b-err code {
+  font-family: var(--font-mono); font-size: var(--fs-caption); background: var(--bg-side);
+  border-radius: var(--r-2); padding: 2px 8px; color: var(--text);
+}
+
+.w4b-loading { min-width: 0; }
+.w4b-loading-line { font-size: var(--fs-small); color: var(--text-faint); margin-top: 14px; }
+.w4b-skel { background: var(--sel); border-radius: var(--r-3); display: inline-block; flex: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .w4b-skel { animation: nv-pulse var(--nv-pulse) ease-in-out infinite; }
+}
+.w4b-skrows { display: flex; flex-direction: column; }
+.w4b-skrow { display: flex; align-items: center; gap: 12px; padding: 11px 0; }
+.w4b-skrow + .w4b-skrow { border-top: 1px solid var(--border); }
+.w4b-skrow .w4b-skel:nth-child(2) { flex: 1 1 auto; }
+.w4b-skcards { display: flex; gap: 12px; }
+.w4b-skcard { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.w4b-skcard .w4b-skel { display: block; }
+.w4b-sktable { display: flex; flex-direction: column; }
+.w4b-skthrow { display: flex; align-items: center; gap: 12px; padding: 8px 10px; }
+.w4b-skthrow.is-row { border-top: 1px solid var(--border); padding: 9px 10px; }
+.w4b-skcell { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; }
+.w4b-skcell.is-main { flex: 2.2; }
+.w4b-skpad { display: block; height: 10px; }
+
+/* ── The w4b pages in the one page shape (design C mock-ups) ─────────────────────────────── */
+
+/* Bookmarks: kept rows with a grip, a glyph tile, words, a kind tag and a quiet remove. */
+.w4b-bm-page { max-width: 880px; margin: 0 auto; padding: 24px 32px 48px; }
+.w4b-bm-row {
+  display: flex; align-items: center; gap: 12px; padding: 11px 0;
+  border-bottom: 1px solid var(--border); min-width: 0;
+}
+.w4b-bm-row:last-child { border-bottom: 0; }
+.w4b-bm-main {
+  border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer;
+  display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; text-align: left;
+}
+.w4b-bm-grip { color: var(--text-faint); font-size: var(--fs-small); letter-spacing: 1px; cursor: grab; flex: none; }
+.w4b-bm-row.is-drop { background: var(--sel); border-radius: var(--r-3); }
+.w4b-bm-t { font-size: var(--fs-body); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: clip; }
+.w4b-bm-p { font-size: var(--fs-small); color: var(--text-faint); white-space: nowrap; overflow: hidden; text-overflow: clip; }
+.w4b-bm-row.is-missing .w4b-bm-t { color: var(--text-faint); text-decoration: line-through; }
+.w4b-bm-x { background: none; border: 0; color: var(--text-faint); font-size: var(--fs-body); cursor: pointer; padding: 4px 6px; border-radius: var(--r-3); flex: none; }
+.w4b-bm-x:hover { background: var(--bg-hover); color: var(--text); }
+.w4b-bm-group { border: 0; background: none; font: inherit; padding: 0; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.w4b-bm-foot { margin-top: 18px; display: flex; gap: 12px; align-items: center; }
+.w4b-bm-foot .t { font-size: var(--fs-body); font-weight: 600; }
+.w4b-bm-foot .s { font-size: var(--fs-small); color: var(--text-muted); }
+
+/* Templates: one row per template under its group, Use plus the dot menu at right. */
+.w4b-tp-row {
+  display: flex; align-items: center; gap: 14px; padding: 12px 0;
+  border-bottom: 1px solid var(--border); min-width: 0;
+}
+.w4b-tp-row:last-child { border-bottom: 0; }
+.w4b-tp-main {
+  border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer;
+  display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; text-align: left;
+}
+.w4b-tp-nm { font-size: var(--fs-body); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: clip; }
+.w4b-tp-name { border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer; text-align: left; }
+.w4b-tp-name:hover { text-decoration: underline; text-decoration-color: var(--border-strong); text-underline-offset: 3px; }
+.w4b-tp-ds { font-size: var(--fs-small); color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: clip; }
+.w4b-tp-ctl { margin-left: auto; flex: none; display: flex; align-items: center; gap: 8px; }
+/* The "Yours" marker is a quiet slate tag, never a blue chip (sweep-vault-b F-B9, DECISIONS 3). */
+.w4b-tp-own {
+  display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: var(--r-2);
+  font-size: var(--fs-caption); font-weight: 700; background: var(--slate-bg); color: var(--slate-tx); margin-left: 8px;
+  vertical-align: 2px;
+}
+.w4b-tp-foot { font-size: var(--fs-small); color: var(--text-faint); margin-top: 12px; }
+
+/* Automations: one row per automation or flow, the schedule tag and switch at right. */
+.w4b-au-row {
+  display: flex; align-items: center; gap: 14px; padding: 13px 0;
+  border-bottom: 1px solid var(--border); min-width: 0;
+}
+.w4b-au-row:last-child { border-bottom: 0; }
+.w4b-au-main {
+  border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer;
+  display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; text-align: left;
+}
+.w4b-au-nm { font-size: var(--fs-body); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: clip; }
+.w4b-au-ds { font-size: var(--fs-small); color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: clip; }
+.w4b-au-ctl { margin-left: auto; flex: none; display: flex; align-items: center; gap: 10px; }
+.w4b-au-live { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-caption); font-weight: 600; color: var(--green-tx); }
+.w4b-au-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green-tx); }
+.w4b-au-failed { font-size: var(--fs-caption); font-weight: 600; color: var(--red-tx); }
+
+/* The centred trio went with the card map (8 Nov 2026, the living graph: one dark canvas, styles/graph.css). */
+
+/* Files and assets: the files table, asset tiles, the brand kit. */
+.w4b-file-name { display: flex; align-items: center; gap: 10px; font-weight: 500; min-width: 0; }
+.w4b-file-name .w { white-space: nowrap; overflow: hidden; text-overflow: clip; }
+.w4b-tiles { display: flex; gap: 12px; margin-top: 8px; }
+.w4b-tile { flex: 1; min-width: 0; border: 1px solid var(--border); border-radius: var(--r-3); overflow: hidden; background: var(--bg-raised); }
+.w4b-tile .art { height: 96px; display: grid; place-items: center; font-size: var(--fs-caption); font-weight: 700; }
+.w4b-tile .cap { padding: 10px 12px; font-size: var(--fs-small); font-weight: 600; }
+.w4b-tile .cap small { display: block; font-weight: 400; color: var(--text-muted); }
+button.w4b-tile { font: inherit; color: inherit; cursor: pointer; text-align: left; padding: 0; }
+.w4b-kit { display: flex; gap: 20px; margin-top: 8px; }
+.w4b-kitcol { flex: 1; min-width: 0; }
+.w4b-logo {
+  height: 64px; border: 1px solid var(--border); border-radius: var(--r-4); display: flex; align-items: center;
+  gap: 10px; padding: 0 14px; margin-bottom: 8px; font-size: var(--fs-small); font-weight: 600;
+}
+.w4b-logo small { display: block; font-weight: 400; color: var(--text-muted); }
+.w4b-logo.is-dark { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+.w4b-logo.is-dark small { color: inherit; opacity: .75; }
+.w4b-csw { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: var(--fs-small); font-weight: 500; }
+.w4b-csw i { width: 30px; height: 30px; border-radius: var(--r-3); flex: none; }
+.w4b-csw code { margin-left: auto; font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--text-muted); }
+
+/* Files and assets: the filter strip above the table (round 2 replaces the rail; 4 Nov 2026 polish: the kit chips). */
+.w4b-fstrip { display: flex; align-items: center; gap: 10px; padding: 12px 24px 0; min-width: 0; }
+.w4b-fstrip-chips { display: flex; align-items: center; gap: 6px; overflow-x: auto; flex: 1; min-width: 0; padding-bottom: 2px; scrollbar-width: thin; }
+.w4b-fstrip-chips .chip { flex: none; }
+.chip.is-add { border-style: dashed; }
+.w4b-fstrip-sum { flex: none; font-size: var(--fs-caption); color: var(--text-faint); font-variant-numeric: tabular-nums; }
+@media (max-width: 700px) { .w4b-fstrip-sum { display: none; } }
+
+/* The timeline's bar: zoom words, the group dropdown, the hint at right. */
+.w4b-tl-bar { display: flex; align-items: center; gap: 8px; margin: 14px 0; flex-wrap: wrap; }
+.w4b-tl-hint { font-size: var(--fs-small); color: var(--text-faint); margin-left: auto; }
+/* Round 3: the bar sits under the shared head now, not inside it: it keeps the head's inset, tight under the
+   title as drawn (the head's own 24 px steps aside only while the bar follows it). */
+.tl-page > .w4b-tl-bar {
+  margin: 14px 0;
+  padding-left: max(var(--page-pad-side), calc((100% - var(--page-max)) / 2 + var(--page-pad-side)));
+  padding-right: max(var(--page-pad-side), calc((100% - var(--page-max)) / 2 + var(--page-pad-side)));
+}
+.tl-page > .nv-page-head.tl-head:has(+ .w4b-tl-bar) { margin-bottom: 0; }
+
+/* The canvas page: add buttons in the kit, the count and saved words at right. */
+.w4b-cv-bar { display: flex; align-items: center; gap: 8px; padding: 12px 20px 0; flex-wrap: wrap; }
+.w4b-cv-title { padding: 0 20px; }
+/* The add bar sits tight under the shared head, as drawn (round 3: the head's own 24 px would double the gap). */
+.w4b-cv-title > .nv-page-head.nv-page-head { margin-bottom: 0; }
+.w4b-cv-status { font-size: var(--fs-small); color: var(--text-faint); margin-left: auto; }
+.w4b-cv-ground { background: var(--bg-side); border-radius: var(--r-3); }
+.w4b-cv-hint {
+  position: absolute; left: 18px; bottom: 18px; z-index: 5;
+  font-size: var(--fs-caption); font-weight: 500; color: var(--text-faint); pointer-events: none;
+  max-width: min(320px, 30%);
+}
+@media (max-width: 900px) { .w4b-cv-hint { display: none; } }
+
+/* Narrow windows (the -narrow mock-ups): cards stack, tiles wrap. */
+.w4b-narrow .w4b-tiles { flex-wrap: wrap; }
+.w4b-narrow .w4b-tile { flex: 1 1 200px; }
+.w4b-narrow .w4b-kit { flex-wrap: wrap; }
+.w4b-narrow .w4b-kitcol { flex: 1 1 220px; }
+.w4b-narrow .w4b-skcards { flex-wrap: wrap; }
+.w4b-narrow .w4b-skcard { flex: 1 1 160px; }
+@media (max-width: 760px) {
+  .w4b-bm-page { padding: 20px 20px 40px; }
+  .w4b-tiles { flex-wrap: wrap; }
+  .w4b-tile { flex: 1 1 200px; }
+  .w4b-kit { flex-wrap: wrap; }
+}
+
+/* The canvas hint steps aside where the toolbar moves to the left edge (5 Nov 2026, rest-quieten M5: the two
+   sat on each other at middle widths). */
+@container canvas (max-width: 1040px) {
+  .w4b-cv-hint { display: none; }
+}
+
+/* The centred trio's wide-window hold went with it (8 Nov 2026, the living graph fills the page instead). */

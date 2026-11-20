@@ -1,0 +1,51 @@
+/* Life modules (Wave 5, 24 Oct 2026): Settings › Modules, the left side's Modules rows, Today's module rows. The pages
+   themselves: styles/health.css, styles/family.css. Existing tokens only; light first, dark from the same tokens. */
+
+/* ── Settings › Modules ─────────────────────────────────────────────────────────────────────────────────────────── */
+.ms-list { display: flex; flex-direction: column; gap: 14px; max-width: 760px; }
+.ms-lead { margin: 0 0 4px; }
+.ms-module {
+  --mod: var(--type-sage);
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ms-module:has(.ms-family) { --mod: var(--type-rose); }
+.ms-module.is-on { border-color: color-mix(in srgb, var(--mod) 40%, var(--border)); }
+.ms-head { display: flex; align-items: flex-start; gap: 14px; }
+.ms-icon {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-4);
+  display: grid;
+  place-items: center;
+  color: var(--mod);
+  background: color-mix(in srgb, var(--mod) 14%, transparent);
+}
+.ms-words { flex: 1; min-width: 0; }
+.ms-words h3 { margin: 1px 0 3px; font-size: var(--fs-body); font-weight: 600; color: var(--text); text-transform: none; letter-spacing: normal; }
+.ms-words p { margin: 0; color: var(--text-muted); font-size: var(--fs-small); line-height: 1.45; }
+.ms-head .switch { margin-top: 6px; }
+.ms-kept { display: flex; gap: 8px; align-items: flex-start; margin: 0; padding: 8px 10px; border-radius: var(--r-3); background: var(--bg-hover); color: var(--text-muted); font-size: var(--fs-small); line-height: 1.45; }
+.ms-kept .icon, .ms-kept svg { flex: none; margin-top: 2px; }
+.ms-kept strong { color: var(--text); font-weight: 600; }
+.ms-parts { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 6px 14px; padding-top: 4px; }
+.ms-part { display: flex; align-items: flex-start; gap: 10px; padding: 6px 2px; cursor: pointer; }
+.ms-part .switch { margin-top: 1px; transform: scale(0.85); transform-origin: left top; }
+.ms-part span { display: flex; flex-direction: column; min-width: 0; gap: 1px; }
+.ms-part strong { font-size: var(--fs-small); font-weight: 600; color: var(--text); }
+.ms-part em { font-style: normal; font-size: var(--fs-caption); color: var(--text-muted); line-height: 1.4; }
+.ms-actions { display: flex; justify-content: flex-end; }
+.ms-actions .button { display: inline-flex; align-items: center; gap: 6px; }
+
+/* ── The left side's Modules rows ───────────────────────────────────────────────────────────────────────────────── */
+.mp-module .icon, .mp-module svg { color: var(--type-sage); }
+.mp-family .icon, .mp-family svg { color: var(--type-rose); }
+
+/* ── Today's module rows (each module's own block inside) ───────────────────────────────────────────────────────── */
+.tm-modules { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; margin: 16px 0 4px; }

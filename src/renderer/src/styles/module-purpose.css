@@ -1,0 +1,72 @@
+/* Modules with a purpose (8.0 SPEC section D): this job's own styles. Existing theme tokens only, light first. */
+
+/* "Show me around <module>": a small quiet link at the end of the page header's summary line, inline
+   with it (8.0 polish round 3, item 3), never on its own indented line above the tabs and never floating
+   at the foot of the page. It adds no block, margin or padding, so the header keeps its 24px space to
+   the tabs (The bar: 8px spacing grid) on every module page; it wraps with the summary on a narrow pane. */
+.mp-tour-link {
+  /* Sweep 3: the separator and the link never part (a lead ending " ·" with the link wrapped alone). */
+  display: inline;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  line-height: inherit;
+  white-space: nowrap;
+}
+.mp-tour-sep { color: var(--text-muted); }
+.mp-tour-link .mp-tour-button {
+  display: inline;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  line-height: inherit;
+  vertical-align: baseline;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.mp-tour-link .mp-tour-button:hover { color: var(--text); text-decoration: underline; text-underline-offset: 2px; }
+.mp-tour-link .mp-tour-button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--r-1); }
+
+/* Needs-you lead (8.0 polish round 1, SPEC "The bar"): a row of compact cards, each at least 240px and
+   never more than 320px wide, up to 4 across and wrapping, never one card stretched to the full width.
+   The what is 15px semibold, the when is coloured only by its state, numbers are tabular. */
+.needs { margin: 0 0 16px; }
+.needs-title { margin: 0 0 8px; font-size: var(--fs-small); font-weight: 650; color: var(--text); }
+.needs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 8px; justify-content: start; }
+.needs-card {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-width: 0; width: 100%; max-width: 320px;
+  padding: 16px; border: 1px solid var(--border); border-radius: var(--r-3);
+  background: var(--bg-raised); box-shadow: var(--shadow-card);
+}
+.needs-what { font-size: var(--fs-body); font-weight: 600; line-height: 1.3; color: var(--text); overflow-wrap: anywhere; }
+.needs-when { font-size: var(--fs-small); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.needs-when.is-late { color: var(--tone-bad); }
+.needs-when.is-soon { color: var(--tone-warn); }
+.needs-detail { font-size: var(--fs-small); color: var(--text-muted); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.needs-action { margin-top: 8px; }
+.needs-none { margin: 0 0 16px; padding: 16px; border: 1px solid var(--border); border-radius: var(--r-3); background: var(--bg-raised); color: var(--text-muted); font-size: var(--fs-small); }
+
+/* Every module overview in the premium card style of "The bar" (8.0 polish round 1): 8px spacing grid,
+   12px radii on cards and controls, tabular numbers, soft shadows only on raised cards, and colour only
+   where a state means something (late, due soon, on track). This file loads with the module pages, so its
+   overview rules win over the older per-module sheets for the overview surfaces only. */
+.rm-overview { gap: 16px; }
+.rm-overview .rm-tiles { gap: 8px; }
+.rm-overview .rm-cols { gap: 16px; }
+.rm-overview .rm-card, .rm-overview .rm-tile, .rm-overview .rm-doc, .rm-overview .pb-card, .rm-overview .pb-next {
+  border: 1px solid var(--border); border-radius: var(--r-3); background: var(--bg-raised); box-shadow: var(--shadow-card);
+}
+.rm-overview .rm-tile { padding: 16px; gap: 4px; }
+.rm-overview .rm-card { padding: 16px 16px 12px; }
+.rm-overview .rm-tile-value, .rm-overview .rm-row-amount, .rm-overview .rm-row-sub,
+.rm-overview .rm-tile-sub, .rm-overview .pb-card-meta, .rm-overview .pm-hero-when {
+  font-variant-numeric: tabular-nums;
+}
+.rm-overview .rm-tile-label { color: var(--text-muted); }
+.rm-overview .rm-tile-label svg { color: var(--text-muted); }
+.rm-overview .rm-tile.tone-bad .rm-tile-value { color: var(--tone-bad); }
+.rm-overview .rm-tile.tone-warn .rm-tile-value { color: var(--tone-warn); }
+.rm-overview .rm-tile.tone-ok .rm-tile-value { color: var(--text); }
+.rm-overview .lr-node { border-radius: var(--r-3); }
+.rm-overview .rm-row.is-late .rm-row-name, .rm-overview .rm-row.is-late .rm-row-sub { color: var(--tone-bad); }

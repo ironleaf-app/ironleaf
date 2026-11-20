@@ -1,0 +1,92 @@
+/* "Capture to…" (21 Oct 2026, gap G27): the capture flows in Settings › Quick capture
+   (components/CaptureFlowsSettings.tsx). A template's prompts (components/Dialogs.tsx form) live with .dialog in
+   styles.css (9.5 polished, 1 Nov 2026), not here. */
+
+/* ── Capture flows ───────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.cf-wrap {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.cf-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cf-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: var(--bg-raised);
+}
+
+.cf-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.cf-line select {
+  width: auto;
+  max-width: 220px;
+  height: 32px;
+  padding: 4px 8px;
+  font-size: var(--fs-small);
+}
+
+.cf-name.setting-input {
+  width: 170px;
+  font-weight: 550;
+}
+
+.cf-heading.setting-input {
+  width: 120px;
+  margin-left: 6px;
+}
+
+.cf-more {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.cf-more label {
+  display: inline-flex;
+  align-items: center;
+}
+
+.cf-note {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.cf-remove {
+  margin-left: auto;
+}
+
+.cf-keys {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.cf-nokeys {
+  font-size: var(--fs-caption);
+  color: var(--accent-text);
+}
+
+.cf-add {
+  align-self: flex-start;
+  margin-top: 10px;
+}

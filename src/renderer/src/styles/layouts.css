@@ -1,0 +1,2815 @@
+/* Project layouts (21 Oct 2026, docs/LAYOUTS.md): the dashboard of blocks above a project's sections, the Layout pill,
+   the suggestion, and the one-liners on the Projects home and Today. Calm and corporate: the page's own tokens (light,
+   dark, the Bright palettes, any accent), thin rules, one accent, tones only where they mean something. */
+
+.ly-dash {
+  --ly-ok: var(--ns-status);
+  --ly-warn: var(--ns-attention-words);
+  --ly-bad: var(--ns-attention-words);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-auto-flow: row dense;
+  gap: 16px;
+  align-items: start;
+  margin: 0 0 18px;
+}
+
+:root[data-theme='dark'] .ly-dash,
+:root[data-theme='dark'] .ly-glance,
+:root[data-theme='dark'] .pj-tile-line {
+  --tone-ok: #74c69d;
+  --tone-warn: #e2a64a;
+  --tone-bad: #ef8a74;
+}
+
+.ly-block {
+  min-width: 0;
+  padding: 16px 18px 18px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  transition:
+    box-shadow 0.6s ease,
+    border-color 0.6s ease;
+}
+
+.ly-block.wide {
+  grid-column: 1 / -1;
+}
+
+/* Just changed (a log written, a table edited): a soft accent edge that fades. */
+.ly-block.is-changed {
+  border-color: var(--accent-line);
+  box-shadow: 0 0 0 3px var(--accent-softer);
+  animation: ly-changed 2.2s ease-out;
+}
+
+@keyframes ly-changed {
+  0% {
+    box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ly-block.is-changed {
+    animation: none;
+  }
+}
+
+.ly-block-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 12px;
+  color: var(--text-faint);
+  min-height: 22px;
+}
+
+.ly-block-head h3 {
+  margin: 0;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.ly-head-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 9px;
+  border: 1px solid transparent;
+  border-radius: var(--r-1);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  font-weight: 550;
+  cursor: pointer;
+}
+
+.ly-head-add:hover,
+.ly-head-add:focus-visible {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.ly-faint {
+  color: var(--text-faint);
+}
+
+.ly-label {
+  display: block;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-faint);
+}
+
+.ly-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-strong);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.ly-link:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+}
+
+/* Bars: one look everywhere. */
+.ly-bar {
+  position: relative;
+  display: block;
+  height: 6px;
+  border-radius: var(--r-2);
+  background: var(--bg-active);
+  overflow: hidden;
+  flex: 1;
+  min-width: 40px;
+}
+
+.ly-bar.thin {
+  height: 3px;
+}
+
+.ly-bar > span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: var(--tone, var(--accent));
+  transition: width 0.5s ease;
+}
+
+.ly-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: var(--r-1);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--tone, var(--text-muted));
+  background: color-mix(in srgb, var(--tone, var(--text-faint)) 12%, transparent);
+}
+
+.ly-chip.tone-none {
+  color: var(--text-muted);
+  background: var(--bg-active);
+}
+
+/* ── Empty blocks and the forms ──────────────────────────────────────────────────────────────────────────────────── */
+
+.ly-block.is-empty {
+  background: color-mix(in srgb, var(--bg-raised) 60%, var(--bg));
+  border-style: dashed;
+}
+
+.ly-empty p {
+  margin: 0 0 12px;
+  max-width: 62ch;
+  font-size: var(--fs-small);
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.ly-empty-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ly-form {
+  margin-top: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: var(--bg);
+}
+
+.ly-empty .ly-form {
+  margin-top: 0;
+}
+
+.ly-form-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 10px 12px;
+}
+
+.ly-field {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.ly-field-name {
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.ly-field input {
+  width: 100%;
+  min-width: 0;
+  height: 32px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-small);
+}
+
+.ly-field input:focus {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+  border-color: var(--accent);
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.ly-yesno {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.ly-yesno button {
+  flex: 1;
+  height: 32px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--fs-small);
+  font-weight: 550;
+  cursor: pointer;
+}
+
+.ly-yesno button.on {
+  border-color: var(--border-strong);
+  background: var(--bg-raised);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.ly-form-foot {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* ── Status ───────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.ly-b-status {
+  padding: 18px 20px;
+}
+
+.ly-status-band {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.ly-status-words {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.ly-status-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  font-size: var(--fs-small);
+}
+
+.ly-due {
+  font-weight: 600;
+  color: var(--tone, var(--text));
+}
+
+.ly-due.tone-none {
+  color: var(--text);
+}
+
+.ly-aim {
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.ly-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  margin: 0;
+}
+
+.ly-facts div {
+  min-width: 0;
+}
+
+.ly-facts dt {
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-faint);
+  margin-bottom: 2px;
+}
+
+.ly-facts dd {
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: 550;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+/* A stage or phase on its path. */
+.ly-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ly-steps li {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding-right: 26px;
+  position: relative;
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+}
+
+.ly-steps li:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  width: 12px;
+  height: 1px;
+  background: var(--border-strong);
+}
+
+.ly-step-dot {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  corner-shape: round;
+  border: 1.5px solid var(--border-strong);
+  color: var(--on-primary);
+}
+
+.ly-steps li.done {
+  color: var(--text-muted);
+}
+
+.ly-steps li.done .ly-step-dot {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.ly-steps li.now {
+  color: var(--text);
+  font-weight: 650;
+}
+
+.ly-steps li.now .ly-step-dot {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 3px var(--bg-raised);
+  background: var(--accent);
+}
+
+/* ── Rings ────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.ly-ring {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+}
+
+.ly-ring svg {
+  position: absolute;
+  inset: 0;
+}
+
+.ly-ring-track {
+  stroke: var(--bg-active);
+}
+
+.ly-ring-fill {
+  stroke: var(--tone, var(--accent));
+  transition: stroke-dasharray 0.6s ease;
+}
+
+.ly-ring.tone-accent {
+  --tone: var(--accent);
+}
+/* Rings read the one set (p13-vault-status): on track neutral, at risk and off track attention, never green. */
+.ly-ring.tone-ok {
+  --tone: var(--ns-status);
+}
+.ly-ring.tone-warn,
+.ly-ring.tone-bad {
+  --tone: var(--ns-attention);
+}
+
+.ly-ring-words {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  line-height: 1.05;
+  text-align: center;
+}
+
+.ly-ring-words strong {
+  font-size: var(--fs-section);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.ly-ring-words span {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+.ly-ring-small {
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.ly-b-streak .ly-ring-words strong {
+  font-size: var(--fs-page);
+}
+
+/* ── Countdown ────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.ly-count-figure {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.ly-count-figure strong {
+  font-family: var(--font-display);
+  font-size: var(--fs-display);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.ly-count.tone-warn .ly-count-figure strong {
+  color: var(--ns-attention-words);
+}
+
+.ly-count-figure span {
+  font-size: var(--fs-reading);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.ly-count-words {
+  margin: 6px 0 2px;
+  font-size: var(--fs-body);
+  font-weight: 550;
+  color: var(--text);
+}
+
+.ly-count-date {
+  margin: 0;
+  font-size: var(--fs-small);
+}
+
+.ly-period {
+  margin-top: 16px;
+  display: grid;
+  gap: 7px;
+}
+
+.ly-period .ly-bar > span {
+  background: var(--accent);
+}
+
+.ly-grid-total {
+  margin-left: 4px;
+}
+
+.ly-period-words {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* A countdown on a row of its own: the figure on the left, how far through on the right. */
+.ly-b-countdown.wide .ly-count {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas: 'figure period' 'words period' 'date period';
+  column-gap: 40px;
+  align-items: end;
+}
+
+/* Without a start to count from: the figure, and its words beside it. */
+.ly-b-countdown.wide .ly-count:not(.has-period) {
+  grid-template-areas: 'figure words' 'figure date';
+  column-gap: 20px;
+  row-gap: 2px;
+  justify-content: start;
+}
+
+.ly-b-countdown.wide .ly-count:not(.has-period) .ly-count-words {
+  align-self: end;
+  margin: 0;
+}
+
+.ly-b-countdown.wide .ly-count:not(.has-period) .ly-count-date {
+  align-self: start;
+}
+
+.ly-b-countdown.wide .ly-count-figure {
+  grid-area: figure;
+}
+
+.ly-b-countdown.wide .ly-count-words {
+  grid-area: words;
+}
+
+.ly-b-countdown.wide .ly-count-date {
+  grid-area: date;
+}
+
+.ly-b-countdown.wide .ly-period {
+  grid-area: period;
+  align-self: end;
+  margin: 0 0 4px;
+}
+
+/* ── Progress ─────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.ly-overall {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  font-size: var(--fs-small);
+}
+
+.ly-overall-figure {
+  font-size: var(--fs-section);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.ly-bar.wide {
+  margin-left: 8px;
+}
+
+.ly-streams {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ly-stream {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: var(--bg);
+}
+
+.ly-stream-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px 8px;
+}
+
+/* The name keeps a readable width: a long status ("Drafted (out of date)") goes under it rather than squeezing it. */
+.ly-stream-name {
+  flex: 1 1 11ch;
+  min-width: 11ch;
+  font-size: var(--fs-body);
+  font-weight: 650;
+  color: var(--text);
+  line-height: 1.35;
+}
+
+.ly-stream-top .pj-pill {
+  flex: none;
+  max-width: 100%;
+}
+
+/* A long name and status: the name takes the card's width, its status under it. */
+.ly-stream-top.is-long .ly-stream-name {
+  flex-basis: 100%;
+}
+
+.ly-stream .pj-pill {
+  height: 21px;
+  font-size: var(--fs-caption);
+  padding: 0 8px;
+}
+
+.ly-stream-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ly-stream-pct {
+  font-size: var(--fs-small);
+  font-weight: 650;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  min-width: 34px;
+  text-align: right;
+}
+
+.ly-stream-foot {
+  display: grid;
+  gap: 5px;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.ly-person {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ly-stream-next {
+  color: var(--text-faint);
+  line-height: 1.4;
+}
+
+/* Phases of a run sheet, as tabs. */
+.ly-phases {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+}
+
+.ly-phases button {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 6px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: var(--bg);
+  color: var(--text-muted);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ly-phases button:hover {
+  border-color: var(--border-strong);
+}
+
+.ly-phases button.on {
+  border-color: var(--border-strong);
+  background: var(--sel);
+  color: var(--text-strong);
+  font-weight: 600;
+}
+
+.ly-phases .ly-bar {
+  grid-column: 1 / -1;
+}
+
+.ly-phases li.done .ly-bar > span {
+  background: var(--ns-status);
+}
+
+.ly-phase-name {
+  font-size: var(--fs-small);
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.ly-phases li.now .ly-phase-name::after {
+  content: ' · now';
+  font-weight: 500;
+  color: var(--accent-strong);
+}
+
+.ly-phase-count {
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.ly-checks {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ly-checks label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 4px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-body);
+  line-height: 1.45;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.ly-checks label:hover {
+  background: var(--bg-hover);
+}
+
+.ly-checks input {
+  margin-top: 3px;
+  accent-color: var(--accent);
+  flex: none;
+}
+
+.ly-checks li.done .ly-check-what {
+  color: var(--text-faint);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--text-faint) 60%, transparent);
+}
+
+.ly-more-note {
+  margin: 8px 4px 0;
+  font-size: var(--fs-small);
+}
+
+/* ── Timeline ─────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.ly-track {
+  position: relative;
+  height: 46px;
+  margin: 2px 0 10px;
+}
+
+.ly-track-line,
+.ly-track-done {
+  position: absolute;
+  top: 22px;
+  left: 4%;
+  height: 2px;
+  border-radius: var(--r-1);
+  background: var(--border-strong);
+}
+
+.ly-track-line {
+  right: 4%;
+}
+
+.ly-track-done {
+  background: var(--accent-line);
+}
+
+.ly-track-dot {
+  position: absolute;
+  top: 17px;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--bg-raised);
+  border: 2px solid var(--tone, var(--text-faint));
+}
+
+.ly-track-dot.tone-ok {
+  background: var(--ns-status);
+  border-color: var(--ns-status);
+}
+
+.ly-track-dot.tone-next,
+.ly-track-dot.next {
+  border-color: var(--accent);
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+.ly-track-today {
+  position: absolute;
+  top: 8px;
+  bottom: 6px;
+  width: 0;
+  border-left: 1.5px dashed var(--text-faint);
+}
+
+.ly-track-today span {
+  position: absolute;
+  top: -8px;
+  left: 0;
+  transform: translateX(-50%);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-faint);
+  background: var(--bg-raised);
+  padding: 0 4px;
+}
+
+.ly-dates {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ly-dates li {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) auto auto;
+  align-items: baseline;
+  gap: 12px;
+  padding: 8px 4px;
+  border-top: 1px solid var(--border);
+  font-size: var(--fs-small);
+}
+
+.ly-dates li:first-child {
+  border-top: 0;
+}
+
+.ly-date-when {
+  font-weight: 650;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.ly-date-what {
+  color: var(--text);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ly-date-state {
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--tone, var(--text-faint));
+  white-space: nowrap;
+}
+
+.ly-dates li.past .ly-date-what,
+.ly-dates li.past .ly-date-when {
+  color: var(--text-faint);
+}
+
+.ly-dates li.next {
+  background: var(--accent-softer);
+  border-radius: var(--r-3);
+  border-top-color: transparent;
+}
+
+.ly-dates li.next + li {
+  border-top-color: transparent;
+}
+
+.ly-dates li.next .ly-date-state {
+  color: var(--accent-strong);
+}
+
+/* ── Board ────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.ly-board {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(210px, 1fr);
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.ly-col {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px;
+  border-radius: var(--r-4);
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+
+.ly-col header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px 2px;
+  font-size: var(--fs-small);
+  font-weight: 650;
+  color: var(--text-muted);
+}
+
+.ly-col ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ly-card {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+  outline: none;
+}
+
+.ly-card:focus-visible {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.ly-card.overdue {
+  border-color: color-mix(in srgb, var(--ns-attention) 35%, var(--border));
+}
+
+.ly-card-title {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.ly-card-notes {
+  font-size: var(--fs-small);
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.ly-card-foot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Grid ─────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.ly-grid-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 10px;
+}
+
+.ly-grid-sum {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.ly-grid-sum strong {
+  font-size: var(--fs-card);
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.ly-grid-find {
+  width: 200px;
+  max-width: 100%;
+}
+
+.ly-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.ly-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--fs-small);
+  font-weight: 550;
+  cursor: pointer;
+}
+
+.ly-filter span {
+  font-weight: 650;
+  color: var(--tone, var(--text-faint));
+  font-variant-numeric: tabular-nums;
+}
+
+.ly-filter.tone-none span {
+  color: var(--text-faint);
+}
+
+.ly-filter:hover {
+  border-color: var(--border-strong);
+}
+
+.ly-filter.on {
+  border-color: var(--border-strong);
+  background: var(--sel);
+  color: var(--text-strong);
+  font-weight: 600;
+}
+
+.ly-table-wrap {
+  overflow: auto;
+  max-height: 520px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+}
+
+.ly-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--fs-small);
+}
+
+.ly-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 0;
+  background: var(--bg-side);
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.ly-table th button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 8px 12px;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--fs-caption);
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  text-align: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ly-table th.num button {
+  justify-content: flex-end;
+}
+
+.ly-table th button:hover,
+.ly-table th button:focus-visible {
+  color: var(--text);
+}
+
+.ly-sort {
+  width: 10px;
+  color: var(--accent-strong);
+}
+
+.ly-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: top;
+}
+
+.ly-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.ly-table tbody tr:hover td {
+  background: var(--bg-hover);
+}
+
+.ly-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ly-table tfoot td {
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-side);
+  border-top: 1px solid var(--border);
+  border-bottom: 0;
+  font-size: var(--fs-small);
+  font-weight: 650;
+  color: var(--text-muted);
+}
+
+.ly-cell-main {
+  font-weight: 550;
+}
+
+.ly-none {
+  text-align: center;
+  padding: 18px;
+}
+
+/* ── Trends ───────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.ly-trend-figures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  margin-bottom: 8px;
+}
+
+.ly-trend-figures strong {
+  font-size: var(--fs-section);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.ly-trend-chart {
+  width: 100%;
+}
+
+.ly-trend-chart svg,
+.ly-spark svg {
+  display: block;
+  overflow: visible;
+}
+
+.ly-grid-line {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.ly-axis {
+  font-size: var(--fs-caption);
+  fill: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.ly-today-line {
+  stroke: var(--text-faint);
+  stroke-dasharray: 2 3;
+  opacity: 0.7;
+}
+
+.ly-plan-line {
+  stroke: var(--text-faint);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 5;
+  opacity: 0.8;
+}
+
+.ly-target-line {
+  stroke: var(--tone-ok);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 4;
+}
+
+.ly-target-words {
+  font-size: var(--fs-caption);
+  font-weight: 650;
+  fill: var(--tone-ok);
+}
+
+.ly-fade-top {
+  stop-color: var(--accent);
+  stop-opacity: 0.16;
+}
+
+.ly-fade-bottom {
+  stop-color: var(--accent);
+  stop-opacity: 0;
+}
+
+.ly-line {
+  stroke: var(--accent);
+  stroke-width: 2.25;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.ly-point {
+  fill: var(--bg-raised);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+
+.ly-point-last {
+  fill: var(--accent);
+  stroke: var(--bg-raised);
+  stroke-width: 2;
+}
+
+.ly-trend-chart + .ly-sparks {
+  margin-top: 12px;
+}
+
+.ly-sparks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ly-sparks li {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: var(--bg);
+}
+
+.ly-spark-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ly-spark-top strong .ly-faint {
+  font-size: var(--fs-caption);
+  font-weight: 600;
+}
+
+.ly-spark-top strong {
+  white-space: nowrap;
+  font-size: var(--fs-reading);
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.ly-spark {
+  position: relative;
+  width: 100%;
+}
+
+.ly-spark-flat {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  border-top: 1.5px dashed var(--border-strong);
+}
+
+.ly-spark-target {
+  font-size: var(--fs-caption);
+}
+
+/* ── Streak ───────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.ly-streak-body {
+  display: grid;
+  gap: 16px;
+}
+
+.ly-streak-top {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.ly-streak-words p {
+  margin: 0 0 3px;
+  font-size: var(--fs-small);
+}
+
+.ly-streak-label {
+  font-size: var(--fs-card) !important;
+  font-weight: 650;
+  color: var(--text);
+  margin-bottom: 6px !important;
+}
+
+.ly-days {
+  display: grid;
+  grid-template-columns: repeat(14, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.ly-day {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+}
+
+.ly-day i {
+  display: block;
+  width: 100%;
+  max-width: 26px;
+  aspect-ratio: 1;
+  border-radius: var(--r-2);
+  background: var(--bg-active);
+}
+
+.ly-day.yes i {
+  background: var(--ns-status);
+}
+
+.ly-day.no i {
+  background: color-mix(in srgb, var(--ns-attention) 70%, var(--bg-raised));
+}
+
+.ly-day.before i {
+  background: transparent;
+  border: 1px dashed var(--border);
+}
+
+.ly-day small {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+.ly-week {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ly-week-words {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: var(--fs-small);
+}
+
+.ly-week-words strong {
+  font-size: var(--fs-card);
+  color: var(--text);
+}
+
+.ly-week-days {
+  display: flex;
+  gap: 5px;
+}
+
+.ly-week-days span {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  corner-shape: round;
+  font-size: var(--fs-caption);
+  font-weight: 650;
+  color: var(--text-faint);
+  border: 1px solid var(--border);
+}
+
+.ly-week-days span.on {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+}
+
+
+.ly-marks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ly-marks li {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: var(--r-1);
+  border: 1px solid var(--border);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-faint);
+}
+
+.ly-marks li.reached {
+  color: var(--ns-status);
+  border-color: color-mix(in srgb, var(--ns-status) 30%, transparent);
+  background: color-mix(in srgb, var(--ns-status) 9%, transparent);
+}
+
+.ly-marks li.next {
+  color: var(--accent-strong);
+  border-color: var(--accent-line);
+}
+
+/* ── Latest entry ─────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.ly-entry-date {
+  margin: 0 0 10px;
+  font-size: var(--fs-body);
+  font-weight: 650;
+  color: var(--text);
+}
+
+.ly-entry-values {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 8px;
+  margin: 0 0 10px;
+}
+
+.ly-entry-values div {
+  padding: 8px 10px;
+  border-radius: var(--r-3);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  min-width: 0;
+}
+
+.ly-entry-values dt {
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-faint);
+  overflow-wrap: anywhere;
+}
+
+.ly-entry-values dd {
+  margin: 2px 0 0;
+  font-size: var(--fs-body);
+  font-weight: 650;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.ly-entry-values dd.ly-entry-more {
+  margin-top: 3px;
+  font-size: var(--fs-caption);
+  font-weight: 450;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.ly-entry-values .yes dd {
+  color: var(--ns-status);
+}
+
+.ly-entry-values .no dd {
+  color: var(--ns-attention-words);
+}
+
+.ly-entry-notes strong {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.ly-entry-notes {
+  margin: 0 0 8px;
+  padding-left: 18px;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.ly-entry-count {
+  margin: 0;
+  font-size: var(--fs-caption);
+}
+
+/* ── Cards (people) ───────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.ly-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ly-contact {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: var(--bg);
+  min-width: 0;
+}
+
+.ly-contact > div {
+  min-width: 0;
+}
+
+.ly-contact p {
+  margin: 0 0 2px;
+  font-size: var(--fs-small);
+  line-height: 1.4;
+}
+
+.ly-contact-name {
+  font-size: var(--fs-body) !important;
+  font-weight: 650;
+  color: var(--text);
+}
+
+.ly-contact .ly-link,
+.ly-contact-how {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.ly-contact .ly-link {
+  color: var(--text-strong);
+}
+
+/* ── The Layout pill and the suggestion ───────────────────────────────────────────────────────────────────────────── */
+
+.ly-pill svg:first-child {
+  opacity: 0.7;
+}
+
+.ly-suggest {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: -6px 0 18px;
+  padding: 10px 12px 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+}
+
+.ly-suggest > svg {
+  flex: none;
+  color: var(--accent);
+}
+
+.ly-suggest p {
+  flex: 1;
+  margin: 0;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.ly-suggest-acts {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+
+/* ── One-liners: the Projects home's tiles and Today ──────────────────────────────────────────────────────────────── */
+
+.pj-tile-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--tone, var(--text-muted));
+}
+
+.pj-tile-line.tone-none {
+  color: var(--text-muted);
+}
+
+.pj-tile-line svg {
+  opacity: 0.75;
+}
+
+.ly-glance ul {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ly-glance button {
+  display: grid;
+  /* The project's name keeps at least about half the row; a long line gives way (ending in …) rather than the name. */
+  grid-template-columns: minmax(45%, 1fr) minmax(0, max-content);
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 8px;
+  border: 0;
+  border-radius: var(--r-3);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ly-glance button:hover,
+.ly-glance button:focus-visible {
+  background: var(--bg-hover);
+}
+
+.ly-glance-name {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.ly-glance-line {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--tone, var(--text-muted));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  text-align: right;
+}
+
+.ly-glance-line.tone-none {
+  color: var(--text-muted);
+}
+
+/* ── Narrow pages: one column, smaller figures ────────────────────────────────────────────────────────────────────── */
+
+@container (max-width: 760px) {
+  .pj-page .ly-dash {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pj-page .ly-status-band {
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .pj-page .ly-count-figure strong {
+    font-size: var(--fs-display);
+  }
+
+
+  .pj-page .ly-suggest {
+    flex-wrap: wrap;
+  }
+}
+
+@container (max-width: 560px) {
+  .pj-page .ly-b-countdown.wide .ly-count {
+    display: block;
+  }
+
+  .pj-page .ly-b-countdown.wide .ly-period {
+    margin-top: 16px;
+  }
+}
+
+@container (max-width: 480px) {
+  .pj-page .ly-dates li {
+    grid-template-columns: 62px minmax(0, 1fr);
+  }
+
+  .pj-page .ly-date-state {
+    grid-column: 2;
+  }
+
+  .pj-page .ly-status-band {
+    flex-direction: column;
+  }
+
+  .pj-page .ly-block {
+    padding: 14px;
+  }
+}
+
+/* The entry form's choice of log, when a project keeps several. */
+.ly-log-choice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 12px;
+}
+
+/* Who and when after a tick box's words. */
+.ly-item-tail {
+  white-space: normal;
+}
+
+.ly-glance-more {
+  margin: 6px 0 0;
+}
+
+.ly-col-more {
+  margin: 0;
+  padding: 6px 8px;
+  width: 100%;
+  border: 1px dashed var(--border);
+  border-radius: var(--r-3);
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ly-col-more:hover {
+  color: var(--text);
+  border-color: var(--border-strong, var(--border));
+}
+
+.ly-col-more:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Links written in a dashboard's words (a grid's cell, a workstream, a run-sheet line): the page's own link look. */
+.ly-dash a.internal-link,
+.ly-dash a[href^='http'] {
+  color: var(--text-strong);
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.ly-dash a.internal-link:hover,
+.ly-dash a[href^='http']:hover {
+  text-decoration: underline;
+}
+
+.ly-dash a.internal-link.is-unresolved {
+  color: var(--text-muted);
+}
+
+/* ── Editing in place (22 Oct 2026) ──────────────────────────────────────────────────────────────────────────────────
+   . Calm at rest; discoverable at a glance: over a card or row, the values in it underline softly; over a value, the
+   page's wash and a small pencil (taking no room, so nothing moves); a status shows a faint chevron; empty parts offer
+   "+ Owner", "+ Status" over their row; each card's ⋯ comes up over it. Keyboard: every value is a tab stop (Enter
+   edits), focus rings in the accent. */
+
+.ly-dash {
+  --ly-pencil: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.9 2.6a1.7 1.7 0 0 1 2.5 2.5L5.6 12.9 2.2 13.8l.9-3.4z'/%3E%3Cpath d='M9.6 3.9l2.5 2.5'/%3E%3C/svg%3E");
+}
+
+/* Values that can be changed: a soft underline over their card or row, the wash and the pencil over the value itself. */
+.ly-dash.can-edit :is(.ly-stream, .ly-card, .ly-contact, .ly-status-band, .ly-count, .ly-check, .ly-dates li, .ly-trend-figures > div, .ly-spark-top, .ly-streak-words, .ly-week-words, .ly-entry-notes li):hover .pj-ed:not(.pj-ed-empty):not(.block):not(.pj-chip):not(.ly-tile-edit) {
+  text-decoration: underline dotted color-mix(in srgb, var(--text-faint) 70%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.ly-dash .pj-ed:not(.pj-ed-empty):not(.block):not(.pj-chip):not(.ly-tile-edit):not(.ly-card-owner):hover::after,
+.ly-dash .pj-ed:not(.pj-ed-empty):not(.block):not(.pj-chip):not(.ly-tile-edit):not(.ly-card-owner):focus-visible::after {
+  content: '';
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  margin: 0 -16px 0 5px;
+  vertical-align: -1px;
+  background: var(--text-faint);
+  -webkit-mask: var(--ly-pencil) center / contain no-repeat;
+  mask: var(--ly-pencil) center / contain no-repeat;
+  pointer-events: none;
+}
+
+.ly-dash .pj-ed:hover {
+  text-decoration: none !important;
+}
+
+/* Empty parts ("+ Owner", "+ Status", "+ Progress") show over their card or row, or when they have the keys. */
+.ly-quiet-add {
+  display: inline-flex;
+  align-items: center;
+  height: 21px;
+  padding: 0 8px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--r-1);
+  background: transparent;
+  color: var(--text-faint);
+  font: inherit;
+  font-size: var(--fs-caption);
+  font-weight: 550;
+  white-space: nowrap;
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 0.12s ease,
+    color 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.ly-quiet-add:hover,
+.ly-quiet-add:focus-visible {
+  color: var(--text-muted);
+  border-color: var(--text-faint);
+}
+
+:is(.ly-stream, .ly-card, .ly-contact, .ly-status-band, .ly-count, .ly-check, .ly-dates li, .ly-trend-figures, .ly-streak-words, .pj-row):is(:hover, :focus-within) :is(.ly-quiet-add, .pj-ed-empty.quiet),
+.ly-quiet-add:focus-visible,
+.ly-quiet-add.menu-open {
+  opacity: 1;
+}
+
+/* An empty status band's parts are what it's for: always there. */
+.ly-status-top .ly-quiet-add,
+.ly-status-top .pj-ed-empty.quiet {
+  opacity: 0.85;
+}
+
+/* A status: its pill, with a faint chevron saying it opens its choices. */
+button.ly-choice {
+  cursor: pointer;
+  font: inherit;
+}
+
+button.pj-pill.ly-choice {
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+
+.ly-stream button.pj-pill.ly-choice,
+.ly-dates button.pj-pill.ly-choice {
+  font-size: var(--fs-caption);
+}
+
+button.pj-pill.ly-choice svg {
+  opacity: 0.35;
+  margin-right: -2px;
+  transition: opacity 0.12s ease;
+}
+
+button.pj-pill.ly-choice:hover svg,
+button.pj-pill.ly-choice:focus-visible svg,
+button.pj-pill.ly-choice.menu-open svg {
+  opacity: 0.8;
+}
+
+button.pj-pill.ly-choice:focus-visible {
+  outline: none;
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.ly-status-word.pj-pill {
+  background: transparent;
+  border-color: var(--border);
+}
+
+.ly-date-chip.pj-pill {
+  height: 20px;
+  padding: 0 7px;
+  gap: 4px;
+}
+
+.ly-date-chip.pj-pill.tone-accent {
+  --tone: var(--accent);
+}
+
+/* A card's or row's ⋯: over it, or when it has the keys (or its menu is open). */
+.ly-more {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--r-2);
+  color: var(--text-faint);
+  opacity: 0;
+  transition:
+    opacity 0.12s ease,
+    background-color 0.12s ease;
+}
+
+.ly-more:hover,
+.ly-more.menu-open {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+:is(.ly-stream, .ly-card, .ly-contact):is(:hover, :focus-within) .ly-more,
+.ly-more:focus-visible,
+.ly-more.menu-open,
+.ly-head-more {
+  opacity: 1;
+}
+
+.ly-more:focus-visible {
+  outline: none;
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.ly-head-more {
+  width: 22px;
+  height: 22px;
+}
+
+/* ── A percentage as its own slider ── */
+
+.ly-pct {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.ly-pct.tone-ok,
+.ly-pct.tone-warn,
+.ly-pct.tone-bad {
+  --tone: var(--ns-status);
+}
+
+.ly-pct.tone-warn {
+  --tone: var(--ns-attention);
+}
+
+.ly-pct.tone-bad {
+  --tone: var(--ns-attention);
+}
+
+.ly-pct.tone-accent {
+  --tone: var(--accent);
+}
+
+.ly-pct-slider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 40px;
+  height: 18px;
+  cursor: pointer;
+  touch-action: none;
+  outline: none;
+  border-radius: var(--r-1);
+}
+
+.ly-pct-slider .ly-bar {
+  transition: height 0.12s ease;
+}
+
+.ly-pct-slider:hover .ly-bar,
+.ly-pct.is-live .ly-bar,
+.ly-pct-slider:focus-visible .ly-bar {
+  height: 8px;
+}
+
+.ly-pct.is-live .ly-bar > span {
+  transition: none;
+}
+
+.ly-pct-knob {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--bg-raised);
+  border: 2px solid var(--tone, var(--accent));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity 0.12s ease,
+    transform 0.12s ease;
+  pointer-events: none;
+}
+
+.ly-pct-slider:hover .ly-pct-knob,
+.ly-pct.is-live .ly-pct-knob,
+.ly-pct-slider:focus-visible .ly-pct-knob {
+  opacity: 1;
+  transform: none;
+}
+
+.ly-pct-slider:focus-visible .ly-pct-knob {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.ly-pct-figure {
+  min-width: 34px;
+  font-size: var(--fs-small);
+  font-weight: 650;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.ly-pct-start {
+  font-size: var(--fs-caption);
+}
+
+/* ── The status band ── */
+
+.ly-ring-wrap {
+  position: relative;
+  flex: none;
+  align-self: flex-start;
+}
+
+.ly-ring-button {
+  display: block;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  corner-shape: round;
+  background: none;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.ly-ring-button:disabled {
+  cursor: default;
+}
+
+.ly-ring-button:not(:disabled):hover .ly-ring-track {
+  stroke: var(--border-strong);
+}
+
+.ly-ring-button:not(:disabled):hover {
+  transform: scale(1.03);
+}
+
+.ly-ring-button:focus-visible {
+  outline: none;
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.ly-ring-button.is-unset .ly-ring-fill {
+  display: none;
+}
+
+.ly-ring-button.is-unset .ly-ring-track {
+  stroke: var(--border-strong);
+  stroke-dasharray: 2 5;
+}
+
+.ly-ring-words .ly-ring-set {
+  max-width: 54px;
+  font-size: var(--fs-caption);
+  line-height: 1.2;
+  font-weight: 550;
+  color: var(--text-faint);
+}
+
+.ly-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: -6px;
+  z-index: 30;
+  display: grid;
+  gap: 10px;
+  width: 268px;
+  padding: 14px 14px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-pop, 0 18px 48px rgba(0, 0, 0, 0.18));
+  animation: ly-pop 0.12s ease-out;
+}
+
+@keyframes ly-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.ly-popover .ly-label {
+  margin: 0;
+}
+
+.ly-pop-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ly-pop-steps .ly-filter {
+  height: 24px;
+  padding: 0 9px;
+  font-size: var(--fs-caption);
+}
+
+.ly-pop-clear {
+  justify-self: start;
+  padding: 2px 0;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+.ly-pop-clear:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+.ly-count-link {
+  padding: 0;
+  font: inherit;
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+  cursor: pointer;
+}
+
+.ly-count-link:hover,
+.ly-count-link:focus-visible {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ly-steps .ly-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 2px 4px;
+  margin: -2px -4px;
+  border-radius: var(--r-2);
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.ly-steps li:not(.now) .ly-step:hover {
+  color: var(--text);
+  background: var(--bg-hover);
+}
+
+.ly-steps li.now .ly-step {
+  cursor: default;
+}
+
+.ly-steps .ly-step:focus-visible {
+  outline: none;
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.ly-owner {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ly-facts dd .pj-ed-empty {
+  font-weight: 500;
+}
+
+.ly-add-detail {
+  margin: 0 0 0 -6px;
+  max-width: 100%;
+}
+
+.ly-add-detail:has(.pj-addform) {
+  flex-basis: 100%;
+}
+
+.ly-add-detail > .pj-addrow {
+  width: auto;
+  margin: 0;
+  padding: 2px 6px;
+  font-size: var(--fs-small);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.ly-status-band:is(:hover, :focus-within) .ly-add-detail > .pj-addrow,
+.ly-add-detail > .pj-addrow:focus-visible {
+  opacity: 1;
+}
+
+.ly-link-fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ly-pencil {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--r-2);
+  color: var(--text-faint);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.ly-pencil:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.ly-link-fact:hover .ly-pencil,
+.ly-pencil:focus-visible,
+:is(.ly-contact, .ly-status-band):hover .ly-pencil {
+  opacity: 1;
+}
+
+/* ── Countdown ── */
+
+button.ly-count-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 1px 6px;
+  margin-left: -6px;
+  border-radius: var(--r-2);
+  font: inherit;
+  cursor: pointer;
+}
+
+.ly-count p.ly-count-words,
+button.ly-count-kind {
+  color: var(--text-muted);
+}
+
+button.ly-count-kind svg {
+  opacity: 0.35;
+}
+
+button.ly-count-kind:hover,
+button.ly-count-kind.menu-open {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+button.ly-count-kind:hover svg {
+  opacity: 0.8;
+}
+
+/* ── Workstream cards ── */
+
+.ly-stream {
+  position: relative;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.ly-dash.can-edit .ly-stream:hover {
+  border-color: var(--border-strong);
+}
+
+.ly-stream.is-editing {
+  border-color: var(--accent-line);
+  box-shadow: 0 0 0 3px var(--accent-softer);
+}
+
+.ly-stream-acts {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+  max-width: 100%;
+  margin: -1px -6px 0 0;
+}
+
+.ly-stream-acts .ly-quiet-add {
+  height: 21px;
+}
+
+.ly-stream-next .pj-ed-empty {
+  font-size: var(--fs-small);
+}
+
+.ly-stream .ly-form,
+.ly-contact .ly-form,
+.ly-board-edit .ly-form {
+  margin-top: 4px;
+}
+
+/* ── Tick boxes ── */
+
+.ly-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 4px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-body);
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.ly-check:hover {
+  background: var(--bg-hover);
+}
+
+.ly-check > input {
+  margin-top: 4px;
+  accent-color: var(--accent);
+  flex: none;
+  cursor: pointer;
+}
+
+.ly-check-words {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 8px;
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ly-check-what {
+  min-width: 0;
+}
+
+.ly-check-meta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+}
+
+.ly-check-meta > .pj-ed-empty.quiet {
+  order: 1;
+}
+
+.ly-check-meta .pj-chip {
+  height: 20px;
+  font-size: var(--fs-caption);
+}
+
+.ly-check .pj-row-actions {
+  align-self: center;
+}
+
+.ly-check .pj-grip {
+  left: -14px;
+  top: 8px;
+}
+
+.ly-check-none {
+  padding: 6px 4px;
+  font-size: var(--fs-small);
+}
+
+.ly-b-progress [role='tabpanel'] > .pj-addrow,
+.ly-b-actions .pj-addrow {
+  margin-top: 2px;
+}
+
+/* Renaming a phase: its tab, as a field. */
+.ly-phase-rename {
+  display: block;
+  padding: 9px 11px;
+  border: 1px solid var(--accent-line);
+  border-radius: var(--r-4);
+  background: var(--bg-raised);
+  font-size: var(--fs-small);
+  font-weight: 650;
+}
+
+/* ── Milestones ── */
+
+.ly-dates .pj-row-actions {
+  align-self: center;
+}
+
+.ly-date-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ly-date-in {
+  color: var(--accent-strong);
+}
+
+.ly-dates li .ly-date-when.pj-ed-empty {
+  font-weight: 500;
+}
+
+/* ── Board ── */
+
+.ly-col {
+  transition:
+    border-color 0.12s ease,
+    background-color 0.12s ease;
+}
+
+.ly-col.is-over {
+  border-color: var(--accent-line);
+  background: var(--accent-softer);
+}
+
+.ly-card {
+  position: relative;
+}
+
+.ly-dash.can-edit .ly-card[draggable='true'] {
+  cursor: grab;
+}
+
+.ly-dash.can-edit .ly-card[draggable='true']:active {
+  cursor: grabbing;
+}
+
+.ly-card.is-dragging {
+  opacity: 0.4;
+}
+
+.ly-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.ly-card-top .ly-card-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.ly-card-top .ly-more {
+  margin: -3px -6px -3px 0;
+}
+
+.ly-card-owner.pj-ed {
+  border-radius: 50%;
+}
+
+.ly-col-add .pj-addrow {
+  margin-top: 0;
+  padding: 5px 4px;
+  font-size: var(--fs-small);
+}
+
+.ly-col-add .pj-addform {
+  margin-top: 0;
+}
+
+.ly-board-edit {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--accent-line);
+  border-radius: var(--r-4);
+  background: var(--bg);
+}
+
+.ly-board-edit .ly-label {
+  margin: 0 0 4px;
+}
+
+/* ── The register as a spreadsheet ── */
+
+.ly-table.is-editable td:not(.ly-row-acts):not(.ly-none) {
+  cursor: text;
+}
+
+.ly-table.is-editable td.is-choice {
+  cursor: pointer;
+}
+
+.ly-table.is-editable tbody td:not(.ly-row-acts):not(.ly-none):hover {
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+}
+
+.ly-table.is-editable tbody td:focus {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  background: var(--accent-softer);
+}
+
+.ly-table tbody td.is-editing {
+  padding: 0;
+  background: var(--bg-raised) !important;
+  box-shadow: inset 0 0 0 2px var(--accent), 0 0 0 3px var(--accent-soft) !important;
+}
+
+.ly-cell-input {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 6ch;
+  height: 100%;
+  margin: 0;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font: inherit;
+  color: var(--text);
+  outline: none;
+  box-shadow: none;
+}
+
+.ly-cell-input:focus {
+  border: 0;
+  box-shadow: none;
+}
+
+.ly-cell-input.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ly-table th.ly-row-acts,
+.ly-table td.ly-row-acts {
+  width: 34px;
+  padding: 4px 6px 0 0;
+  text-align: right;
+}
+
+.ly-table td.ly-row-acts .pj-row-action {
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.ly-table tbody tr:is(:hover, :focus-within) td.ly-row-acts .pj-row-action,
+.ly-table td.ly-row-acts.is-new .pj-row-action {
+  opacity: 1;
+}
+
+.ly-table tr.ly-new-row td {
+  padding: 0;
+  background: var(--sel);
+  border-bottom: 0;
+}
+
+.ly-table tr.ly-new-row .ly-cell-input::placeholder {
+  color: var(--text-faint);
+}
+
+.ly-grid-add {
+  width: auto;
+  margin-top: 6px;
+}
+
+/* ── Contacts ── */
+
+.ly-contact {
+  position: relative;
+  transition: border-color 0.12s ease;
+}
+
+.ly-dash.can-edit .ly-contact:hover {
+  border-color: var(--border-strong);
+}
+
+.ly-contact-words {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 1px;
+  justify-items: start;
+}
+
+.ly-contact-words > .ly-contact-name {
+  font-size: var(--fs-body);
+  font-weight: 650;
+  color: var(--text);
+}
+
+.ly-contact-words > .pj-ed-empty,
+.ly-contact-words > .pj-ed:not(.ly-contact-name),
+.ly-contact-words .ly-contact-how {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.ly-contact .ly-more {
+  margin: -4px -6px 0 0;
+}
+
+.ly-contact.is-editing {
+  border-color: var(--accent-line);
+}
+
+.ly-contact-words .ly-form {
+  justify-self: stretch;
+}
+
+/* ── A log's entries ── */
+
+.ly-entry-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ly-entry-nav {
+  display: inline-flex;
+  gap: 2px;
+  flex: none;
+}
+
+.ly-nav {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--r-2);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.ly-nav:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.ly-nav:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.ly-entry-values > div.is-editable {
+  position: relative;
+  transition: border-color 0.12s ease;
+}
+
+.ly-entry-values > div.is-editable:hover {
+  border-color: var(--border-strong);
+}
+
+.ly-entry-values > div.is-editable::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 11px;
+  height: 11px;
+  background: var(--text-faint);
+  -webkit-mask: var(--ly-pencil) center / contain no-repeat;
+  mask: var(--ly-pencil) center / contain no-repeat;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  pointer-events: none;
+}
+
+.ly-entry-values > div.is-editable:is(:hover, :focus-within)::after {
+  opacity: 1;
+}
+
+.ly-tile-choice {
+  display: block;
+  width: 100%;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ly-tile-choice:focus-visible {
+  outline: none;
+  outline: 2px solid var(--focus); outline-offset: 2px;
+  border-radius: var(--r-1);
+}
+
+.ly-tile-edit.pj-ed:hover {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* ── Streak days, the week's target, a trend's latest figure and target ── */
+
+button.ly-day {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+button.ly-day i {
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+button.ly-day:hover i,
+button.ly-day.menu-open i {
+  transform: scale(1.12);
+  box-shadow: 0 0 0 2px var(--border-strong);
+}
+
+button.ly-day:focus-visible {
+  outline: none;
+}
+
+button.ly-day:focus-visible i {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.ly-trend-figures .pj-ed-empty {
+  font-size: var(--fs-body);
+  font-weight: 550;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ly-ring-button,
+  .ly-popover,
+  .ly-pct-knob,
+  button.ly-day i {
+    transition: none;
+    animation: none;
+  }
+}
+
+.ly-stream-who {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ly-stream-who .ly-pct-start {
+  margin-left: auto;
+}
+
+.ly-stream-who > .ly-pct.is-edit {
+  flex: 1;
+}
+
+.ly-stream-who .ly-person {
+  min-width: 0;
+}
+
+.ly-stream-who .ly-person > .pj-ed:not(.pj-ed-empty) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.ly-status-top .ly-due.pj-ed-empty {
+  font-weight: 500;
+  color: var(--text-faint);
+}
+
+.ly-sparks li:is(:hover, :focus-within) .pj-ed-empty.quiet {
+  opacity: 1;
+}
+
+.ly-spark-target.pj-ed-empty {
+  font-size: var(--fs-caption);
+}
+
+.ly-col-empty {
+  display: grid;
+  place-items: center;
+  min-height: 56px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--r-3);
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+.ly-contact-role > .pj-ed-empty,
+.ly-contact-role > .pj-ed {
+  display: inline-block;
+  max-width: 100%;
+}

@@ -1,0 +1,414 @@
+/* Settings › Account and plan and the Supporter badge (components/account, 20 Nov 2026). On the page frame's scale
+   (styles/page-frame.css: --space-*, --w-*); rows are Settings' own .setting-row, so only what is new is here. */
+
+.acct-page {
+  display: flex;
+  flex-direction: column;
+  max-width: var(--w-content);
+}
+
+.acct-lead {
+  margin: 0;
+  font-size: var(--fs-body);
+  color: var(--text);
+  max-width: var(--w-reading);
+}
+.acct-quiet {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  margin: 0;
+}
+.acct-sub {
+  margin-top: var(--space-2);
+}
+.acct-note {
+  margin: var(--space-2) 0 0;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  max-width: var(--w-reading);
+}
+
+/* Signed out: what an account is for, three across where there is room. */
+.acct-intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.acct-purpose {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-3);
+}
+.acct-purpose li {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+}
+.acct-purpose li > svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--accent);
+}
+.acct-purpose b {
+  display: block;
+  font-size: var(--fs-body);
+  color: var(--text-strong);
+}
+.acct-purpose span {
+  display: block;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.acct-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Signed in: who, then the plan, offers and devices. */
+.acct-who {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: center;
+}
+.acct-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--accent-soft);
+  color: var(--text-strong);
+  font-weight: 700;
+  font-size: var(--fs-body);
+}
+.acct-id {
+  min-width: 0;
+}
+.acct-name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-md);
+  font-weight: 650;
+  color: var(--text-strong);
+  min-width: 0;
+}
+.acct-email {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+.acct-plan {
+  margin-right: var(--space-2);
+}
+.acct-features {
+  list-style: none;
+  margin: var(--space-1) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-1) var(--space-4);
+  font-size: var(--fs-small);
+  color: var(--text);
+}
+.acct-features li {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+.acct-features svg {
+  flex: none;
+  color: var(--ok, var(--accent));
+}
+.acct-offers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 340px));
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+.acct-offer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+}
+.acct-offer p {
+  margin: 0;
+  font-size: var(--fs-small);
+  color: var(--text);
+}
+.acct-offer-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.acct-offer .button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.acct-who .button,
+.acct-page .setting-control .button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.acct-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+  margin-top: var(--space-4);
+}
+.acct-foot .acct-note {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+/* The Supporter badge: About, the side bar's foot, the account page. */
+.acct-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: var(--r-1);
+  background: var(--accent-soft);
+  color: var(--text-strong);
+  font: inherit;
+  font-size: var(--fs-caption);
+  font-weight: 650;
+  white-space: nowrap;
+  flex: none;
+}
+button.acct-badge {
+  cursor: pointer;
+}
+button.acct-badge:hover {
+  background: var(--accent-softer, var(--accent-soft));
+}
+.acct-badge svg {
+  color: var(--accent);
+}
+.about-name .acct-badge {
+  vertical-align: middle;
+  margin-left: var(--space-2);
+}
+
+/* The account's own blocks sit on the rows' text edge (Settings' rows are inset by --pad-row-x). */
+.acct-intro,
+.acct-who,
+.acct-sub,
+.acct-features,
+.acct-offers,
+.acct-inset,
+.acct-foot {
+  padding-left: var(--pad-row-x);
+  padding-right: var(--pad-row-x);
+}
+.acct-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+/* Signed in, in a wide settings body: the account and plan beside the devices, as About sits beside its history. */
+@container settings (min-width: 1400px) {
+  .acct-page.is-in {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: var(--space-6);
+    align-items: start;
+    max-width: none;
+  }
+  .acct-page.is-in > .acct-col + .acct-col > h3:first-child {
+    margin-top: 0;
+  }
+}
+
+.acct-count {
+  margin-left: var(--space-2);
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+/* The account chip at the side bar's foot and its menu (components/account/AccountMenu.tsx, 20 Nov 2026): one row,
+   as the account chip in VS Code, Slack or Linear. On the page frame's scale (styles/page-frame.css: --space-*). */
+.acct-ava {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex: none;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.acct-ava.is-out {
+  background: var(--bg-side);
+  color: var(--rail-muted, var(--text-muted));
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+.acct-ava.big {
+  width: 36px;
+  height: 36px;
+  font-size: var(--fs-md);
+}
+.srow .acct-ava svg {
+  width: 16px;
+  height: 16px;
+  color: inherit;
+}
+/* The update dot moved here from the old version line: on the avatar's shoulder, ringed in the bar's colour. */
+.acct-ava-dot {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 2px var(--bg-side);
+}
+
+.places-profile .acct-chip {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: auto;
+  min-height: 44px;
+  padding: var(--space-1) var(--space-2);
+  gap: 10px;
+  align-items: center;
+}
+.places-profile .acct-chip.menu-open,
+.places-profile .acct-chip[aria-expanded='true'] {
+  background: var(--bg-side);
+}
+.acct-chip-words {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+  text-align: left;
+}
+.acct-chip-name {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--rail-ink, var(--text));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.acct-chip.is-out .acct-chip-name {
+  color: var(--text-strong, var(--rail-ink));
+}
+.acct-chip-sub {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+  font-size: var(--fs-caption);
+  color: var(--rail-faint, var(--text-faint));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.srow .acct-chip-sub svg.acct-chip-heart {
+  width: 11px;
+  height: 11px;
+  color: var(--accent);
+}
+
+/* The folded rail: the avatar alone, the same menu beside it. */
+.rail .acct-chip-rail .acct-ava {
+  width: 28px;
+  height: 28px;
+  font-size: var(--fs-caption);
+}
+.rail .acct-chip-rail .acct-ava svg {
+  width: 15px;
+  height: 15px;
+}
+.rail .acct-chip-rail[aria-expanded='true'] {
+  background: var(--sel);
+}
+
+/* The menu: the app's menu shell (kit.css .menu), opened above the row (or beside the rail), the row's width. */
+.menu.acct-menu {
+  min-width: 248px;
+  max-width: 320px;
+  box-sizing: border-box;
+}
+.acct-menu-who {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) 10px var(--space-2);
+}
+.acct-menu-id {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 1px;
+}
+.acct-menu-name {
+  font-weight: 600;
+  color: var(--text-strong);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.acct-menu-email {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.acct-menu-plan {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: 3px;
+  font-size: var(--fs-caption);
+  color: var(--text);
+}
+.acct-menu-note {
+  padding: var(--space-2) 10px;
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  color: var(--text-muted);
+}
+.acct-menu .menu-row:focus-visible {
+  outline: none;
+}
+.acct-menu-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex: none;
+}
+.acct-menu .acct-menu-dot + .menu-hint {
+  margin-left: var(--space-1);
+}
+.acct-menu .menu-row .acct-menu-dot {
+  margin-left: auto;
+}

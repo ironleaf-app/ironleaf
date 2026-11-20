@@ -1,0 +1,920 @@
+/* Today as the hub (views/TodayView.tsx, views/today/; 20 Oct 2026, "Ironleaf Calm"): the quick actions, the week
+   strip that opens to a month, the day's meetings and its note open for writing, what is due, and the day's activity.
+   Calm: one quiet card per part, words first, colour only for the dots and the chosen day. Tokens only (light first;
+   dark through the same tokens). Only circles (dots and avatars, 50%) carry corner-shape: round; nothing is a pill. */
+
+/* ── Quick actions (Home's, folded in) ──────────────────────────────────────────────────────────────────────────── */
+
+.th-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: -4px 0 16px;
+}
+
+.th-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px 5px 9px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-2);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  font-weight: 550;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+
+.th-action:hover:not(:disabled),
+.th-action:focus-visible {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.th-action svg {
+  color: var(--text-faint);
+}
+
+/* ── The week strip ─────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.th-strip {
+  margin: 0 0 16px;
+  padding: 8px 10px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.th-strip-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 2px 6px;
+}
+
+.th-strip-title {
+  margin: 0 4px;
+  min-width: 0;
+  font-size: var(--fs-body);
+  font-weight: 650;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.th-strip-space {
+  flex: 1;
+}
+
+.th-icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-2);
+  color: var(--text-muted);
+}
+
+.th-icon-btn:hover,
+.th-icon-btn:focus-visible {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.th-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 11px;
+  border-radius: var(--r-2);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+
+.th-pill-btn:hover,
+.th-pill-btn:focus-visible {
+  background: var(--bg-hover);
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.th-pill-btn.quiet {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.th-pill-btn.quiet:hover,
+.th-pill-btn.quiet:focus-visible {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.th-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.th-dow-row {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+  padding: 0 0 2px;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  text-align: center;
+  color: var(--text-faint);
+}
+
+.th-day {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  padding: 7px 0 6px;
+  border-radius: var(--r-4);
+  color: var(--text);
+  outline: none;
+  transition: background 0.12s ease;
+}
+
+.th-day:hover {
+  background: var(--bg-hover);
+}
+
+.th-day:focus-visible {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.th-dow {
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-faint);
+}
+
+.th-num {
+  display: inline-grid;
+  place-items: center;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 4px;
+  border-radius: var(--r-1);
+  font-size: var(--fs-body);
+  font-weight: 550;
+  font-variant-numeric: tabular-nums;
+}
+
+.th-day.is-past .th-num {
+  color: var(--text-muted);
+}
+
+/* Today: its number in a ring; the chosen day: lifted. */
+.th-day.is-today .th-num {
+  box-shadow: inset 0 0 0 1.5px var(--accent);
+  color: var(--accent-strong);
+  font-weight: 700;
+}
+
+.th-day.is-selected {
+  background: var(--bg-active);
+}
+
+.th-day.is-selected .th-num {
+  background: var(--primary);
+  color: var(--on-primary);
+  box-shadow: none;
+  font-weight: 700;
+}
+
+.th-day.is-selected .th-dow {
+  color: var(--text);
+}
+
+.th-day.is-outside .th-num {
+  color: var(--text-faint);
+  font-weight: 450;
+}
+
+.th-dots {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+  height: 5px;
+}
+
+.th-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--text-faint);
+}
+
+.th-dot.note {
+  background: var(--accent);
+}
+
+.th-dot.meeting {
+  background: var(--doc);
+}
+
+.th-dot.due {
+  background: var(--tone-warn);
+}
+
+.th-strip.is-month .th-day {
+  padding: 4px 0 4px;
+}
+
+.th-strip.is-month .th-num {
+  min-width: 28px;
+  height: 28px;
+  font-size: var(--fs-small);
+}
+
+/* ── The day: its meetings, then its note ───────────────────────────────────────────────────────────────────────── */
+
+.th-agenda {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.th-agenda.is-empty {
+  justify-content: flex-end;
+  margin-bottom: 4px;
+}
+
+.th-meeting {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 8px 14px 8px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+  text-align: left;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+
+.th-meeting:hover,
+.th-meeting:focus-visible {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+}
+
+.th-meeting-time {
+  flex: none;
+  padding: 3px 0;
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.th-meeting-words {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.th-meeting-words b {
+  overflow: hidden;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+.th-meeting-words small {
+  overflow: hidden;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+.th-new-meeting {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  align-self: center;
+  padding: 5px 10px;
+  border-radius: var(--r-1);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  font-weight: 550;
+}
+
+.th-new-meeting:hover,
+.th-new-meeting:focus-visible {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.th-day-note {
+  position: relative;
+  margin: 0 0 18px;
+  padding: 14px 20px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.th-day-note:focus-within {
+  border-color: var(--border-strong);
+}
+
+/* Inside the day's card the note is a part of that card, not a second box in it (seen at their 3456 window). */
+.th-daybox { margin-bottom: var(--td-gap, 18px); }
+.th-daybox .th-day-note { margin: 0; border: 0; border-top: 1px solid var(--border); border-radius: 0; background: none; box-shadow: none; }
+.th-daybox .th-day-note:focus-within { border-color: var(--border); }
+
+.th-day-note-title {
+  margin: 0 0 6px;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.th-note {
+  position: relative;
+}
+
+.th-note-open {
+  position: absolute;
+  top: -26px;
+  right: -8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: var(--r-1);
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  font-weight: 550;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.12s ease;
+}
+
+.th-day-note:hover .th-note-open,
+.th-note-open:focus-visible {
+  opacity: 1;
+}
+
+.th-note-open:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.th-editor {
+  min-height: 96px;
+  max-height: min(460px, 55vh);
+  overflow: auto;
+  cursor: text;
+}
+
+.th-editor .cm-editor {
+  min-height: 96px;
+  background: transparent;
+  outline: none !important;
+}
+
+.th-editor .cm-scroller {
+  overflow: visible;
+  font-family: var(--font-text);
+  line-height: 1.6;
+}
+
+.th-editor .cm-content {
+  min-height: 96px;
+  padding: 2px 0 8px;
+  max-width: none;
+  font-size: var(--fs-body);
+}
+
+.th-editor .cm-line {
+  padding: 0;
+}
+
+.th-editor .cm-gutters {
+  display: none;
+}
+
+/* The empty day's own line, never the editor's usual one beside it. */
+.th-note .cm-placeholder:not(:has(.th-placeholder)) {
+  display: none;
+}
+
+.th-placeholder {
+  color: var(--text-faint);
+}
+
+.th-saved {
+  margin: 6px -10px 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.th-saved h3 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 10px 4px;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.th-saved h3 span {
+  letter-spacing: 0;
+}
+
+/* ── Due ────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.th-due-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.th-due-note svg {
+  flex: none;
+}
+
+.th-fold {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 4px 2px;
+  padding: 5px 6px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.th-fold span {
+  letter-spacing: 0;
+  font-weight: 600;
+}
+
+.th-fold:hover,
+.th-fold:focus-visible {
+  background: var(--bg-hover);
+  color: var(--text-muted);
+}
+
+/* ── The day's activity ─────────────────────────────────────────────────────────────────────────────────────────── */
+
+.th-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0 8px 6px;
+}
+
+.th-tab {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: var(--r-1);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  font-weight: 550;
+}
+
+.th-tab span {
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.th-tab:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.th-tab.on {
+  background: var(--bg-active);
+  color: var(--text);
+}
+
+.th-tab:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.th-act-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.th-act-list button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-width: 0;
+  padding: 6px 10px;
+  border-radius: var(--r-3);
+  color: var(--text);
+  font-size: var(--fs-small);
+  text-align: left;
+}
+
+.th-act-list button:hover,
+.th-act-list button:focus-visible {
+  background: var(--bg-hover);
+}
+
+.th-act-list svg {
+  flex: none;
+  color: var(--text-faint);
+}
+
+.th-act-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+.th-act-when {
+  flex: none;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Projects not set up yet: a quiet word, not the whole page ──────────────────────────────────────────────────── */
+
+.th-projects-welcome {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+}
+
+.th-projects-welcome > svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--text-faint);
+}
+
+.th-projects-welcome h2 {
+  margin: 0 0 4px;
+  font-size: var(--fs-body);
+  font-weight: 650;
+}
+
+.th-projects-welcome p {
+  margin: 0 0 6px;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.th-projects-welcome .text-button {
+  padding-left: 0;
+}
+
+/* ── Another day chosen: one column ─────────────────────────────────────────────────────────────────────────────── */
+
+.th-other-day {
+  display: flex;
+  flex-direction: column;
+  gap: var(--td-gap);
+  max-width: 760px;
+}
+
+/* One column on Today (a narrow middle): the day's due first, its activity after the work. */
+@container today (max-width: 900px) {
+  [data-section='tasks'] { order: 1; }
+  [data-section='activity'] { order: 7; }
+  .th-projects-welcome { order: 8; }
+}
+
+@container today (max-width: 620px) {
+  .th-strip {
+    padding: 6px 4px 8px;
+  }
+
+  .th-num {
+    min-width: 26px;
+    height: 26px;
+    font-size: var(--fs-small);
+  }
+
+  .th-day-note {
+    padding: 12px 14px 10px;
+  }
+}
+
+/* Today's calendar (21 Oct 2026, views/today/CalendarDay.tsx): the day's events from the calendar the former host app
+   reads, a quiet list above the meeting notes; an event over is faded, one on now carries the accent. */
+.th-cal {
+  container-type: inline-size;
+  margin: 0 0 12px;
+  padding: 10px 12px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.th-cal-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin: 0 2px 4px;
+}
+
+.th-cal-head h3 {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.th-cal-error {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+.th-cal-none {
+  margin: 2px 2px 4px;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.th-cal-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.th-cal-ev {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 6px 2px;
+  border-top: 1px solid var(--border);
+}
+
+.th-cal-ev:first-child {
+  border-top: 0;
+}
+
+.th-cal-time {
+  flex: none;
+  width: 9.5em;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.th-cal-ev.is-now .th-cal-time {
+  color: var(--accent);
+}
+
+.th-cal-ev.is-past .th-cal-words,
+.th-cal-ev.is-past .th-cal-time {
+  opacity: 0.55;
+}
+
+.th-cal-words {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.th-cal-words b {
+  overflow: hidden;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+.th-cal-open-title {
+  padding: 0;
+  overflow: hidden;
+  font: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.th-cal-ev.is-tentative .th-cal-words b {
+  font-style: italic;
+}
+
+.th-cal-words small {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
+  min-width: 0;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+.th-cal-where {
+  overflow: hidden;
+  max-width: 100%;
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+.th-cal-tag {
+  padding: 0 6px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-1);
+  font-size: var(--fs-caption);
+}
+
+.th-cal-join {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.th-cal-join:hover,
+.th-cal-join:focus-visible {
+  text-decoration: underline;
+}
+
+.th-cal-acts {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 2px;
+}
+
+.th-cal-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: var(--r-1);
+  font-size: var(--fs-caption);
+  font-weight: 550;
+  color: var(--text-muted);
+}
+
+.th-cal-note:hover,
+.th-cal-note:focus-visible {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.th-cal-note.is-made {
+  color: var(--doc);
+}
+
+.th-cal-open {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--r-3);
+  color: var(--text-faint);
+}
+
+.th-cal-open:hover,
+.th-cal-open:focus-visible {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.th-cal-connect {
+  margin: 0 0 10px;
+}
+
+.th-cal-connect button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+}
+
+.th-cal-connect button:hover,
+.th-cal-connect button:focus-visible {
+  background: var(--bg-hover);
+  color: var(--text-muted);
+}
+
+@container (max-width: 560px) {
+  .th-cal-ev {
+    flex-wrap: wrap;
+  }
+  .th-cal-time {
+    width: auto;
+  }
+  .th-cal-words {
+    flex-basis: 100%;
+    order: 2;
+  }
+  .th-cal-acts {
+    margin-left: auto;
+  }
+}
+
+/* Cards to review (notebook mode): decks with flashcards due today. */
+.th-cards-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.th-cards-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.th-cards-name {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 7px 6px;
+  border-radius: var(--r-3);
+  font-size: var(--fs-small);
+  color: var(--text);
+  text-align: left;
+}
+
+.th-cards-name:hover,
+.th-cards-name:focus-visible {
+  background: var(--bg-hover);
+}
+
+.th-cards-name svg {
+  flex: none;
+  color: var(--accent);
+}
+
+.th-cards-name span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+.th-cards-name small {
+  flex: none;
+  margin-left: auto;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+.th-cards-go {
+  flex: none;
+  font-size: var(--fs-small);
+}
+
+/* No meetings today: no box (5 Nov 2026, the walk: the card held only the two actions) — the
+   calendar's line, if any, then the two actions on one quiet line. The agenda's own empty row already
+   lines its buttons up right; this keeps only the section's gap, never a border or fill. */
+.th-meetings-quiet {
+  margin: 0 0 var(--td-gap, 18px);
+}
+.th-meetings-quiet .th-agenda.is-empty {
+  margin-bottom: 0;
+}
+

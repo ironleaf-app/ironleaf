@@ -1,0 +1,402 @@
+/* Docs (src/shared/doc-file.ts): how something is set up and run. The page reads as a doc — its head under the title
+   (what it is, when it last changed, its sections), the summary a little larger, a hairline above each section, and
+   Changes a quiet dated list — while every word stays ordinary Markdown, edited in place. */
+
+/* The head, inside the page under the title (editor/live-preview.ts places it). */
+.doc-head-host {
+  padding: 0 0 10px;
+  font-size: var(--fs-small);
+}
+
+.doc-head {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: var(--font-ui);
+  user-select: none;
+  cursor: default;
+}
+
+.doc-head.with-title {
+  padding-top: 6px;
+  margin-bottom: 18px;
+}
+
+.doc-head-title {
+  margin: 0;
+  font: 700 calc(var(--note-size) * 1.95) / 1.2 var(--font-serif);
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.doc-head-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.doc-kind {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+  top: -1px;
+  padding: 2px 8px 2px 6px;
+  border-radius: var(--r-1);
+  font-size: var(--fs-caption);
+  font-weight: 650;
+  color: var(--doc);
+  background: var(--doc-soft);
+}
+
+.doc-about {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  font: 400 calc(var(--note-size) * 1.02) / 1.45 var(--font-ui);
+  color: var(--text-muted);
+  cursor: text;
+  border-radius: var(--r-1);
+}
+
+.doc-about:hover:not(:disabled) {
+  color: var(--text);
+  background: var(--bg-hover);
+  box-shadow: 0 0 0 4px var(--bg-hover);
+}
+
+.doc-about:disabled {
+  cursor: default;
+}
+
+.doc-about.is-empty {
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+.doc-head-facts {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+.doc-fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.doc-tag {
+  padding: 1px 7px;
+  border: 0;
+  border-radius: var(--r-2);
+  background: var(--bg-hover);
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+.doc-tag:hover {
+  color: var(--text);
+  background: var(--bg-active);
+}
+
+.doc-toc {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px 2px;
+  padding-top: 9px;
+  border-top: 1px solid var(--border);
+  font-size: var(--fs-small);
+}
+
+.doc-toc-label {
+  margin-right: 8px;
+  font-size: var(--fs-caption);
+  font-weight: 650;
+  color: var(--text-faint);
+}
+
+.doc-toc-link {
+  padding: 3px 8px;
+  border: 0;
+  border-radius: var(--r-2);
+  background: none;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.doc-toc-link:hover {
+  color: var(--text);
+  background: var(--doc-soft);
+}
+
+.doc-toc-link.is-quiet {
+  color: var(--text-faint);
+}
+
+/* The summary: the words that say what it is. */
+.cm-line.cm-nv-doc-summary {
+  font-size: 1.06em;
+  line-height: 1.62;
+  color: var(--text);
+}
+
+/* Sections: a hairline above each, so a long doc reads in parts. */
+.note-view.is-doc .cm-line.cm-nv-h2 {
+  border-top: 1px solid var(--border);
+  padding-top: 0.75em !important;
+  margin-top: 0.35em;
+}
+
+/* Changes: a quiet dated list at the end. */
+.cm-line.cm-nv-doc-changes-head,
+.note-view.is-doc .cm-line.cm-nv-doc-changes-head {
+  font-family: var(--font-ui);
+  font-size: 0.74em !important;
+  font-weight: 650;
+  color: var(--text-faint) !important;
+  padding-top: 1.9em !important;
+  padding-bottom: 0.25em !important;
+}
+
+.cm-line.cm-nv-doc-changes-head * {
+  color: inherit !important;
+}
+
+.cm-line.cm-nv-doc-change {
+  font-size: 0.88em;
+  line-height: 1.6;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Reading mode: the same marks (NoteView marks the Changes heading and what follows it). */
+.note-view.is-doc .reading-body h2 {
+  border-top: 1px solid var(--border);
+  padding-top: 0.75em;
+}
+
+.note-view.is-doc .reading-body > p:first-of-type {
+  font-size: 1.06em;
+  line-height: 1.62;
+}
+
+.note-view.is-doc .reading-body h2.doc-changes-head {
+  font-family: var(--font-ui);
+  font-size: 0.74em;
+  font-weight: 650;
+  color: var(--text-faint);
+  margin-top: 2.2em;
+}
+
+.note-view.is-doc .reading-body .doc-changes {
+  font-size: 0.88em;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The side bar's doc rows and the canvas: docs carry their slate. */
+.cv-doc-face {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.cv-doc-face .cv-doc-kind {
+  align-self: flex-start;
+}
+
+.cv-doc-name {
+  font: 700 var(--fs-section)/1.2 var(--font-serif);
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.cv-doc-about {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.cv-doc-summary {
+  font-size: var(--fs-small);
+  color: var(--text);
+  line-height: 1.55;
+  overflow: hidden; overflow-wrap: break-word;
+}
+
+.cv-doc-sections {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.cv-doc-sections span {
+  padding: 1px 7px;
+  border-radius: var(--r-2);
+  background: var(--doc-soft);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+}
+
+.cv-section-face {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.cv-section-face p {
+  margin: 0;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.cv-section-face p:first-child {
+  color: var(--text);
+}
+
+.cv-section-empty {
+  color: var(--text-faint);
+  font-style: italic;
+  font-size: var(--fs-small);
+}
+
+.cv-section-sub {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+.canvas-card.is-doc-card {
+  --card-color: var(--doc);
+}
+
+.canvas-card.is-doc-centre {
+  box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--doc) 45%, transparent), var(--shadow-card);
+}
+
+.canvas-card-title .cv-title-doc {
+  color: var(--doc);
+}
+
+.canvas-card-title .cv-title-of {
+  margin-left: 2px;
+  font-weight: 400;
+  color: var(--text-faint);
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  flex: 0 1 auto;
+}
+
+.cv-board-bar .cv-title-doc {
+  flex: none;
+  color: var(--doc);
+}
+
+.cv-board-action {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: var(--r-2);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text);
+  font-size: var(--fs-caption);
+  font-weight: 550;
+  white-space: nowrap;
+}
+
+.cv-board-action:hover {
+  background: var(--bg-hover);
+}
+
+.canvas-card.is-doc-card .canvas-card-title > span:first-of-type {
+  color: var(--text);
+  font-weight: 600;
+  font-size: var(--fs-small);
+}
+
+.result-folder.result-doc {
+  color: var(--doc);
+  font-weight: 550;
+}
+
+/* Today: docs changed since yesterday. */
+.td-doc .td-doc-icon {
+  flex: none;
+  color: var(--doc);
+}
+
+.td-doc-change {
+  margin: 2px 0 0 21px;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+/* A labelled action in a view's header (a doc's Canvas, a project note's Project page): icon and words in one line. */
+.view-header-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  margin-right: 2px;
+  border-radius: var(--r-2);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.view-header-action:hover {
+  color: var(--text);
+  background: var(--bg-hover);
+}
+
+.note-view.is-doc .view-header-action svg {
+  color: var(--doc);
+}
+
+/* A doc's lines to its sections: quiet, so the cards lead. */
+.canvas-edge.auto-section .canvas-edge-line {
+  stroke: color-mix(in srgb, var(--doc) 40%, var(--border-strong));
+  stroke-width: 1.4;
+}
+
+/* The doc's own card says its name large: its title bar keeps only its buttons, in the corner. */
+.canvas-card.is-doc-centre .canvas-card-title {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 1;
+  min-height: 0;
+  padding: 0;
+}
+
+.canvas-card.is-doc-centre .canvas-card-title > svg,
+.canvas-card.is-doc-centre .canvas-card-title > span:not(.cv-title-actions) {
+  display: none;
+}
+
+.canvas-card.is-doc-centre .canvas-card-body {
+  padding-top: 14px;
+}

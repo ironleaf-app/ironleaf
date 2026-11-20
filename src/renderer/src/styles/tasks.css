@@ -1,0 +1,377 @@
+/* Tasks (21 Oct 2026, gap G24; views/TasksView.tsx): every tick-box in the notes in one calm list. The rows are Today's
+   own (.td-row, .td-check, .rm-when in today.css and reminders.css), so a task looks the same wherever it shows. */
+
+.tk-page {
+  --td-row-h: 46px;
+  height: 100%;
+  overflow-y: auto;
+  background: var(--bg);
+  container: tasks / inline-size;
+}
+
+.tk-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 36px 32px 56px;
+}
+
+.tk-head h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-section);
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.tk-summary {
+  margin: 4px 0 0;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.tk-sum-bad {
+  color: var(--tone-bad);
+}
+
+.tk-sum-quiet {
+  color: var(--text-faint);
+}
+
+/* ── Filters ─────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.tk-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 22px 0 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tk-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+/* One row (29 Oct 2026, ITEMS 3): whose, when, search, Filters. */
+.tk-filter-main {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.tk-filter-main .tk-chips {
+  flex-wrap: nowrap;
+}
+
+.tk-filter-main .tk-search {
+  margin-left: 0;
+  flex: 1 1 120px;
+  min-width: 120px;
+  max-width: 220px;
+}
+
+.tk-filter-main .segmented,
+.tk-filter-main .tk-chips {
+  flex: none;
+}
+
+.tk-filter-main .tk-chip {
+  padding: 0 8px;
+  font-size: var(--fs-caption);
+  white-space: nowrap;
+}
+
+.tk-filters-button {
+  flex: none;
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  font-weight: 550;
+}
+
+.tk-filters-button:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.tk-filters-button.on {
+  border-color: var(--accent-line);
+  background: var(--accent-softer);
+  color: var(--accent-strong);
+}
+
+.tk-n {
+  margin-left: 6px;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.tk-search {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1;
+  min-width: 180px;
+  max-width: 320px;
+  height: 30px;
+  margin-left: auto;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  color: var(--text-faint);
+}
+
+.tk-search:focus-within {
+  border-color: var(--accent-line);
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.tk-search input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: var(--fs-small);
+}
+
+.tk-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tk-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.tk-chip:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.tk-chip:focus-visible,
+.segmented button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.tk-chip.on {
+  border-color: var(--accent-line);
+  background: var(--accent-softer);
+  color: var(--accent-strong);
+}
+
+.tk-chip.on .tk-n {
+  color: var(--accent-strong);
+}
+
+.tk-chip.is-bad .tk-n {
+  color: var(--tone-bad);
+}
+
+.tk-select {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 8px 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+}
+
+.tk-select:focus-within {
+  border-color: var(--accent-line);
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.tk-select-label {
+  color: var(--text-faint);
+}
+
+.tk-select select {
+  appearance: none;
+  max-width: 190px;
+  padding-right: 14px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  text-overflow: clip;
+  cursor: pointer;
+}
+
+.tk-select select option {
+  background: var(--bg-raised);
+  color: var(--text);
+}
+
+.tk-select > svg {
+  position: absolute;
+  right: 8px;
+  pointer-events: none;
+}
+
+.tk-clear {
+  font-size: var(--fs-small);
+}
+
+/* ── The list ────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+/* The bulk tick's room (t251: a row's paint containment, t102, clips anything past its edge — the tick
+   hung 18px past it in the card's padding, unpainted and unclickable). Bulking rows carry their own
+   padding for it, margin-kept, so the grid — and who and when's x — never moves. */
+.tklist.tk-bulk .tkrow {
+  padding-left: 20px;
+  margin-left: -20px;
+}
+
+.tklist.tk-bulk .tkrow .tk-select {
+  left: 2px;
+}
+
+.tk-group + .tk-group {
+  margin-top: 18px;
+}
+
+.tk-group h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px;
+  padding: 0 10px;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+}
+
+.tk-group h2 span {
+  color: var(--text-faint);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.tk-group.is-late h2 {
+  color: var(--tone-bad);
+}
+
+.tk-row + .tk-row {
+  margin-top: 1px;
+}
+
+.tk-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+}
+
+button.tk-meta:hover {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.tk-tag {
+  color: var(--accent-text);
+}
+
+.tk-priority {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--tone-warn);
+}
+
+.tk-row.is-done .td-text {
+  color: var(--text-faint);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--text-faint) 60%, transparent);
+}
+
+.tk-foot {
+  margin: 28px 10px 0;
+  font-size: var(--fs-caption);
+  line-height: 1.55;
+  color: var(--text-faint);
+}
+
+.tk-foot code {
+  white-space: nowrap;
+  padding: 1px 5px;
+  border-radius: var(--r-2);
+  background: var(--bg-hover);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+}
+
+/* Today's Due card points here. */
+.th-all-tasks {
+  margin-left: auto;
+  font-size: var(--fs-small);
+}
+
+@container tasks (max-width: 620px) {
+  .tk-inner {
+    padding: 24px 16px 40px;
+  }
+
+  .tk-search {
+    max-width: none;
+    margin-left: 0;
+    flex-basis: 100%;
+  }
+
+  .tk-select select {
+    max-width: 130px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tk-chip {
+    transition: none;
+  }
+}
+
+/* No-date fold by project, and owner chips on task rows (29 Oct 2026, REDESIGN Job A). */
+.tk-nodate-fold > summary {
+  cursor: pointer; margin: 6px 10px 2px; font-size: var(--fs-small); font-weight: 550; color: var(--text-muted);
+}

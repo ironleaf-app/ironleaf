@@ -1,0 +1,252 @@
+/* Polish round 1: the frame, the pages and the rows (29 Oct 2026, the plan items 1, 2, 5, 6, 7 and 8; the ).
+   One frame for every page, a calmer PageHead, Notes and Inbox rows that read in one pass, a quiet path bar, and
+   plan rows whose long lines wrap to two lines. Theme tokens only, light first; dark reads through the same
+   tokens. Imported last in main.tsx so this one frame settles the widths the older page files chose for
+   themselves. */
+
+/* The frame's widths are named once, in styles/page-frame.css (--w-content and friends). */
+
+@media (max-width: 1000px) {
+  :root {
+    --page-pad-side: 16px;
+  }
+}
+
+/* Item 1: the same content width, side gutter and top space on every page, module pages included. A page that
+   runs full width for its board (Timeline) keeps its head in this frame (page-frame.css .tl-head). */
+.sv-page,
+.rm-page,
+.pv-page {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--page-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--page-pad-side);
+  padding-right: var(--page-pad-side);
+}
+
+/* Pages whose head is not PageHead sit in the same frame, with no second gutter inside it. */
+.sv-page > .sv-head,
+.rm-page > .rm-tabs,
+.sv-page > .rm-tabs,
+.pv-page > .rm-tabs,
+/* 8.6 (an area's tabs started 12-24 px right of its title): the area's own strips sit at the frame edge too. */
+.sv-page > .ar-kinds,
+.sv-page > .ar-modules,
+.sv-page > .sv-body,
+.rm-page > .sv-body {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Sweep 3: one left edge per page. Assets: the middle column's head and brand kit take the toolbar's gutter,
+   never flush against the rail. */
+.as-main > .nv-page-head,
+.as-main > .as-scroll > .as-scroll-inner {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/* Today: the hub sits in the one page frame, like every other page. */
+.td-inner {
+  max-width: var(--page-max);
+  padding-left: var(--page-pad-side);
+  padding-right: var(--page-pad-side);
+}
+
+/* Also's groups pair into side columns on very wide windows (8 Nov 2026 calm Today; step 2 no white oceans;
+   t254 13 Nov 2026: Today stands in the rooms' one column again, so the column's own 2000 cap is gone and
+   every room widens together; the odd count's first child spans, with no :has, so a pair slot never stands
+   empty whatever holds something. Every child here pairs (groups, waiting, the brief, the day's note), so
+   :nth-child counts them all — unlike the pack pages, whose chrome always spans and whose sections count by
+   type). */
+@media (min-width: 2400px) {
+  .td-else-groups {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--td-gap) 32px;
+    align-items: start;
+  }
+  .td-else-groups > :first-child:nth-last-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Timeline: the head, the banner and the board share the frame's inset, on both sides. */
+.tl-page > .tl-head.tl-head {
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: max(var(--page-pad-side), calc((100% - var(--page-max)) / 2 + var(--page-pad-side)));
+  padding-right: max(var(--page-pad-side), calc((100% - var(--page-max)) / 2 + var(--page-pad-side)));
+}
+.tl-board.tl-board,
+/* 8.6 (started left of the title and the board): the banner keeps the frame's inset, never its own 28 px. */
+.tl-page > .tl-needs {
+  margin-left: max(var(--page-pad-side), calc((100% - var(--page-max)) / 2 + var(--page-pad-side)));
+  margin-right: max(var(--page-pad-side), calc((100% - var(--page-max)) / 2 + var(--page-pad-side)));
+}
+
+.tp-inner,
+.au-inner:not(.with-panel) {
+  max-width: var(--page-max);
+  padding-left: var(--page-pad-side);
+  padding-right: var(--page-pad-side);
+}
+
+/* Item 2: PageHead. The icon tile is smaller and quiet, the actions sit on the title's line, and the summary
+   never runs past two lines. */
+.nv-page-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-3);
+}
+
+.nv-page-actions {
+  align-self: flex-start;
+  padding-top: 2px;
+}
+
+.nv-page-lead.nv-page-lead {
+  overflow: hidden; overflow-wrap: break-word;
+}
+
+/* Item 7: the path bar at the top of each page. Quiet, in the page frame, with Ask on the same line. */
+.view-header {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--page-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--page-pad-side);
+  padding-right: var(--page-pad-side);
+}
+
+.view-header.controls-gap {
+  padding-right: calc(var(--page-pad-side) + 72px);
+}
+
+.view-header.controls-gap-left {
+  padding-left: calc(var(--page-pad-side) + 40px);
+}
+
+.view-title {
+  justify-content: flex-start;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+/* Item 5: Notes rows. The title gets the full first line; the second line carries the project chip, the kind
+   and date, then the snippet. */
+.nj-row-line2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  line-height: 19px;
+}
+
+.nj-row-line2 .nj-row-snippet {
+  flex: 1;
+  min-width: 0;
+}
+
+.nj-row-line2 .nj-chip,
+.nj-row-line2 .nj-kind,
+.nj-row-line2 .nj-when {
+  flex: none;
+}
+
+/* Item 6: Inbox rows. One row height, actions on hover with the suggested File first, and a quieter keys hint. */
+.ib-item {
+  align-items: center;
+}
+
+.ib-actions {
+  align-items: center;
+}
+
+.ib-act {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+@media (hover: hover) {
+  .ib-item .ib-actions {
+    opacity: 0;
+    transition: opacity 140ms ease-out;
+  }
+
+  .ib-item:hover .ib-actions,
+  .ib-item:focus-within .ib-actions,
+  .ib-item.is-active .ib-actions {
+    opacity: 1;
+  }
+}
+
+.nj-inbox-keys,
+.nj-keys {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  opacity: 0.75;
+}
+
+/* Item 8: Today, Tasks, Projects and the project page. Numbers line up, and a long task line wraps to two
+   lines at most; the full words stay on hover through the row's title. */
+.nj-when,
+.tk-n,
+.td-time,
+.pj-due,
+.pj-tile-foot,
+.rm-tile-value {
+  font-variant-numeric: tabular-nums;
+}
+
+.td-row-what > .td-text,
+.tk-row .td-row-what > .td-text {
+  white-space: normal;
+  overflow: hidden; overflow-wrap: break-word;
+}
+
+.pj-tile-next,
+.pj-prow-meta,
+.pj-next-words {
+  white-space: normal;
+  overflow: hidden; overflow-wrap: break-word;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ib-item .ib-actions {
+    transition: none;
+  }
+}
+
+/* 8.0.1 (29 Oct 2026): a page that scrolls inside itself was narrowed to the frame, so its scroll bar sat on top of the
+   cards. The page now runs the full width (its scroll bar at the window's edge) and centres its content with padding
+   instead. */
+.sv-page.sv-page,
+.rm-page.rm-page,
+.pv-page.pv-page {
+  /* 8.1 (29 Oct sweep 2): the padding sits on the page itself (a scroll container's padding never moves its scroll bar),
+     so the title, the tabs and every card share one left and right edge. Padding each child instead lost to the page
+     head's own padding:0 and left the head and cards flush against the side bar. */
+  max-width: none;
+  box-sizing: border-box;
+  padding-left: max(var(--page-pad-side), calc((100% - var(--page-max)) / 2 + var(--page-pad-side)));
+  padding-right: max(var(--page-pad-side), calc((100% - var(--page-max)) / 2 + var(--page-pad-side)));
+}
+
+/* Ultra-wide Today (5 Nov 2026, u3 moving-in; reconciled with p25 one column: the column stays the frame's at
+   every window, so only the inner split changes, the main list taking more room with the side cards right). */
+@container today (min-width: 2200px) {
+  .td-cols { grid-template-columns: minmax(0, 1.9fr) minmax(0, 1fr); }
+}
+
+/* Wide windows (3456x1408, and ~2000 px monitors: no wide empty space). The rooms' column no longer stretches with the window (t254's 1280 and 2400 made one task row
+   2,176 px long): it stays --w-content (styles/page-frame.css) and a wide window adds structure instead, a second
+   column beside it (t300-no-holes.css .nv-split), centred in the room. */

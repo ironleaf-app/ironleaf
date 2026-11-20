@@ -1,0 +1,229 @@
+/* Settings › AI (components/AiSettings.tsx): the person's own AI connections. */
+
+.ai-privacy {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ai-conn-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.ai-conn-body {
+  display: grid;
+  gap: var(--space-3) var(--space-5);
+  padding-top: var(--space-2);
+}
+/* A wide card reads as a two-column form: the key and address at the left, the models at the right, Test and
+   Remove under both (20 Nov 2026: one 515 px column beside a dead band). */
+@container settings (min-width: 760px) {
+  .ai-conn-body {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+  .ai-conn-body > .ai-field:not(.ai-field-models) {
+    grid-column: 1;
+  }
+  .ai-conn-body > .ai-field-models {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+  }
+  .ai-conn-body > .ai-conn-foot,
+  .ai-conn-body > .ai-said {
+    grid-column: 1 / -1;
+  }
+}
+
+.ai-field {
+  display: grid;
+  gap: 4px;
+}
+
+.ai-field > span:first-child {
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.ai-field .field-row,
+.ai-conn-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.ai-field .setting-input {
+  flex: 1;
+  min-width: 180px;
+}
+
+.ai-models {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  min-height: 24px;
+}
+
+.ai-model-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  font-size: var(--fs-small);
+  background: var(--bg-soft);
+}
+
+.ai-model-chip button {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--text-faint);
+  cursor: pointer;
+}
+
+.ai-model-chip button:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.ai-remote {
+  display: grid;
+  gap: 6px;
+}
+
+.ai-remote-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px 8px;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--r-2);
+  display: grid;
+  gap: 2px;
+}
+
+.ai-remote-list label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-small);
+  cursor: pointer;
+}
+
+.ai-conn-remove {
+  margin-left: auto;
+}
+/* Add connection's form reads at the connections' width, its fields two across when the body has the room. */
+.ai-settings .ai-add-form {
+  max-width: none;
+}
+@container settings (min-width: 760px) {
+  .ai-settings .ai-add-form {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: end;
+  }
+  .ai-settings .ai-add-form > :is(.ai-add-lead, .hint, .field-row, .ai-said) {
+    grid-column: 1 / -1;
+  }
+}
+
+.ai-said {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: var(--fs-small);
+}
+
+.ai-said.is-ok {
+  color: var(--success, var(--text));
+}
+
+.ai-said.is-bad {
+  color: var(--danger);
+}
+
+.ai-add {
+  margin: 10px 0 18px;
+}
+
+.ai-add-lead {
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.ai-presets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 8px;
+}
+
+.ai-preset {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ai-preset:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+}
+
+.ai-preset strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ai-preset span {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.ai-add-form {
+  display: grid;
+  gap: 10px;
+  max-width: 520px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+}
+
+.ai-add-form .hint {
+  margin: 0;
+}
+
+.ai-chev {
+  transform: rotate(-90deg);
+  transition: transform 0.12s;
+}
+
+.ai-chev.is-open {
+  transform: none;
+}

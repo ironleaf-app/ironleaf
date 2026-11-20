@@ -1,0 +1,888 @@
+/* Notebook mode (21 Oct 2026, views/NotebookView.tsx, components/ReviewCards.tsx): sources, the conversation and the
+   Studio side by side in Ironleaf Calm's own paper and ink; two columns, then one, as the pane narrows. */
+
+.nb-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--bg);
+  container-type: inline-size;
+}
+
+.nb-failed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 80px auto;
+  max-width: 420px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.nb-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 24px 12px;
+}
+
+.nb-mark {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-4);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.nb-head h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-section);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+.nb-sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+}
+/* The project door, explained (10.0 papercuts): one quiet line above the workspace. */
+.nb-door {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 20px;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+.nb-door svg { flex: none; }
+
+.nb-cols {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr) minmax(230px, 290px);
+  gap: 14px;
+  min-height: 0;
+  padding: 0 24px 20px;
+}
+
+.nb-pane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.nb-sources,
+.nb-studio {
+  overflow-y: auto;
+  padding: 12px 12px 14px;
+}
+
+.nb-pane-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 2px 8px;
+}
+
+.nb-pane-head h2 {
+  margin: 0;
+  font-size: var(--fs-small);
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  color: var(--text);
+}
+
+.nb-quiet {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: var(--r-1);
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+.nb-quiet:hover,
+.nb-quiet:focus-visible {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.nb-group {
+  margin: 14px 4px 4px;
+  font-size: var(--fs-caption);
+  font-weight: 650;
+  color: var(--text-faint);
+}
+
+.nb-none,
+.nb-foot {
+  margin: 8px 4px 0;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--text-faint);
+}
+
+.nb-foot {
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+/* Sources */
+
+.nb-src-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.nb-src-actions .button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--fs-small);
+}
+
+.nb-find {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.nb-find input {
+  flex: 1 1 160px;
+  min-width: 0;
+}
+
+.nb-find-words {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+.nb-src-list,
+.nb-outs,
+.nb-cites {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nb-src {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 2px 4px;
+  border-radius: var(--r-3);
+}
+
+.nb-src:hover {
+  background: var(--bg-hover);
+}
+
+.nb-src input[type='checkbox'] {
+  flex: none;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.nb-src-name {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 4px 2px;
+  font-size: var(--fs-small);
+  color: var(--text);
+  text-align: left;
+}
+
+.nb-src-name span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+.nb-src-name svg {
+  flex: none;
+  color: var(--text-faint);
+}
+
+.nb-src.is-off .nb-src-name {
+  color: var(--text-faint);
+}
+
+.nb-src.is-missing .nb-src-name span {
+  text-decoration: line-through;
+}
+
+.nb-src-x {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--r-2);
+  color: var(--text-faint);
+  opacity: 0;
+}
+
+.nb-src:hover .nb-src-x,
+.nb-src-x:focus-visible {
+  opacity: 1;
+}
+
+/* Open the source to read or change it (a click on its name shows what it's connected to): on hover, as values' pencils. */
+.nb-src-open {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--r-2);
+  color: var(--text-faint);
+  opacity: 0;
+}
+
+.nb-src:hover .nb-src-open,
+.nb-src-open:focus-visible {
+  opacity: 1;
+}
+
+.nb-src-open:hover {
+  background: var(--bg-active, var(--bg-hover));
+  color: var(--text);
+}
+
+.nb-src-x:hover {
+  background: var(--bg-active);
+  color: var(--text);
+}
+
+/* The conversation */
+
+.nb-ask {
+  overflow: hidden;
+}
+
+.nb-thread {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 22px 8px;
+}
+
+.nb-ask-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 420px;
+  margin: 12% auto 0;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.nb-ask-empty svg {
+  color: var(--accent);
+}
+
+.nb-ask-empty h2 {
+  margin: 10px 0 4px;
+  font-family: var(--font-display);
+  font-size: var(--fs-section);
+  font-weight: 500;
+  color: var(--text);
+}
+
+.nb-ask-empty p {
+  margin: 0;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+
+.nb-turn {
+  margin: 0 0 20px;
+}
+
+.nb-q {
+  width: fit-content;
+  max-width: 85%;
+  margin: 0 0 8px auto;
+  padding: 8px 12px;
+  border-radius: var(--r-3) var(--r-3) var(--r-1) var(--r-3);
+  background: var(--bg-hover);
+  font-size: var(--fs-body);
+  line-height: 1.45;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
+.nb-a {
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.nb-a-words > :first-child {
+  margin-top: 0;
+}
+
+.nb-a-words > :last-child {
+  margin-bottom: 4px;
+}
+
+.nb-a.is-refused {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--r-3);
+  color: var(--text-muted);
+}
+
+.nb-a.is-refused p {
+  margin: 0;
+}
+
+.nb-a.is-refused svg {
+  flex: none;
+  margin-top: 3px;
+}
+
+.nb-a.is-busy {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-faint);
+}
+
+.nb-a.is-busy span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--text-faint);
+  animation: chat-dot var(--nv-pulse) ease-in-out infinite;
+}
+
+.nb-a.is-busy span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.nb-a.is-busy span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.nb-a.is-busy small {
+  margin-left: 6px;
+  font-size: var(--fs-small);
+}
+
+
+
+.nb-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: var(--fs-small);
+  color: var(--danger);
+}
+
+/* A citation chip: small, round, the accent's own soft tint; it opens the passage. */
+.nb-chip {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  margin: 0 0 0 2px;
+  padding: 0 5px;
+  border-radius: var(--r-1);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: var(--fs-caption);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  vertical-align: 0.15em;
+  cursor: pointer;
+}
+
+button.nb-chip:hover,
+button.nb-chip:focus-visible {
+  background: var(--accent);
+  color: var(--on-primary);
+}
+
+.nb-chip.is-static {
+  cursor: inherit;
+  vertical-align: 0;
+}
+
+.nb-cites {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.nb-cite {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 280px;
+  padding: 4px 9px 4px 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+.nb-cite:hover,
+.nb-cite:focus-visible {
+  border-color: var(--accent-line);
+  background: var(--accent-softer);
+  color: var(--text);
+ outline: 2px solid var(--focus); outline-offset: 2px;}
+
+.nb-cite-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+.nb-cite-where {
+  flex: none;
+  color: var(--text-faint);
+}
+
+.nb-a-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+.nb-a-tools > span {
+  margin-right: auto;
+}
+
+.nb-compose {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin: 0 14px 14px;
+  padding: 8px 8px 8px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-3);
+  background: var(--bg);
+}
+
+.nb-compose:focus-within {
+  border-color: var(--accent-line);
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.nb-compose textarea {
+  flex: 1;
+  min-height: 40px;
+  max-height: 160px;
+  padding: 2px 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: var(--fs-body);
+  line-height: 1.45;
+  color: var(--text);
+  resize: none;
+  field-sizing: content;
+}
+
+.nb-compose textarea:focus {
+  border: 0;
+  outline: none;
+  box-shadow: none;
+}
+
+.nb-send {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-4);
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.nb-send:disabled {
+  opacity: 0.35;
+}
+
+/* The Studio */
+
+.nb-make {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.nb-make-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg);
+  text-align: left;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+
+.nb-make-item svg {
+  color: var(--accent);
+}
+
+.nb-make-item:not(:disabled):hover,
+.nb-make-item:focus-visible {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+}
+
+.nb-make-item:disabled {
+  opacity: 0.55;
+}
+
+.nb-make-item.is-making {
+  border-color: var(--accent-line);
+  background: var(--accent-softer);
+  opacity: 1;
+}
+
+.nb-make-label {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.nb-make-words {
+  font-size: var(--fs-caption);
+  line-height: 1.35;
+  color: var(--text-faint);
+}
+
+.nb-out {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  border-radius: var(--r-3);
+}
+
+.nb-out:hover {
+  background: var(--bg-hover);
+}
+
+.nb-out-name {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 6px;
+  font-size: var(--fs-small);
+  color: var(--text);
+  text-align: left;
+}
+
+.nb-out-name svg {
+  flex: none;
+  color: var(--text-faint);
+}
+
+.nb-out-name span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+.nb-out-name small {
+  flex: none;
+  margin-left: auto;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+.nb-out-act {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+  font-size: var(--fs-caption);
+  font-weight: 550;
+  color: var(--text-muted);
+}
+
+.nb-out-act:hover,
+.nb-out-act:focus-visible,
+.nb-out-act.is-on {
+  border-color: var(--accent-line);
+  color: var(--text);
+ outline: 2px solid var(--focus); outline-offset: 2px;}
+
+.nb-due {
+  min-width: 16px;
+  padding: 0 5px;
+  border-radius: var(--r-1);
+  background: var(--accent);
+  color: var(--on-primary);
+  font-size: var(--fs-caption);
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+}
+
+/* Narrower: the conversation on top at a steady height, sources and Studio side by side under it at their own heights,
+   the whole page scrolling; then everything in one column. */
+@container (max-width: 1040px) {
+  .nb-cols {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: min(600px, 72vh) auto;
+    align-items: start;
+    overflow-y: auto;
+  }
+  .nb-ask {
+    order: -1;
+    grid-column: 1 / -1;
+    height: 100%;
+  }
+  .nb-sources,
+  .nb-studio {
+    min-height: auto;
+    overflow: visible;
+  }
+}
+
+@container (max-width: 640px) {
+  .nb-head {
+    padding: 14px 16px 10px;
+  }
+  .nb-cols {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: min(560px, 70vh);
+    grid-auto-rows: auto;
+    padding: 0 12px 16px;
+  }
+}
+
+@container (max-width: 420px) {
+  .nb-make {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Reviewing flashcards */
+
+.nb-review {
+  width: min(560px, calc(100vw - 32px));
+  padding: 16px 18px 18px;
+}
+
+/* The dialog holds the keys (Space, 1 to 4) without a ring of its own; its buttons still show theirs. */
+.nb-review:focus-visible {
+  outline: none;
+}
+
+.nb-review-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  color: var(--text-muted);
+}
+
+.nb-review-head h2 {
+  flex: 1;
+  overflow: hidden;
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+.nb-review-count {
+  font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-faint);
+}
+
+.nb-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 180px;
+  padding: 22px 22px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg);
+}
+
+.nb-card-q {
+  font-family: var(--font-display);
+  font-size: var(--fs-section);
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.nb-card-q > :first-child,
+.nb-card-a > :first-child {
+  margin-top: 0;
+}
+
+.nb-card-q > :last-child,
+.nb-card-a > :last-child {
+  margin-bottom: 0;
+}
+
+.nb-card-a {
+  padding-top: 14px;
+  border-top: 1px dashed var(--border-strong);
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.nb-show {
+  align-self: center;
+  margin-top: auto;
+}
+
+.nb-show kbd,
+.nb-grade kbd {
+  margin-left: 6px;
+  padding: 0 5px;
+  border: 1px solid currentColor;
+  border-radius: var(--r-1);
+  font-family: var(--font-ui);
+  font-size: var(--fs-caption);
+  opacity: 0.6;
+}
+
+.nb-grades {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.nb-grade {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  color: var(--text);
+}
+
+.nb-grade:hover,
+.nb-grade:focus-visible {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+}
+
+.nb-grade b {
+  font-size: var(--fs-small);
+  font-weight: 650;
+}
+
+.nb-grade small {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+.nb-grade.g-again b {
+  color: var(--danger);
+}
+
+.nb-grade.g-easy b {
+  color: var(--ok);
+}
+
+.nb-review-end {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 8px 4px;
+  text-align: center;
+}
+
+.nb-review-end svg {
+  color: var(--ok);
+}
+
+.nb-review-end h3 {
+  margin: 8px 0 4px;
+  font-size: var(--fs-reading);
+  font-weight: 600;
+}
+
+.nb-review-end p {
+  margin: 0 0 6px;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+/* A cited passage in a note, lit for a moment (editor/flash.ts). */
+.cm-line.cm-nv-flash {
+  animation: nb-flash 2.4s ease-out;
+}
+
+@keyframes nb-flash {
+  0%,
+  35% {
+    background: var(--mark);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+/* The workspace's Ask and Studio: the notebook's line about its sources, above its columns. */
+.nb-sub.is-embedded {
+  margin: -4px 0 12px;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+}

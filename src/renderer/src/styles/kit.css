@@ -1,0 +1,921 @@
+/* The one kit (8.7 wave 1, item 1; 30 Oct 2026; 10.0 Endless Tech: square-ish radii, no pills, one type scale). Every
+   button, tag, card, input, menu, dialog, toast and state in the app comes from here, so the look changes everywhere
+   at once. The shapes and numbers are the design language's, rebuilt on the app's theme tokens: the spec's colours are
+   the default palette's values (styles/palettes.css honey), and the person's other palettes, their own accent and dark
+   mode keep working through the same tokens. No cream, beige or warm off-white. */
+
+/* The former host app values, mapped in one place (SHARED-LAYOUT: the former host app is the reference;
+   SHELL-VALUES.md): Vault's own token names carry the former host app's values — grounds, mist, selected fill,
+   ink, the header token — and --coral is the former host app's fixed coral (words in colour use --accent-text,
+   never this). Values live in the tokens below, never here. */
+:root {
+  /* The attention fill (Overdue, Due today, the calendar's today): the former host app's coral, except with Ironleaf's
+     leaf accent (the default since the rename, 20 Nov 2026), where styles.css's [data-accent='leaf'] makes it burnt
+     orange. */
+  --coral: #f2785a;
+  /* Words on a fill of the brand coral: the same white-or-navy ink as --on-accent (5 Nov 2026 rework: the fill shows
+     the raw colour) — coral's own lightness sits navy-side, both themes, no dark twin. */
+  --on-coral: oklch(from var(--coral) calc(0.22283 + 0.77717 * clamp(0, (0.59 - l) * 1000, 1)) calc(0.04021 * (1 - clamp(0, (0.59 - l) * 1000, 1))) 270.22686);
+  --sel: #e3eaf3;
+  --slate-bg: #eef1f6; --slate-tx: #3c4454;
+  --green-bg: #e4efe6; --green-tx: #3f7a49;
+  --amber-bg: #eaeee6; --amber-tx: #9a6713;
+  --red-bg: #eee9ec; --red-tx: #b0422f;
+  --blue-bg: #e2ecfd; --blue-tx: #2456c6;
+  --focus-ring: #2c6347;
+}
+/* Dark (from the c-home-dark mock-up, on the brand navy): cards and the ask box lift off the page, the primary button
+   goes pale with navy words, tints stay soft fills with readable words. */
+:root[data-theme='dark'] {
+  --coral: #f2785a;
+  --sel: #2a3350;
+  --slate-bg: #2c3653; --slate-tx: #c3cad6;
+  --green-bg: #1d3329; --green-tx: #8fcb95;
+  --amber-bg: #38301d; --amber-tx: #dcae55;
+  --red-bg: #3d2323; --red-tx: #e88573;
+  --blue-bg: #1d2f55; --blue-tx: #8fb0f5;
+  --focus-ring: #7cc197;
+}
+
+/* ---------- type ---------- */
+.eyebrow { font-size: var(--fs-caption); font-weight: 600; color: var(--text-muted); letter-spacing: .02em; }
+h1.vtitle { font-size: var(--fs-page); font-weight: 600; letter-spacing: -0.025em; line-height: 44px; color: var(--text-strong); }
+h2.vsec { font-size: var(--fs-section); font-weight: 600; letter-spacing: -0.01em; color: var(--text-strong); }
+.glabel { font-size: var(--fs-caption); font-weight: 600; color: var(--text-muted); }
+.vsub { font-size: var(--fs-reading); line-height: 26px; color: var(--text-muted); }
+/* One-line slots clip without dots (their full words ride on title=); card rows that carry titles wrap fully
+   and grow (t207 pass 2). */
+.clip { white-space: nowrap; overflow: hidden; text-overflow: clip; }
+.clip-2 { min-width: 0; overflow-wrap: break-word; }
+
+/* ---------- buttons: one navy primary per screen, white secondary ---------- */
+.btn, .button {
+  height: 32px; padding: 0 14px; border-radius: var(--r-2); font-size: var(--fs-small); font-weight: 600;
+  border: 1px solid var(--border); background: var(--bg-raised); color: var(--text-ink); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit;
+  white-space: nowrap; text-decoration: none;
+}
+.btn:hover, .button:hover { background: var(--bg-hover); }
+.btn.pri, .btn.primary, .button.pri, .button.primary { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.btn.pri:hover, .btn.primary:hover, .button.pri:hover, .button.primary:hover { filter: brightness(1.12); background: var(--primary); }
+.btn.quiet, .button.quiet { border-color: transparent; background: none; color: var(--text-muted); font-weight: 500; }
+.btn.quiet:hover, .button.quiet:hover { background: var(--bg-hover); color: var(--text); }
+.btn:disabled, .button:disabled { opacity: .5; cursor: default; }
+/* A small button (9.5 polished): headers and dialogs, 28 px. The premium layer already names .button.small. */
+.btn.small, .button.small { height: 28px; min-height: 28px; padding: 0 10px; font-size: var(--fs-small); }
+/* Push to the far edge of a flex row (9.5 polished): the one class for margin-left: auto. */
+.push { margin-left: auto; }
+.btn.danger-text, .button.danger-text { border-color: transparent; background: none; color: var(--red-tx); }
+.iconbtn {
+  width: 30px; height: 30px; border-radius: var(--r-2); border: 0; background: none; color: var(--text-muted);
+  font-size: var(--fs-reading); cursor: pointer; display: inline-grid; place-items: center;
+}
+.iconbtn:hover { background: var(--bg-hover); color: var(--text); }
+
+/* ---------- tags and chips: neutral slate, coral only for the one thing needing attention (3 Nov 2026, audit f
+   F18 and DECISIONS 3: never a pink, amber or blue chip; danger red only for real errors and destructive buttons).
+   The green/amber/red/blue classes stay for danger and for callouts that must carry meaning elsewhere, but status
+   chips use slate and coral. (.pill keeps its name, never its roundness.) ---------- */
+.pill {
+  display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 10px;
+  border-radius: var(--r-1); font-size: var(--fs-small); font-weight: 600; white-space: nowrap;
+}
+.tag {
+  display: inline-flex; align-items: center; height: 22px; padding: 0 8px;
+  border-radius: var(--r-1); font-size: var(--fs-caption); font-weight: 600; white-space: nowrap;
+  /* The one info chip (t218): this shape in both apps, every status colour kept. */
+  font-variant-numeric: tabular-nums;
+}
+.minichip { display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: var(--r-1); font-size: var(--fs-caption); font-weight: 700; }
+.cite {
+  display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 5px;
+  border-radius: var(--r-1); background: var(--slate-bg); color: var(--slate-tx);
+  font-size: var(--fs-caption); font-weight: 700; vertical-align: 2px; font-style: normal;
+}
+.slate { background: var(--slate-bg); color: var(--slate-tx); }
+.coral { background: var(--coral); color: var(--on-coral); }
+/* Status chips render neutral (3 Nov 2026, audit f F18, one place for every page): amber, blue and green as slate,
+   red as the attention colour for the one needing attention (p13-vault-status: the person's accent, never fixed
+   coral). Each class keeps its own rule, so pages using the old names still match; danger text, destructive
+   buttons and callouts keep their tokens. Solid fills show the raw colour and their words read the on-fill ink
+   (5 Nov 2026 rework: "a filled pill shows exactly that colour"): white or navy from the fill's
+   own lightness, both themes from the same token. */
+.green { background: var(--slate-bg); color: var(--slate-tx); }
+.amber { background: var(--slate-bg); color: var(--slate-tx); }
+.blue { background: var(--slate-bg); color: var(--slate-tx); }
+.red { background: var(--ns-attention, var(--coral)); color: var(--on-accent); }
+.outline { background: var(--bg-raised); border: 1px solid var(--border); color: var(--text-muted); }
+/* The health dot: the one attention mark on a quiet chip (3 Nov 2026 sweep D: Off track and Overdue were solid coral
+   blocks; they read as a small dot on a neutral chip now; p13-vault-status: the person's accent). Tags carry no
+   gap, so the dot brings it. */
+.pill .dot, .tag .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--coral); background: var(--ns-attention, var(--coral)); flex: none; }
+.tag .dot { margin-right: 6px; }
+
+/* ---------- cards and rows ---------- */
+.card { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--r-3); padding: 18px; }
+.card h3 { font-size: var(--fs-card); font-weight: 600; color: var(--text-strong); }
+/* One list row (t218, 11 Nov 2026): title 15px/500/21px, sub 13px muted, 12px of row above and below, one
+   1px divider, the hover wash. Every list in both apps reads this (the former host app through its
+   theme's mirror of these numbers); dense secondary lists keep the one named compact variant below, used
+   the same way in both. */
+.trow { display: flex; align-items: center; gap: 12px; padding: 12px 0; min-width: 0; }
+.trow + .trow { border-top: 1px solid var(--border); }
+/* One hover wash (t218): the selected-fill mist, as the premium layer's own row hover (--pl-row-hover). */
+.trow:hover { background: var(--sel); }
+/* Compact: dense secondary lists (the project page's tab rows here, Recent activity in the former host
+app). */
+.trow.compact { padding: 8px 0; }
+.trow.compact .t { font-size: var(--fs-small); font-weight: 600; line-height: 18px; }
+.check { width: 20px; height: 20px; border-radius: var(--r-1); border: 1.5px solid var(--border-strong); flex: none; background: var(--bg-raised); padding: 0; cursor: pointer; }
+.check.done { background: var(--green-tx); border-color: var(--green-tx); color: #fff; font-size: var(--fs-caption); display: grid; place-items: center; }
+:root[data-theme='dark'] .check.done { color: #141a2e; }
+/* A row's title wraps whole words and grows, never cut mid-word (t249: the Projects home row ending
+   "late-opening rost" — titles a person must read wrap whole, two lines fine; the t207 clip-without-dots
+   rule stands for one-line slots, never titles). */
+.trow .t { font-size: var(--fs-body); font-weight: 500; line-height: 21px; min-width: 0; color: var(--text); white-space: normal; overflow-wrap: break-word; }
+/* Only a ticked row fades (8.7 wave 1 polish, 30 Oct 2026): every kit row's title is ink. */
+.trow .t.is-done { color: var(--text-faint); text-decoration: line-through; }
+.trow .meta { font-size: var(--fs-small); line-height: 18px; color: var(--text-muted); }
+/* A row's trailing words keep their room on one line (p14-words, 4 Nov 2026: the Overview's activity meta wrapped
+   beside its words; p16 loose ends: the nowrap was global, so module and note rows lost their own look — scoped
+   to the project page; 5 Nov 2026, the vault folio: the Overview became the folio, the scope moved with it);
+   the name clips, never the due words. */
+.pj-folio .trow .meta { white-space: nowrap; flex: none; }
+/* …but a stacked detail line under the row's title wraps whole words (13 Nov 2026, the picture: a person's
+   long role ran under Open card and was cut at the card's edge). Trailing slots — direct children and the
+   bill row's end — keep their line; only a meta stacked in the row's content block wraps. */
+.pj-folio .trow > div > .meta { white-space: normal; overflow-wrap: break-word; }
+
+/* ---------- inputs, selects, search ---------- */
+.input, .select, .text-input {
+  font: inherit; font-size: var(--fs-md); color: var(--text-ink); background: var(--bg-raised);
+  border: 1px solid var(--border-strong); border-radius: var(--r-1); height: 36px; padding: 0 12px;
+}
+.input:focus, .select:focus, .text-input:focus { outline: 2px solid var(--focus); outline-offset: 2px; }
+.input::placeholder, .text-input::placeholder { color: var(--text-faint); }
+.searchbox {
+  display: flex; align-items: center; gap: 8px; background: var(--bg-side); border: 1px solid var(--border);
+  border-radius: var(--r-1); height: 36px; padding: 0 12px; font-size: var(--fs-md); color: var(--text-faint); flex: 1; min-width: 160px;
+}
+.searchbox input { border: 0; outline: 0; font: inherit; width: 100%; color: var(--text); background: none; }
+.searchbox input::placeholder { color: var(--text-faint); }
+textarea.input, textarea.text-input { height: auto; padding: 10px 12px; line-height: 1.5; resize: none; }
+.lbl { font-size: var(--fs-caption); font-weight: 500; color: var(--text); display: block; margin: 0 0 6px; }
+
+/* ---------- filter chips and segmented switches ---------- */
+.chips { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+/* Controls in a chips bar that wrap as one (t74 vault-three-sizes, 9 Nov 2026: at 1219px Notes' two drop-downs
+   split across rows, the sort orphaned alone; grouped, they drop below the chips together). The bar's own gap. */
+.chips > .chip-group { display: inline-flex; align-items: center; gap: 8px; flex: none; flex-wrap: nowrap; }
+.chip {
+  height: 30px; padding: 0 12px; border-radius: var(--r-1); font-size: var(--fs-small); font-weight: 600;
+  border: 1px solid var(--border); background: var(--bg-raised); color: var(--text-muted); cursor: pointer; font-family: inherit;
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+}
+.chip:hover { color: var(--text); }
+.chip.on { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.chip .n { font-size: var(--fs-small); font-weight: 500; font-variant-numeric: tabular-nums; }
+.seg, .kindtabs { display: inline-flex; background: var(--bg-side); border-radius: var(--r-2); padding: 3px; gap: 2px; }
+.seg button, .kindtabs button {
+  border: 0; background: none; font: inherit; font-size: var(--fs-small); font-weight: 600; color: var(--text-muted);
+  padding: 5px 12px; border-radius: var(--r-1); cursor: pointer; white-space: nowrap;
+}
+.kindtabs button { padding: 6px 14px; }
+.seg button.on, .kindtabs button.on { background: var(--bg-raised); color: var(--text); box-shadow: 0 1px 3px rgba(27, 34, 53, .12); }
+
+/* ---------- page tabs ---------- */
+/* Tabs scroll, never cut (10.0 rooms critique, 2 Nov 2026: Decisions/Timeline were cut and unreachable at 900px,
+   and counts wrapped under their labels): the .nv-tabs pattern, one line kept per tab. Every sideways strip
+   shows it scrolls (10.0 third round F2: invisible scroll is cut for a mouse): one thin token thumb over both
+   strip kinds at once, shown only when overflowing (the note foot's strip went with its tabs, 5 Nov 2026,
+   rest-quieten and v6: one Linked list in sections). */
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin: 18px 0 0; overflow-x: auto; overflow-y: hidden; }
+.tabs, .nv-tabs { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+.tabs::-webkit-scrollbar, .nv-tabs::-webkit-scrollbar { height: 6px; }
+.tabs::-webkit-scrollbar-thumb, .nv-tabs::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: var(--r-1); }
+.tabs::-webkit-scrollbar-track, .nv-tabs::-webkit-scrollbar-track { background: transparent; }
+.tab {
+  border: 0; background: none; font: inherit; font-size: var(--fs-body); font-weight: 600; color: var(--text-muted);
+  padding: 9px 12px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
+  flex: none; white-space: nowrap;
+}
+.tab:hover { color: var(--text); }
+.tab.on { color: var(--text-strong); border-bottom-color: var(--text-strong); }
+.tab .c { font-size: var(--fs-small); color: var(--text-muted); font-weight: 500; margin-left: 4px; font-variant-numeric: tabular-nums; }
+
+/* ---------- tables ---------- */
+.tbl { width: 100%; border-collapse: collapse; }
+.tbl th { font-size: var(--fs-caption); font-weight: 600; color: var(--text-faint); text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+.tbl td { font-size: var(--fs-small); padding: 0 12px; height: 44px; border-bottom: 1px solid var(--border); vertical-align: middle; font-variant-numeric: tabular-nums; }
+.tbl tr.sel td { background: var(--sel); }
+.tbl tr.sel td:first-child { border-radius: var(--r-2) 0 0 var(--r-2); }
+.tbl tr.sel td:last-child { border-radius: 0 var(--r-2) var(--r-2) 0; }
+
+/* ---------- menus, dialogs, toasts, tooltips ---------- */
+.menu {
+  /* The kit owns the menu's shell (5 Nov 2026 feel-motion): placed by its own left and top (components/Menu.tsx),
+     the same measures as before, in one rule. Its motion (the settle) stays in styles/feel.css. */
+  position: fixed; z-index: 60;
+  background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--r-3); padding: 6px;
+  box-shadow: var(--e-2); min-width: 218px; max-width: 320px; font-size: var(--fs-small);
+  /* A long menu (More's) keeps every row reachable (8.7 wave 1 polish, 30 Oct 2026: the Fold row sat below the
+     window, so the rail shot never folded): it stops at the window's edge and scrolls within. */
+  max-height: calc(100vh - 12px); overflow-y: auto;
+}
+/* The app's menu rows wear the same shape (components/Menu.tsx): the former host app's own menu measures
+   (shell parity, 4 Nov 2026: shell.css menus are 218px wide with 40px rows in 400 14/22). */
+.menu > button, .menu .menu-row {
+  display: flex; align-items: center; gap: 8px; width: 100%; min-height: 40px; border: 0; background: none;
+  font: inherit; font-size: var(--fs-md); line-height: 22px; font-weight: 400; color: var(--text-ink); padding: 8px 10px;
+  border-radius: var(--r-3); cursor: pointer; text-align: left;
+}
+/* A long row name wraps to whole words instead of running past the 320px menu (t207, 10 Nov 2026; pass 2:
+   whole words, so break-word, not anywhere). */
+.menu .menu-label { min-width: 0; overflow-wrap: break-word; }
+.menu > button:hover, .menu .menu-row:hover, .menu > button.hot, .menu .menu-row.selected { background: var(--bg-side); }
+.menu > button .r, .menu .menu-row .menu-hint, .menu .menu-row .menu-hotkey { margin-left: auto; font-size: var(--fs-caption); color: var(--text-faint); font-weight: 400; }
+.menu .menu-row.danger, .menu .menu-row.danger .menu-label { color: var(--red-tx); }
+.menu .msep, .menu .menu-separator { height: 1px; background: var(--border); margin: 4px 2px; }
+.menu .mlab, .menu .menu-heading { font-size: var(--fs-caption); line-height: 16px; font-weight: 400; color: var(--text-muted); padding: 8px 10px; }
+.menu .menu-icon { color: var(--text-muted); display: inline-flex; }
+/* One dim, the former host app's depth (shell parity, 4 Nov 2026: look.css
+dialog.ns-kit-confirm::backdrop). */
+.dlgback, .overlay {
+  position: fixed; inset: 0; background: rgba(20, 26, 46, .28);
+  display: flex; align-items: flex-start; justify-content: center; z-index: 60;
+}
+.dlg, .dialog {
+  background: var(--bg-raised); border-radius: var(--r-4); box-shadow: var(--e-3);
+  width: 560px; max-width: calc(100vw - 48px); padding: 22px 24px;
+  border: 1px solid var(--border);
+  /* Every dialog fits the window (8.8 round 2, 31 Oct 2026, the reviewer: the template window's Start sat below the
+     window at 1440x900): the overlay's own padding sets how far down a dialog starts, so the dialog adds no margin of
+     its own (the two used to stack: 12vh plus 110px); no dialog runs past the room under that, and one with more in it
+     than fits scrolls within. */
+  margin-top: 0;
+  max-height: calc(100vh - 12vh - 24px);
+  overflow-y: auto;
+}
+.dlg h2, .dialog h2 { font-size: var(--fs-section); font-weight: 600; color: var(--text-strong); overflow-wrap: anywhere; }
+.dialog.small { width: 440px; }
+/* The small dialog is the former host app's one confirm (shell parity, 4 Nov 2026: look.css
+   dialog.ns-kit-confirm is 440 wide with a 600 16/24 title and its actions 20px down): the title
+   reads the scale's nearest step to the confirm size (suite-green, 4 Nov 2026: 16px sat off the
+   scale, and every size rides the tokens), the actions sit 20px under the words. Big dialogs keep the
+   20px title above. */
+.dialog.small h2 { font-size: var(--fs-reading); line-height: 24px; font-weight: 600; color: var(--text-strong); }
+.dialog-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; justify-content: flex-end; }
+.toast {
+  /* The kit owns the toast's shell (5 Nov 2026 feel-motion): the same measures as before, in one rule. */
+  position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 80;
+  max-width: min(600px, calc(100vw - 32px));
+  background: var(--primary); color: var(--on-primary); font-size: var(--fs-body); font-weight: 500;
+  border-radius: var(--r-3); padding: 12px 14px; display: flex; align-items: center; gap: 14px;
+  box-shadow: 0 12px 32px rgba(20, 26, 46, .3); white-space: normal; overflow-wrap: anywhere;
+  animation: rise-in var(--nv-motion-base) var(--nv-ease-enter) both;
+}
+/* Long words wrap inside the toast (t207, 10 Nov 2026: nowrap ran a 120-character name past the box). */
+.toast > span { min-width: 0; }
+.toast button, .toast .toast-action { border: 0; background: none; color: inherit; font: inherit; font-weight: 700; cursor: pointer; text-decoration: underline; padding: 0; flex: none; white-space: nowrap; }
+/* Tips round 8px, as the former host app's bubble (shell parity, 4 Nov 2026: shell.css "Tooltips: 8px
+bubble"). */
+.tip {
+  position: absolute; background: var(--primary); color: var(--on-primary); font-size: var(--fs-caption); font-weight: 500;
+  border-radius: var(--r-3); padding: 5px 10px; white-space: normal; overflow-wrap: anywhere;
+  max-width: min(420px, calc(100vw - 32px)); z-index: 90;
+}
+
+/* ---------- the palette and switcher (components/Picker.tsx) ---------- */
+.smodal, .picker {
+  width: 640px; max-width: calc(100vw - 48px); margin: 48px auto 0; background: var(--bg-raised);
+  border: 1px solid var(--border); border-radius: var(--r-4); box-shadow: var(--e-3); overflow: hidden;
+}
+/* The search window and the pickers centre over the page area, right of the side bar (8.7 final polish, 30 Oct
+   2026, the reviewer: centred on the window they sit half over the side bar's own rows): the dim still covers the
+   whole window, but the dialog centres past the docked side (--left-dock on .app: its width, else 0). */
+.overlay.picker-overlay, .overlay:has(> .smodal) { padding-left: var(--left-dock, 0px); }
+.smodal .sin, .picker .picker-input { display: flex; align-items: center; gap: 12px; padding: 18px 22px; font-size: var(--fs-card); }
+.smodal .sin input, .picker .picker-input input { border: 0; outline: 0; font: inherit; width: 100%; color: var(--text); background: none; }
+.smodal .sin input::placeholder, .picker .picker-input input::placeholder { color: var(--text-faint); }
+.smodal .filters { display: flex; align-items: center; gap: 4px; padding: 0 22px 12px; border-bottom: 1px solid var(--border); }
+.smodal .filters span { font-size: var(--fs-small); color: var(--text-muted); padding: 5px 10px; border-radius: var(--r-1); display: flex; gap: 5px; align-items: center; }
+.smodal .filters i.pipe { width: 1px; height: 16px; background: var(--border); font-style: normal; }
+.sres, .picker .picker-list { padding: 6px 12px 10px; }
+.sres .rlabel { padding: 6px 10px; }
+.prow2, .picker .picker-row {
+  display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-radius: var(--r-2);
+  font-size: var(--fs-body); font-weight: 500; cursor: pointer; min-width: 0;
+}
+/* Rows past the fold skip layout and paint until scrolled to (t102, 9 Nov 2026): a one-letter query lists
+   over a hundred rows, and laying them all out cost each first keystroke. The same rows, keyboard and mouse. */
+.picker .picker-list > .picker-row, .picker .picker-list > .picker-note, .picker .picker-list > .picker-heading {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 44px;
+}
+.prow2.hot, .picker .picker-row.selected { background: var(--bg-side); }
+.prow2 .k, .picker .picker-row .picker-hint { margin-left: auto; font-size: var(--fs-caption); color: var(--text-faint); font-weight: 400; flex: none; }
+.picker .picker-row .picker-label { min-width: 0; }
+.picker .picker-row .picker-detail { font-size: var(--fs-caption); color: var(--text-faint); font-weight: 400; }
+.picker .picker-icon { color: var(--text-muted); display: inline-flex; flex: none; }
+.picker .picker-footer, .smodal .sfoot {
+  display: flex; gap: 16px; padding: 10px 22px 14px; border-top: 1px solid var(--border);
+  font-size: var(--fs-caption); color: var(--text-faint); align-items: center;
+}
+/* The palette's Ask / Find / Do and scope (4 Nov 2026): the middle Ask box's bar, kept in the header bar's
+   panel in the same words and the same shape — the modes left, the scope right. */
+.picker-modes { display: flex; align-items: center; gap: 8px; }
+.picker-modes .src { margin-left: auto; font-size: var(--fs-caption); font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 4px; border: 0; background: none; cursor: pointer; font-family: inherit; }
+.picker-modes .src:hover { color: var(--text); }
+/* Key caps read 11px on a 4px radius, as the former host app's (shell parity, 4 Nov 2026: look.css
+   .ns-cmdk and .ns-ghost kbd are radius-sm at 500 11px, and every other key in the vault already
+   rounds r-1); the mono face stays, as the former host app keys its own approvals in mono. */
+.kbd, kbd {
+  font-size: var(--fs-xs); color: var(--text-muted); background: var(--bg-side); border: 1px solid var(--border);
+  border-radius: var(--r-1); padding: 1px 6px; font-family: var(--font-mono); white-space: nowrap;
+}
+.srow2 { display: flex; gap: 12px; padding: 10px; border-radius: var(--r-2); align-items: flex-start; }
+.srow2.hot { background: var(--bg-side); }
+.srow2 .t { font-size: var(--fs-body); font-weight: 600; }
+.srow2 .p { font-size: var(--fs-small); color: var(--text-faint); }
+.srow2 .s { font-size: var(--fs-small); color: var(--text-muted); margin-top: 2px; }
+.srow2 .s b { color: var(--text); }
+
+/* ---------- AI answers with sources ---------- */
+.aians { margin: 4px 12px 12px; border: 1px solid var(--border); border-radius: var(--r-3); padding: 16px 18px; }
+.aians p { font-size: var(--fs-body); }
+.srcrow { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: var(--fs-body); font-weight: 500; min-width: 0; }
+.srcrow .n { color: var(--text-faint); font-weight: 400; font-size: var(--fs-small); }
+
+/* ---------- empty states and loading (the app's EmptyState wears the kit's shape; bare .empty stays the small
+   panel line it has always been in NotePanels and LinksPanel) ---------- */
+/* The empty place reads the former host app's (shell parity, 4 Nov 2026: look.css .ns-empty-state is
+   36/22/32 over 340 with a 600 14/20 title and a marginless line; the feel layer carries the same
+   numbers). */
+.nv-empty { text-align: center; padding: 36px 22px 32px; max-width: 340px; margin: 0 auto; }
+.nv-empty .nv-empty-tile {
+  width: 44px; height: 44px; margin: 0 auto; display: grid; place-items: center;
+  background: var(--bg-side); border-radius: var(--r-3); font-size: var(--fs-section); color: var(--text-muted);
+}
+.nv-empty .nv-empty-title { font-size: var(--fs-md); font-weight: 600; color: var(--text-ink); margin: 0; }
+.nv-empty .nv-empty-line { font-size: var(--fs-small); color: var(--text-muted); margin: 0; }
+.nv-empty .nv-empty-actions { display: flex; gap: 8px; justify-content: center; }
+.skel, .nv-skeleton-row { border-radius: var(--r-2); background: linear-gradient(90deg, var(--bg-side), var(--bg-hover), var(--bg-side)); }
+
+/* ---------- toggles, switches, settings rows ---------- */
+.setrow { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.setrow .t { font-size: var(--fs-body); font-weight: 600; }
+.setrow .d { font-size: var(--fs-small); color: var(--text-muted); }
+/* The one switch's button twin (10.0 Endless Tech): the same 44x24 square shape as input.switch, on in primary as
+   the former host app, for places that render a button instead of a checkbox. */
+.switch:not(input) { margin-left: auto; width: 44px; height: 24px; border-radius: var(--r-1); background: var(--primary); position: relative; flex: none; border: 0; cursor: pointer; padding: 0; }
+.switch:not(input)::after { content: ""; position: absolute; top: 4px; right: 4px; width: 16px; height: 16px; border-radius: var(--r-1); background: #fff; }
+.switch.off:not(input) { background: var(--border-strong); }
+.switch.off:not(input)::after { right: auto; left: 4px; }
+.tog { display: flex; align-items: center; gap: 10px; padding: 9px 0; font-size: var(--fs-body); font-weight: 600; }
+.tog .tri { font-size: var(--fs-caption); color: var(--text); width: 14px; }
+.togbody { margin: 0 0 6px 24px; }
+
+/* ---------- callouts and quotes (the mock-ups' inline tints) ---------- */
+.callout { border-radius: var(--r-3); padding: 14px 16px; font-size: var(--fs-body); display: flex; gap: 10px; align-items: flex-start; }
+/* A markdown callout's body reads as text; only its title carries the kind colour (5 Nov 2026, the audit: tip and
+   info bodies rendered solid blue, where Live Preview reads dark bodies). The UI's own tint boxes keep their
+   coloured words. */
+.callout.slate { background: var(--slate-bg); color: var(--slate-tx); }
+.callout-note { background: var(--slate-bg); }
+.callout-note > .callout-title { color: var(--slate-tx); }
+.callout.amber { background: var(--amber-bg); color: var(--amber-tx); }
+.callout-warning { background: var(--amber-bg); }
+.callout-warning > .callout-title { color: var(--amber-tx); }
+.callout.blue { background: var(--blue-bg); color: var(--blue-tx); }
+.callout-tip, .callout-info { background: var(--blue-bg); }
+.callout-tip > .callout-title, .callout-info > .callout-title { color: var(--blue-tx); }
+.callout.green { background: var(--green-bg); color: var(--green-tx); }
+.callout-success, .callout-todo { background: var(--green-bg); }
+.callout-success > .callout-title, .callout-todo > .callout-title { color: var(--green-tx); }
+.callout.red { background: var(--red-bg); color: var(--red-tx); }
+.callout-failure, .callout-danger, .callout-bug { background: var(--red-bg); }
+.callout-failure > .callout-title, .callout-danger > .callout-title, .callout-bug > .callout-title { color: var(--red-tx); }
+/* UI callout boxes are flat tints (sweep-vault-b F-B10): the markdown callout's accent edge showed pink on every
+   slate UI box. Markdown [!kind] boxes keep their own kind edge. */
+.callout.slate, .callout.amber, .callout.blue, .callout.green, .callout.red { border: 0; }
+.quote { border-left: 3px solid var(--border-strong); padding: 2px 0 2px 16px; font-size: var(--fs-body); color: var(--text-muted); font-style: italic; }
+
+/* ---------- property rows, tiles, avatars ---------- */
+.props { margin: 18px 0 6px; }
+dl.props { margin: 18px 0 6px; padding: 0; }
+.props dd { margin: 0; }
+.prow { display: flex; align-items: center; gap: 12px; padding: 6px 0; min-width: 0; }
+.prow .k { width: 140px; flex: none; font-size: var(--fs-small); color: var(--text-muted); }
+.prow .v { font-size: var(--fs-body); font-weight: 500; display: flex; align-items: center; gap: 8px; min-width: 0; }
+.miniava {
+  width: 20px; height: 20px; border-radius: 50%; font-style: normal; font-size: var(--fs-caption);
+  font-weight: 700; display: inline-grid; place-items: center; flex: none;
+}
+.gtile {
+  width: 40px; height: 40px; border-radius: var(--r-3); display: inline-grid; place-items: center; flex: none;
+  font-size: var(--fs-card);
+}
+.gtile.sm { width: 32px; height: 32px; border-radius: var(--r-3); font-size: var(--fs-body); }
+.gtile.xs { width: 26px; height: 26px; border-radius: var(--r-2); font-size: var(--fs-caption); }
+.avatars { display: flex; }
+.avatars i {
+  width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--bg-raised);
+  /* Each face reads apart from the next (t208, 11 Nov 2026: three faces overlapped into "ACACSO", so less
+     of an overlap — but t261, 13 Nov 2026: BM DL PN still overlapped so the first read "BN". No overlap
+     left: a 2px gap, letters never touching. The hairline stays on every ground. Theme tokens only. */
+  box-shadow: 0 0 0 1px var(--border);
+  font-style: normal; font-size: var(--fs-caption); font-weight: 700; display: grid; place-items: center;
+  margin-left: 2px;
+}
+.avatars i:first-child { margin-left: 0; }
+.pcard { display: flex; gap: 14px; align-items: flex-start; }
+.pava { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-size: var(--fs-body); font-weight: 700; flex: none; }
+.stat { display: flex; align-items: baseline; gap: 8px; }
+.stat b { font-size: var(--fs-section); font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.stat span { font-size: var(--fs-small); color: var(--text-muted); }
+
+/* ---------- the frame: side bar, icon rail, top bar, page ---------- */
+.vapp { display: flex; height: 100vh; overflow: hidden; }
+.side {
+  width: var(--rail-w); flex: none; background: var(--bg); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; padding: 10px 14px 6px; overflow: hidden;
+}
+/* The bar never scrolls (3 Nov 2026): the places list takes the room between New note and the foot, and what does
+   not fit folds into More (panels/Places.tsx, useFold), never a scrollbar. Shorter windows set the rows closer
+   first. */
+.side .places-list { flex: 1 1 0; min-height: 0; overflow: hidden; }
+/* Shorter windows set the rows closer, as the former host app's (SHELL-VALUES: 30px at 820px high and under, 28px
+   at 700px and under, 26px at 620px and under); headings stay 30px. */
+@media (max-height: 860px) {
+  .side .vault { padding-bottom: 6px; }
+  .side .places-action { margin-bottom: 12px; }
+}
+@media (max-height: 820px) {
+  .side .places-list .srow { height: 30px; min-height: 30px; }
+}
+@media (max-height: 700px) {
+  .side .places-list .srow { height: 28px; min-height: 28px; }
+  .rail .rrow { height: 36px; }
+}
+@media (max-height: 620px) {
+  .side .places-list .srow { height: 26px; min-height: 26px; }
+}
+.side .vault { display: flex; align-items: center; gap: 12px; padding: 0 4px 8px; }
+.side .vault .mark {
+  width: 38px; height: 38px; border-radius: var(--r-3); background: var(--primary);
+  color: var(--on-primary); display: grid; place-items: center; font-weight: 700; font-size: var(--fs-body); flex: none;
+  overflow: hidden;
+}
+.side .vault .mark svg, .rail .mark svg { display: block; border-radius: inherit; }
+.side .vault b { font-size: var(--fs-body); font-weight: 600; min-width: 0; }
+/* The brand row (10.0 Endless Tech, the mock-ups' .brand): the space mark, the wordmark (navy in light, cream in
+   dark, the coral spark on both), and the business name small beneath it. The vault menu lives in the foot now. */
+.side .vault .brand-words { min-width: 0; flex: 1; }
+.side .vault .wm { height: 22px; width: auto; max-width: 150px; display: block; }
+.side .vault .wm-d { display: none; }
+:root[data-theme='dark'] .side .vault .wm-l { display: none; }
+:root[data-theme='dark'] .side .vault .wm-d { display: block; }
+.side .vault small { display: block; font-size: var(--fs-caption); color: var(--text-muted); margin-top: 2px; }
+.srow {
+  display: flex; align-items: center; gap: 10px; padding: 0 10px; width: 100%; height: 32px; min-height: 32px; box-sizing: border-box;
+  border: 0; background: none; border-radius: var(--r-2); font: inherit; font-size: var(--fs-body); line-height: 22px; font-weight: 400; color: var(--rail-ink);
+  text-decoration: none; cursor: pointer; text-align: left;
+}
+.srow svg, .srow .sicon { flex: none; color: var(--rail-muted); display: inline-flex; }
+.srow svg { width: 16px; height: 16px; }
+.srow .clip { min-width: 0; }
+.srow:focus-visible { outline-color: var(--coral) !important; }
+.srow .key {
+  margin-left: auto; font-size: var(--fs-caption); color: var(--text-faint); background: var(--bg-raised);
+  border: 1px solid var(--border); border-radius: var(--r-2); padding: 1px 6px;
+}
+.srow .n { margin-left: auto; font-size: var(--fs-small); line-height: 20px; color: var(--rail-muted); font-weight: 500; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.srow.on { background: var(--sel); font-weight: 600; }
+/* Hover is the mist, as the former host app's rail (shell parity, 4 Nov 2026: look.css --ns-forest-hover): lighter
+   than where you are, so the selected row is always the strongest (3 Nov 2026: a darker hover read as two rows
+   selected). */
+.srow:not(.on):hover, .settings-nav button:not(.active):hover { background: var(--bg-side); }
+.srow.on svg, .srow.on .sicon { color: var(--rail-muted); }
+.slabel { font-size: var(--fs-caption); font-weight: 600; line-height: 18px; color: var(--rail-faint); padding: 6px 10px; min-height: 30px; box-sizing: border-box; display: flex; align-items: center; }
+.side .sp, .rail .sp { flex: 1; }
+/* The bar's foot (10.0 Endless Tech Direction B; 20 Nov 2026, one account row: the avatar, name and plan, 40px min,
+   with the bell 32px beside it; Settings and the version live in its menu, components/account/AccountMenu.tsx). */
+.places-foot { border-top: 0; padding: 6px 0 0; display: flex; flex-direction: column; align-items: stretch; gap: 2px; }
+.places-foot .srow { padding: 4px 8px; }
+.places-profile { display: flex; align-items: center; gap: 4px; }
+.places-profile .places-me { flex: 1 1 auto; min-width: 0; min-height: 40px; font-weight: 600; }
+.places-identity { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; text-align: left; }
+.places-name { font-size: var(--fs-small); font-weight: 600; color: var(--rail-ink); }
+.places-sub { font-size: var(--fs-xs); font-weight: 400; color: var(--rail-faint); }
+/* The foot's words wrap, as the former host app's rail (shell parity, p11-uniform-account: look.css lets
+   .ns-native-name wrap anywhere): a long name or plan line is never cut with …. */
+.places-foot .places-name, .places-foot .places-sub { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+/* The account's avatar in the foot (20 Nov 2026: no longer at the right of every header): the former host app's coral circle
+   (shell parity, 4 Nov 2026: host.mjs draws it 30px coral with near-white 600 13px words), coral whatever is picked. */
+.places-ava, .acct-ava.is-in {
+  width: 30px; height: 30px; border-radius: 50%; background: var(--coral); color: var(--bg-side);
+  display: grid; place-items: center; font-size: var(--fs-small); font-weight: 600; flex: none;
+}
+/* The folded rail's person answers hover as the header's avatar does (p11-uniform-account round 2: the avatar-only
+   foot; the rail's rows otherwise answer with ink alone, which a coral circle cannot). */
+.rail .rail-me:hover .places-ava { filter: brightness(1.12); }
+:root[data-theme='dark'] .rail .rail-me:hover .places-ava { filter: brightness(0.9); }
+.places-foot .places-me { font-weight: 600; }
+.rail button.mark { border: 0; cursor: pointer; font-family: inherit; padding: 0; }
+.side .places-head { padding-left: 0; padding-right: 0; }
+/* The the former host app/Vault/Bot switch fills the bar's width (3 Nov 2026 polish: full width directly under the name,
+   as the former host app's; the hide button moved to the brand row), and gives way when the bar is dragged narrow (9.5
+   polished, 2 Nov 2026, the side bar shows a horizontal scrollbar): the switch may shrink, so nothing scrolls sideways
+   at any width (tests/sidebar-overflow.test.mjs). Other panels keep the switch + hide row (styles.css .places-side). */
+.side .places-head .lens-switch { flex: 1 1 auto; width: 100%; min-width: 0; }
+.places-side .places-head .lens-switch { flex: 0 1 180px; width: 180px; }
+.rail { width: 64px; flex: none; background: var(--bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 14px 0; gap: 4px; }
+.rail .mark { width: 30px; height: 30px; border-radius: var(--r-3); background: var(--primary); color: var(--on-primary); display: grid; place-items: center; font-weight: 700; font-size: var(--fs-body); margin-bottom: 10px; }
+.rail .rrow { width: 42px; height: 42px; border-radius: var(--r-2); display: grid; place-items: center; color: var(--text-muted); position: relative; border: 0; background: none; cursor: pointer; font: inherit; }
+.rail .rrow:hover { color: var(--text); }
+.rail .rrow.on { background: var(--sel); color: var(--text); }
+.rail .rrow .dot { position: absolute; top: 8px; right: 9px; width: 7px; height: 7px; border-radius: 50%; background: var(--coral); }
+/* The rail names its row on hover (8.7 wave 1 polish, 30 Oct 2026, frame-collapsed.png's "Inbox · 3 waiting" tip). */
+.rail .rrow .tip { display: none; left: 48px; top: 50%; transform: translateY(-50%); }
+.rail .rrow:hover .tip, .rail .rrow:focus-visible .tip { display: block; }
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; background: var(--bg); }
+/* One row, always (3 Nov 2026; the bar used to wrap to a second row, which in the former host app's Vault page at
+   1080p 150% put the bell, the page action, Ask and the avatar under the search). Round 6 (4 Nov 2026, the
+   reviewer: with max-content sides the bar sat 97-233px left of centre, and off-centre was the complaint —
+   centring wins): the bar is a 3-column grid with two always-equal sides (0 minimums: content can never prise a
+   side wider), so the middle is exactly centred over the whole header, and nothing can overlap by construction
+   (no absolute positioning anywhere on this bar). A side whose content is wider than its own cell is crowded: on
+   the right, page buttons yield one by one from the least used into their page's ⋯ menu, the most used last; on
+   the left the crumb shortens with … by itself. Only a side that still cannot fit falls back to its max-content
+   column (the least move); a page without its own ⋯ hides behind one that only shows then. The place, Ask and
+   the avatar keep their row. */
+.topbar {
+  min-height: var(--header-h); flex: none; display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 520px) minmax(0, 1fr);
+  column-gap: 12px; align-items: center; padding: 8px 20px;
+  border-bottom: 1px solid var(--border); container-type: inline-size; container-name: topbar; position: relative;
+}
+/* A page's own row in the former host app's window (one window, 9 Nov 2026: two searches and two
+   account circles on screen): Vault's header chrome is gone there, so the row is no grid with a centred
+   search — the page's folders on the left, its actions on the right. A page with no row draws nothing at
+   all. */
+.topbar.topbar-page { display: flex; }
+.topbar.topbar-page > .topbar-left { flex: 1 1 auto; }
+.topbar.topbar-page > .right { flex: none; margin-left: auto; }
+/* The least-move fallback (Round 6): a side that still cannot fit with everything yielded and the crumb at
+   its minimum goes back to its max-content column — the grid shifts the middle by half the difference, never
+   an overlap. Both set reads the Round 5 columns. The squeeze below still wins over both. */
+.topbar.is-left-roomy { grid-template-columns: minmax(max-content, 1fr) minmax(360px, 520px) minmax(0, 1fr); }
+.topbar.is-right-roomy { grid-template-columns: minmax(0, 1fr) minmax(360px, 520px) minmax(max-content, 1fr); }
+/* Both set needs its own rule (a whole grid-template-columns wins or loses whole: without this the later
+   single would silently drop the other's side back to a 0 minimum and the bar would cover the way back). */
+.topbar.is-left-roomy.is-right-roomy { grid-template-columns: minmax(max-content, 1fr) minmax(360px, 520px) minmax(max-content, 1fr); }
+.topbar .topbar-left { display: flex; align-items: center; min-width: 0; }
+.topbar .navbtn { width: 32px; height: 32px; border: 0; background: none; color: var(--text-muted); border-radius: var(--r-3); font-size: var(--fs-body); cursor: pointer; display: inline-grid; place-items: center; }
+.topbar .navbtn:hover { background: var(--bg-side); color: var(--text-ink); }
+.topbar .crumb { font-size: var(--fs-small); color: var(--text-faint); margin-left: 6px; white-space: nowrap; overflow: hidden; text-overflow: clip; min-width: 0; max-width: calc(50cqw - 390px); }
+.topbar .crumb b { color: var(--text); font-weight: 600; }
+.topbar .right { display: flex; align-items: center; flex-wrap: nowrap; gap: 8px; justify-content: flex-end; min-width: 0; }
+/* The right side's children never shrink (Round 6: nowrap buttons and short spans): they overflow honestly
+   instead of crushing, so the crowded check measures them child by child against the cell. */
+.topbar > .right > * { flex: none; }
+.topbar .chip { height: 32px; }
+.topbar .view-nav { display: flex; align-items: center; gap: 2px; flex: none; }
+.topbar .navbtn:disabled { opacity: .35; cursor: default; }
+.topbar .navbtn:disabled:hover { background: none; color: var(--text-muted); }
+.topbar .crumb button { border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer; }
+.topbar .crumb button:hover { text-decoration: underline; }
+/* The centred search (10.0 Endless Tech: the place, a centred search field with its Ctrl+K key, and the page's
+   actions): commands, pages and full search through the palette. One bar, 520px full, at the same size on every
+   page it fits (3 Nov 2026 sweep D: Projects' buttons crowded it to a Ctrl+K box): the former host app's own
+   520px max centred (shell parity, 4 Nov 2026: look.css .ns-room-search). Round 5 fills the grid's middle track
+   (360px to 520px): the track sizes the bar, never a width step (the old 280/240px container steps undercut the
+   floor in the real window and are gone). 38px tall (8px padding + 20px line + 2px border), mist fill, 6px
+   radius, 14px/20px words. Centred by the grid (4 Nov 2026): auto margins centred it in the leftover between
+   two uneven sides, so it sat left of the page column; Round 6's always-equal sides centre it exactly over the
+   whole header, and a still-crowded side falls back to its max-content column by the least amount. The columns
+   can never overlap. */
+.topbar .top-search {
+  width: 100%; max-width: 520px; min-width: 0; margin: 0; justify-self: center; display: flex; align-items: center; gap: 9px;
+  background: var(--bg-side); border: 1px solid var(--border); border-radius: var(--r-2);
+  padding: 8px 12px; color: var(--text-caption); font-size: var(--fs-md); line-height: 20px; font-family: inherit; cursor: pointer;
+  overflow: hidden; box-sizing: border-box;
+}
+.topbar .top-search .clip { flex: 1; text-align: left; min-width: 0; overflow: hidden; text-overflow: clip; white-space: nowrap; }
+.topbar .top-search kbd { flex: none; font: 500 var(--fs-xs)/16px var(--font-ui); background: var(--bg-raised); border: 1px solid var(--border-strong); border-radius: var(--r-1); color: var(--text-muted); }
+/* The header contract (Round 6, 4 Nov 2026, the reviewer: the grid's always-equal sides centre the bar,
+   so nothing can overlap it by construction): a side whose content is wider than its own cell is crowded —
+   on the right a button with data-overflow hides into its page's ⋯ menu, one by one from the least used
+   (lowest data-overflow-order first, the most used last), and comes back when there is room
+   (lib/headerOverflow.ts lays out on every render and resize, and only ever hides buttons and marks the
+   fallback columns now, never moves the bar); on the left the crumb shortens with … by itself, ← → + never
+   hide. A page without its own ⋯ keeps one beside its buttons that only shows while it carries something.
+   The crumb still hides below 1150px of bar — the page head below names the place — and above it clips at
+   half the bar less the search's half, the back/forward/plus block and a breath (the max-width on .crumb, in
+   container units now the bar is a grid). A window too narrow for even the bare sides squeezes the bar to a
+   40px search button that says what it does on hover. */
+.topbar [data-overflow].is-overflow-hidden { display: none; }
+.topbar .navbtn.topbar-tight-only { display: none; }
+.topbar .navbtn.topbar-tight-only.is-shown { display: inline-grid; }
+@container topbar (max-width: 1150px) { .topbar .crumb { display: none; } }
+.topbar.is-squeezed { grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr); }
+.topbar.is-squeezed .top-search { width: 40px; min-width: 40px; max-width: 40px; justify-content: center; padding: 8px 0; }
+.topbar.is-squeezed .top-search .clip, .topbar.is-squeezed .top-search kbd { display: none; }
+/* Squeezed, the bare sides can run wider than their share (a ballooned band gap is dead padding): the cells
+   clip from the outer edge, so the 40px button still keeps its 12px, the ⋯ carrying the hidden buttons stays
+   whole and clickable, and nothing slides under the window buttons. Border-box keeps the cell on its track
+   (content-box would count the padding outside the zero minimum and burst the track); the buttons never
+   shrink (the rule above: a crushed content box would crush them to their minimums instead of spilling
+   past it). */
+.topbar.is-squeezed > .topbar-left, .topbar.is-squeezed > .right { overflow: hidden; }
+.topbar.is-squeezed > .right { justify-content: flex-start; box-sizing: border-box; }
+/* Tabs off, the header is the window's top band and leaves room for the window buttons: the gap lives INSIDE
+   the right cell, not on the bar (Round 5: padding on the bar would pull the grid's middle off the page
+   column; inside the cell it only pushes the buttons left). On a Mac the traffic lights' gap lives inside the
+   left cell the same way. */
+.app[data-platform='win32'] .topbar.controls-gap,
+.app[data-platform='linux'] .topbar.controls-gap { padding-right: 20px; }
+.app[data-platform='win32'] .topbar.controls-gap > .right,
+.app[data-platform='linux'] .topbar.controls-gap > .right { padding-right: calc(var(--wbtn-w, 138px) + 6px); }
+.app[data-platform='darwin'] .topbar.controls-gap-left { padding-left: 20px; }
+.app[data-platform='darwin'] .topbar.controls-gap-left > .topbar-left { padding-left: 72px; }
+/* A narrow window yields, in order: the crumb (the page head below names the place), the bar's padding and gaps,
+   the page's overflow buttons one by one from the least used (into their ⋯ menu, above, the most used last,
+   while their side crowds its cell), a still-crowded side to its max-content column, the grid's middle
+   track to its 360px floor, the bar itself to its 40px button, and the header's people stack (a shortcut for
+   the People tab below). The search, Ask and the avatar never hide. */
+@media (max-width: 1150px) {
+  .topbar { padding: 8px 16px; }
+  .topbar .crumb { display: none; }
+  .topbar .right { gap: 6px; }
+  .topbar .right .avatars { display: none; }
+  .app[data-platform='win32'] .topbar.controls-gap,
+  .app[data-platform='linux'] .topbar.controls-gap { padding-right: 16px; }
+  .app[data-platform='darwin'] .topbar.controls-gap-left { padding-left: 16px; }
+}
+.topbar .top-search:hover { color: var(--text-muted); border-color: var(--border-strong); }
+/* Both edges keep the scrollbar's gutter (4 Nov 2026): a classic scrollbar would otherwise pull the centred
+   page column half its width off the header's middle; with both gutters the column's middle is the header's
+   middle, scrollbar or not, and the page never jumps when the bar appears. */
+.vscroll { flex: 1; overflow-y: auto; overflow-x: hidden; scrollbar-gutter: stable both-edges; }
+.vpage { max-width: var(--reading); margin: 0 auto; padding: 36px 36px 48px; }
+.vpage.wide { max-width: none; }
+
+/* ---------- the ask box ---------- */
+.ask {
+  background: var(--bg-raised); border: 1px solid var(--border-strong); border-radius: var(--r-4); padding: 16px 16px 12px;
+  box-shadow: var(--e-2);
+}
+.ask .hint { font-size: var(--fs-reading); color: var(--text-faint); }
+.ask textarea, .ask input.ask-text { border: 0; outline: 0; font: inherit; font-size: var(--fs-reading); width: 100%; color: var(--text); background: none; resize: none; padding: 0; }
+.ask textarea::placeholder, .ask input.ask-text::placeholder { color: var(--text-faint); }
+.ask .bar { display: flex; align-items: center; margin-top: 14px; }
+.ask .modes { display: flex; gap: 4px; }
+.ask .modes button, .ask .modes span { font-size: var(--fs-caption); font-weight: 600; color: var(--text-muted); padding: 5px 10px; border-radius: var(--r-2); border: 0; background: none; cursor: pointer; font-family: inherit; }
+.ask .modes .on { background: var(--bg-side); color: var(--text); }
+.ask .src { margin-left: auto; font-size: var(--fs-caption); font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 4px; border: 0; background: none; cursor: pointer; font-family: inherit; }
+.ask .send {
+  width: 32px; height: 32px; border-radius: var(--r-2); border: 0; background: var(--primary);
+  color: var(--on-primary); font-size: var(--fs-reading); margin-left: 10px; cursor: pointer; display: grid; place-items: center; flex: none;
+}
+.ask .send:hover { filter: brightness(1.12); }
+.ask .send:disabled { background: var(--bg-active); color: var(--text-faint); opacity: 1; cursor: default; }
+.ask.float { border-radius: var(--r-4); padding: 10px 8px 10px 20px; display: flex; align-items: center; gap: 8px; }
+.ask.float .hint { font-size: var(--fs-body); }
+.ask.float .tools { margin-left: auto; display: flex; align-items: center; gap: 2px; color: var(--text-faint); }
+.ask.float .send { width: 30px; height: 30px; border-radius: var(--r-2); margin-left: 6px; }
+.ask.float .send.send-words { width: auto; height: auto; padding: 7px 14px; border-radius: var(--r-2); font-size: var(--fs-small); font-weight: 600; }
+
+/* ---------- boards ---------- */
+.boardwrap { background: var(--bg-side); border-radius: var(--r-3); padding: 16px; }
+.board { display: flex; gap: 12px; }
+.bcol { flex: 1; min-width: 0; }
+.bcol .bhead { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.bcol .bhead .c { font-size: var(--fs-caption); color: var(--text-faint); font-weight: 600; }
+.bcard { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--r-3); padding: 14px 16px; margin-bottom: 10px; }
+.bcard .t { font-size: var(--fs-body); font-weight: 600; line-height: 1.4; }
+.bcard .tags { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.bcard .who { display: flex; align-items: center; gap: 6px; margin-top: 10px; font-size: var(--fs-small); color: var(--text-muted); }
+.badd { border: 1.5px dashed var(--border-strong); border-radius: var(--r-3); padding: 10px; text-align: center; font-size: var(--fs-small); color: var(--text-faint); background: none; width: 100%; cursor: pointer; font-family: inherit; }
+
+/* ---------- calendars ---------- */
+.cal { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--r-3); overflow: hidden; }
+.cal .monthbar { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.cal .monthbar .navbtn { width: 30px; height: 30px; border: 0; background: none; color: var(--text-muted); border-radius: var(--r-2); font-size: var(--fs-card); cursor: pointer; }
+.cal .monthbar b { font-size: var(--fs-card); font-weight: 600; }
+.cal table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.cal th { font-size: var(--fs-caption); font-weight: 600; color: var(--text-faint); background: var(--bg-side); padding: 8px; text-align: left; }
+.cal td { border-top: 1px solid var(--border); border-left: 1px solid var(--border); height: 86px; vertical-align: top; padding: 4px; }
+.cal td:first-child { border-left: 0; }
+.cal .d { font-size: var(--fs-small); color: var(--text-muted); text-align: right; padding: 0 6px 2px; }
+.cal .d.today span { background: var(--coral); color: var(--on-coral); border-radius: var(--r-1); display: inline-grid; place-items: center; width: 24px; height: 24px; font-weight: 700; }
+.cal .ev { font-size: var(--fs-caption); font-weight: 600; border-radius: var(--r-1); padding: 2px 7px; margin: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: clip; }
+
+/* ---------- side-peek (wave 2 moves Peek.tsx onto this; .peek stays the current panel until then) ---------- */
+.vpeekback { position: fixed; inset: 0 0 0 var(--rail-w); background: rgba(27, 34, 53, .18); }
+/* Below the window buttons' band (8.6.1): its head holds the Close. */
+.vpeek {
+  position: fixed; top: var(--wbtn-h, 40px); right: 0; bottom: 0; width: 480px; background: var(--bg-raised);
+  border-radius: var(--r-4) 0 0 var(--r-4); box-shadow: -16px 0 48px rgba(20, 26, 46, .16);
+  padding: 20px 28px; overflow-y: auto;
+}
+.vpeek .phead { display: flex; align-items: flex-start; gap: 10px; }
+.vpeek h2 { font-size: var(--fs-section); font-weight: 600; letter-spacing: -0.01em; color: var(--text-strong); }
+
+/* ---------- settings ---------- */
+.setwrap { display: flex; gap: 0; max-width: 980px; margin: 0 auto; padding: 24px 32px; }
+.setrail { width: 220px; flex: none; padding-right: 20px; }
+.setrail .ssearch {
+  display: flex; align-items: center; gap: 8px; background: var(--bg-side); border-radius: var(--r-2);
+  padding: 8px 12px; font-size: var(--fs-small); color: var(--text-faint); margin-bottom: 10px;
+}
+.setpane { flex: 1; max-width: 640px; min-width: 0; }
+.setpane h1 { font-size: var(--fs-section); font-weight: 600; color: var(--text-strong); margin-bottom: 4px; }
+.packrow { display: flex; align-items: center; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--border); }
+.packrow .nm { font-size: var(--fs-body); font-weight: 600; }
+.packrow .ds { font-size: var(--fs-small); color: var(--text-muted); }
+
+/* ---------- meetings ---------- */
+.metapills { display: flex; gap: 8px; margin: 14px 0 4px; flex-wrap: wrap; }
+.msec { margin-top: 22px; }
+.msec ol, .msec ul { margin: 8px 0 0 20px; font-size: var(--fs-body); }
+.msec li { margin: 5px 0; }
+.drow { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: var(--fs-body); }
+
+/* ---------- gallery cards ---------- */
+.gal { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.gcard { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--r-3); padding: 18px; }
+.gcard .t { font-size: var(--fs-card); font-weight: 600; margin-top: 12px; line-height: 1.35; }
+.gcard .s { font-size: var(--fs-small); color: var(--text-muted); margin-top: 2px; }
+
+/* ---------- timelines ---------- */
+.gantt { display: flex; flex-direction: column; }
+.gantt .grow { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.gantt .grow .nm { width: 200px; flex: none; font-size: var(--fs-body); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: clip; }
+.gtrack { flex: 1; position: relative; height: 26px; }
+.gbar { position: absolute; top: 2px; height: 22px; border-radius: var(--r-2); font-size: var(--fs-caption); font-weight: 700; display: flex; align-items: center; padding: 0 10px; white-space: nowrap; overflow: hidden; min-width: 40px; }
+.gmonths { display: flex; margin-left: 212px; }
+.gmonths span { flex: 1; font-size: var(--fs-caption); font-weight: 600; color: var(--text-faint); }
+.vtl { position: relative; margin: 6px 0 0 6px; padding-left: 22px; }
+.vtl::before { content: ""; position: absolute; left: 6px; top: 8px; bottom: 8px; width: 2px; background: var(--border); border-radius: var(--r-1); }
+.vtl .ev2 { position: relative; padding: 7px 0; }
+.vtl .ev2::before { content: ""; position: absolute; left: -20px; top: 13px; width: 8px; height: 8px; border-radius: 50%; background: var(--border-strong); }
+.vtl .ev2.hot::before { background: var(--coral); }
+.vtl .ev2 .t { font-size: var(--fs-body); font-weight: 600; }
+.vtl .ev2 .s { font-size: var(--fs-small); color: var(--text-muted); }
+.vtl .ev2 .when { float: right; font-size: var(--fs-caption); color: var(--text-faint); font-weight: 500; }
+
+/* ---------- folders, recording, editor bits ---------- */
+.frow { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--r-2); font-size: var(--fs-body); font-weight: 500; border: 0; background: none; font-family: inherit; color: var(--text); width: 100%; cursor: pointer; text-align: left; }
+.frow.on { background: var(--sel); font-weight: 600; }
+.frow .n { margin-left: auto; font-size: var(--fs-caption); color: var(--text-faint); }
+.frow.sub { padding-left: 32px; font-weight: 400; color: var(--text-muted); }
+.recdot { width: 10px; height: 10px; border-radius: 50%; background: #d93b2b; flex: none; }
+.recbanner {
+  display: flex; align-items: center; gap: 12px; background: var(--primary); color: var(--on-primary);
+  border-radius: var(--r-3); padding: 12px 18px; font-size: var(--fs-body); font-weight: 600;
+}
+.recbanner .time { font-variant-numeric: tabular-nums; font-size: var(--fs-body); }
+.recbanner .rbtn { border: 1px solid rgba(255, 255, 255, .3); background: none; color: inherit; font: inherit; font-size: var(--fs-small); font-weight: 600; border-radius: var(--r-2); padding: 5px 12px; cursor: pointer; }
+.tscript { border: 1px solid var(--border); border-radius: var(--r-3); overflow: hidden; }
+.tline { display: flex; gap: 12px; padding: 9px 16px; font-size: var(--fs-body); }
+.tline + .tline { border-top: 1px solid var(--border); }
+.tline.live { background: var(--bg-side); }
+.tline .who { font-weight: 700; flex: none; }
+.tline .at { margin-left: auto; font-size: var(--fs-caption); color: var(--text-faint); flex: none; font-variant-numeric: tabular-nums; }
+.ed { font-size: var(--fs-body); line-height: 1.55; }
+.ed h2 { font-size: var(--fs-section); font-weight: 600; margin: 22px 0 6px; }
+.ed ul, .ed ol { margin: 6px 0 10px 22px; }
+.ed li { margin: 4px 0; }
+.slashmenu { width: 300px; max-height: 330px; overflow: hidden; }
+.slashmenu .d { display: block; font-size: var(--fs-caption); color: var(--text-faint); font-weight: 400; }
+.cellask { position: relative; }
+.cellask .cdot {
+  position: absolute; top: -7px; right: -7px; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--coral); border: 2px solid var(--bg-raised); box-shadow: 0 1px 4px rgba(27, 34, 53, .3);
+}
+.linkstrip { border-left: 1px solid var(--border); padding-left: 18px; }
+.linkstrip .lrow { display: flex; align-items: center; gap: 8px; font-size: var(--fs-small); font-weight: 500; padding: 5px 0; }
+
+/* Coral only where the spec puts it: the today marker, the needs-you dot, urgent flags (10.0 Endless Tech,
+   2 Nov 2026, the reviewer: Vault still paints coral everywhere, so actions and links are ink, the send button is
+   primary, tags are plain rectangles, selected filters are the soft fill). */
+a { color: inherit; }
+
+/* One coral accent, kept by the kit (the guard a new screen cannot dodge: actions, links, chips, tags, filters
+   and send are ink, primary or the soft fill, never coral; tests/w4vault-look.test.mjs fails a room sheet that
+   reaches for --accent* or --coral in one of these selectors). */
+:root :is(.btn.quiet, .button.quiet, .text-button, .link-button, .au-link-button) { color: var(--text-strong); }
+:root :is(.ask .send) { background: var(--primary); color: var(--on-primary); }
+
+/* The line being worked on carries a whisper, never a stripe (5 Nov 2026: the editor's own wash was a blue
+   bar, the selection spill a user refused all over again; this is a breath of neutral ink at 4%). */
+.cm-editor .cm-content .cm-activeLine {
+  background-color: color-mix(in srgb, var(--text-strong) 4%, transparent);
+}
+
+/* ── Plain status words (5 Nov 2026, the plan "Vault: status in plain words") ────────────────
+   Task and project status opts into plain words with .is-plain: no fill, no dot, the words alone.
+   Late reads the attention colour; today, on track and counts read muted. Off track adds weight,
+   never a third hue. Other modules' pills keep their look; task surfaces choose plain. */
+.pill.is-plain, .tag.is-plain { background: none; border: 0; padding: 0 2px; height: auto; min-height: 0; }
+.pill.is-plain.is-attention, .tag.is-plain.is-attention { color: var(--ns-attention-strong, var(--accent-strong, var(--ns-attention-words))); font-weight: 650; }
+.pill.is-plain.is-attention.is-strong, .tag.is-plain.is-attention.is-strong { font-weight: 700; }
+.pill.is-plain.is-muted, .tag.is-plain.is-muted { color: var(--text-muted); font-weight: 500; }
+.pill.is-plain .dot, .tag.is-plain .dot { display: none; }
+
+/* Reduced motion, the one mechanism (5 Nov 2026 feel-motion): this global kill, here in the kit that loads last, is
+   what stills every animation and transition in the app. Pages carry no reduced-motion rule of their own (a page with
+   its own animation and no rule here is covered by this one, not forgotten); the duplicate kill that sat in
+   styles/settings-87.css is gone. */
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* One exit (5 Nov 2026 feel-motion: toasts, menus and dialogs vanished in one frame while everything arrives softly):
+   a quick fade and sink on the separate `translate` property, so a centred toast keeps its place while it goes. The
+   component marks the element (data-nv-leaving) and unmounts it after the 120ms; under Reduced motion the kill above
+   makes the exit instant. Last in the kit, which loads last, so it wins over any entrance on the same element. */
+@keyframes nv-leave {
+  from { opacity: 1; }
+  to { opacity: 0; translate: 0 4px; }
+}
+[data-nv-leaving='true'] { animation: nv-leave var(--nv-motion-fast) var(--nv-ease-fade) both; pointer-events: none; }
+/* A held group (the modal layer, a hosted picker): the exit runs on the overlay inside the unstyled wrapper. */
+.nv-leave-wrap[data-nv-leaving='true'] > * { animation: nv-leave var(--nv-motion-fast) var(--nv-ease-fade) both; pointer-events: none; }
+/* View Transitions (tab reorder, pane moves) still when movement is off. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
+
+/* The shared explainer paragraph on a wide window (5 Nov 2026 at 3456 wide: .vsub is every pack's Fills itself
+   line, and it spanned the 1440 column in ~170-character lines). Past 1700 px viewports it holds at 76ch, the
+   codebase's own prose measure; narrow windows keep the full column. */
+@media (min-width: 1700px) {
+  .vsub { max-width: 76ch; }
+}
+
+/* A citation marker never prints as a bare digit stuck to a word (5 Nov 2026, the real app: the side chat read
+   "…meeting1 is with the former host app now" — the source chip flush against its link, the gap living only in
+   the search answer's and packs' own rules). The chip carries its own gap, as .nb-chip already does. */
+.cite { margin-left: 4px; }
+
+/* Names Windows cannot keep (components/NamesDialog.tsx, Nov 2026 break audit): the plan as old-to-new rows with
+   their folders quiet, and what was left alone beneath. Full names always (never cut off); the list scrolls. */
+.dlg.nm-dialog { max-height: min(84vh, 760px); display: flex; flex-direction: column; }
+.nm-list { overflow-y: auto; min-height: 0; border: 1px solid var(--border); border-radius: var(--r-3); background: var(--bg-raised); padding: 4px 16px; margin: 12px 0; }
+.nm-row { display: flex; align-items: baseline; gap: 10px; padding: 8px 0; overflow-wrap: anywhere; }
+.nm-row + .nm-row { border-top: 1px solid var(--border); }
+.nm-old { font-weight: 600; color: var(--text); }
+.nm-folder { font-weight: 400; color: var(--text-muted); }
+.nm-arrow { flex: none; color: var(--text-muted); }
+.nm-new { font-weight: 600; color: var(--text); }
+.nm-notes { margin: 4px 0 0; }
+.nm-note { margin: 6px 0 0; }
+
+/* One date strip, everywhere (v9, 6 Nov 2026, components/DateStrip.tsx): each stop its own room in order, long
+   gaps as marked breaks, Today at its true place, the named stops under it. Colours only theme tokens. */
+.dstrip { margin: 2px 0 10px; }
+.dstrip-folds { display: flex; justify-content: space-between; gap: 8px; }
+.dstrip-fold { border: 0; background: none; padding: 2px 0; font: inherit; font-size: var(--fs-small); color: var(--text-muted); cursor: pointer; white-space: nowrap; }
+.dstrip-fold:hover { color: var(--text-strong); text-decoration: underline; }
+.dstrip-track { position: relative; height: 46px; }
+.dstrip-track.is-wide { overflow-x: auto; }
+.dstrip-inner { position: relative; height: 100%; min-width: 100%; }
+.dstrip-line { position: absolute; top: 22px; left: 0; right: 0; height: 2px; border-radius: var(--r-1); background: var(--border-strong); }
+.dstrip-done { position: absolute; top: 22px; left: 0; height: 2px; border-radius: var(--r-1); background: var(--accent-line); }
+.dstrip-today { position: absolute; top: 8px; bottom: 6px; width: 0; border-left: 1.5px dashed var(--text-faint); }
+.dstrip-today > span { position: absolute; top: -8px; left: 0; transform: translateX(-50%); font-size: var(--fs-caption); font-weight: 600; color: var(--text-faint); background: var(--bg-raised); padding: 0 4px; }
+.dstrip-break { position: absolute; top: 13px; transform: translateX(-50%); font-size: var(--fs-caption); font-weight: 700; color: var(--text-faint); letter-spacing: 1px; }
+.dstrip-stop { position: absolute; top: 17px; width: 12px; height: 12px; margin: 0 0 0 -6px; border: 0; background: none; padding: 0; cursor: pointer; }
+.dstrip-dot { display: block; width: 12px; height: 12px; box-sizing: border-box; border-radius: 50%; background: var(--bg-raised); border: 2px solid var(--text-faint); }
+.dstrip-stop.is-late .dstrip-dot, .dstrip-key.is-late .dstrip-dot { background: var(--ns-attention-words); border-color: var(--ns-attention-words); }
+.dstrip-stop.is-done .dstrip-dot, .dstrip-key.is-done .dstrip-dot { background: var(--ns-status); border-color: var(--ns-status); }
+.dstrip-stop.is-next .dstrip-dot, .dstrip-key.is-next .dstrip-dot { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+.dstrip-stop:hover .dstrip-dot { box-shadow: 0 0 0 4px var(--accent-soft); }
+.dstrip-keys { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 2px; }
+.dstrip-key { display: flex; align-items: baseline; gap: 8px; width: 100%; border: 0; background: none; padding: 3px 0; font: inherit; font-size: var(--fs-small); color: var(--text-muted); cursor: pointer; text-align: left; }
+.dstrip-key:hover { color: var(--text-strong); }
+.dstrip-key .dstrip-dot { width: 9px; height: 9px; flex: none; transform: translateY(1px); }
+.dstrip-key-words { overflow-wrap: anywhere; }
+.dstrip-key-words b { font-weight: 600; }
+
+/* Dates under every stop (v10, 6 Nov 2026: 14 bare dots "still says nothing"): each day's date small and
+   neat below the line, the next stop with its short name, Today above so they never collide. Colour says
+   done, late and coming, on the dates as on the dots. Colours only theme tokens. */
+.dstrip-track { height: 72px; }
+.dstrip-today { bottom: 40px; }
+.dstrip-label { position: absolute; top: 34px; transform: translateX(-50%); font-size: var(--fs-caption); line-height: 1.45; white-space: nowrap; text-align: center; }
+.dstrip-label-date { display: block; color: var(--text-muted); }
+.dstrip-label-name { display: block; color: var(--text-strong); }
+.dstrip-label.tone-late .dstrip-label-date { color: var(--ns-attention-words); font-weight: 650; }
+.dstrip-label.tone-done .dstrip-label-date { color: var(--ns-status); }
+.dstrip-label.tone-next .dstrip-label-date { color: var(--accent-text); font-weight: 700; }
+.dstrip-label.tone-next .dstrip-label-name { font-weight: 600; }
+
+/* Gallery cards reflow to the width on very wide windows (t254, 13 Nov 2026: three fixed columns would each
+   stand 760 wide with one short name). Below 2400 px the three columns stand as they were. */
+@media (min-width: 2400px) {
+  .gal {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+.side .vault .wm-text { display: block; font-family: var(--font-head, inherit); font-weight: 700; font-size: var(--fs-section); line-height: 22px; letter-spacing: -0.01em; color: var(--text, inherit); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

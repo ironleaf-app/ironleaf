@@ -1,0 +1,386 @@
+/* The light looks (5.2.0; src/shared/prefs.ts PALETTES): 20 Oct 2026. Every palette sets the same tokens. Every look ever
+   offered is offered (4 Nov 2026): Sunny, Paper and Blush are back as themselves, and Ocean, Lagoon, Forest, Rose, Cocoa
+   and Dusk joined them. Dark keeps its own look. The former host app draws the same palettes
+   (native-runtime/plugins/desktop/look.css there) from the same choice. */
+
+/* Bright, the default look (8.1, 29 Oct 2026; 30 Oct 2026; 10.0: restated as Endless Tech, the same values the former host
+   app draws; 3 Nov 2026, DECISIONS 3: called Bright, never Honey Glow): a white page, cool mist greys, ink navy for
+   primary actions, the coral gem as the one accent (words in it stay readable by the accent-text rule below), and the
+   soft Selected fill where something is. The same look in the former host app (native-runtime/plugins/desktop/look.css
+   there). */
+:root[data-theme='light'][data-palette='honey'] {
+  --bg: #ffffff;
+  --bg-side: #f2f4f7;
+  --bg-soft: #f6f8fa;
+  --bg-raised: #ffffff;
+  --bg-hover: #e8edf2;
+  --bg-sunken: #e8edf2;
+  --bg-active: #e3eaf3;
+  --bg-code: #f2f4f7;
+  --border: #e2e7ee;
+  --border-soft: #edf0f4;
+  --border-strong: #ccd4df;
+  --sel: #e3eaf3;
+  --text: #3d4356;
+  --text-strong: #141a2e;
+  --text-muted: #565e70;
+  --text-faint: #7a8191;
+  --ink: #141a2e;
+  --on-ink: #ffffff;
+  --primary: #1b2235;
+  --on-primary: #ffffff;
+  --graph-link: #ccd4df;
+  --canvas-grid: #e2e7ee;
+  --canvas-card-border: #ccd4df;
+  --scroll: #d3d9e2;
+  --overlay: rgba(27, 34, 53, 0.24);
+}
+
+/* Bright in Dark (8.1; 10.0: restated as Endless Tech dark): the same look on the brand navy ground, as finished
+   as Light; every other palette keeps Dark's own colours above (styles.css). */
+:root[data-theme='dark'][data-palette='honey'] {
+  --bg: #141a2e;
+  --bg-side: #0f1526;
+  --bg-soft: #171e33;
+  --bg-raised: #1b2235;
+  --bg-hover: #232c47;
+  --bg-sunken: #101524;
+  --bg-active: #2a3350;
+  --bg-code: #1b2235;
+  --border: #2a3350;
+  --border-soft: #232c47;
+  --border-strong: #3d4356;
+  --sel: #2a3350;
+  --text: #c6ccd8;
+  --text-strong: #ffffff;
+  --text-muted: #a9aec2;
+  --text-faint: #8b93a8;
+  --ink: #ffffff;
+  --on-ink: #141a2e;
+  --primary: #eef1f6;
+  --on-primary: #141a2e;
+  --graph-link: #3d4356;
+  --canvas-grid: #232c47;
+  --canvas-card-border: #3d4356;
+  --scroll: #454f61;
+  --overlay: rgba(0, 0, 0, 0.45);
+}
+
+:root[data-theme='light'][data-palette='bright'] {
+  --bg: #ffffff;
+  --bg-side: #f5f7fa;
+  --bg-raised: #ffffff;
+  --bg-hover: #edf0f4;
+  --bg-active: #e3e7ee;
+  --bg-code: #f3f5f8;
+  --border: #e3e7ec;
+  --border-strong: #cfd5de;
+  --text: #14171c;
+  --text-muted: #525866;
+  --text-faint: #858b98;
+  --ink: #14171c;
+  --on-ink: #ffffff;
+  --primary: #14171c;
+  --on-primary: #ffffff;
+  --graph-link: #cfd5de;
+  --canvas-grid: #d3d9e2;
+  --canvas-card-border: #cfd5de;
+  --scroll: #cdd3dc;
+  --overlay: rgba(20, 23, 28, 0.24);
+}
+
+:root[data-theme='light'][data-palette='sky'] {
+  --bg: #fbfdff;
+  --bg-side: #eaf3fd;
+  --bg-raised: #ffffff;
+  --bg-hover: #dfecfa;
+  --bg-active: #d3e4f7;
+  --bg-code: #edf4fc;
+  --border: #d9e6f4;
+  --border-strong: #c2d4e9;
+  --text: #102033;
+  --text-muted: #475a70;
+  --text-faint: #8092a8;
+  --ink: #102033;
+  --on-ink: #ffffff;
+  --primary: #102033;
+  --on-primary: #ffffff;
+  --graph-link: #c2d4e9;
+  --canvas-grid: #c9d9ec;
+  --canvas-card-border: #c2d4e9;
+  --scroll: #c2d4e9;
+  --overlay: rgba(16, 32, 51, 0.24);
+}
+
+:root[data-theme='light'][data-palette='mint'] {
+  --bg: #fbfefc;
+  --bg-side: #e8f6ee;
+  --bg-raised: #ffffff;
+  --bg-hover: #dbf0e4;
+  --bg-active: #cde8d9;
+  --bg-code: #ecf6f0;
+  --border: #d6eadf;
+  --border-strong: #bcdac9;
+  --text: #10201a;
+  --text-muted: #465c51;
+  --text-faint: #7f978a;
+  --ink: #10201a;
+  --on-ink: #ffffff;
+  --primary: #10201a;
+  --on-primary: #ffffff;
+  --graph-link: #bcdac9;
+  --canvas-grid: #c4ddcf;
+  --canvas-card-border: #bcdac9;
+  --scroll: #bcdac9;
+  --overlay: rgba(16, 32, 26, 0.24);
+}
+
+:root[data-theme='light'][data-palette='lavender'] {
+  --bg: #fcfbff;
+  --bg-side: #efebfd;
+  --bg-raised: #ffffff;
+  --bg-hover: #e5dffb;
+  --bg-active: #dad2f7;
+  --bg-code: #f2effc;
+  --border: #e1dbf6;
+  --border-strong: #cdc3ee;
+  --text: #1a1630;
+  --text-muted: #554f70;
+  --text-faint: #8c87a6;
+  --ink: #1a1630;
+  --on-ink: #ffffff;
+  --primary: #1a1630;
+  --on-primary: #ffffff;
+  --graph-link: #cdc3ee;
+  --canvas-grid: #d3cbf0;
+  --canvas-card-border: #cdc3ee;
+  --scroll: #cdc3ee;
+  --overlay: rgba(26, 22, 48, 0.24);
+}
+
+:root[data-theme='light'][data-palette='blush'] {
+  --bg: #fffbfb;
+  --bg-side: #fcecef;
+  --bg-raised: #ffffff;
+  --bg-hover: #f8e0e5;
+  --bg-active: #f3d4db;
+  --bg-code: #fbeff1;
+  --border: #f0dbe0;
+  --border-strong: #e4c5cd;
+  --text: #25151a;
+  --text-muted: #67505a;
+  --text-faint: #9c858d;
+  --ink: #25151a;
+  --on-ink: #ffffff;
+  --primary: #25151a;
+  --on-primary: #ffffff;
+  --graph-link: #e4c5cd;
+  --canvas-grid: #ebcdd4;
+  --canvas-card-border: #e4c5cd;
+  --scroll: #e4c5cd;
+  --overlay: rgba(37, 21, 26, 0.24);
+}
+
+:root[data-theme='light'][data-palette='sunny'] {
+  --bg: #fffefa;
+  --bg-side: #fdf5dc;
+  --bg-raised: #ffffff;
+  --bg-hover: #f9ecc6;
+  --bg-active: #f4e2b2;
+  --bg-code: #fcf5e0;
+  --border: #f1e5bf;
+  --border-strong: #e3d29f;
+  --text: #221c0c;
+  --text-muted: #635a40;
+  --text-faint: #978e74;
+  --ink: #221c0c;
+  --on-ink: #ffffff;
+  --primary: #221c0c;
+  --on-primary: #ffffff;
+  --graph-link: #e3d29f;
+  --canvas-grid: #e8daaf;
+  --canvas-card-border: #e3d29f;
+  --scroll: #e3d29f;
+  --overlay: rgba(34, 28, 12, 0.24);
+}
+
+:root[data-theme='light'][data-palette='paper'] {
+  --bg: #faf9f5;
+  --bg-side: #f3f1ea;
+  --bg-raised: #ffffff;
+  --bg-hover: #ebe9e1;
+  --bg-active: #e2ded3;
+  --bg-code: #f1eee6;
+  --border: #e6e3da;
+  --border-strong: #d4d0c4;
+  --text: #1f1e1d;
+  --text-muted: #66635c;
+  --text-faint: #8a877f;
+  --ink: #1f1e1d;
+  --on-ink: #ffffff;
+  --primary: #1f1e1d;
+  --on-primary: #ffffff;
+  --graph-link: #d4d0c4;
+  --canvas-grid: #dbd6c9;
+  --canvas-card-border: #d4d0c4;
+  --scroll: #d4d0c4;
+  --overlay: rgba(31,30,29, 0.24);
+}
+
+:root[data-theme='light'][data-palette='ocean'] {
+  --bg: #f6fafd;
+  --bg-side: #dfeaf7;
+  --bg-raised: #ffffff;
+  --bg-hover: #d3e3f5;
+  --bg-active: #c3d8f0;
+  --bg-code: #e8f1f9;
+  --border: #cfdff0;
+  --border-strong: #b3cbe6;
+  --text: #0d1f33;
+  --text-muted: #42586e;
+  --text-faint: #687d93;
+  --ink: #0d1f33;
+  --on-ink: #ffffff;
+  --primary: #0d1f33;
+  --on-primary: #ffffff;
+  --graph-link: #b3cbe6;
+  --canvas-grid: #bccfe8;
+  --canvas-card-border: #b3cbe6;
+  --scroll: #b3cbe6;
+  --overlay: rgba(13,31,51, 0.24);
+}
+
+:root[data-theme='light'][data-palette='lagoon'] {
+  --bg: #f5fbf9;
+  --bg-side: #d8ece6;
+  --bg-raised: #ffffff;
+  --bg-hover: #c8e2da;
+  --bg-active: #b6d7cc;
+  --bg-code: #e2f0ea;
+  --border: #c4ddd5;
+  --border-strong: #a3c9bc;
+  --text: #0b2320;
+  --text-muted: #405b56;
+  --text-faint: #677f79;
+  --ink: #0b2320;
+  --on-ink: #ffffff;
+  --primary: #0b2320;
+  --on-primary: #ffffff;
+  --graph-link: #a3c9bc;
+  --canvas-grid: #adcbc0;
+  --canvas-card-border: #a3c9bc;
+  --scroll: #a3c9bc;
+  --overlay: rgba(11,35,32, 0.24);
+}
+
+:root[data-theme='light'][data-palette='forest'] {
+  --bg: #f5faf6;
+  --bg-side: #d9e9dc;
+  --bg-raised: #ffffff;
+  --bg-hover: #c9dfcd;
+  --bg-active: #b7d4bc;
+  --bg-code: #e3efe5;
+  --border: #c5dcc9;
+  --border-strong: #a4c7aa;
+  --text: #0e2018;
+  --text-muted: #415a4a;
+  --text-faint: #687d6c;
+  --ink: #0e2018;
+  --on-ink: #ffffff;
+  --primary: #0e2018;
+  --on-primary: #ffffff;
+  --graph-link: #a4c7aa;
+  --canvas-grid: #aec9b3;
+  --canvas-card-border: #a4c7aa;
+  --scroll: #a4c7aa;
+  --overlay: rgba(14,32,24, 0.24);
+}
+
+:root[data-theme='light'][data-palette='rose'] {
+  --bg: #fef8f9;
+  --bg-side: #f5dade;
+  --bg-raised: #ffffff;
+  --bg-hover: #f0c9d1;
+  --bg-active: #e9b7c0;
+  --bg-code: #f9e9ec;
+  --border: #eccdd3;
+  --border-strong: #dfaeb8;
+  --text: #2b1118;
+  --text-muted: #6a4a53;
+  --text-faint: #8f6f78;
+  --ink: #2b1118;
+  --on-ink: #ffffff;
+  --primary: #2b1118;
+  --on-primary: #ffffff;
+  --graph-link: #dfaeb8;
+  --canvas-grid: #e3b5bf;
+  --canvas-card-border: #dfaeb8;
+  --scroll: #dfaeb8;
+  --overlay: rgba(43,17,24, 0.24);
+}
+
+:root[data-theme='light'][data-palette='cocoa'] {
+  --bg: #fbf8f4;
+  --bg-side: #eadfcf;
+  --bg-raised: #ffffff;
+  --bg-hover: #e2d4bc;
+  --bg-active: #d7c3a4;
+  --bg-code: #f1e8d8;
+  --border: #e0d3bd;
+  --border-strong: #cdb891;
+  --text: #241a12;
+  --text-muted: #625748;
+  --text-faint: #847a66;
+  --ink: #241a12;
+  --on-ink: #ffffff;
+  --primary: #241a12;
+  --on-primary: #ffffff;
+  --graph-link: #cdb891;
+  --canvas-grid: #d2bd99;
+  --canvas-card-border: #cdb891;
+  --scroll: #cdb891;
+  --overlay: rgba(36,26,18, 0.24);
+}
+
+:root[data-theme='light'][data-palette='dusk'] {
+  --bg: #f7f8fb;
+  --bg-side: #e1e5ef;
+  --bg-raised: #ffffff;
+  --bg-hover: #d3d9e8;
+  --bg-active: #c2c9dd;
+  --bg-code: #e9ecf3;
+  --border: #d2d7e4;
+  --border-strong: #b7bcd2;
+  --text: #151a28;
+  --text-muted: #4e5366;
+  --text-faint: #74788a;
+  --ink: #151a28;
+  --on-ink: #ffffff;
+  --primary: #151a28;
+  --on-primary: #ffffff;
+  --graph-link: #b7bcd2;
+  --canvas-grid: #bfc4d6;
+  --canvas-card-border: #b7bcd2;
+  --scroll: #b7bcd2;
+  --overlay: rgba(21,26,40, 0.24);
+}
+
+/* Words in the accent colour stay readable on any page, whatever colour was picked (a bright yellow or a pale blue drawn
+   as text would vanish): the same hue, no lighter than reads on white; in Dark, no darker than reads on the dark page. */
+:root {
+  --accent-text: oklch(from var(--accent-base) min(l, 0.56) c h);
+  --accent-strong: oklch(from var(--accent-base) min(l, 0.5) c h);
+  /* Words on a fill of the accent, whatever colour was picked (5 Nov 2026 rework: "A person picked
+     a colour; a filled pill or tick shows exactly that colour", so the fill stays raw and the ink follows the
+     fill's own lightness): white on a deep fill, navy #141a2e on a light one. oklch L 0.59 parts the two sides
+     on all 19 accents, both themes (the nearest fills sit 0.013 away, so the switch is always pure); dark's
+     navy words on its lightened fills come from this same token. */
+  --on-accent: oklch(from var(--accent) calc(0.22283 + 0.77717 * clamp(0, (0.59 - l) * 1000, 1)) calc(0.04021 * (1 - clamp(0, (0.59 - l) * 1000, 1))) 270.22686);
+}
+:root[data-theme='dark'] {
+  --accent-text: oklch(from var(--accent-dark, var(--accent-base)) max(l, 0.74) c h);
+  --accent-strong: oklch(from var(--accent-dark, var(--accent-base)) max(l, 0.8) c h);
+}
+
+/* Where you are is a soft filled row with weight (10.0 Endless Tech: never an accent tint, never a coral icon at
+   rest): the base .place.is-current rule in styles.css carries it, on every palette, in both themes. */
