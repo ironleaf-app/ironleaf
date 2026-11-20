@@ -87,7 +87,7 @@ test('validity, notice and end: lapsed, lapsing, decided, auto-renewal rolling o
   // Attention: worst first; each with its one action and a stable key.
   const words = m.attention.map((a) => a.words);
   assert.ok(words.includes('Bluegum Telco’s quote lapsed on Mon 19 Oct'));
-  assert.ok(words.includes('Northwind Builders’s quote lapses in 6 days'));
+  assert.ok(words.includes('Northwind Builders’ quote lapses in 6 days'));
   // Packs uplift item 15: one plain renews line, with the notice day kept as the receipt underneath.
   assert.ok(words.includes('Bluegum Telco’s contract renews on Sun 15 Nov; too late to give notice'));
   assert.equal(m.attention.find((a) => a.kind === 'contract')?.sub, 'notice was due Fri 16 Oct');
