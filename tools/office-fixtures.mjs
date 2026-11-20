@@ -49,7 +49,7 @@ export function zip(files, { store = false } = {}) {
 export const X = 'xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"';
 export const CT = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
 export const s = (i) => `t="s"><v>${i}</v>`;
-export const STRINGS = ['Cafe Opening Checklist', 'Venue:', 'Wexley St', 'Opening date:', 'Phase', 'Task', 'Owner', 'Due', 'Status', 'Notes', 'Days to go', 'Pre-opening', 'Order signage', 'Sam', 'Done', 'Book the fit-out crew', 'Priya', 'In progress', 'Landlord wants keys back by 5pm', 'Set up POS', 'Opening week', 'Staff rostered', 'Total done', 'Statuses', 'Not started'];
+export const STRINGS = ['Cafe Opening Checklist', 'Venue:', 'Wexley St', 'Opening date:', 'Phase', 'Task', 'Owner', 'Due', 'Status', 'Notes', 'Days to go', 'Before opening', 'Order signage', 'Sam', 'Done', 'Book the fit-out crew', 'Priya', 'In progress', 'Landlord wants keys back by 5pm', 'Set up the card reader', 'Opening week', 'Staff rostered', 'Total done', 'Statuses', 'Not started'];
 export const SST = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="${STRINGS.length}" uniqueCount="${STRINGS.length}">${STRINGS.map((t) => `<si><t>${t}</t></si>`).join('')}</sst>`;
 export const ix = (t) => STRINGS.indexOf(t);
 // Styles: 0 plain · 1 bold · 2 a date (d/mm/yyyy) · 3 a filled cell (an input) · 4 a filled date.
@@ -62,9 +62,9 @@ export const TASKS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<
   `<row r="2"><c r="A2" ${s(ix('Venue:'))}</c><c r="B2" s="3" ${s(ix('Wexley St'))}</c></row>` +
   `<row r="3"><c r="A3" ${s(ix('Opening date:'))}</c><c r="B3" s="4"><v>46330</v></c></row>` +
   `<row r="5" spans="1:7">${['Phase', 'Task', 'Owner', 'Due', 'Status', 'Notes', 'Days to go'].map((h, i) => `<c r="${'ABCDEFG'[i]}5" s="1" ${s(ix(h))}</c>`).join('')}</row>` +
-  `<row r="6" spans="1:7"><c r="A6" ${s(ix('Pre-opening'))}</c><c r="B6" ${s(ix('Order signage'))}</c><c r="C6" s="3" ${s(ix('Sam'))}</c><c r="D6" s="4"><v>46300</v></c><c r="E6" s="3" ${s(ix('Done'))}</c><c r="F6" s="3"/><c r="G6"><f t="shared" ref="G6:G9" si="0">D6-$B$3</f><v>-30</v></c></row>` +
-  `<row r="7" spans="1:7"><c r="A7" ${s(ix('Pre-opening'))}</c><c r="B7" ${s(ix('Book the fit-out crew'))}</c><c r="C7" s="3" ${s(ix('Priya'))}</c><c r="D7" s="4"><v>46310</v></c><c r="E7" s="3" ${s(ix('In progress'))}</c><c r="F7" s="3" ${s(ix('Landlord wants keys back by 5pm'))}</c><c r="G7"><f t="shared" si="0"/><v>-20</v></c></row>` +
-  `<row r="8" spans="1:7"><c r="A8" ${s(ix('Opening week'))}</c><c r="B8" ${s(ix('Set up POS'))}</c><c r="C8" s="3" ${s(ix('Sam'))}</c><c r="D8" s="4"><v>46325</v></c><c r="E8" s="3" ${s(ix('Done'))}</c><c r="G8"><f t="shared" si="0"/><v>-5</v></c></row>` +
+  `<row r="6" spans="1:7"><c r="A6" ${s(ix('Before opening'))}</c><c r="B6" ${s(ix('Order signage'))}</c><c r="C6" s="3" ${s(ix('Sam'))}</c><c r="D6" s="4"><v>46300</v></c><c r="E6" s="3" ${s(ix('Done'))}</c><c r="F6" s="3"/><c r="G6"><f t="shared" ref="G6:G9" si="0">D6-$B$3</f><v>-30</v></c></row>` +
+  `<row r="7" spans="1:7"><c r="A7" ${s(ix('Before opening'))}</c><c r="B7" ${s(ix('Book the fit-out crew'))}</c><c r="C7" s="3" ${s(ix('Priya'))}</c><c r="D7" s="4"><v>46310</v></c><c r="E7" s="3" ${s(ix('In progress'))}</c><c r="F7" s="3" ${s(ix('Landlord wants keys back by 5pm'))}</c><c r="G7"><f t="shared" si="0"/><v>-20</v></c></row>` +
+  `<row r="8" spans="1:7"><c r="A8" ${s(ix('Opening week'))}</c><c r="B8" ${s(ix('Set up the card reader'))}</c><c r="C8" s="3" ${s(ix('Sam'))}</c><c r="D8" s="4"><v>46325</v></c><c r="E8" s="3" ${s(ix('Done'))}</c><c r="G8"><f t="shared" si="0"/><v>-5</v></c></row>` +
   `<row r="9" spans="1:7"><c r="A9" ${s(ix('Opening week'))}</c><c r="B9" ${s(ix('Staff rostered'))}</c><c r="C9" s="3"/><c r="D9" s="4"/><c r="E9" s="3"/><c r="G9"><f t="shared" si="0"/><v>-46330</v></c></row>` +
   `<row r="10"><c r="A10" s="1" ${s(ix('Total done'))}</c><c r="E10" s="1"><f>COUNTIF(E6:E9,"Done")</f><v>2</v></c></row>` +
   `</sheetData>${MERGE}${VALID}<pageMargins left="0.7" right="0.7" top="0.75" bottom="0.75" header="0.3" footer="0.3"/></worksheet>`;
@@ -74,7 +74,7 @@ export const WB_RELS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\
 export const TYPES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/><Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/><Override PartName="/xl/calcChain.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.calcChain+xml"/></Types>`;
 export const CHAIN = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<calcChain xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><c r="G6" i="1"/><c r="G7"/><c r="G8"/><c r="G9"/><c r="E10"/></calcChain>';
 export const ROOT_RELS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${CT}/officeDocument" Target="xl/workbook.xml"/></Relationships>`;
-export const PLAYBOOK = {
+export const CHECKLIST_PARTS = {
   '[Content_Types].xml': TYPES,
   '_rels/.rels': ROOT_RELS,
   'xl/workbook.xml': WORKBOOK,
@@ -85,7 +85,7 @@ export const PLAYBOOK = {
   'xl/worksheets/sheet2.xml': LISTS,
   'xl/calcChain.xml': CHAIN,
 };
-export const checklist = () => zip(PLAYBOOK);
+export const checklist = () => zip(CHECKLIST_PARTS);
 
 export const W = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"';
 export const DOCX = () =>
@@ -107,7 +107,7 @@ export const PPTX = () =>
  * across sheets. `venue` filled in (owners, dates, statuses, notes, the cafe's name, manager and opening date) is the
  * project's working copy; without, the blank master. Cells written as inline words (no shared-strings part).
  */
-export function bigPlaybook({ venue = '', manager = 'Ana Ruiz' } = {}) {
+export function bigChecklist({ venue = '', manager = 'Ana Ruiz' } = {}) {
   const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const cell = (ref, v, style) => {
     const st = style !== undefined ? ` s="${style}"` : '';
@@ -121,18 +121,18 @@ export function bigPlaybook({ venue = '', manager = 'Ana Ruiz' } = {}) {
   const statuses = ['Done', 'Done', 'In progress', 'Not started', 'Blocked'];
   const opening = 46330;
   const phases = {
-    'Pre-opening': ['Sign the lease', 'Order signage', 'Book the fit-out crew', 'Council consent', 'Insurance in place', 'Utilities connected', 'Waste collection booked', 'Security alarm quote', 'Cleaning contract', 'Parking for staff'],
-    'Fit-out': ['Strip out', 'Electrical first fix', 'Plumbing', 'Flooring', 'Shopfitting', 'Paint', 'Lighting', 'Back-of-house shelving', 'Fitting rooms', 'Final clean'],
-    'IT & POS': ['Internet line ordered', 'Network cabinet', 'POS terminals', 'Card readers', 'Receipt printers', 'Wi-Fi for staff', 'CCTV', 'Stock system set up', 'Test transactions', 'Price files loaded'],
-    Staffing: ['Advertise roles', 'Interviews', 'Offers sent', 'Contracts signed', 'Induction day', 'Rosters for week one', 'Uniforms ordered', 'Keys and alarm codes', 'Till training', 'First-aid officer'],
-    Marketing: ['Opening date announced', 'Social posts planned', 'Local paper', 'Flyers', 'Opening offer', 'Window display', 'Google listing', 'Photos of the store', 'Invite local businesses', 'Opening-day event'],
-    'Opening week': ['Stock delivered', 'Merchandising', 'Float in the tills', 'Soft opening', 'Opening day', 'Daily huddles', 'Feedback cards', 'First weekly report', 'Snag list', 'Hand over to the area manager'],
+    'Before opening': ['Sign the lease', 'Order signage', 'Book the fit-out crew', 'Council consent', 'Food licence', 'Insurance in place', 'Utilities connected', 'Waste collection booked', 'Cleaning contract', 'Flour supplier chosen'],
+    Kitchen: ['Strip out', 'Electrical first fix', 'Plumbing', 'Flooring', 'Benches and shelving', 'Paint', 'Lighting', 'Extraction hood', 'Cool room', 'Final clean'],
+    'Equipment & supplies': ['Oven commissioned', 'Coffee machine serviced', 'Card reader', 'Mixer and proofer', 'Fridges and freezers', 'Dishwasher', 'Scales checked', 'Menu boards', 'Cups and boxes ordered', 'Wi-Fi for customers'],
+    Staff: ['Advertise roles', 'Interviews', 'Offers sent', 'Contracts signed', 'Induction day', 'Rosters for week one', 'Aprons ordered', 'Keys and alarm codes', 'Coffee training', 'First-aid officer'],
+    'Getting the word out': ['Opening date announced', 'Social posts planned', 'Local paper', 'Flyers', 'Opening offer', 'Window display', 'Google listing', 'Photos of the bakes', 'Invite the neighbours', 'Opening-day tasting'],
+    'Opening week': ['First flour delivery', 'Counter display', 'Change for the cash drawer', 'Soft opening', 'Opening day', 'Daily huddles', 'Feedback cards', 'First week’s takings', 'Snag list', 'Thank the builder'],
   };
   const files = {};
   const sheetNames = ['Overview', ...Object.keys(phases), 'Contacts', 'Lists'];
   // Overview: the cafe's fields, then a line per phase with its totals across the sheets.
   const ov = [
-    [1, [cell('A1', 'Cafe Opening Checklist — New Cafe Opening', 1)]],
+    [1, [cell('A1', 'Cafe Opening Checklist — Our Bakery Cafe', 1)]],
     [3, [cell('A3', 'Venue:'), cell('B3', venue, 3)]],
     [4, [cell('A4', 'Opening date:'), cell('B4', venue ? opening : '', 4)]],
     [5, [cell('A5', 'Cafe manager:'), cell('B5', venue ? manager : '', 3)]],
@@ -174,7 +174,7 @@ export function bigPlaybook({ venue = '', manager = 'Ana Ruiz' } = {}) {
   });
   files.Contacts = sheetXml([
     [1, ['Role', 'Name', 'Phone', 'Email'].map((h, i) => cell(`${'ABCD'[i]}1`, h, 1))],
-    ...['Area coordinator', 'Landlord', 'Builder', 'Tills support', 'Marketing'].map((role, k) => [k + 2, [cell(`A${k + 2}`, role), cell(`B${k + 2}`, venue ? people[k] : '', 3), cell(`C${k + 2}`, venue ? `021 555 01${k}` : '', 3), cell(`D${k + 2}`, venue ? `${people[k].split(' ')[0].toLowerCase()}@example.com` : '', 3)]]),
+    ...['Head baker', 'Landlord', 'Builder', 'Card reader support', 'Signwriter'].map((role, k) => [k + 2, [cell(`A${k + 2}`, role), cell(`B${k + 2}`, venue ? people[k] : '', 3), cell(`C${k + 2}`, venue ? `021 555 01${k}` : '', 3), cell(`D${k + 2}`, venue ? `${people[k].split(' ')[0].toLowerCase()}@example.com` : '', 3)]]),
   ]);
   files.Lists = sheetXml([[1, [cell('A1', 'Statuses', 1)]], ...['Not started', 'In progress', 'Blocked', 'Done'].map((v, k) => [k + 2, [cell(`A${k + 2}`, v)]])]);
   const parts = {
