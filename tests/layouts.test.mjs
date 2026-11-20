@@ -146,7 +146,7 @@ test('blocks: a project’s own list wins, else its layout’s preset, else noth
 });
 
 test('programme: status band with sponsor, budget and phase; workstreams with progress; milestones; risks; next actions', () => {
-  const models = L.dashboard(input('Branch Library Refresh'));
+  const models = L.dashboard(input('Community Garden Refresh'));
   // v10, 6 Nov 2026: Next actions sit above Milestones, back where the old page had them (Workstreams, then
   // Next actions, then the milestone rows).
   assert.deepEqual(models.map((m) => m.type), ['status', 'progress', 'actions', 'timeline']);
@@ -154,16 +154,16 @@ test('programme: status band with sponsor, budget and phase; workstreams with pr
   assert.equal(status.progress, 62);
   assert.equal(status.health, 'at risk');
   assert.deepEqual(status.due, { date: '2026-12-18', days: 58 });
-  assert.deepEqual(status.facts.map((f) => [f.label, f.value]), [['Sponsor', 'Dana Whitlock'], ['Budget', 'A$1.2m capex'], ['Phase', 'Delivery']]);
+  assert.deepEqual(status.facts.map((f) => [f.label, f.value]), [['Sponsor', 'Dana Whitlock'], ['Budget', 'A$120k grant'], ['Phase', 'Delivery']]);
   assert.equal(status.risks, 2, 'the closed row of the risks table isn’t counted');
   assert.equal(progress.mode, 'table');
-  assert.deepEqual(progress.rows.map((r) => [r.name, r.progress, r.tone]), [['Shelving', 80, 'ok'], ['Kiosks', 45, 'warn'], ['Reading corners', 70, 'ok'], ['Training', 35, 'warn']]);
+  assert.deepEqual(progress.rows.map((r) => [r.name, r.progress, r.tone]), [['Raised beds', 80, 'ok'], ['Water tanks', 45, 'warn'], ['Seating', 70, 'ok'], ['Training', 35, 'warn']]);
   assert.equal(progress.overall, 58);
   assert.deepEqual(timeline.items.map((i) => [i.date, i.tone]), [['2026-08-04', 'ok'], ['2026-09-15', 'ok'], ['2026-10-27', 'next'], ['2026-11-17', 'warn'], ['2026-12-18', 'none']]);
   assert.equal(actions.items.length, 5);
   assert.equal(actions.open, 5);
   assert.equal(actions.items[0].who, 'Sam Okafor');
-  assert.deepEqual(L.layoutLine(input('Branch Library Refresh')), { words: '62% · at risk', tone: 'warn' });
+  assert.deepEqual(L.layoutLine(input('Community Garden Refresh')), { words: '62% · at risk', tone: 'warn' });
 });
 
 test('site: the countdown to opening, the run sheet by phase (the named phase current), contacts, key dates', () => {
