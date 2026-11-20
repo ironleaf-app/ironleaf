@@ -63,7 +63,7 @@ const MEETING = `---
 date: 2026-03-03
 time: 9:00 am
 duration: 40 minutes
-project: Riverside flagship
+project: Riverside cafe
 attendees: [Ana Reyes, Sam Okafor]
 absent: Lee Park
 figures:
@@ -73,19 +73,19 @@ figures:
 
 ## Summary
 
-The fortnightly now runs from the shared tracker to cut status chasing. Thursday's till trial at the Quay decides the install schedule.
+The fortnightly now runs from the shared tracker to cut status chasing. Thursday's oven trial at the Quay decides the install schedule.
 
 ## Actions
 
-- [ ] Confirm the trial with the store team — Ana · by 4 Mar 2026
-- [ ] Run one live till trial at the Quay — Sam · by 5 Mar 2026
+- [ ] Confirm the trial with the kitchen team — Ana · by 4 Mar 2026
+- [ ] Run one live oven trial at the Quay — Sam · by 5 Mar 2026
 
 ## Decisions
 
-- **Test first.** One live till trial at the Quay on Thursday.
+- **Test first.** One live oven trial at the Quay on Thursday.
 `;
 const DATED_MEETING = `---
-project: Riverside flagship
+project: Riverside cafe
 attendees: [Ana Reyes]
 ---
 
