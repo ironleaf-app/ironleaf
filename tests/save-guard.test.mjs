@@ -235,7 +235,14 @@ test('one file’s writes run one at a time', async () => {
 
 test('the close handshake resolves on time, and gives up on the timeout', async () => {
   assert.equal(await M.closeHandshake((done) => setTimeout(done, 10), 500), true);
-  assert.equal(await M.closeHandshake(() => {}, 30), false);
+  // Its timer never holds the app open (unref); in the app the window keeps the loop alive, here a stand-in does,
+  // or the run would end with the promise still waiting and cancel every test after this one.
+  const alive = setInterval(() => {}, 1000);
+  try {
+    assert.equal(await M.closeHandshake(() => {}, 30), false);
+  } finally {
+    clearInterval(alive);
+  }
 });
 
 test('watched news is classified: texts reload, folders rescan, temps and private files ignored, null rescans', async () => {
