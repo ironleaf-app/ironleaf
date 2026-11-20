@@ -47,7 +47,7 @@ test('the jump stays inside the focused pane (two panes, the unfocused one first
     const jump = readFileSync(path.join(dir, 'go.js'), 'utf8');
     // Two panes side by side, each a long note with its foot below the fold; the unfocused pane first, so the
     // old whole-document jump lands on it.
-    const lines = (n) => Array.from({ length: 120 }, (_, i) => `<div class="cm-line">Line ${i + 1}: chase the spare tills still on the old build before Friday</div>`).join('\n');
+    const lines = (n) => Array.from({ length: 120 }, (_, i) => `<div class="cm-line">Line ${i + 1}: chase the old microphone stands still in the cupboard before Friday</div>`).join('\n');
     const pane = (tag, focused) => `<div class="split-cell"><section class="group${focused ? ' is-focused' : ''}" data-tag="${tag}"><div class="group-body"><div class="note-editor"><div class="cm-editor"><div class="cm-scroller" data-tag="${tag}"><div class="cm-content">${lines()}<div class="note-foot" data-tag="${tag}"><div class="linked">Linked list ${tag}</div></div></div></div></div></div></div></section></div>`;
     const page = (body) => `<!doctype html>
 <html lang="en-AU"><head><meta charset="utf-8"><style>html, body { margin: 0; height: 100%; } .split { display: flex; height: 100vh; } .split-cell { flex: 1 1 50%; min-width: 0; display: flex; } .group { flex: 1; display: flex; min-height: 0; } .group-body { flex: 1; display: flex; min-height: 0; } .note-editor { flex: 1; display: flex; min-height: 0; } .cm-editor { flex: 1; display: flex; min-height: 0; } .cm-scroller { flex: 1; overflow-y: auto; min-height: 0; } .cm-line { height: 24px; } .note-foot { padding: 24px; background: #eef; }</style></head>

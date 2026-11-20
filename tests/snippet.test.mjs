@@ -28,15 +28,15 @@ const marked = (raw, words) => {
 };
 
 test('bold, italic and a list lead go; the found words stay marked', () => {
-  const r = marked('- **High** — 11 spare tills can’t be reached remotely', ['spare', 'tills']);
-  assert.equal(r.text, 'High — 11 spare tills can’t be reached remotely');
-  assert.deepEqual(r.marks, ['spare', 'tills']);
+  const r = marked('- **High** — 11 old microphone stands can’t be found', ['old', 'stands']);
+  assert.equal(r.text, 'High — 11 old microphone stands can’t be found');
+  assert.deepEqual(r.marks, ['old', 'stands']);
 });
 
 test('an update line with its date in bold and its source in italics', () => {
-  const r = marked('- **17 Oct 2026** — 214 of 236 tills done. *From:* Store_Upgrade_Status.csv', ['tills', 'Store_Upgrade']);
-  assert.equal(r.text, '17 Oct 2026 — 214 of 236 tills done. From: Store_Upgrade_Status.csv');
-  assert.deepEqual(r.marks, ['tills', 'Store_Upgrade']);
+  const r = marked('- **17 Oct 2026** — 10 of 12 soundproofing panels up. *From:* Studio_Upgrade_Status.csv', ['panels', 'Studio_Upgrade']);
+  assert.equal(r.text, '17 Oct 2026 — 10 of 12 soundproofing panels up. From: Studio_Upgrade_Status.csv');
+  assert.deepEqual(r.marks, ['panels', 'Studio_Upgrade']);
 });
 
 test('a word found inside bold marks loses the stars, not its mark', () => {
@@ -52,7 +52,7 @@ test('highlights, strike-through, code and link brackets go; headings and quotes
 });
 
 test('underscores in names and a star between spaces stay', () => {
-  assert.equal(S.plainLine('Store_Upgrade_Status.csv is 4 * 3 rows', []).text, 'Store_Upgrade_Status.csv is 4 * 3 rows');
+  assert.equal(S.plainLine('Studio_Upgrade_Status.csv is 4 * 3 rows', []).text, 'Studio_Upgrade_Status.csv is 4 * 3 rows');
 });
 
 test('a table row reads as its cells with dots between, its words still marked', () => {

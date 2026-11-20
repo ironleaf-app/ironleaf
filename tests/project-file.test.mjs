@@ -24,7 +24,7 @@ const full = () => ({
   key: P.projectKey('C:\\Users\\jarlow\\Downloads\\projects\\01 Garden Shed Upgrade'),
   summary: 'The north and west beds around the garden shed.\n\n940 of 1,012 bricks laid.',
   next: [{ done: false, what: 'Send Darcy the list check', who: 'Jesse', when: '17 Oct' }, { done: true, what: 'Order from the brick yard' }],
-  dates: [{ when: '30 Sep 2026', what: 'Target | first wave', status: 'missed' }, { when: '31 Oct 2026', what: 'New target' }],
+  dates: [{ when: '30 Sep 2026', what: 'Target | first session', status: 'missed' }, { when: '31 Oct 2026', what: 'New target' }],
   people: [{ name: 'Wesley Stavely', role: 'Report sponsor' }, { name: 'Darcy Lin' }],
   risks: [{ level: 'high', what: 'No new target date' }, { what: '7 devices under 30 GB free' }],
   decisions: [{ date: '14 Oct 2026', what: 'Retired devices are dropped from every list.', why: 'stop chasing them' }],
@@ -37,14 +37,14 @@ test('every fact is written in plain text and read back the same', () => {
   const text = P.serializeProject(full());
   assert.match(text, /^---\ntype: project\nstatus: active\nhealth: at risk\nprogress: 95\nowner: Alex Morgan\nfolder: C:\\Users\\jarlow\\Downloads\\projects\\01 Garden Shed Upgrade\nstarted: "2026-09-09"\ndue: "2026-10-31"\nupdated: "2026-10-16"\ntags: \[windows-11, intune\]\nneuralspark-project: local:c:\/users\/jarlow\/downloads\/projects\/01 garden shed upgrade\n---\n# Garden Shed Upgrade\n/);
   assert.match(text, /## What’s next\n\n- \[ \] Send Darcy the list check — Jesse · by 17 Oct\n- \[x\] Order from the brick yard\n/);
-  assert.match(text, /## Key dates\n\n\| When \| What \| Status \|\n\| --- \| --- \| --- \|\n\| 30 Sep 2026 \| Target \\\| first wave \| missed \|\n\| 31 Oct 2026 \| New target \| — \|/);
+  assert.match(text, /## Key dates\n\n\| When \| What \| Status \|\n\| --- \| --- \| --- \|\n\| 30 Sep 2026 \| Target \\\| first session \| missed \|\n\| 31 Oct 2026 \| New target \| — \|/);
   assert.match(text, /## Risks and issues\n\n- \*\*High\*\* — No new target date\n- 7 devices under 30 GB free/);
   assert.match(text, /## Decisions\n\n- \*\*14 Oct 2026\*\* — Retired devices are dropped from every list\. \*Why:\* stop chasing them/);
   assert.match(text, /## Updates\n\n- \*\*16 Oct 2026\*\* — 940 of 1,012 bricks laid \*From:\* Shed_Status_2026-10-16\.xlsx/);
   assert.match(text, /## Documents\n\n- `Current\/Shed_Status_2026-10-16\.xlsx` — Latest status\n- `RECORD\.md`/);
   const back = P.parseProject(text);
   const want = full();
-  assert.deepEqual({ ...back, extra: [] }, { ...want, dates: [{ when: '30 Sep 2026', what: 'Target | first wave', status: 'missed' }, { when: '31 Oct 2026', what: 'New target' }] });
+  assert.deepEqual({ ...back, extra: [] }, { ...want, dates: [{ when: '30 Sep 2026', what: 'Target | first session', status: 'missed' }, { when: '31 Oct 2026', what: 'New target' }] });
   assert.equal(P.serializeProject(back, text), text, 'writing what was read changes nothing');
 });
 
@@ -199,14 +199,14 @@ test('the open project briefed: summary, next, risks, pages, capped short (seams
     next: [
       { done: false, what: 'Send v4 to finance', who: 'Sam Taylor', when: '14 Oct' },
       { done: true, what: 'Sign the lease' },
-      { done: false, what: 'Chase the tills' },
+      { done: false, what: 'Chase the microphone stands' },
     ],
-    risks: [{ level: 'high', what: 'Tills unreachable' }, { what: 'Paint late', closed: true }],
+    risks: [{ level: 'high', what: 'Stands missing' }, { what: 'Paint late', closed: true }],
     documents: [{ path: 'Quotes/Lighting.pdf', what: 'lighting quote' }],
   };
   assert.equal(
     P.projectContext(p, ['lighting quote (Quotes/Lighting.pdf)', 'Site notes']),
-    'Summary: A cafe fit-out at the harbour. Due before summer.\nNext: Send v4 to finance — Sam Taylor (14 Oct); Chase the tills\nRisks: high: Tills unreachable\nPages: lighting quote (Quotes/Lighting.pdf); Site notes',
+    'Summary: A cafe fit-out at the harbour. Due before summer.\nNext: Send v4 to finance — Sam Taylor (14 Oct); Chase the microphone stands\nRisks: high: Stands missing\nPages: lighting quote (Quotes/Lighting.pdf); Site notes',
   );
   assert.equal(P.projectContext(P.emptyProject('Bare'), []), '', 'nothing to brief is nothing said');
   const many = { ...P.emptyProject('Big'), next: Array.from({ length: 7 }, (_, i) => ({ done: false, what: `Step ${i + 1}` })), risks: Array.from({ length: 5 }, (_, i) => ({ what: `Risk ${i + 1}` })) };
