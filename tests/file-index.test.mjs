@@ -4,12 +4,36 @@
 // a change re-reads only that file, the limits hold, junk is left out, nothing is written in the folder or outside the
 // index's own folder, nothing is read outside the folder, and switching a project off forgets it.
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, statSync, symlinkSync, utimesSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { after, before, test } from 'node:test';
+import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import zlib from 'node:zlib';
+
+// The app's own PDF.js (src/renderer/src/assets/pdfjs, version 5) is written for the runtime Electron gives it, Node 24:
+// it calls Promise.try, Uint8Array's toHex and base64, Map's getOrInsertComputed and Math.sumPrecise. Plain Node 22
+// has none of them, so there the tests that read a PDF run again under Electron's own Node (ELECTRON_RUN_AS_NODE),
+// checking what the app runs rather than a stand-in.
+const PDF_RUNS_HERE = typeof Promise.try === 'function' && typeof Uint8Array.prototype.toHex === 'function' && typeof Math.sumPrecise === 'function' && typeof Map.prototype.getOrInsertComputed === 'function';
+const pdfTest = (name, fn) => {
+  if (PDF_RUNS_HERE) return test(name, fn);
+  let electron = null;
+  try {
+    electron = createRequire(import.meta.url)('electron');
+  } catch {}
+  if (typeof electron !== 'string') return test(name, { skip: 'PDF.js needs Node 24 (Electron’s), and Electron isn’t installed here' }, fn);
+  return test(name, () => {
+    // Its own run, never a child of this one's runner (NODE_TEST_CONTEXT would send its report up the wrong way).
+    const { NODE_TEST_CONTEXT: _ctx, ...env } = process.env;
+    const only = `^${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`;
+    const r = spawnSync(electron, ['--test', `--test-name-pattern=${only}`, fileURLToPath(import.meta.url)], { env: { ...env, ELECTRON_RUN_AS_NODE: '1' }, encoding: 'utf8', timeout: 150000 });
+    assert.equal(r.status, 0, `under Electron’s Node:\n${r.stdout}${r.stderr}`);
+    assert.match(r.stdout, /pass 1\b/, `the one test ran under Electron’s Node:\n${r.stdout}`);
+  });
+};
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const work = mkdtempSync(path.join(tmpdir(), 'nv-file-index-'));
@@ -191,7 +215,7 @@ test('text files: UTF-8, UTF-16 from Windows tools, not text, and web pages with
   assert.match(M.plainText(Buffer.from('<html><style>x{}</style><p>Hello &amp; welcome</p></html>'), 'html'), /Hello & welcome/);
 });
 
-test('a PDF: its words page by page with PDF.js in a worker; a broken one fails without harm', async () => {
+pdfTest('a PDF: its words page by page with PDF.js in a worker; a broken one fails without harm', async () => {
   const reader = new M.PdfReader(pdfJs);
   try {
     const text = await reader.read(new Uint8Array(pdf([['Harbourline quote', 'Total 48200 inc GST'], ['SSL update 13 Oct']])));
@@ -264,7 +288,7 @@ const listAll = (dir) => {
   return out.sort();
 };
 
-test('a project’s folder: found by its words, the words marked, with the page or sheet; by name too; junk left out', async () => {
+pdfTest('a project’s folder: found by its words, the words marked, with the page or sheet; by name too; junk left out', async () => {
   const folder = makeFolder('Studio Upgrade');
   const before = listAll(folder);
   const store = path.join(work, 'store-a');
@@ -311,7 +335,7 @@ test('a project’s folder: found by its words, the words marked, with the page 
   assert.deepEqual(readdirSync(store).filter((n) => !n.endsWith('.json')), [], 'the index keeps only its own files, in its own folder');
 });
 
-test('a change re-reads only the files that changed; a file gone is dropped; kept between runs', async () => {
+pdfTest('a change re-reads only the files that changed; a file gone is dropped; kept between runs', async () => {
   const folder = makeFolder('Wifi Refresh');
   const store = path.join(work, 'store-b');
   let reads = 0;
@@ -439,7 +463,7 @@ test('the assistant’s link to a file: written and read back', () => {
   assert.equal(M.parseProjectFileHref('https://example.com'), null);
 });
 
-test('the assistant: searches inside project files and reads one, read only, with the link to give', async () => {
+pdfTest('the assistant: searches inside project files and reads one, read only, with the link to give', async () => {
   const folder = makeFolder('Assistant');
   const projects = [{ path: 'Projects/Studio Upgrade/Studio Upgrade.md', name: 'Studio Upgrade', folder }];
   const { index } = makeIndex(path.join(work, 'store-g'), projects);
@@ -473,7 +497,7 @@ test('the assistant: searches inside project files and reads one, read only, wit
 // 19 Oct 2026: a file attached to the assistant's chat is read from its bytes (the window hands over the file, never a
 // path): Word, PDF and text as words, an unknown kind read as text when it is text, a picture-only PDF or a binary said
 // in words, a long one cut and marked; the former host app's reader gets a copy that is removed straight after.
-test('a file attached to the chat: its words from its bytes, or why not in words', async () => {
+pdfTest('a file attached to the chat: its words from its bytes, or why not in words', async () => {
   const reader = new M.PdfReader(pdfJs);
   const tmpDir = path.join(work, 'attach-read');
   const read = (name, buf, extra = {}) => M.attachmentText(name, buf, { pdf: reader, tmpDir, maxChars: 2000, ...extra });
