@@ -81,6 +81,8 @@ export function PdfView({ tab }: { tab: TabState }) {
   const [room, setRoom] = useState({ w: 0, h: 0 });
   const [current, setCurrent] = useState(0);
   const [live, setLive] = useState<[number, number]>([0, 2]);
+  /** The pages on screen now (live also holds one either side): drawn sharp, and first. */
+  const [seen, setSeen] = useState<[number, number]>([0, 0]);
   const [rail, setRail] = useState(() => remembered('rail', false));
   const [panel, setPanel] = useState(() => remembered('panel', false));
   const [dim, setDim] = useState(() => remembered('dim', false));
@@ -219,6 +221,9 @@ export function PdfView({ tab }: { tab: TabState }) {
     const a = Math.max(0, pageAt(top) - 1);
     const b = Math.min(tops.length - 1, pageAt(top + el.clientHeight) + 1);
     setLive((l) => (l[0] === a && l[1] === b ? l : [a, b]));
+    const sa = pageAt(top);
+    const sb = pageAt(top + el.clientHeight - 1);
+    setSeen((s) => (s[0] === sa && s[1] === sb ? s : [sa, sb]));
     const p = pageAt(top);
     anchor.current = { page: p, frac: sizes[p] ? (top - tops[p]) / Math.max(1, sizes[p].h + GAP) : 0 };
   }, [tops, sizes, pageAt]);
@@ -843,6 +848,7 @@ export function PdfView({ tab }: { tab: TabState }) {
                   width={s.w}
                   height={s.h}
                   live={i >= live[0] && i <= live[1]}
+                  visible={i >= seen[0] && i <= seen[1]}
                   highlights={highlightsByPage.get(i) ?? NO_HIGHLIGHTS}
                   flash={flash}
                   matches={byPage.get(i) ?? NO_MATCHES}

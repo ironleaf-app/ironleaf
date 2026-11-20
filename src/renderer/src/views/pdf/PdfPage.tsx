@@ -9,6 +9,7 @@ import type { PdfHighlight } from '../../../../shared/pdf-highlights';
 import type { OcrLine } from '../../../../shared/ocr';
 import { locate as locateIn, ocrPageText, pageText, pdfToBox, type Box, type Matrix, type PageText } from './geometry';
 import { pageTextContent, pdfjsFull, type PdfDocument, type PdfPage as PdfPageProxy, type PdfViewport } from './pdfDoc';
+import { askToDraw } from './drawQueue';
 
 /** What the reader needs from a drawn page to turn a selection into a highlight. */
 export interface PageHandle {
@@ -32,6 +33,8 @@ interface Props {
   width: number;
   height: number;
   live: boolean;
+  /** On screen now (not just near it): drawn sharp, and first. A live page beside the view gets a quick drawing. */
+  visible: boolean;
   highlights: PdfHighlight[];
   flash: string | null;
   matches: PageMatch[];
@@ -43,15 +46,24 @@ interface Props {
   ocr: OcrLine[] | null;
 }
 
-/** Big pages at high zoom are drawn at fewer pixels than the screen has, so memory stays sane. */
-const MAX_PIXELS = 16_000_000;
+/** A page in view is drawn at up to this many pixels (a wide screen's Fit width page is more: it is drawn a little
+ *  softer rather than holding the window), a page beside the view at far fewer (a quick drawing, made sharp when it
+ *  scrolls into view). */
+const SHARP_PIXELS = 8_000_000;
+const NEAR_PIXELS = 1_500_000;
 
 /** How long a zoom must hold still before the words are laid again at the new size. */
 const SETTLE_MS = 180;
 
-function PdfPageView({ path, doc, index, scale, width, height, live, highlights, flash, matches, register, clip, onClip, ocr }: Props) {
+function PdfPageView({ path, doc, index, scale, width, height, live, visible, highlights, flash, matches, register, clip, onClip, ocr }: Props) {
   const box = useRef<HTMLDivElement>(null);
-  const canvas = useRef<HTMLCanvasElement>(null);
+  // Two canvases: the one shown, and the one the next drawing goes into, shown when it is done (no copy of millions
+  // of pixels from a scratch canvas, and no blank page in between).
+  const canvasA = useRef<HTMLCanvasElement>(null);
+  const canvasB = useRef<HTMLCanvasElement>(null);
+  const [front, setFront] = useState<0 | 1>(0);
+  /** What the shown canvas holds: its scale and how many pixels it was drawn at. */
+  const shown = useRef<{ scale: number; pixels: number } | null>(null);
   const textBox = useRef<HTMLDivElement>(null);
   const [page, setPage] = useState<PdfPageProxy | null>(null);
   /** A box being drawn for a clip: its start (in CSS pixels from the page's top left) and its box now. */
@@ -72,45 +84,64 @@ function PdfPageView({ path, doc, index, scale, width, height, live, highlights,
 
   const viewport: PdfViewport | null = page ? page.getViewport({ scale }) : null;
 
-  // The drawing, at this zoom (a new zoom draws again, the old drawing showing stretched until then).
+  // The drawing, at this zoom (a new zoom draws again, the old drawing showing stretched until then). A page in view is
+  // drawn sharp; one beside it quickly, at few pixels; and every page waits its turn (drawQueue.ts), the one in view first.
   useEffect(() => {
-    const c = canvas.current;
-    if (!c) return;
+    const shownCanvas = (front === 0 ? canvasA : canvasB).current;
+    const back = (front === 0 ? canvasB : canvasA).current;
+    if (!shownCanvas || !back) return;
     if (!live || !page || !viewport) {
       // Far from view: the drawing goes (it is made again on the way back).
-      c.width = 0;
-      c.height = 0;
+      for (const c of [shownCanvas, back]) {
+        c.width = 0;
+        c.height = 0;
+      }
+      shown.current = null;
       setDrawn(false);
       return;
     }
+    const budget = visible ? SHARP_PIXELS : NEAR_PIXELS;
+    const ratio = Math.min(window.devicePixelRatio || 1, Math.sqrt(budget / Math.max(1, viewport.width * viewport.height)));
+    const pixels = Math.floor(viewport.width * ratio) * Math.floor(viewport.height * ratio);
+    const have = shown.current;
+    // Already shown at this zoom, at least this sharp: nothing to draw (a page scrolled out of view keeps its sharp drawing).
+    if (have && have.scale === scale && have.pixels >= pixels) return;
     let task: { promise: Promise<void>; cancel(): void } | null = null;
+    let ticket: { cancel(): void } | null = null;
     const timer = setTimeout(() => {
-      const ratio = Math.min(window.devicePixelRatio || 1, Math.sqrt(MAX_PIXELS / Math.max(1, viewport.width * viewport.height)));
-      const scratch = document.createElement('canvas');
-      scratch.width = Math.max(1, Math.floor(viewport.width * ratio));
-      scratch.height = Math.max(1, Math.floor(viewport.height * ratio));
-      const ctx = scratch.getContext('2d');
-      if (!ctx) return;
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, scratch.width, scratch.height);
-      task = page.render({ canvasContext: ctx, viewport, background: '#ffffff', transform: ratio !== 1 ? [ratio, 0, 0, ratio, 0, 0] : undefined });
-      // Drawn off screen, then shown in one go, so a zoom never flashes a blank page.
-      task.promise.then(
-        () => {
-          c.width = scratch.width;
-          c.height = scratch.height;
-          c.getContext('2d')?.drawImage(scratch, 0, 0);
-          scratch.width = 0;
+      ticket = askToDraw(
+        visible ? 0 : 1,
+        async () => {
+          back.width = Math.max(1, Math.floor(viewport.width * ratio));
+          back.height = Math.max(1, Math.floor(viewport.height * ratio));
+          const ctx = back.getContext('2d', { alpha: false });
+          if (!ctx) return;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, back.width, back.height);
+          task = page.render({ canvasContext: ctx, viewport, background: '#ffffff', transform: ratio !== 1 ? [ratio, 0, 0, ratio, 0, 0] : undefined });
+          await task.promise;
+          shown.current = { scale, pixels: back.width * back.height };
+          // The finished drawing comes forward; the old one lets its memory go.
+          setFront((f) => (f === 0 ? 1 : 0));
           setDrawn(true);
         },
-        () => {},
+        () => task?.cancel(),
       );
     }, drawn ? 120 : 0);
     return () => {
       clearTimeout(timer);
-      task?.cancel();
+      ticket?.cancel();
     };
-  }, [live, page, scale]);
+  }, [live, visible, page, scale]);
+
+  // The canvas that went to the back frees its pixels once the new one shows.
+  useEffect(() => {
+    const back = (front === 0 ? canvasB : canvasA).current;
+    if (back && back.width) {
+      back.width = 0;
+      back.height = 0;
+    }
+  }, [front]);
 
   // The words, laid over the drawing by PDF.js so they can be selected, copied and found. A page without words of
   // its own (a scan) instead lays its recognised lines, one span per line in the same order as ocrPageText, so
@@ -163,17 +194,26 @@ function PdfPageView({ path, doc, index, scale, width, height, live, highlights,
           setWords({ scale, text: ocrPageText(ocr), spans });
           return;
         }
-        el.replaceChildren();
-        el.style.setProperty('--scale-factor', String(viewport.scale));
-        el.style.setProperty('--user-unit', String(viewport.userUnit || 1));
-        const tl = new m.TextLayer({ textContentSource: content, container: el, viewport });
+        // Laid off the page, then put in at once: PDF.js adds a span per word (thousands on a newspaper page), and each
+        // one added to the live page made the window re-check its style rules (the :has() ones especially) for the
+        // page around it. Built apart, the words cost one check when they go in (21 Nov 2026: a zoom on a 24-page
+        // paper spent 1.9 s in style work, 0.03 s without that).
+        const fresh = document.createElement('div');
+        fresh.className = el.className;
+        fresh.style.setProperty('--scale-factor', String(viewport.scale));
+        fresh.style.setProperty('--user-unit', String(viewport.userUnit || 1));
+        const tl = new m.TextLayer({ textContentSource: content, container: fresh, viewport });
         layer = tl;
         await tl.render();
         if (!ok) return;
         // The space after the last word: dragging past the words keeps the selection steady (as in PDF.js's viewer).
         const end = document.createElement('div');
         end.className = 'endOfContent';
-        el.append(end);
+        fresh.append(end);
+        for (const prop of ['--scale-factor', '--user-unit']) el.style.setProperty(prop, fresh.style.getPropertyValue(prop));
+        if (fresh.style.width) el.style.width = fresh.style.width;
+        if (fresh.style.height) el.style.height = fresh.style.height;
+        el.replaceChildren(...fresh.childNodes);
         setWords({ scale, text: pageText(content.items), spans: tl.textDivs });
       } catch {
         // A page without words (a scan) still reads; it just can't be selected.
@@ -286,7 +326,8 @@ function PdfPageView({ path, doc, index, scale, width, height, live, highlights,
           : undefined
       }
     >
-      <canvas ref={canvas} className="pdfv-canvas" style={{ width, height }} />
+      <canvas ref={canvasA} className={`pdfv-canvas${front === 0 ? '' : ' is-back'}`} style={{ width, height }} />
+      <canvas ref={canvasB} className={`pdfv-canvas${front === 1 ? '' : ' is-back'}`} style={{ width, height }} />
       {!drawn && <span className="pdfv-page-wait">{index + 1}</span>}
       <div className="pdfv-marks" aria-hidden>
         {matrix &&
