@@ -2,7 +2,7 @@
 // (src/shared/work-vendors.ts), a quote's validity, a contract's notice and end (auto-renewal rolling on), what needs
 // attention, quotes compared item by item, the records for the views, one property or one item's cell changed, new
 // notes, the agents' tools and their write plans, and the main side (src/main/work/vendors.ts through
-// src/main/work-modules.ts) with a real gate, notices said once and nothing when switched off. Made-up "Harbour Retail"
+// src/main/work-modules.ts) with a real gate, notices said once and nothing when switched off. Made-up "Harbour Studio"
 // vendors and amounts only; a fixed day (Sat 24 Oct 2026).
 import assert from 'node:assert/strict';
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
