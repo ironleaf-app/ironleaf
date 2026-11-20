@@ -587,7 +587,7 @@ test('Settings rows: the groups and each bot under Chat bots; access set and res
   const lv = await w.setLevel('Notes/Oven service.md', 'work');
   assert.equal(lv.level, 'work');
   assert.match(v.files.get('Notes/Oven service.md'), /^---\nsensitivity: work\n---\n/);
-  assert.ok(lv.readers.includes('The side chat') && !lv.readers.includes('Chat bot') === false);
+  assert.ok(lv.readers.includes('The side chat') && lv.readers.includes('Chat bots'), 'the side chat and the chat bots may read Work');
   await w.setLevel('Work/Harbour Fit-out/Drawings.pdf', 'personal');
   assert.equal(v.sensitivity.store().items['Work/Harbour Fit-out/Drawings.pdf'], 'personal');
   await w.setLevel('Notes/Oven service.md', null);
