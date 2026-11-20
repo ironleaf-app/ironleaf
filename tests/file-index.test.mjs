@@ -164,7 +164,7 @@ test('a Word document: paragraphs, tabs, table rows side by side, entities; dele
 
 test('a workbook: sheets in the book’s order, shared and inline words, true/false, dates as dates, money as written', async () => {
   const text = await M.xlsxText(xlsx());
-  assert.equal(text, ['\fBudget', 'Item | Cost', 'Harbourline Signs fit-out | 48200', 'Paid | TRUE', '\fDates & times', 'SSL renewed | 13 Oct 2026'].join('\n'));
+  assert.equal(text, ['\fBudget', 'Item | Cost', 'Harbourline lighting refit | 48200', 'Paid | TRUE', '\fDates & times', 'SSL renewed | 13 Oct 2026'].join('\n'));
   assert.equal(M.excelDate(46308), '13 Oct 2026');
 });
 
@@ -453,7 +453,7 @@ test('the assistant: searches inside project files and reads one, read only, wit
     const found = await tools.run({ id: 'a', name: 'search_project_files', arguments: JSON.stringify({ query: 'Harbourline quote' }) });
     assert.ok(!found.isError, found.text);
     assert.match(found.text, /^Studio Upgrade · Quotes\/Harbourline quote\.docx \(Word document, \d+ K?B, changed \d{4}-\d\d-\d\d\)/);
-    assert.match(found.text, /link: \[Harbourline quote\.docx\]\(nv-file:Projects%2FStore%20Upgrade%2FStore%20Upgrade\.md\/Quotes%2FHarbourline%20quote\.docx\)/);
+    assert.match(found.text, /link: \[Harbourline quote\.docx\]\(nv-file:Projects%2FStudio%20Upgrade%2FStudio%20Upgrade\.md\/Quotes%2FHarbourline%20quote\.docx\)/);
     assert.match(found.text, /Harbourline quote for the lighting refit/);
     const read = await tools.run({ id: 'b', name: 'read_project_file', arguments: JSON.stringify({ project: 'studio upgrade', path: 'Quotes/Harbourline quote.docx' }) });
     assert.match(read.text, /Total \$48,200 inc GST/);
