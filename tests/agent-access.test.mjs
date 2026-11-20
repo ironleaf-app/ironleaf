@@ -394,18 +394,20 @@ test('Ironleaf’s own AIs call the catalogue: same handlers, their gate, nothin
   assert.equal(JSON.parse(words(await access.asOwn(spark, null, 'tasks_list', {}))).count, 2);
   assert.match(words(await access.asOwn(spark, null, 'calendar_get', {})), /No calendar is connected/);
   // A reminder: Ironleaf's own ⏰ line, through the side chat's own handler.
-  const r = await access.asOwn(spark, null, 'reminder_set', { what: 'Renew the rego', when: '20 Nov 2026 at 9am' });
+  // A date still to come whenever this runs (a fixed one passed on 20 Nov 2026 and the reminder was rightly refused).
+  const year = new Date().getFullYear() + 1;
+  const r = await access.asOwn(spark, null, 'reminder_set', { what: 'Renew the rego', when: `20 Nov ${year} at 9am` });
   assert.ok(!r.isError, words(r));
-  assert.match(files.get('Reminders.md'), /- \[ \] Renew the rego ⏰ 2026-11-20 09:00/);
+  assert.ok(files.get('Reminders.md').includes(`- [ ] Renew the rego ⏰ ${year}-11-20 09:00`), files.get('Reminders.md'));
   assert.equal((await access.asOwn(spark, null, 'reminder_set', { what: 'x', when: 'sometime soonish' })).isError, true, 'a moment it can’t tell is a failed step');
   // A near one offers Replace or Keep through this door too, and replace answers it (seams O2).
-  const near = await access.asOwn(spark, null, 'reminder_set', { what: 'Renew the registration', when: '20 Nov 2026 at 9am' });
+  const near = await access.asOwn(spark, null, 'reminder_set', { what: 'Renew the registration', when: `20 Nov ${year} at 9am` });
   assert.ok(!near.isError, words(near));
   assert.match(words(near), /Replace or Keep/);
-  const kept = await access.asOwn(spark, null, 'reminder_set', { what: 'Renew the registration', when: '20 Nov 2026 at 9am', replace: false });
+  const kept = await access.asOwn(spark, null, 'reminder_set', { what: 'Renew the registration', when: `20 Nov ${year} at 9am`, replace: false });
   assert.ok(!kept.isError, words(kept));
-  assert.match(files.get('Reminders.md'), /Renew the registration ⏰ 2026-11-20 09:00/);
-  const again = await access.asOwn(spark, null, 'reminder_set', { what: 'Renew the rego', when: '20 Nov 2026 at 9am' });
+  assert.ok(files.get('Reminders.md').includes(`Renew the registration ⏰ ${year}-11-20 09:00`), files.get('Reminders.md'));
+  const again = await access.asOwn(spark, null, 'reminder_set', { what: 'Renew the rego', when: `20 Nov ${year} at 9am` });
   assert.match(words(again), /already set in your note “Reminders”/, 'the same one through this door is already set (seams O1)');
   // A change with the former host app's own call: done at once, nothing waits, nothing in What
   // agents did.
