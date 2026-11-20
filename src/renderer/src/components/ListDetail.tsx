@@ -15,6 +15,7 @@ import { docs } from '../state/docs';
 import { openRecordPage, peek } from '../state/peek';
 import { useApp } from '../state/store';
 import { Icon } from './Icon';
+import { usePanesMark } from '../lib/panesMark';
 import { ConnectedGroupList, TYPE_ICONS } from './Peek';
 
 /** The note's opening words: its first plain paragraph (no properties, headings, lists, tasks or quotes), cut at a
@@ -55,6 +56,7 @@ export function ListDetail({ list, detail, label, className, context = true }: {
   const box = useRef<HTMLDivElement>(null);
   const [three, setThree] = useState(false);
   const [slot, setSlot] = useState<HTMLElement | null>(null);
+  usePanesMark(box);
   useEffect(() => {
     const el = box.current;
     if (!el || typeof ResizeObserver === 'undefined') return;
@@ -198,7 +200,7 @@ export function readingBody(text: string, title: string): string {
 }
 
 /** An element's own width, measured (a container's: the chat column and a folded side bar are counted). */
-export function useWidth(): [(el: HTMLElement | null) => void, number] {
+export function useWidth(): [(el: HTMLElement | null) => void, number, HTMLElement | null] {
   const [el, setEl] = useState<HTMLElement | null>(null);
   const [w, setW] = useState(0);
   useEffect(() => {
@@ -207,7 +209,7 @@ export function useWidth(): [(el: HTMLElement | null) => void, number] {
     ro.observe(el);
     return () => ro.disconnect();
   }, [el]);
-  return [setEl, w];
+  return [setEl, w, el];
 }
 
 /** What a record connects to (people, projects, files, its timeline), as the detail's groups read, on its own: the

@@ -163,7 +163,8 @@ test('round 3: panes that fill the window, regions on the meeting page, three co
   const main = read('src/renderer/src/main.tsx');
   assert.ok(main.indexOf("import './styles/panes.css';") > main.indexOf("import './styles/compose.css';"), 'the panes sheet loads last');
   const css = read('src/renderer/src/styles/panes.css');
-  assert.ok(/:is\(\.vscroll, \.nv-page-scroll[^)]*\):has\(\.nv-panes-root\) \{[^}]*overflow: hidden;/s.test(css), 'a page with panes does not scroll as a document');
+  // [data-has-panes]: the mark lib/panesMark.ts sets on every box above a panes root (it said :has(.nv-panes-root)).
+  assert.ok(/:is\(\.vscroll, \.nv-page-scroll[^)]*\)\[data-has-panes\] \{[^}]*overflow: hidden;/s.test(css), 'a page with panes does not scroll as a document');
   assert.ok(/\.nv-split\.is-panes > \.nv-pane \{[^}]*overflow: auto;/s.test(css), 'each pane scrolls inside itself');
   assert.ok(/\.nv-split\.nv-split\.is-panes\.is-three \{[^}]*grid-template-columns: clamp\(/s.test(css), 'list | detail | context, fluid');
   assert.ok(/\.w2b-after\.mt-regions\.nv-panes-root\.is-three \{[^}]*grid-template-columns:/s.test(css), 'the meeting page in three regions');

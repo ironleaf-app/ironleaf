@@ -146,9 +146,10 @@
   transition: opacity 0.16s ease;
 }
 
+/* No .view-tools:has(.menu-open) > * here any more (21 Nov 2026): nothing renders .view-tools now, and that one rule
+   cost 0.4-1.1 s of style work per 40 rows added to any list at 3,530 px. */
 .view-header:hover .view-tools > *,
-.view-header:focus-within .view-tools > *,
-.view-tools:has(.menu-open) > * {
+.view-header:focus-within .view-tools > * {
   opacity: 1;
 }
 
