@@ -11,13 +11,13 @@ export function zip(files, { store = false } = {}) {
   let offset = 0;
   for (const [name, content] of Object.entries(files)) {
     const data = Buffer.from(content, 'utf8');
-    const packed = venue ? data : zlib.deflateRawSync(data);
+    const packed = store ? data : zlib.deflateRawSync(data);
     const n = Buffer.from(name, 'utf8');
     const crc = zlib.crc32(data);
     const local = Buffer.alloc(30);
     local.writeUInt32LE(0x04034b50, 0);
     local.writeUInt16LE(20, 4);
-    local.writeUInt16LE(venue ? 0 : 8, 8);
+    local.writeUInt16LE(store ? 0 : 8, 8);
     local.writeUInt32LE(crc, 14);
     local.writeUInt32LE(packed.length, 18);
     local.writeUInt32LE(data.length, 22);
@@ -26,7 +26,7 @@ export function zip(files, { store = false } = {}) {
     c.writeUInt32LE(0x02014b50, 0);
     c.writeUInt16LE(20, 4);
     c.writeUInt16LE(20, 6);
-    c.writeUInt16LE(venue ? 0 : 8, 10);
+    c.writeUInt16LE(store ? 0 : 8, 10);
     c.writeUInt32LE(crc, 16);
     c.writeUInt32LE(packed.length, 20);
     c.writeUInt32LE(data.length, 24);
