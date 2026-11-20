@@ -44,7 +44,7 @@ function writeFixtures(h, owner) {
   w('People/Priya Nair.md', `---\ntype: person\n---\n# Priya Nair\n\nDesigner.\n`);
   w('People/Alex Chen.md', `---\ntype: person\n---\n# Alex Chen\n\nDeveloper.\n`);
   w('People/Sam Okafor.md', `---\ntype: person\n---\n# Sam Okafor\n\nWeekends.\n`);
-  w(FLAG, `---\ntype: project\nstatus: active\nowner: ${owner}\n---\n# Harbourline Cart Fix\n\n## What's next\n\n- [ ] ${LONGTITLE} — Priya Nair — due 2026-11-06\n- [ ] File the ${WORD45} report — Alex Chen — due 2026-11-07\n- [ ] 🎉 Plan the launch party 🎉 for the refit — Priya Nair — due 2026-11-08\n- [ ] Set up the new till — Priya Nair and Alex Chen — due 2026-11-09\n\n## Notes\n\nKept.\n`);
+  w(FLAG, `---\ntype: project\nstatus: active\nowner: ${owner}\n---\n# Harbourline Cart Fix\n\n## What's next\n\n- [ ] ${LONGTITLE} — Priya Nair — due 2026-11-06\n- [ ] File the ${WORD45} report — Alex Chen — due 2026-11-07\n- [ ] 🎉 Plan the launch party 🎉 for the refit — Priya Nair — due 2026-11-08\n- [ ] Set up the new oven — Priya Nair and Alex Chen — due 2026-11-09\n\n## Notes\n\nKept.\n`);
   w('Projects/Museum Late Shift/Museum Late Shift.md', `---\ntype: project\nstatus: active\nowner: ${owner}\n---\n# Museum Late Shift\n\n## What's next\n\n- [ ] Publish the November roster — Priya Nair — due 2026-10-28\n`);
   w('Projects/Night Market/Night Market.md', `---\ntype: project\nstatus: active\nowner: ${owner}\n---\n# Night Market\n\n## What's next\n\n- [ ] Book the night stalls — Alex Chen — due 2026-11-15\n`);
   w(LONGPATH, `---\ntype: project\nstatus: active\nowner: ${owner}\n---\n# ${LONG}\n\n## What's next\n\n- [ ] Open the long project — Alex Chen\n`);
@@ -122,7 +122,7 @@ test('your own name off your own rows, others always shown (set)', { timeout: 30
   assert.ok(priya.length === 1 && priya[0].who === '', `Priya hides on her own row (${JSON.stringify(priya)})`);
   const alex = rows.filter((r) => r.title.includes(WORD45.slice(0, 20)));
   assert.ok(alex.length === 1 && alex[0].who.includes('Alex'), `Alex shows on Alex’s own (${JSON.stringify(alex)})`);
-  const joint = rows.filter((r) => r.title.includes('Set up the new till'));
+  const joint = rows.filter((r) => r.title.includes('Set up the new oven'));
   assert.ok(joint.length === 1 && joint[0].who.includes('Alex') && !joint[0].who.includes('Priya'), `the joint row shows only Alex (${JSON.stringify(joint)})`);
 });
 

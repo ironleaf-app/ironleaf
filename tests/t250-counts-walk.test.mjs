@@ -12,7 +12,7 @@ import { writeT200Vault } from './t200-vault.mjs';
 import { startHarness } from './vault-controls-harness.mjs';
 
 const FLAG = 'Projects/Harbourline Cart Fix/Harbourline Cart Fix.md';
-const STEP = 'Count the till float twice before the Friday handover';
+const STEP = 'Count the cash float twice before the Friday handover';
 // Late on any run after 10 Nov 2026, never stale (12 Nov is 2 days past it).
 const LATE = '2026-11-10';
 // Today, whatever day the suite runs (t250 wrote 2026-11-12, its own run-day; the meeting must be
@@ -270,7 +270,7 @@ test('meetings move their card and the lists', { timeout: 300000 }, async () => 
   const cardsBefore = before.p.cards.length;
   writeFileSync(
     V(MEETING),
-    `---\ntype: meeting\ndate: ${MEETING.slice(9, 19)}\nattendees: [Alex Chen, Sam Ortega]\nproject: ${FLAG}\n---\n# ${MEETING.slice(9, 19)} T250 late check\n\n## Actions\n\n- [ ] Count the till float twice — Sam Ortega — due ${LATE}\n- [x] Book the room for next Tuesday — Alex Chen\n`,
+    `---\ntype: meeting\ndate: ${MEETING.slice(9, 19)}\nattendees: [Alex Chen, Sam Ortega]\nproject: ${FLAG}\n---\n# ${MEETING.slice(9, 19)} T250 late check\n\n## Actions\n\n- [ ] Count the cash float twice — Sam Ortega — due ${LATE}\n- [x] Book the room for next Tuesday — Alex Chen\n`,
   );
   await reload();
   const after = await assertAll('after meeting');

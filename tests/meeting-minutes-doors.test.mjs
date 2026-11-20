@@ -32,7 +32,7 @@ project: Projects/Harbourline Cart Fix/Harbourline Cart Fix.md
 
 ## Notes
 
-The till queue was long again at lunch.
+The coffee queue was long again at lunch.
 
 ## Actions
 
@@ -109,7 +109,7 @@ The supplier quotd four thousand two hundred. Priya will chase the paperwork.
 >
 > **1:15** *You:* Merricks sent the printer quote this morning.
 >
-> **2:00** *Others:* Merrick's quote covers the printer and the till roll.
+> **2:00** *Others:* Merrick's quote covers the printer and the paper bags.
 `;
 
 // A sensors review yesterday with minutes made and no recording kept: the word check's rows as drawn —
@@ -123,7 +123,7 @@ attendees: [Alex Chen, Priya Nair]
 project: Projects/Harbourline Cart Fix/Harbourline Cart Fix.md
 ---
 
-# ${yesterday} Till sensors review
+# ${yesterday} Oven sensors review
 
 ## Summary
 
@@ -179,7 +179,7 @@ async function harness() {
     };
     w(`Meetings/${day(0)} Cart retry standup.md`, STANDUP(day(0)));
     w(`Work/Meetings/${day(-1)} Receipts review.md`, REVIEW(day(-1)));
-    w(`Meetings/${day(-1)} Till sensors review.md`, CHECK(day(-1)));
+    w(`Meetings/${day(-1)} Oven sensors review.md`, CHECK(day(-1)));
     w('Work/Meetings/receipts-review.opus', 'not really audio, only a name the transcript links');
     await H.services.rescanAll();
     await H.browser.send('Page.navigate', { url: `${H.origin}/harness.html` });
@@ -360,8 +360,8 @@ test('the word check prefills the likeliest spelling, counts an initialism once,
   await harness();
   await meetingsList();
   await clickWords('Past');
-  await waitFor(`(document.querySelector('.w2b-meetings')?.innerText || '').includes('Till sensors review')`);
-  await clickWords('Till sensors review');
+  await waitFor(`(document.querySelector('.w2b-meetings')?.innerText || '').includes('Oven sensors review')`);
+  await clickWords('Oven sensors review');
   await waitFor(`!!document.querySelector('.w2b-meeting')`);
   await waitFor(`!!document.querySelector('.mm-check')`);
   await sleep(1500);

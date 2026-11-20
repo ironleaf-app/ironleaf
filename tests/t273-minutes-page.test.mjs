@@ -40,12 +40,12 @@ const PAIR_LINES = [
   'Thanks, Keston already sent the survey sheet to the mill team.',
   'Right, Cobbisen quoted the fitting work for the foyer site.',
   'Sure, Cobbison keeps the old quote open until the end of term.',
-  'Well, Tavvish served the late shift during the retail cover.',
+  'Well, Tavvish served the late shift during the market cover.',
   'Okay, Tavish helped the early crew with the stock count.',
   'Morning, Arlow pushed most remaining rooms into next year.',
-  'Thanks, Arloow kept two Sydney rooms in this half.',
-  'Right, Merrow covers the harbour stores while the crew trains.',
-  'Sure, Merow takes the weekend stocktake at the north depot.',
+  'Thanks, Arloow kept two studio rooms in this half.',
+  'Right, Merrow covers the harbour stall while the crew trains.',
+  'Sure, Merow takes the weekend stocktake at the north shed.',
   'Well, Wondow tinting for the gallery starts after the audit.',
   'Okay, Window locks for the side doors arrive with the crates.',
 ];
@@ -53,21 +53,21 @@ const stamp2 = (at) => `${Math.floor(at / 60)}:${String(at % 60).padStart(2, '0'
 
 // One long paragraph (six sentences, one link to strip), so the page must break it into short paragraphs.
 const SUMMARY =
-  'Mia Tran and Jordan Lee met for a one-to-one covering the harbour stores, the till rollout and the weekend stocktake. ' +
+  'Mia Tran and Jordan Lee met for a one-to-one covering the harbour stall, the oven install and the weekend stocktake. ' +
   'They agreed the foyer fitting work stays open until the end of term, with the revised quote due back before Friday lunch. ' +
   'The gallery tinting starts after the audit, and the side door locks arrive with the next crates. ' +
-  'Most remaining rooms move into next year, with two Sydney rooms kept in this half. ' +
-  'Jordan takes the weekend stocktake at the [[Harbour Stores|Harbour]] north depot while the crew trains. ' +
+  'Most remaining rooms move into next year, with two studio rooms kept in this half. ' +
+  'Jordan takes the weekend stocktake at the [[Harbour Stores|Harbour]] north shed while the crew trains. ' +
   'They left with the stocktake roster settled and the fitting quote as the only open thread.';
 
 const DECISIONS = [
   'Keep the foyer fitting quote open until the end of term.',
   'Start the gallery tinting after the audit.',
   'Move most remaining rooms into next year.',
-  'Keep two Sydney rooms in this half.',
-  'Run the weekend stocktake at the north depot.',
+  'Keep two studio rooms in this half.',
+  'Run the weekend stocktake at the north shed.',
   'Send the revised roadmap before Friday lunch.',
-  'Serve the late shift through the retail cover.',
+  'Serve the late shift through the market cover.',
   'Photograph the training room for the facilities team.',
   'Hold the fitting budget until the quote lands.',
 ];
@@ -76,10 +76,10 @@ const ACTIONS = [
   '- [x] Send the revised roadmap to the mill team',
   '- [ ] Chase the foyer fitting quote before Friday',
   '- [x] Book the gallery tinting after the audit',
-  '- [ ] Count the spare video bars in the Sydney store',
+  '- [ ] Count the spare baking trays in the harbour stall',
   '- [x] File the survey sheet with the job record',
-  '- [ ] Rota the late shift through the retail cover',
-  '- [x] Confirm the north depot stocktake day',
+  '- [ ] Rota the late shift through the market cover',
+  '- [x] Confirm the north shed stocktake day',
   '- [ ] Photograph the training room for the facilities team',
   '- [x] Move the remaining rooms into next year',
   '- [ ] Label the cable trays before the acceptance tests',
@@ -96,7 +96,7 @@ const meetingNote = () =>
     '---',
     '## Agenda',
     '',
-    '- [x] Harbour stores and the till rollout',
+    '- [x] Harbour stall and the oven install',
     '- [x] Weekend stocktake',
     '',
     '## Summary',
@@ -113,10 +113,10 @@ const meetingNote = () =>
     '',
     '## Discussion',
     '',
-    '> [!quote]- Till rollout',
+    '> [!quote]- Oven install',
     '> The foyer fitting work stays open until the end of term.',
     '>',
-    '> Jordan takes the weekend stocktake at the north depot.',
+    '> Jordan takes the weekend stocktake at the north shed.',
     '',
     '## Transcript',
     '',
