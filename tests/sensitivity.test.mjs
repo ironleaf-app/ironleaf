@@ -48,7 +48,12 @@ before(async () => {
 });
 after(() => rmSync(work, { recursive: true, force: true }));
 
-const fixture = (name) => readFileSync(path.join(root, 'tests', 'fixtures', 'secrets', name), 'utf8');
+// Fake keys are made here, not stored in the fixture: a key-shaped string in the repository is reported by every secret
+// scanner (and by GitHub's) as a leak, whether it is real or not. Same shape as the real thing, made-up characters.
+const fakeChars = (n, seed) => Array.from({ length: n }, (_, i) => 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789'[(i * 7 + seed) % 57]).join('');
+const FAKES = { '{{FAKE_OPENAI_KEY}}': 'sk-' + 'proj-' + fakeChars(40, 3), '{{FAKE_BOT_TOKEN}}': '1234567890:' + 'AA' + fakeChars(33, 11) };
+const fixture = (name) =>
+  readFileSync(path.join(root, 'tests', 'fixtures', 'secrets', name), 'utf8').replace(/\{\{FAKE_[A-Z_]+\}\}/g, (k) => FAKES[k] ?? k);
 
 // ── The rules ────────────────────────────────────────────────────────────────────────────────────────────────────────
 

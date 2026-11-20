@@ -31,8 +31,8 @@ Business Visa 4111 1111 1111 1111, CVV: 123
 ## Keys and licences
 
 - Office licence key: ABCDE-12345-FGHIJ-67890-KLMNO
-- Deploy uses OPENAI_API_KEY=sk-proj-AbCdEfGhIjKlMnOpQrStUvWxYz0123456789abcd
-- Ordering bot token 123456789:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsawQ
+- Deploy uses OPENAI_API_KEY={{FAKE_OPENAI_KEY}}
+- Ordering bot token {{FAKE_BOT_TOKEN}}
 - Backup site https://backup:Vault2026pw@files.harbourlane.example/share
 
 ## ID and bank
