@@ -464,8 +464,8 @@ test('person 3 brings a zip export in: plan first, originals kept, take-back off
       mkdirSync(path.join(exp, 'Journal'), { recursive: true });
       writeFileSync(path.join(exp, 'Journal', 'First day.md'), '# First day\n\nWe landed at noon.\n');
       staged = path.join(work, 'keep-export.zip');
-      const { execFileSync } = await import('node:child_process');
-      execFileSync('zip', ['-qr', staged, 'Keep export'], { cwd: path.join(work, 'export-src') });
+      const { zipFolder } = await import('./zip-folder.mjs');
+      zipFolder(staged, exp);
     },
     { wrap: { get importSource() { return staged; } } },
   );

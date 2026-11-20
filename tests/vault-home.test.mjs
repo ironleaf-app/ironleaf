@@ -13,6 +13,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { after, before, test } from 'node:test';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { zipFolder } from './zip-folder.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const work = mkdtempSync(path.join(tmpdir(), 'nv-home-'));
@@ -386,7 +387,7 @@ test('notes from another app: Markdown, HTML and CSV exports become notes in a f
 test('a zip of one folder (as Windows’ Send to › Compressed folder makes it) imports that folder; a name climbing out is never written', async () => {
   const d = path.join(work, 'zips');
   put(path.join(d, 'src', 'Club notes', 'Minutes.md'), '# Minutes\n');
-  execFileSync('zip', ['-qr', path.join(d, 'club.zip'), 'Club notes'], { cwd: path.join(d, 'src') });
+  zipFolder(path.join(d, 'club.zip'), path.join(d, 'src', 'Club notes'));
   const vault = path.join(d, 'Ironleaf');
   livedIn(vault, 1);
   const src = await H.readImport(path.join(d, 'club.zip'), vault, { tempDir: path.join(d, 'temp') });
