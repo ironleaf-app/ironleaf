@@ -397,7 +397,7 @@ test('the whole conversation, scripted: ask for the launch checklist as a templa
   const { host, files, original, launch } = await setUp('conversation');
   try {
     const sys = M.agentSystem(null, host.today(), null, []);
-    for (const rule of [/Act on the obvious reading; don't ask what you can tell/, /IS the thing they mean/, /“put it back to default”/, /Launch template – Cafe Opening Checklist\.xlsx/, /Never say you can't do something your tools can do/, /with its link exactly as the tool gave it/]) assert.match(sys, rule);
+    for (const rule of [/Act on the obvious reading; don't ask what you can tell/, /IS the thing they mean/, /“put it back to default”/, /Spring template – Garden Planting Plan\.xlsx/, /Never say you can't do something your tools can do/, /with its link exactly as the tool gave it/]) assert.match(sys, rule);
     for (const name of ['copy_project_file', 'edit_project_file', 'read_spreadsheet']) assert.ok(M.TOOLS.some((t) => t.name === name), `${name} is offered`);
     assert.ok(!/Read only: it never changes the file\.$/.test(M.TOOLS.find((t) => t.name === 'read_project_file').description), 'reading no longer reads as “can’t change files”');
     const steps = [];
