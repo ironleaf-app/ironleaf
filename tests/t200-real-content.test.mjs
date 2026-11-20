@@ -29,7 +29,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { after, before, test } from 'node:test';
 import { pathToFileURL } from 'node:url';
-import { startHarness } from './vault-controls-harness.mjs';
+import { openSettings, startHarness } from './vault-controls-harness.mjs';
 import { writeT200Vault } from './t200-vault.mjs';
 
 const root = path.join(import.meta.dirname, '..');
@@ -90,7 +90,9 @@ test('a meeting’s name under a Today row reads through .td-text with its title
   assert.ok(due.includes('<span className="td-text" title={') && due.includes(': title}'), 'the sub wraps whole with its title, as a due line’s project name does (t207 pass 2: no dots; t238 names every source, the note’s name last)');
   const today = read('src/renderer/src/views/TodayView.tsx');
   assert.ok(today.includes('title={`Open ${x.projectName}`}><span className="td-text">{x.projectName}</span></button>'), 'the waiting line’s project clips the same way');
-  assert.ok(today.includes('<span className="td-project" title={x.projectName}><span className="td-text">{x.projectName}</span></span>'), 'the unscheduled line’s project clips the same way');
+  // (Today no longer draws undated steps as rows, layout round 2: one count row opens Tasks with just those, so the
+  // unscheduled line and its project are gone from this page.)
+  assert.ok(!today.includes('unscheduled.map('), 'undated steps are a count, never rows');
 });
 
 test('the Tasks page’s meeting sub stands as a block, wraps whole and carries its title', () => {
@@ -270,8 +272,8 @@ const MEASURE_JS = `(() => {
 const PAGES = [
   { id: 'today', room: true, open: (h) => openRoom(h, 'Today') },
   { id: 'note', open: async (h) => { await openRoom(h, 'Notes'); assert.equal(await palettePick(h, 'Kickoff note 1 with decisions'), 'CLICKED', 'the note opens'); await sleep(1500); } },
-  { id: 'project', open: async (h) => { await openRoom(h, 'Projects'); assert.equal(await clickWords(h, 'Harbourline Cart Fix', 'main'), 'CLICKED', 'the project opens'); await sleep(1200); } },
-  { id: 'person', open: async (h) => { await openRoom(h, 'People'); assert.equal(await clickWords(h, 'Alex Chen', 'main'), 'CLICKED', 'the person opens'); await sleep(1200); } },
+  { id: 'project', open: async (h) => { await openRoom(h, 'Projects'); await waitFor(h, `(document.querySelector('main')?.innerText ?? '').includes('Harbourline Cart Fix')`); assert.equal(await clickWords(h, 'Harbourline Cart Fix', 'main'), 'CLICKED', 'the project opens'); await sleep(1200); } },
+  { id: 'person', open: async (h) => { await openRoom(h, 'People'); await waitFor(h, `(document.querySelector('main')?.innerText ?? '').includes('Alex Chen')`); assert.equal(await clickWords(h, 'Alex Chen', 'main'), 'CLICKED', 'the person opens'); await sleep(1200); } },
   { id: 'notes', room: true, open: (h) => openRoom(h, 'Notes') },
   { id: 'tasks', room: true, open: (h) => openRoom(h, 'Tasks') },
   { id: 'meetings', room: true, open: (h) => openRoom(h, 'Meetings') },
@@ -311,7 +313,7 @@ const PAGES = [
     },
   },
   { id: 'more', open: async (h) => { await openRoom(h, 'Today'); assert.equal(await clickWords(h, 'More', '.sidebar.left, aside'), 'CLICKED', 'More opens'); await sleep(800); } },
-  { id: 'settings', room: true, open: async (h) => { assert.equal(await clickWords(h, 'Settings', '.sidebar.left, aside'), 'CLICKED', 'Settings opens'); await sleep(1200); } },
+  { id: 'settings', room: true, open: async (h) => { assert.equal(await openSettings(h), 'CLICKED', 'Settings opens'); await sleep(1200); } },
 ];
 
 const SHARE = { 3456: { today: 0.45, room: 0.4 }, 1920: { today: 0.6, room: 0.6 }, 1219: { today: 0.7, room: 0.7 } };

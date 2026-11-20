@@ -108,13 +108,17 @@ test('due today first, then waiting, then upkeep', () => {
     assert.ok(i >= 0, `${mark} lists with the rows`);
     return i;
   };
-  const due = at('<TodayModules group="due"');
-  const waiting = at('<TodayModules group="waiting"');
+  // Layout round 2 and 2.0.1 (20 Nov 2026): the packs' due rows (bills, editions) are a block of their own that
+  // balances into the shorter column, and the meetings finished with actions open read in the one Meetings card, so
+  // neither sits in the Needs you list any more. That list keeps its order: notes waiting, upkeep, loose ends, review.
+  at('<TodayModules group="due"');
+  at('<MeetingsAfterLine />');
+  assert.ok(!src.includes('<TodayModules group="waiting"'), 'no second Meetings block');
   const notes = at('<ProjectChecksToday />');
   const upkeep = at('<TodayModules group="upkeep"');
   const dormant = at('{isToday && dormantQuiet}');
   const review = at('{isToday && reviewQuiet}');
-  assert.ok(due < waiting && waiting < notes && notes < upkeep && upkeep < dormant && dormant < review, 'bills and editions, meetings and notes, systems, loose ends, review');
+  assert.ok(notes < upkeep && upkeep < dormant && dormant < review, 'notes waiting, systems, loose ends, review');
 });
 
 test('tidy leaves Today for the weekly review, reachable there', () => {
