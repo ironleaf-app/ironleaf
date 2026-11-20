@@ -438,7 +438,7 @@ test('the whole conversation, scripted: ask for the launch checklist as a templa
     assert.deepEqual(tools.cards().map((c) => [c.kind, c.entries.map((e) => e.name)]), [['made', ['Launch template – Cafe Opening Checklist.xlsx']]]);
     assert.deepEqual(steps.filter((x) => x.kind !== 'say').map((x) => x.words), ['Searched the project files for “launch checklist”', 'Looked over every sheet of Cafe_Opening_Checklist_WexleySt.xlsx in 07 Wexley St Ashford (Launch)', 'Saved Launch template – Cafe Opening Checklist.xlsx']);
     assert.ok(!steps.some((x) => x.kind === 'error'), 'no step failed');
-    assert.deepEqual(listAll(launch), ['Floor plan.pdf', 'Notes.md', 'Checklist/Launch template – Cafe Opening Checklist.xlsx', 'Checklist/Cafe_Opening_Checklist_MASTER.xlsx', 'Checklist/Cafe_Opening_Checklist_WexleySt.xlsx', 'Cafe brief.docx'], 'one new file, nothing else touched');
+    assert.deepEqual(listAll(launch), ['Cafe brief.docx', 'Checklist/Cafe_Opening_Checklist_MASTER.xlsx', 'Checklist/Cafe_Opening_Checklist_WexleySt.xlsx', 'Checklist/Launch template – Cafe Opening Checklist.xlsx', 'Floor plan.pdf', 'Notes.md'], 'one new file, nothing else touched');
     assert.ok(statSync(tpl).size > 0);
   } finally {
     files.stop();
