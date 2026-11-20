@@ -1125,7 +1125,7 @@ function AskAnywhere({ view, canEdit }: { view: MeetingsView; canEdit: boolean }
   return (
     <div className="w2b-add" style={{ margin: '0 0 12px' }}>
       <Icon name="plus" size={12} />
-      <input value={asking} placeholder="Ask a question (“Who signs off the till logs?”)" aria-label="Ask a question" onChange={(e) => setAsking(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), void ask())} />
+      <input value={asking} placeholder="Ask a question (“Who signs off the oven logs?”)" aria-label="Ask a question" onChange={(e) => setAsking(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), void ask())} />
       <button type="button" className="button small" style={{ flex: 'none', maxWidth: '45%', whiteSpace: 'normal', textAlign: 'left' }} title="Which meeting it is asked in" onClick={(e) => openMenu(e.currentTarget, [{ heading: 'Ask it in' }, ...ordered.slice(0, 20).map((m) => ({ label: bareTitle(m.title), checked: m.path === into.path, run: () => setAt(m.path) }))])}>
         in {bareTitle(into.title)} <Icon name="chevron" size={10} />
       </button>
