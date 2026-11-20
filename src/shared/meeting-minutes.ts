@@ -705,9 +705,9 @@ function restateWord(a: string, b: string): boolean {
 /** Whether an unticked line the merged whole left out is a restatement of a line that stays (6 Nov 2026, m9:
  *  nothing a person wrote is ever lost — a line goes only when shown to restate what stays, never because the
  *  model left it out). A generous overlap of content words, well below sameJob's 70%: at least two shared and
- *  at least 35 in 100 of the shorter's, the level set by the Fitzroy run's weakest real restatement ("Both
- *  stores move from Fresh Dairy Co to Merricks Creek Dairy" for "Merricks Creek Dairy to start Monday 23
- *  November for Brunswick and Fitzroy", 3 of 7). A figure the staying line doesn't carry vetoes: different
+ *  at least 35 in 100 of the shorter's, the level set by the weakest real restatement seen ("The bakery
+ *  moves from Fresh Dairy Co to Merricks Creek Dairy" for "Merricks Creek Dairy to start Monday 23 November
+ *  for the bakery", 3 of 7). A figure the staying line doesn't carry vetoes: different
  *  figures are different points. When in doubt it keeps. */
 function restatesLine(left: string, stays: string): boolean {
   const words = (s: string) => [...new Set(sameWhat(s).replace(/(\d+)(st|nd|rd|th)\b/g, '$1').split(' ').filter((w) => !!w && (/\d/.test(w) || w.length > 1) && !RESTATE_GLUE.has(w)))];

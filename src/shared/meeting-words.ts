@@ -220,7 +220,7 @@ const inflectionPair = (a: string, b: string): boolean => {
   return false;
 };
 
-/** Whether two spellings are one word's singular and plural ("store"/"stores", "delivery"/"deliveries",
+/** Whether two spellings are one word's singular and plural ("scone"/"scones", "delivery"/"deliveries",
  *  "pass"/"passes"): different words, never a mishear. A wrong plural ("winchs" for "winches") is no pair. */
 const pluralPair = (a: string, b: string): boolean => {
   if (a === `${b}s` || b === `${a}s`) return true;
@@ -270,7 +270,7 @@ export function findUncertain(lines: readonly TranscriptLine[], known: readonly 
   }
   const steady = [...frequent].filter(([, f]) => f.count >= 2).map(([lower, f]) => ({ lower, display: f.display, count: f.count }));
   // How alike a once-said spelling must be to a steady word to be offered: in a short word two changed letters
-  // make a different word ("stock" is not "store", "starts" is not "stores": 6 Nov 2026, noise), so one letter
+  // make a different word ("crumb" is not "crust", "scones" is not "stoves"), so one letter
   // only there; longer words keep the check's own threshold.
   const steadyNear = (l: string, s: string): boolean => {
     const cap = Math.max(l.length, s.length) <= 6 ? 1 : nearThreshold(l, s);
@@ -410,7 +410,7 @@ export function findUncertain(lines: readonly TranscriptLine[], known: readonly 
   // A wrong lowercase word that makes no sense in its sentence ("books counsel" for "books council", "flor" for
   // "flour"): each spelling said once or twice,
   //  near a word the transcript itself says steadily (three times or more, and more often than the spelling), gets
-  //  its own row, ask-first as ever. Two ordinary words merely alike ("crumb" and "crust", "scones" and "stones")
+  //  its own row, ask-first as ever. Two ordinary words merely alike ("crumb" and "crust", "scones" and "stoves")
   //  stay quiet: in a short word two changed letters make a different word, and a twice-said almost-word is not
   //  steady enough to correct by (6 Nov 2026, "stone" said twice offered itself for "stock"). One word inside the
   //  other is a form of it, not a mishear ("train" for "training"). Dates, generic words and short words never
