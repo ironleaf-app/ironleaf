@@ -76,9 +76,9 @@ function crmFiles(folder: string, today: string): StarterFile[] {
       `# Harbourline install\n\nThree meeting rooms. Waiting on their cabling dates before signing.\n`,
     ),
     note(
-      F('Deals/Corner store till.md'),
+      F('Deals/Bakery shopfront sign.md'),
       `company: "[[Acme Bakeries]]"\ncontact: "[[Ava Reed]]"\nvalue: 3200\nstage: Won\nclose: "${plusDays(today, -6)}"`,
-      `# Corner store till\n\nOne till for the trial shop. Paid on delivery.\n`,
+      `# Bakery shopfront sign\n\nOne lit sign for their own bakery. Paid on delivery.\n`,
     ),
     view(F('Views/Deals board.view.json'), { ...defaultView({ kind: 'folder', value: `${folder}/Deals` }, 'board'), groupBy: 'stage', groupOrder: ['Prospect', 'Negotiation', 'Won', 'Lost'], cardProps: ['value', 'close'] }),
     view(F('Views/People.view.json'), tableView(`${folder}/People`, ['role', 'org', 'email'])),
@@ -203,8 +203,8 @@ function meetingsFiles(folder: string, today: string): StarterFile[] {
     );
   return [
     note(F('Series.md'), 'when: "Mondays 10 am"\nwhere: "Front meeting room"\nwho: ["Mia Tran", "Priya Shah", "Tom Nguyen"]', `# Team meeting\n\nHalf an hour, Mondays at 10. What moved, what is stuck, what is next.\n\nStart each week from last week's note: carry the open actions forward.\n`),
-    instance(1, '- The till order goes ahead.', '- [x] Mia: send the till order\n- [ ] Priya: book the Sydney wave'),
-    instance(2, '- Easter hours agreed.', '- [x] Tom: confirm the cabling day\n- [x] Mia: file the till report'),
+    instance(1, '- The oven order goes ahead.', '- [x] Mia: send the oven order\n- [ ] Priya: book the oven fitting'),
+    instance(2, '- Easter hours agreed.', '- [x] Tom: confirm the cabling day\n- [x] Mia: file the stock report'),
     view(F('Views/Meetings.view.json'), tableView(folder, ['date', 'attendees'], { sort: { prop: 'date', dir: 'desc' } })),
     view(F('Views/Meetings calendar.view.json'), { ...defaultView({ kind: 'folder', value: folder }, 'calendar'), dateProp: 'date', cardProps: [] }),
   ];
@@ -230,7 +230,7 @@ function weeklyFiles(folder: string, today: string): StarterFile[] {
     note(
       F(`Week of ${last.label}.md`),
       `week: "${last.label}"\nstatus: Done`,
-      `# Week of ${last.label}\n\n## Done\n\n- Till order sent.\n- Sydney wave booked.\n\n## Slipped\n\n- Till report filed late.\n\n## Next week matters most\n\n1. Sydney wave starts well.\n2. Till report on time.\n3. Book the photo shoot.\n`,
+      `# Week of ${last.label}\n\n## Done\n\n- Oven order sent.\n- Oven fitting booked.\n\n## Slipped\n\n- Stock report filed late.\n\n## Next week matters most\n\n1. Oven fitting goes well.\n2. Stock report on time.\n3. Book the photo shoot.\n`,
     ),
     view(F('Views/Reviews.view.json'), { ...defaultView({ kind: 'folder', value: folder }, 'list'), columns: ['week', 'status'], sort: { prop: 'week', dir: 'desc' } }),
   ];
