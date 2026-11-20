@@ -60,11 +60,11 @@ test('a note naming a project by its alias belongs to it (9.5 fourth pass)', () 
 
 test('a note in one folder naming another project belongs to the one it names (9.5 fourth pass)', () => {
   const r = R.computeRelations([
-    project('Alpha Tills'),
-    project('Bravo Kiosks'),
-    note('Projects/Alpha Tills/Shared register notes.md', 'For both.', { props: { project: '[[Bravo Kiosks]]' } }),
+    project('Alpha Ovens'),
+    project('Bravo Planters'),
+    note('Projects/Alpha Ovens/Shared register notes.md', 'For both.', { props: { project: '[[Bravo Planters]]' } }),
   ]);
-  assert.equal(r.owner.get('Projects/Alpha Tills/Shared register notes.md'), pathOf('Bravo Kiosks'));
+  assert.equal(r.owner.get('Projects/Alpha Ovens/Shared register notes.md'), pathOf('Bravo Planters'));
 });
 
 test('projects sharing a person are connected, however the name is written', () => {
@@ -83,8 +83,8 @@ test('projects sharing a person are connected, however the name is written', () 
 test('a group, a first name alone, and the person on every project connect nothing', () => {
   const owner = 'Sam Taylor';
   const r = R.computeRelations([
-    project('Alpha Tills', { owner, people: ['Finance team', 'Priya'] }),
-    project('Bravo Kiosks', { owner, people: ['Finance team', 'Priya'] }),
+    project('Alpha Ovens', { owner, people: ['Finance team', 'Priya'] }),
+    project('Bravo Planters', { owner, people: ['Finance team', 'Priya'] }),
     project('Charlie Scales', { owner }),
     project('Delta Ovens', { owner }),
     project('Echo Freezers', { owner }),
@@ -141,13 +141,13 @@ test('a lead acronym and a project actually named AI match; IT alone never names
 test('mentions are not found in ordinary words, lower-case single words, or a project’s own notes', () => {
   const r = R.computeRelations([
     project('Studio Upgrade'),
-    project('Tessaly Rollout'),
+    project('Tessaly Recording'),
     project('Harbour Fit-out'),
     note('Projects/Studio Upgrade/Visit.md', 'Studio Upgrade visit went well.'),
     note('Shopping.md', 'Went to the studio to upgrade my phone. The tessaly old man said hello. A harbour view.'),
   ]);
   assert.equal(between(r, 'Shopping.md', pathOf('Studio Upgrade')), undefined);
-  assert.equal(between(r, 'Shopping.md', pathOf('Tessaly Rollout')), undefined);
+  assert.equal(between(r, 'Shopping.md', pathOf('Tessaly Recording')), undefined);
   assert.equal(between(r, 'Shopping.md', pathOf('Harbour Fit-out')), undefined);
   const own = between(r, 'Projects/Studio Upgrade/Visit.md', pathOf('Studio Upgrade'));
   assert.deepEqual(own.kinds, ['owns']);
@@ -177,25 +177,25 @@ test('a place closing and one opening in the same city go together; nothing else
 
 test('projects sharing a tag are connected; a tag on most projects is not', () => {
   const r = R.computeRelations([
-    project('Alpha Tills', { tags: ['garden', 'work'] }),
-    project('Bravo Kiosks', { tags: ['garden', 'work'] }),
+    project('Alpha Ovens', { tags: ['garden', 'work'] }),
+    project('Bravo Planters', { tags: ['garden', 'work'] }),
     project('Charlie Scales', { tags: ['work'] }),
     project('Delta Ovens', { tags: ['work'] }),
     project('Echo Freezers', { tags: ['work'] }),
   ]);
-  const rel = between(r, pathOf('Alpha Tills'), pathOf('Bravo Kiosks'));
+  const rel = between(r, pathOf('Alpha Ovens'), pathOf('Bravo Planters'));
   assert.deepEqual(rel.kinds, ['tags']);
   assert.equal(rel.reasons[0], 'Both tagged #garden');
   assert.equal(projectPairs(r).length, 1);
 });
 
 test('links as written, with every reason on one line per pair', () => {
-  const a = project('Alpha Tills', { people: ['Bettina Maddox'] });
-  a.links = [pathOf('Bravo Kiosks')];
-  const r = R.computeRelations([a, project('Bravo Kiosks', { people: ['Bettina Maddox'] }), note('A.md', '', { links: ['B.md'] }), note('B.md')]);
-  const rel = between(r, pathOf('Alpha Tills'), pathOf('Bravo Kiosks'));
+  const a = project('Alpha Ovens', { people: ['Bettina Maddox'] });
+  a.links = [pathOf('Bravo Planters')];
+  const r = R.computeRelations([a, project('Bravo Planters', { people: ['Bettina Maddox'] }), note('A.md', '', { links: ['B.md'] }), note('B.md')]);
+  const rel = between(r, pathOf('Alpha Ovens'), pathOf('Bravo Planters'));
   assert.deepEqual(rel.kinds.sort(), ['link', 'people']);
-  assert.ok(rel.reasons.includes('Alpha Tills links to Bravo Kiosks'));
+  assert.ok(rel.reasons.includes('Alpha Ovens links to Bravo Planters'));
   assert.ok(rel.reasons.includes('Both have Bettina Maddox'));
   assert.ok(rel.strength > 1);
   const ab = between(r, 'A.md', 'B.md');
