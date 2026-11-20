@@ -236,12 +236,11 @@ button.ev.w2b-ev { display: block; width: 100%; border: 0; cursor: pointer; font
 /* ---------- a person, and People (p15-person, 4 Nov 2026) ---------- */
 /* The halves' titles take the row's free room, as the timeline's do (.w2b-card .trow > .t above). */
 .w2b-half .trow > .t { flex: 1; min-width: 0; }
-/* The person's page is cards and rows, not prose: on a narrow window it keeps the reading column, on a wide one
-   it takes the list column, and on the window more still, so You owe and Owes you titles are read, not cut.
-   Other reading pages keep 920px: this names the person's page only. */
-@media (min-width: 1280px) {
-  .nv-page.read.w2b-person { max-width: var(--page-max); }
-}
+/* The person's page is cards and rows, not prose: it takes the list column at every window, so You owe and Owes
+   you titles are read, not cut. (Narrow windows once kept the 920 px reading column, which filled them; since the
+   reading column became 720 px of text, 20 Nov 2026, that left a 1219 px window's person page at 65% of it.)
+   Other reading pages keep the reading column: this names the person's page only. */
+.nv-page.read.w2b-person { max-width: var(--page-max); }
 
 /* Notes Show more sits centred under its rows (5 Nov 2026 speed audit item 6), as the Library's does. */
 .w2b-more { display: flex; justify-content: center; padding: 12px 0 4px; }
