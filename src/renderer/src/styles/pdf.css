@@ -215,6 +215,11 @@
   display: block;
 }
 
+/* The canvas the next drawing goes into: out of sight until it is finished and comes forward. */
+.pdfv-canvas.is-back {
+  visibility: hidden;
+}
+
 :root[data-theme='dark'] .pdfv.is-dim .pdfv-canvas,
 :root[data-theme='dark'] .pdfv.is-dim .pdfv-thumb canvas {
   filter: brightness(0.78) sepia(0.06);
