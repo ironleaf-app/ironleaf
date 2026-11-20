@@ -129,7 +129,7 @@ describe('live: nothing a person reads is clipped', () => {
       // Heavy invented data: 40 projects with long names, 10 packed in one week, 30 spread
       // over 18 months, two sharing a day and a person (a clash), one with a long summary.
       const iso = (d) => `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
-      const names = ['Brunswick Site Lease Renewal Negotiation With The Waterfront Group', 'Catering Contract For The Docklands Office Weekly Morning Tea Service', 'Fitzroy Cafe Fit-Out With Joinery And Custom Banquette Seating', 'Roastery Espresso Machine Replacement And Barista Retraining Programme', 'Supplier Tender For Milk Bread And Pantry Staples Across All Stores', 'Website And Online Ordering Rebuild With Loyalty Points Migration', 'Winter Menu Launch With Supplier Tastings And Photography Shoot', 'Point Of Sale Changeover Across Every Till And Kiosk Statewide', 'Staff Rostering System Rollout With Leave Balances Imported', 'Highpoint Kiosk Lease Extension And Weekend Trading Hours Trial'];
+      const names = ['Kingsley Site Lease Renewal Negotiation With The Waterfront Group', 'Catering Contract For The Harbour Studio Weekly Morning Tea Service', 'Brookfield Bakery Fit-Out With Joinery And Custom Banquette Seating', 'Roastery Espresso Machine Replacement And Barista Retraining Programme', 'Supplier Tender For Milk Bread And Pantry Staples For The Bakery Kitchen', 'Website And Online Ordering Rebuild With Loyalty Points Migration', 'Winter Menu Launch With Supplier Tastings And Photography Shoot', 'Garden Shed Rebuild With New Racks For Every Tool And Seed Tray', 'Staff Rostering System Setup With Leave Balances Imported', 'Market Stall Lease Extension And Weekend Opening Hours Trial'];
       for (let i = 0; i < 40; i++) {
         const name = i < names.length ? names[i] : `Harbour Precinct Project Number ${i} With A Long Descriptive Name`;
         const packed = i < 10;
@@ -285,7 +285,7 @@ describe('live: nothing a person reads is clipped', () => {
       })()`);
       await browser.send('Emulation.setDeviceMetricsOverride', { width: 3456, height: 1408, deviceScaleFactor: 1, mobile: false });
       await sleep(900);
-      assert.match(await readMore('Brunswick Site Lease'), /MORE:Read more/, 'the long summary offers Read more at 3456');
+      assert.match(await readMore('Kingsley Site Lease'), /MORE:Read more/, 'the long summary offers Read more at 3456');
       assert.equal(await readMore('Catering Contract'), 'NONE', 'the 235-character lead fits whole in two lines: no Read more at 3456');
       await shot('n3-project-after-3456x1408.png');
       assert.equal(await readMore('Winter Menu Launch'), 'NONE', 'the one-line lead fits whole: no Read more at 3456');

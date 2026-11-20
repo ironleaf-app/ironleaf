@@ -1,5 +1,5 @@
 // node --test tests/meaning-first-look.test.mjs — find by meaning where a person looks first
-// (6 Nov 2026: the Ask/Find palette showed "renting a new shop" no note for "Brunswick site lease
+// (6 Nov 2026: the Ask/Find palette showed "renting a new shop" no note for "Kingsley site lease
 // renewal", and the model runtime never loaded on Windows until today). Full search must find the
 // note: the SHIPPED runner (tools/ort-ship.mjs into a bare folder, the .cjs required as the app
 // requires it), the real embed model and the real rerank model, over a heavy invented vault
@@ -73,17 +73,17 @@ const BODIES = [
   'Council permit for the footpath tables, insurance certificate attached.',
 ];
 const TARGETS = {
-  'Sites/Brunswick site lease renewal.md':
-    '# Brunswick site lease renewal\nThe Fitzroy landlord wants the commercial tenancy agreement for the Sydney Road premises signed by March. Rent review clause, five year option, fit-out contribution. Meeting with the property solicitor Thursday.',
+  'Sites/Kingsley site lease renewal.md':
+    '# Kingsley site lease renewal\nThe landlord wants the commercial tenancy agreement for the Harbour Road bakery premises signed by March. Rent review clause, five year option, fit-out contribution. Meeting with the property solicitor Thursday.',
   'Suppliers/Green bean contract talks.md':
     '# Green bean contract talks\nNegotiating the forward purchase of Colombian and Ethiopian lots with the importer. Price per bag, shipment windows, quality scoring on arrival. Cupping samples Friday.',
   'Staff/Weekend crew roster.md':
-    '# Weekend crew roster\nSaturday and Sunday shifts for baristas and floor staff across both stores. Mia covers opening, Priya closes. Swap requests in the book by Wednesday.',
+    '# Weekend crew roster\nSaturday and Sunday shifts for baristas and floor staff at the cafe. Mia covers opening, Priya closes. Swap requests in the book by Wednesday.',
   'Notes/Siesta.md': '# Siesta\nThe feline domestic companion reclined on the heated textile.',
 };
 const QUERIES = [
   // [query, target]: the walk's headline first, each sharing no word with its target.
-  ['renting a new shop', 'Sites/Brunswick site lease renewal.md'],
+  ['renting a new shop', 'Sites/Kingsley site lease renewal.md'],
   ['buying coffee from overseas', 'Suppliers/Green bean contract talks.md'],
   ['who is rostered to work', 'Staff/Weekend crew roster.md'],
   ['cat sat on warm rug', 'Notes/Siesta.md'],
@@ -122,7 +122,7 @@ async function built(count = 300) {
   return { index, builder, dir, buildMs: Date.now() - t0, starting };
 }
 
-test('the walk headline: "renting a new shop" finds Brunswick site lease renewal, an ordinary hit', async () => {
+test('the walk headline: "renting a new shop" finds Kingsley site lease renewal, an ordinary hit', async () => {
   const { index, builder, dir, buildMs, starting } = await built();
   try {
     assert.equal(index.meanings().hasTermVectors(), false, 'every note embedded: only embeddings answer');
@@ -174,9 +174,9 @@ test('stored stand-in vectors are replaced safely when the real model loads', as
   // once the model runs, every vector is replaced, none compared across the two spaces.
   const index = new M.VaultIndex();
   for (let i = 0; i < 20; i++) index.set(`Notes/Note ${i}.md`, `# Note ${i}\nFlour, sugar, butter, bake at 180.`, NOW, 10);
-  index.set('Sites/Brunswick site lease renewal.md', TARGETS['Sites/Brunswick site lease renewal.md'], NOW, 10);
+  index.set('Sites/Kingsley site lease renewal.md', TARGETS['Sites/Kingsley site lease renewal.md'], NOW, 10);
   assert.equal(index.meanings().hasTermVectors(), true, 'before the model: hashed stand-ins answer');
-  assert.equal((index.meanings().vectors('Sites/Brunswick site lease renewal.md') ?? []).length, 128, 'the hashed width');
+  assert.equal((index.meanings().vectors('Sites/Kingsley site lease renewal.md') ?? []).length, 128, 'the hashed width');
   const dir = mkdtempSync(path.join(tmpdir(), 'nv-first-look-cache-'));
   try {
     const builder = new M.MeaningBuilder({
@@ -197,9 +197,9 @@ test('stored stand-in vectors are replaced safely when the real model loads', as
     await builder.idle();
     try {
       assert.equal(index.meanings().hasTermVectors(), false, 'after the model: every stand-in replaced');
-      assert.equal((index.meanings().vectors('Sites/Brunswick site lease renewal.md') ?? []).length, 384, 'the taught width');
+      assert.equal((index.meanings().vectors('Sites/Kingsley site lease renewal.md') ?? []).length, 384, 'the taught width');
       const hits = await index.searchAsync('renting a new shop');
-      assert.ok(hits.some((h) => h.path === 'Sites/Brunswick site lease renewal.md' && h.meaning), 'the replaced index finds by meaning');
+      assert.ok(hits.some((h) => h.path === 'Sites/Kingsley site lease renewal.md' && h.meaning), 'the replaced index finds by meaning');
     } finally {
       builder.stop();
     }
@@ -207,7 +207,7 @@ test('stored stand-in vectors are replaced safely when the real model loads', as
     // rebuilt, never compared against the model's vectors.
     writeFileSync(
       path.join(dir, 'map.json'),
-      JSON.stringify({ v: 1, dim: 128, order: [{ path: 'Sites/Brunswick site lease renewal.md', hash: 'deadbeef', chunks: 1 }] }),
+      JSON.stringify({ v: 1, dim: 128, order: [{ path: 'Sites/Kingsley site lease renewal.md', hash: 'deadbeef', chunks: 1 }] }),
     );
     writeFileSync(path.join(dir, 'vecs.f32'), Buffer.alloc(384 * 4));
     const orig = emb.embed.bind(emb);
@@ -219,7 +219,7 @@ test('stored stand-in vectors are replaced safely when the real model loads', as
     try {
       const index2 = new M.VaultIndex();
       for (let i = 0; i < 20; i++) index2.set(`Notes/Note ${i}.md`, `# Note ${i}\nFlour, sugar, butter, bake at 180.`, NOW, 10);
-      index2.set('Sites/Brunswick site lease renewal.md', TARGETS['Sites/Brunswick site lease renewal.md'], NOW, 10);
+      index2.set('Sites/Kingsley site lease renewal.md', TARGETS['Sites/Kingsley site lease renewal.md'], NOW, 10);
       const builder2 = new M.MeaningBuilder({
         dir,
         embedder: emb,
