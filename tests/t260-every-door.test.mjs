@@ -104,7 +104,7 @@ const SKIP = [
 // Dialog-driven openers this walk drives all the way to their page (one pick, then the page).
 const DIALOG_DOORS = new Set(['open-note-type', 'records-new', 'open-pdf', 'new-note-from-template']);
 // The Files command carries an opener it never runs standalone (the Files panel opens instead).
-const SKIP_IDS = new Map([['files', 'side panel'], ['capture-to', 'capture']]);
+const SKIP_IDS = new Map([['files', 'side panel'], ['capture-to', 'capture'], ['account-sign-in', 'sign-in (it hands over to the browser)']]);
 
 function classifyCommands() {
   const doors = [];
@@ -122,6 +122,8 @@ function classifyCommands() {
       /newNote(WriteFirst|OfType)\(/.test(e.slice) ||
       /A\.(newCanvas|newDrawing|uniqueNote)\(/.test(e.slice) ||
       /openModal\(\{\s*kind:\s*'settings'/.test(e.slice) ||
+      // About and updates, and the account: Settings sections of their own, opened from the account menu (20 Nov 2026).
+      /open(About|Account)Page\(/.test(e.slice) ||
       /W\.open\(ws, \{\s*type:\s*'empty'\s*\}/.test(e.slice);
     if (page) { doors.push({ ...e, kind: 'door' }); continue; }
     const hit = SKIP.find(([re]) => re.test(e.slice));
