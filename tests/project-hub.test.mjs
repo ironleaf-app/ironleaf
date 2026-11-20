@@ -77,7 +77,7 @@ test('actions: mine, waiting on others with since, no owner; a day written among
   // A run sheet's tick boxes are actions too, under their phase.
   const site = load('Riverside Pop-up');
   const run = H.projectActions(site.p, 'Sam Reid', TODAY());
-  assert.equal(run.find((a) => a.what.startsWith('Order the point-of-sale')).phase, 'Six weeks out');
+  assert.equal(run.find((a) => a.what.startsWith('Order the card reader')).phase, 'Six weeks out');
   assert.equal(run.find((a) => a.what.startsWith('Stock delivered')).after, 'Stand built');
   assert.equal(run.find((a) => a.what.startsWith('Stock delivered')).mine, true, 'nobody named: the owner has it');
 });
@@ -236,9 +236,9 @@ test('moving an action or milestone to another day writes only its date, the way
   assert.deepEqual(changedLines(text, w).added, ['- [ ] Walk through the site with the landlord — Ana Lopez · Mon 16 Nov, 9:00 AM (see [[Landlord walk-through]])']);
   // A run sheet's tick box.
   const site = load('Riverside Pop-up');
-  const run = H.projectActions(site.p, 'Sam Reid', t).find((a) => a.what.startsWith('Order the point-of-sale'));
+  const run = H.projectActions(site.p, 'Sam Reid', t).find((a) => a.what.startsWith('Order the card reader'));
   const r = apply(site.text, H.rescheduleEdit(site.p, run.ref, day('2026-11-18'), t));
-  assert.deepEqual(changedLines(site.text, r), { gone: ['- [ ] Order the point-of-sale kit — Dee Park · by 2026-11-16'], added: ['- [ ] Order the point-of-sale kit — Dee Park · by 2026-11-18'] });
+  assert.deepEqual(changedLines(site.text, r), { gone: ['- [ ] Order the card reader — Dee Park · by 2026-11-16'], added: ['- [ ] Order the card reader — Dee Park · by 2026-11-18'] });
 });
 
 test('the plan: grouped by workstream (or phase), one line each, dependencies, a run sheet line that is a key date shows once', () => {

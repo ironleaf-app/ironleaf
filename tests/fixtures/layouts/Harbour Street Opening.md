@@ -45,7 +45,7 @@ A new 12-seat studio and shopfront on Harbour Street, open to the public on Mond
 
 - [x] Approve the floor plan
 - [ ] Book the signage install
-- [ ] Order furniture and the point-of-sale kit
+- [ ] Order furniture and the card reader
 
 ### Build week
 
