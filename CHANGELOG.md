@@ -6,6 +6,11 @@ the website. `tools/release.mjs` takes a release's notes from here when `--notes
 
 Format: one `## <version> — <YYYY-MM-DD>` heading a release, then one `- ` line a change.
 
+## 2.0.8 — 2026-11-21
+
+- PDFs zoom smoothly: the pages stretch at once and sharpen when you stop, instead of every page being laid out again for each step of the wheel.
+- The window no longer gets stuck busy (and stops scrolling) when a PDF's scrollbar comes and goes.
+
 ## 2.0.7 — 2026-11-20
 
 - Security updates: Electron 44.11.5 (it no longer trusts certificates from a compromised authority), and patched versions of the Markdown, diagram (mermaid) and maths (KaTeX) libraries.
