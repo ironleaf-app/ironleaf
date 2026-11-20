@@ -1,7 +1,7 @@
 # Publishing the public repository: checklist
 
 The exact steps to put Ironleaf on GitHub at `github.com/ironleaf-app/ironleaf`, private first, then public,
-with the 2.0.8 installers on a GitHub release. Run them in order from the private checkout that holds the
+with the 2.0.9 installers on a GitHub release. Run them in order from the private checkout that holds the
 `public-main` branch (one orphan commit, authored `Ironleaf <noreply@kaitiaki-it.com>`). Each step says what
 "done" looks like; stop at the first one that does not match.
 
@@ -20,7 +20,7 @@ REPO=ironleaf-app/ironleaf
 git log --format='%H %an <%ae> %s' public-main            # exactly one commit, author Ironleaf <noreply@kaitiaki-it.com>
 git rev-list --count public-main                         # 1
 git ls-tree -r --name-only public-main | grep -E '^(docs/walk|tools/shots)' || echo "clean"   # clean
-git show public-main:package.json | jq -r .version       # 2.0.8
+git show public-main:package.json | jq -r .version       # 2.0.9
 ```
 
 ## 2. Create the repository, private
@@ -113,17 +113,17 @@ tools/github-setup.sh --repo "$REPO"     # again: the public-only features (secr
 Done when `gh repo view "$REPO" --json visibility -q .visibility` prints `PUBLIC` and the setup ends without
 warnings.
 
-## 8. The GitHub release with the 2.0.8 installers
+## 8. The GitHub release with the 2.0.9 installers
 
 Download the installers the website serves, and check them against `latest.json` and its signature before uploading:
 
 ```bash
-mkdir -p release-2.0.8 && cd release-2.0.8
+mkdir -p release-2.0.9 && cd release-2.0.9
 BASE=https://ironleaf.kaitiaki-it.com/download
 curl -fsSLO "$BASE/latest.json" && curl -fsSLO "$BASE/latest.json.sig"
-jq -r .version latest.json                                   # 2.0.8
-WIN=$(jq -r .windows.versioned latest.json)                  # Ironleaf-Setup-2.0.8.exe
-LNX=$(jq -r .linux.versioned latest.json)                    # Ironleaf-2.0.8.AppImage
+jq -r .version latest.json                                   # 2.0.9
+WIN=$(jq -r .windows.versioned latest.json)                  # Ironleaf-Setup-2.0.9.exe
+LNX=$(jq -r .linux.versioned latest.json)                    # Ironleaf-2.0.9.AppImage
 curl -fsSLO "$BASE/$WIN" && curl -fsSLO "$BASE/$LNX"
 echo "$(jq -r .windows.sha256 latest.json)  $WIN" | sha256sum -c -
 echo "$(jq -r .linux.sha256 latest.json)  $LNX"   | sha256sum -c -
@@ -131,28 +131,28 @@ echo "$(jq -r .linux.sha256 latest.json)  $LNX"   | sha256sum -c -
 (cd .. && node --input-type=module -e "
   import { readFileSync } from 'node:fs';
   import { verifyLatest, embeddedUpdateKey } from './tools/update-sign.mjs';
-  const ok = await verifyLatest(readFileSync('release-2.0.8/latest.json', 'utf8'), readFileSync('release-2.0.8/latest.json.sig', 'utf8'), embeddedUpdateKey('.'));
+  const ok = await verifyLatest(readFileSync('release-2.0.9/latest.json', 'utf8'), readFileSync('release-2.0.9/latest.json.sig', 'utf8'), embeddedUpdateKey('.'));
   console.log(ok ? 'signature OK' : 'SIGNATURE BAD'); process.exit(ok ? 0 : 1);")
 sha256sum "$WIN" "$LNX" > SHA256SUMS
 ```
 
 Done when both `sha256sum -c` lines say `OK` and the signature check prints `signature OK`. Then the release notes
-(the 2.0.8 section of CHANGELOG.md) and the release itself, tagged on `main`:
+(the 2.0.9 section of CHANGELOG.md) and the release itself, tagged on `main`:
 
 ```bash
 awk '/^## 2\.0\.4 /{on=1; next} /^## /{if(on) exit} on' ../CHANGELOG.md > notes.md
 cat >> notes.md <<'EOF'
 
-**Download:** Windows `Ironleaf-Setup-2.0.8.exe`, Linux `Ironleaf-2.0.8.AppImage` (below, or from
+**Download:** Windows `Ironleaf-Setup-2.0.9.exe`, Linux `Ironleaf-2.0.9.AppImage` (below, or from
 https://ironleaf.kaitiaki-it.com/download/). Installed copies update themselves; every update is signed with
 Kaitiaki IT's release key. SHA-256 sums are in `SHA256SUMS`.
 EOF
-gh release create v2.0.8 --repo "$REPO" --target main --title "Ironleaf 2.0.8" --notes-file notes.md --latest \
+gh release create v2.0.9 --repo "$REPO" --target main --title "Ironleaf 2.0.9" --notes-file notes.md --latest \
   "$WIN" "$LNX" SHA256SUMS
 ```
 
-Done when `gh release view v2.0.8 --repo "$REPO"` lists the three files and the README's release badge shows
-`v2.0.8`. The in-app updater keeps reading the website's `latest.json`; the GitHub release is for people who look
+Done when `gh release view v2.0.9 --repo "$REPO"` lists the three files and the README's release badge shows
+`v2.0.9`. The in-app updater keeps reading the website's `latest.json`; the GitHub release is for people who look
 for downloads on GitHub.
 
 ## 9. Description and topics
