@@ -1,4 +1,4 @@
-// node --test tests/e2-meeting-faults.test.mjs — e2-meeting-faults fault 3 (6 Nov 2026, the Fitzroy
+// node --test tests/e2-meeting-faults.test.mjs — e2-meeting-faults fault 3 (6 Nov 2026, the Brookfield
 // take at 1280 wide: the recording block's "Written down as it goes…" ran into the right rail, and
 // "by Thursday morning" poked past its actions card). Driven through the live harness on the take's
 // own note shape; without the wrap the hint and the loose "by when" measure past their column.
@@ -9,19 +9,19 @@ import test, { after } from 'node:test';
 
 const NOTE = `---
 type: meeting
-title: "2026-11-06 Fitzroy cafe opening: weekly"
+title: "2026-11-06 Brookfield bakery opening: weekly"
 date: 2026-11-06
 people:
   - "[[Alex Rivera]]"
   - "[[Kate Sullivan]]"
-project: "[[Fitzroy cafe fit-out]]"
-where: Fitzroy site office
+project: "[[Brookfield bakery fit-out]]"
+where: Brookfield site office
 ---
 
 ## Agenda
 
-- [ ] Fitzroy opening date
-- [ ] Till rollout for the new counters
+- [ ] Brookfield opening date
+- [ ] Oven install for the new kitchen
 
 ## Actions
 
@@ -35,10 +35,10 @@ where: Fitzroy site office
 
 ## Transcript
 
-Recording: [[Recording – 2026-11-06 Fitzroy cafe opening weekly.m4a]] · 4 minutes
+Recording: [[Recording – 2026-11-06 Brookfield bakery opening weekly.m4a]] · 4 minutes
 
 > [!quote]- Transcript · 4 minutes
-> **0:00** *Speaker 1:* Right. Doors shut. Opening date first, then joinery, tills and stock, and the milk last.
+> **0:00** *Speaker 1:* Right. Doors shut. Opening date first, then joinery, ovens and stock, and the milk last.
 >
 > **0:38** *Speaker 2:* I'll ring them, and I'll chase the stone top for the Thursday morning as well.
 `;
@@ -50,7 +50,7 @@ async function harness() {
   if (!H) {
     const { startHarness } = await import('./vault-controls-harness.mjs');
     H = await startHarness();
-    const p = path.join(H.vaultDir, 'Meetings', '2026-11-06 Fitzroy cafe opening weekly.md');
+    const p = path.join(H.vaultDir, 'Meetings', '2026-11-06 Brookfield bakery opening weekly.md');
     mkdirSync(path.dirname(p), { recursive: true });
     writeFileSync(p, NOTE);
     await H.services.rescanAll();
@@ -95,11 +95,11 @@ test('the meeting note keeps its recording words and loose days inside their car
   await H.browser.ev(`(() => {
     const input = document.querySelector('.picker input');
     input.focus();
-    document.execCommand('insertText', false, 'Fitzroy cafe opening');
+    document.execCommand('insertText', false, 'Brookfield bakery opening');
     input.dispatchEvent(new Event('input', { bubbles: true }));
   })()`);
   await sleep(1400);
-  await clickWords('Fitzroy cafe opening', '.picker');
+  await clickWords('Brookfield bakery opening', '.picker');
   await waitFor(`!!document.querySelector('.mr-stack') && !!document.querySelector('.mt-panel')`);
   await sleep(1200);
   for (const [width, height] of [[1280, 800], [1219, 709]]) {

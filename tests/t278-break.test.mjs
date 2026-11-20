@@ -346,11 +346,11 @@ function minutesSeed() {
   ]).map((text, i) => `> **${stamp2(5 + i * 9)}** *Speaker ${(i % speakers) + 1}:* ${text}`);
   const note = (date, lines, recording) => [
     '---', 'type: meeting', `date: ${date}`, 'time: 10:00 AM', 'where: Harbour Stores', '---',
-    '## Agenda', '', '- [x] Harbour stores and the till rollout', '',
-    '## Summary', '', 'Mia Tran and Jordan Lee met for a one-to-one covering the harbour stores. They agreed the foyer fitting work stays open until the end of term.',
+    '## Agenda', '', '- [x] Harbour stall and the oven install', '',
+    '## Summary', '', 'Mia Tran and Jordan Lee met for a one-to-one covering the harbour stall. They agreed the foyer fitting work stays open until the end of term.',
     '', '## Decisions', '', '- Keep the foyer fitting quote open.', '',
     '## Actions', '', '- [x] Send the revised roster', '- [ ] Chase the foyer quote', '',
-    '## Discussion', '', '> [!quote]- Till rollout', '> The foyer fitting work stays open.', '',
+    '## Discussion', '', '> [!quote]- Oven install', '> The foyer fitting work stays open.', '',
     '## Transcript', '',
     ...(recording ? [`Recording: [[${recording}]] · 20 minutes`, ''] : []),
     '> [!quote]- Transcript · 20 minutes',

@@ -25,13 +25,13 @@ before(async () => {
 });
 after(() => rmSync(work, { recursive: true, force: true }));
 
-const MEETING = ['---', 'type: meeting', 'date: 2026-11-10', 'project: "[[Harbourline Cart Fix]]"', '---', '# Tuesday standup', '', '## Agenda', '', '- The retry fix', '', '## Notes', '', 'Priya asked whether the receipt shows the tax line.', '', '## Actions', '', '- [ ] Send the receipt v2 — Alex Chen', '', '## Questions', '', '- ? Does the receipt show the tax line? — asked by Priya Nair — for Alex Chen', '- ? Who signs off the till logs? — asked by June Park — answer: the shop manager signs', '- ? What time is the soak test?', '', '## Decisions', '', '- Retry twice, then fail loud', ''].join('\n');
+const MEETING = ['---', 'type: meeting', 'date: 2026-11-10', 'project: "[[Harbourline Cart Fix]]"', '---', '# Tuesday standup', '', '## Agenda', '', '- The retry fix', '', '## Notes', '', 'Priya asked whether the receipt shows the tax line.', '', '## Actions', '', '- [ ] Send the receipt v2 — Alex Chen', '', '## Questions', '', '- ? Does the receipt show the tax line? — asked by Priya Nair — for Alex Chen', '- ? Who signs off the oven logs? — asked by June Park — answer: the head baker signs', '- ? What time is the soak test?', '', '## Decisions', '', '- Retry twice, then fail loud', ''].join('\n');
 
 test('questions read with asked by, owned by, answered and the answer', () => {
   const found = Q.findQuestions(MEETING);
   assert.equal(found.length, 3);
   assert.deepEqual([found[0].what, found[0].askedBy, found[0].owner, found[0].answered], ['Does the receipt show the tax line?', 'Priya Nair', 'Alex Chen', false]);
-  assert.deepEqual([found[1].what, found[1].askedBy, found[1].answer, found[1].answered], ['Who signs off the till logs?', 'June Park', 'the shop manager signs', true]);
+  assert.deepEqual([found[1].what, found[1].askedBy, found[1].answer, found[1].answered], ['Who signs off the oven logs?', 'June Park', 'the head baker signs', true]);
   assert.deepEqual([found[2].what, found[2].askedBy, found[2].answered], ['What time is the soak test?', undefined, false]);
 });
 
@@ -83,8 +83,8 @@ test('answering sets the answer tail and keeps the rest', () => {
 
 test('an answered question becomes a task or a decision in one click', () => {
   const found = Q.findQuestions(MEETING);
-  assert.equal(Q.questionTaskLine(found[1]), '- [ ] Who signs off the till logs? — June Park');
-  assert.equal(Q.questionDecisionLine(found[1]), '- Who signs off the till logs? — the shop manager signs');
+  assert.equal(Q.questionTaskLine(found[1]), '- [ ] Who signs off the oven logs? — June Park');
+  assert.equal(Q.questionDecisionLine(found[1]), '- Who signs off the oven logs? — the head baker signs');
   assert.equal(Q.questionTaskLine(found[0]), '- [ ] Does the receipt show the tax line? — Alex Chen', 'owned by wins over asked by');
   assert.equal(Q.questionDecisionLine(found[2]), '- What time is the soak test?');
 });
