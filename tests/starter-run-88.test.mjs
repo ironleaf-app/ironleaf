@@ -131,7 +131,7 @@ test('starting the CRM makes its notes, records and views in the named folder an
   assert.equal(made.length, 11, `ten files plus the manifest, in CRM/ (${made.join(', ')})`);
   assert.ok(made.includes('CRM/People/Ava Reed.md'), 'its people');
   assert.ok(made.includes('CRM/Companies/Acme Bakeries.md'), 'its companies');
-  assert.ok(made.includes('CRM/Deals/Acme rollout.md'), 'its deals');
+  assert.ok(made.includes('CRM/Deals/Acme van signs.md'), 'its deals');
   assert.ok(made.includes('CRM/Starter manifest.md'), 'its manifest');
   // Every made note reads, with the records the made views show.
   const propsByPath = new Map();
