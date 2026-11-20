@@ -97,7 +97,7 @@ function pptx() {
   return zip({
     'ppt/presentation.xml': '<p:presentation/>',
     'ppt/slides/slide10.xml': slide(['Last slide']),
-    'ppt/slides/slide2.xml': slide(['Rollout plan', 'Wave 2 in November']),
+    'ppt/slides/slide2.xml': slide(['Planting plan', 'Stage 2 in November']),
     'ppt/slides/slide1.xml': slide(['Studio Upgrade', 'Monthly update']),
     'ppt/notesSlides/notesSlide2.xml': slide(['Mention the SSL certificate', '2']),
   });
@@ -181,7 +181,7 @@ test('an Excel serial as its day: whole days, never rounded up, or nothing when 
 
 test('a presentation: slides in their order (2 before 10), with the speaker’s notes', async () => {
   const text = await M.pptxText(pptx());
-  assert.equal(text, ['\fslide 1', 'Studio Upgrade', 'Monthly update', '\fslide 2', 'Rollout plan', 'Wave 2 in November', 'Notes: Mention the SSL certificate', '\fslide 10', 'Last slide'].join('\n'));
+  assert.equal(text, ['\fslide 1', 'Studio Upgrade', 'Monthly update', '\fslide 2', 'Planting plan', 'Stage 2 in November', 'Notes: Mention the SSL certificate', '\fslide 10', 'Last slide'].join('\n'));
 });
 
 test('text files: UTF-8, UTF-16 from Windows tools, not text, and web pages without their tags', () => {
@@ -235,7 +235,7 @@ function makeFolder(name) {
   put('Quotes/Harbourline quote.docx', docx(p('Harbourline quote for the lighting refit') + p('Total $48,200 inc GST')));
   put('Status/Status update 13 Oct.md', '# Status\n\nSSL certificate renewed on the web server.\nNext: the Wi-Fi survey.\n');
   put('Budget.xlsx', xlsx());
-  put('Rollout.pptx', pptx());
+  put('Planting.pptx', pptx());
   put('Contacts.csv', 'name,role\nAroha Ngata,Cafe manager\n');
   put('Photos/Boardroom.jpg', Buffer.alloc(64));
   put('Scope.pdf', pdf([['Scope of works'], ['Boardroom screens', 'SSL for the booking site']]));
@@ -288,9 +288,9 @@ test('a project’s folder: found by its words, the words marked, with the page 
 
     const ssl = index.search('SSL');
     const rels = ssl.map((h) => h.rel).sort();
-    assert.deepEqual(rels, ['Budget.xlsx', 'Rollout.pptx', 'Scope.pdf', 'Status/Status update 13 Oct.md'], 'never the hidden or junk copies');
+    assert.deepEqual(rels, ['Budget.xlsx', 'Planting.pptx', 'Scope.pdf', 'Status/Status update 13 Oct.md'], 'never the hidden or junk copies');
     assert.equal(ssl.find((h) => h.rel === 'Scope.pdf').snippets[0].where, 'page 2');
-    assert.equal(ssl.find((h) => h.rel === 'Rollout.pptx').snippets[0].where, 'slide 2');
+    assert.equal(ssl.find((h) => h.rel === 'Planting.pptx').snippets[0].where, 'slide 2');
     assert.equal(index.search('13 Oct 2026')[0].snippets[0].where, 'Dates & times', 'a date in a sheet reads as a date');
     const photo = index.search('boardroom jpg');
     assert.deepEqual([photo[0].rel, photo[0].byName], ['Photos/Boardroom.jpg', true], 'a picture by its name');
