@@ -35,9 +35,9 @@ function library() {
     note('Projects/Saltwater Bakehouse/Activity/Draft the order form.md', { status: 'done' }, 3),
     note('Projects/Saltwater Bakehouse/Activity/Price the loyalty cards.md', { status: 'failed' }, 1),
     note('Projects/Saltwater Bakehouse/Reports/Progress report October.md', {}, 0.5),
-    note('Projects/Studio Upgrade/Meetings/Wave two.md', {}, 4),
+    note('Projects/Studio Upgrade/Meetings/Desk install.md', {}, 4),
     note('Meetings/Supplier call.md', { project: '[[Saltwater Bakehouse]]' }, 2),
-    note('Meetings/Till vendor.md', { project: 'Projects/Studio Upgrade/Studio Upgrade.md' }, 6),
+    note('Meetings/Desk vendor.md', { project: 'Projects/Studio Upgrade/Studio Upgrade.md' }, 6),
     note('Meetings/Team lunch.md', { project: 'Not a project' }, 5),
     note('Pricing ideas.md', {}, 7),
     note('Weekly menu.md', {}, 1),
@@ -86,8 +86,8 @@ test('each project gathers all its parts: its page, notes, activity, reports, ca
   assert.deepEqual(paths(bake.reports), ['Projects/Saltwater Bakehouse/Reports/Progress report October.md']);
   assert.deepEqual(paths(bake.canvases), ['Projects/Saltwater Bakehouse/Saltwater Bakehouse.canvas']);
   assert.deepEqual(paths(bake.files), ['Projects/Saltwater Bakehouse/storefront sketch.png']);
-  const store = s.projects.find((p) => p.name === 'Studio Upgrade');
-  assert.deepEqual(paths(store.notes).sort(), ['Meetings/Till vendor.md', 'Projects/Studio Upgrade/Meetings/Wave two.md'], 'a project named by its path; a note in a subfolder of its folder');
+  const studio = s.projects.find((p) => p.name === 'Studio Upgrade');
+  assert.deepEqual(paths(studio.notes).sort(), ['Meetings/Desk vendor.md', 'Projects/Studio Upgrade/Meetings/Desk install.md'], 'a project named by its path; a note in a subfolder of its folder');
   assert.equal(s.place.get('Projects/Saltwater Bakehouse/Saltwater Bakehouse.md').part, 'overview');
   assert.equal(s.place.get('Meetings/Supplier call.md').project, 'Projects/Saltwater Bakehouse/Saltwater Bakehouse.md');
 });
@@ -187,7 +187,7 @@ test('a project file kept loose owns no folder, and the property values people w
 });
 
 test('a note naming several projects (a weekly review) stays in Notes; naming one project twice still files it there', () => {
-  const notes = [note('Projects/Bakery/Bakery.md', { type: 'project' }, 1, 'Bakery'), note('Projects/Store/Store.md', { type: 'project' }, 1, 'Store'), note('Reviews/Weekly review.md', { type: 'review', projects: ['[[Bakery]]', '[[Store]]'] }), note('Ideas/Loaf.md', { project: '[[Bakery]]', projects: ['[[Bakery]]'] })];
+  const notes = [note('Projects/Bakery/Bakery.md', { type: 'project' }, 1, 'Bakery'), note('Projects/Stall/Stall.md', { type: 'project' }, 1, 'Stall'), note('Reviews/Weekly review.md', { type: 'review', projects: ['[[Bakery]]', '[[Stall]]'] }), note('Ideas/Loaf.md', { project: '[[Bakery]]', projects: ['[[Bakery]]'] })];
   const s = N.buildSections(notes, [], [], config());
   assert.ok(treePaths(s.notes).includes('Reviews/Weekly review.md'), 'in Notes, in its Reviews folder');
   assert.ok(!s.projects.some((p) => paths(p.notes).includes('Reviews/Weekly review.md')), 'under no single project');
@@ -200,9 +200,9 @@ test('the filter finds across every section, names first, and says where each on
   const found = N.findEntries(entries, 'studio');
   assert.equal(found[0].kind, 'project');
   assert.equal(found[0].name, 'Studio Upgrade');
-  assert.ok(!found.some((e) => e.path === 'Meetings/Till vendor.md'), 'typing a project’s name finds the project, not every note in it');
-  const till = N.findEntries(entries, 'till studio');
-  assert.ok(till.some((e) => e.path === 'Meetings/Till vendor.md' && e.where === 'Studio Upgrade · Notes'), 'a word can match where a note is');
+  assert.ok(!found.some((e) => e.path === 'Meetings/Desk vendor.md'), 'typing a project’s name finds the project, not every note in it');
+  const desk = N.findEntries(entries, 'desk studio');
+  assert.ok(desk.some((e) => e.path === 'Meetings/Desk vendor.md' && e.where === 'Studio Upgrade · Notes'), 'a word can match where a note is');
   const loaf = N.findEntries(entries, 'progress report');
   assert.deepEqual(loaf.map((e) => e.section).sort(), ['projects', 'templates']);
   assert.equal(N.findEntries(entries, 'storefront').length, 1, 'attachments are found only when shown');
