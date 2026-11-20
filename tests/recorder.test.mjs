@@ -392,13 +392,13 @@ test('r2: the main side hands the hints to the host app’s hearing', async () =
 });
 
 test('the hint never reaches a transcript: its lead sentence and any three names in order are cut (12 Nov 2026)', () => {
-  const hints = ['2026-11-12', 'meeting', 'Darcy Lin', 'Harbour Rollout', 'Sydney Network Update'];
-  assert.equal(R.scrubHintEcho('Names and words to know: 2026-11-12, meeting, Darcy Lin, Harbour Rollout, Sydney Network Update.', hints), '', 'an old-shaped hint read back whole: dropped');
-  assert.equal(R.scrubHintEcho('Names and words to know: Darcy Lin. The rollout starts Monday.', hints), 'The rollout starts Monday.', 'the lead with its list cut out, the speech kept');
-  assert.equal(R.scrubHintEcho('2026-11-12, meeting, Darcy Lin, Harbour Rollout', hints), '', 'names in hint order, no label: the plain list read back, dropped');
+  const hints = ['2026-11-12', 'meeting', 'Darcy Lin', 'Harbour Garden', 'Studio Desk Update'];
+  assert.equal(R.scrubHintEcho('Names and words to know: 2026-11-12, meeting, Darcy Lin, Harbour Garden, Studio Desk Update.', hints), '', 'an old-shaped hint read back whole: dropped');
+  assert.equal(R.scrubHintEcho('Names and words to know: Darcy Lin. The planting starts Monday.', hints), 'The planting starts Monday.', 'the lead with its list cut out, the speech kept');
+  assert.equal(R.scrubHintEcho('2026-11-12, meeting, Darcy Lin, Harbour Garden', hints), '', 'names in hint order, no label: the plain list read back, dropped');
   assert.equal(R.scrubHintEcho('Darcy Lin will send the quote.', hints), 'Darcy Lin will send the quote.', 'one name said for real: kept');
-  assert.equal(R.scrubHintEcho('Darcy Lin and the Harbour Rollout team met today.', hints), 'Darcy Lin and the Harbour Rollout team met today.', 'two names said for real: kept');
-  assert.equal(R.scrubHintEcho('Harbour Rollout, meeting and Darcy Lin all came up.', hints), 'Harbour Rollout, meeting and Darcy Lin all came up.', 'the names out of hint order: kept, never an echo');
+  assert.equal(R.scrubHintEcho('Darcy Lin and the Harbour Garden team met today.', hints), 'Darcy Lin and the Harbour Garden team met today.', 'two names said for real: kept');
+  assert.equal(R.scrubHintEcho('Harbour Garden, meeting and Darcy Lin all came up.', hints), 'Harbour Garden, meeting and Darcy Lin all came up.', 'the names out of hint order: kept, never an echo');
   assert.equal(R.scrubHintEcho('Names and words to know: Darcy Lin.', []), 'Names and words to know: Darcy Lin.', 'no hints: untouched');
 });
 
