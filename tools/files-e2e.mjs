@@ -23,7 +23,7 @@ import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, write
 import http from 'node:http';
 import path from 'node:path';
 import { freePort } from './free-port.mjs';
-import { DOCX, bigPlaybook } from './office-fixtures.mjs';
+import { DOCX, bigChecklist } from './office-fixtures.mjs';
 
 const [project = '.', work = path.join(project, '.files-e2e')] = process.argv.slice(2);
 const notes = path.resolve(work, 'notes');
@@ -43,11 +43,11 @@ const book = path.join(folder, 'Project files', 'checklist');
 mkdirSync(book, { recursive: true });
 const original = path.join(book, 'Cafe_Opening_Checklist_WexleySt.xlsx');
 const master = path.join(book, 'Cafe_Opening_Checklist_MASTER.xlsx');
-writeFileSync(original, bigPlaybook({ venue: 'Wexley St' }));
-writeFileSync(master, bigPlaybook());
-writeFileSync(path.join(book, 'README.md'), '# Cafe opening checklist\n\nThe MASTER is the blank one; each cafe keeps its own copy (Cafe_Opening_Checklist_<Store>.xlsx).\n');
-writeFileSync(path.join(book, 'CHANGELOG.md'), '# Changes\n\n- v3: Opening week sheet added.\n- v2: IT & POS split from Fit-out.\n');
-writeFileSync(path.join(book, 'structure_baseline.json'), JSON.stringify({ sheets: ['Overview', 'Pre-opening', 'Fit-out', 'IT & POS', 'Staffing', 'Marketing', 'Opening week', 'Contacts', 'Lists'] }));
+writeFileSync(original, bigChecklist({ venue: 'Wexley St' }));
+writeFileSync(master, bigChecklist());
+writeFileSync(path.join(book, 'README.md'), '# Cafe opening checklist\n\nThe MASTER is the blank one; the filled-in copy is named for the shop (Cafe_Opening_Checklist_<Shop>.xlsx).\n');
+writeFileSync(path.join(book, 'CHANGELOG.md'), '# Changes\n\n- v3: Opening week sheet added.\n- v2: Equipment & supplies split from Kitchen.\n');
+writeFileSync(path.join(book, 'structure_baseline.json'), JSON.stringify({ sheets: ['Overview', 'Before opening', 'Kitchen', 'Equipment & supplies', 'Staff', 'Getting the word out', 'Opening week', 'Contacts', 'Lists'] }));
 writeFileSync(path.join(folder, 'Cafe brief.docx'), DOCX());
 mkdirSync(path.join(notes, 'Projects', NAME), { recursive: true });
 writeFileSync(path.join(notes, 'Projects', NAME, `${NAME}.md`), `---\ntype: project\nstatus: active\nhealth: on track\nfolder: ${folder}\n---\n# ${NAME}\n\n## Summary\n\nThe new cafe on Wexley St, Ashford.\n`);
@@ -98,7 +98,7 @@ const server = http.createServer((req, res) => {
         // The last turn, with no tools: plain words from what it was given.
         const given = textOf(lastUser);
         wrapUpAsked = given;
-        return say(res, `I found the launch checklist: it's in Project files/checklist in ${NAME}, as Cafe_Opening_Checklist_WexleySt.xlsx (this store's filled-in copy) and Cafe_Opening_Checklist_MASTER.xlsx (the blank master). I looked through both but didn't make the template yet. Next: say "make the Launch template" and I'll make it from the Wexley St copy in one step.`);
+        return say(res, `I found the launch checklist: it's in Project files/checklist in ${NAME}, as Cafe_Opening_Checklist_WexleySt.xlsx (the shop's filled-in copy) and Cafe_Opening_Checklist_MASTER.xlsx (the blank master). I looked through both but didn't make the template yet. Next: say "make the Launch template" and I'll make it from the Wexley St copy in one step.`);
       }
       const opening = [
         ['notes_overview', {}],
@@ -114,7 +114,7 @@ const server = http.createServer((req, res) => {
       if (done.length < opening.length) return ask(res, '', [{ name: opening[done.length][0], args: opening[done.length][1] }]);
       const i = done.length - opening.length;
       const row = i % 3 === 2 ? 4 : 4 + i * 6;
-      return ask(res, '', [{ name: 'read_spreadsheet', args: { project: NAME, path: i % 2 ? WEXLEY : MASTER, range: `Fit-out!A${row}:H${row + 5}` } }]);
+      return ask(res, '', [{ name: 'read_spreadsheet', args: { project: NAME, path: i % 2 ? WEXLEY : MASTER, range: `Kitchen!A${row}:H${row + 5}` } }]);
     }
     // 2. A model following the instructions: find it, then the template in one call.
     if (/^make the Launch template/i.test(userText)) {
@@ -273,7 +273,7 @@ try {
   };
   const overview = sheetXml(1), fitout = sheetXml(3);
   check('entries cleared, formatting kept (the cafe’s fields, owners, dates, statuses)', overview.includes('<c r="B3" s="3"/>') && overview.includes('<c r="B4" s="4"/>') && fitout.includes('<c r="C4" s="3"/>') && fitout.includes('<c r="D4" s="4"/>') && fitout.includes('<c r="E4" s="3"/>'));
-  check('formulas and tasks kept', fitout.includes('<f>IF(D4="","",D4-Overview!$B$4)</f>') && fitout.includes('Strip out') && overview.includes("<f>COUNTA('Pre-opening'!B4:B60)</f>"));
+  check('formulas and tasks kept', fitout.includes('<f>IF(D4="","",D4-Overview!$B$4)</f>') && fitout.includes('Strip out') && overview.includes("<f>COUNTA('Before opening'!B4:B60)</f>"));
   check('the answer links the new file', second.links.includes('Launch template – Cafe Opening Checklist.xlsx'), second.links.join(', '));
   check('the card beside the answer shows it', /Made for you/.test(second.card) && second.rows.some((r) => r.startsWith('Launch template – Cafe Opening Checklist.xlsx')) && second.place.includes(NAME), JSON.stringify(second).slice(0, 300));
   check('the changes line counts it as a file', /Made 1 file/.test(second.changes), second.changes);
