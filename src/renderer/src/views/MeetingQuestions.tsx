@@ -95,7 +95,7 @@ export function MeetingQuestions({ path, text, canEdit }: { path: string; text: 
           <div className="mt-foot">
             <div className="w2b-add" style={{ marginTop: 0, flex: '1 1 100%' }}>
               <Icon name="plus" size={12} />
-              <input value={adding} placeholder="Ask a question (“Who signs off the till logs?”)" aria-label="Ask a question" onChange={(e) => setAdding(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), void add())} onBlur={() => void add()} />
+              <input value={adding} placeholder="Ask a question (“Who signs off the oven logs?”)" aria-label="Ask a question" onChange={(e) => setAdding(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), void add())} onBlur={() => void add()} />
             </div>
           </div>
         )}

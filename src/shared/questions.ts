@@ -7,7 +7,7 @@
 //   ## Questions
 //
 //   - ? Does the receipt show the tax line? — asked by Priya Nair — for Alex Chen
-//   - ? Who signs off the till logs? — asked by June Park — answer: the shop manager signs
+//   - ? Who signs off the oven logs? — asked by June Park — answer: the head baker signs
 //
 // `- ?` is never a tick box (src/shared/tasks.ts leaves it alone) and never an action (it lives under Questions,
 // not Actions). Names may be [[links]] to people (typed: they survive renames). Pure: meetings read through here,
