@@ -633,7 +633,7 @@ export function navEntries(s: NavSections, showAttachments = false): NavEntry[] 
 
 /**
  * The entries with every word typed, best first (names that start with it, then names with it). A word may match where
- * something is ("till store" finds Till vendor call in Studio Upgrade), but at least one must be in its name, so typing a
+ * something is ("desk studio" finds Desk vendor call in Studio Upgrade), but at least one must be in its name, so typing a
  * project's name finds the project, not every note in it.
  */
 export function findEntries(entries: NavEntry[], query: string, limit = 400): NavEntry[] {
