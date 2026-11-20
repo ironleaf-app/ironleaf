@@ -32,6 +32,9 @@ function checker(answer) {
   const fetched = [];
   const opened = [];
   const c = new U.UpdateChecker({
+    // The sites' order is what is checked here; the release signature (latest.json.sig) has its own checks in
+    // update-signature.test.mjs, so no key: as in update-check.test.mjs.
+    updateKeyPem: '',
     current: '2.0.0',
     platform: 'win32',
     fetch: async (url) => {
