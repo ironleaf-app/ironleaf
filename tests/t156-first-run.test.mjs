@@ -505,7 +505,8 @@ test('the Kit: Templates opens from Settings and a template makes a note', async
   assert.ok(await waitFor(h, `document.body.innerText.includes('Meeting notes')`, 15000), 'the Templates page lists the ready-made ones');
   await shot(h, 't156-kit-templates');
   assert.equal(await h.browser.ev(`(() => { const b = [...document.querySelectorAll('button.w4b-tp-name')].find((x) => (x.innerText || '').includes('Meeting notes')); if (!b) return 'NOTFOUND'; b.click(); return 'CLICKED'; })()`), 'CLICKED', 'a template previews');
-  assert.ok(await waitFor(h, `document.body.innerText.includes('As it would be made today') || document.querySelector('.tp-preview')`, 10000), 'the preview shows as made today');
+  // The preview's own words, seen (the pane beside the list, or the sheet when that pane is folded away).
+  assert.ok(await waitFor(h, `document.body.innerText.includes('As it would be made today')`, 10000), 'the preview shows as made today');
   assert.equal(await clickWords(h, 'Use', '.tp-preview'), 'CLICKED', 'Use clicks');
   await sleep(2500);
   const made = await h.browser.ev(`[...document.querySelectorAll('.tab, [role="tab"]')].map((t) => t.innerText).join(' ')`);

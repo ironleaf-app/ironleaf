@@ -4,7 +4,7 @@
 // a project's page, notes made here go in that project's folder.
 
 import { ListDetail } from '../components/ListDetail';
-import { useEffect, useMemo, useState, type KeyboardEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { formatDate } from '../../../shared/dates';
 import { showCount } from '../../../shared/words';
 import { filterTemplates, GROUPS, noteFromTemplate, projectFromTemplate, sortTemplatesByUsed, splitFront, templateOutline, usedParticularly, type TemplateGroup, type TemplateInfo, type TemplateUsed } from '../../../shared/templates';
@@ -147,6 +147,11 @@ export function TemplatesPage({ tab }: { tab: W.TabState }) {
   // The list stands alone (8.7 wave 2 round 2, the mock-up): the preview comes in as a sheet over it when a
   // template is chosen, from its name or its menu.
   const [sheet, setSheet] = useState(false);
+  // The preview reads in the pane beside the list when that pane is showing (the frame's own width decides, see
+  // styles/panes.css), and as a sheet otherwise. Judged by the pane, not the window: at a 1600 px window the frame
+  // can sit just under the split width, and a window-width guess left the pane folded away and the click unanswered.
+  const body = useRef<HTMLDivElement>(null);
+  const paneShowing = () => (body.current?.querySelector('.nv-split-side')?.getBoundingClientRect().width ?? 0) > 0;
   useEffect(() => {
     if (!sheet) return;
     const onKey = (e: globalThis.KeyboardEvent) => {
@@ -329,7 +334,7 @@ explains the obvious. The how-to stays. */}
                 </button>
               ))}
             </div>
-            <div className="tp-body">
+            <div className="tp-body" ref={body}>
               {/* List and preview as panes (round 3): the templates scroll in theirs, the chosen one reads beside them. */}
               <ListDetail
                 label="The template chosen"
@@ -360,7 +365,7 @@ explains the obvious. The how-to stays. */}
                               t={t}
                               reportable={false}
                               onUse={() => (t.kind === 'project' ? openModal({ kind: 'new-project', template: t.path }) : t.kind === 'doc' ? void newDoc(t.path) : use(t))}
-                              onPreview={() => (setSelected(t.path), setSheet(window.innerWidth < 1600))}
+                              onPreview={() => (setSelected(t.path), setSheet(!paneShowing()))}
                               onEdit={() => A.openPath(t.path, { where: 'tab' })}
                               onReport={() => undefined}
                             />
