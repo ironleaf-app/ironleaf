@@ -179,7 +179,7 @@ function busyVault(h) {
   // Six areas hold projects; Family and Library hold nothing (no folder, nothing in them).
   w('Work/Projects/Bakery Launch/Bakery Launch.md', proj('Bakery Launch', { steps: [['Order the flour', 'Alex Chen', -1], ['Ring the landlord', 'Alex', 0], ['Fit out the ovens', 'Priya Nair', 2]] }));
   w('Work/Projects/IT Shop/IT Shop.md', proj('IT Shop', { steps: [['Patch the server', 'Alex Chen', 0], ['Rack the switch', 'me', 9]] }));
-  w('Work/Projects/Studio Upgrade/Studio Upgrade.md', proj('Studio Upgrade', { health: 'at risk', steps: [['Send the reconciliation', 'Alex Chen', -2], ['Chase the spare tills', 'Priya Nair', -3]] }));
+  w('Work/Projects/Studio Upgrade/Studio Upgrade.md', proj('Studio Upgrade', { health: 'at risk', steps: [['Send the reconciliation', 'Alex Chen', -2], ['Chase the spare microphone stands', 'Priya Nair', -3]] }));
   w('Work/Projects/Harbour Fit-out/Harbour Fit-out.md', proj('Harbour Fit-out', { steps: [['Approve the lighting quote', 'Alex Chen', 4]] }));
   w('Work/Projects/Desk Hub/Desk Hub.md', `---\ntype: project\nstatus: active\nhealth: on track\nowner: Alex Chen\n---\n# Desk Hub\n\nThe hub everything links to. Its own work is small; the hundred boxes live in linked notes.\n\n${datesTable([[-3, 'Racking lands', 'planned']])}\n`);
   w('Work/Projects/Museum Roster/Museum Roster.md', proj('Museum Roster', { steps: [['Fill the Friday nights', 'Alex Chen', 1], ['Confirm the volunteers', 'Priya Nair', 3]] }));

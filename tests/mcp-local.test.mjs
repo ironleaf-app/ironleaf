@@ -258,10 +258,10 @@ test('the set-up JSON: the exact shape each app takes, with the real path', () =
 // ── the app's own dispatch, through asLocalMcp ────────────────────────────────────────────────────────────────────────
 // The notes in memory, and Ironleaf's steps as the app takes them (as tests/agent-access.test.mjs keeps them).
 
-const STORE = 'Projects/Studio Upgrade/Studio Upgrade.md';
+const STUDIO = 'Projects/Studio Upgrade/Studio Upgrade.md';
 const WINTER = 'Projects/Winter Menu Launch/Winter Menu Launch.md';
 const NOTES = {
-  [STORE]: `---\ntype: project\nstatus: active\nhealth: at risk\nprogress: 80\nowner: Sam Taylor\ndue: "2026-11-20"\n---\n# Studio Upgrade\n\n## Summary\n\nEvery store’s point-of-sale PCs move to the new build before the holiday trading period.\n\n## What’s next\n\n- [ ] Send the reconciliation v4 to finance — Sam Taylor · by 14 Oct 2026\n`,
+  [STUDIO]: `---\ntype: project\nstatus: active\nhealth: at risk\nprogress: 80\nowner: Sam Taylor\ndue: "2026-11-20"\n---\n# Studio Upgrade\n\n## Summary\n\nThe studio gets a new mixing desk, new speakers and soundproofing before the summer bookings.\n\n## What’s next\n\n- [ ] Send the reconciliation v4 to finance — Sam Taylor · by 14 Oct 2026\n`,
   [WINTER]: `---\ntype: project\nstatus: active\nhealth: on track\nprogress: 60\nowner: Alex Lee\n---\n# Winter Menu Launch\n\n## Summary\n\nThe bakery’s winter menu: new soups and the website page.\n\n## What’s next\n\n- [ ] Photograph the soups — Alex Lee\n`,
   'Notes/Oven service.md': '# Oven service\n\nThe deck oven is serviced every March.\n',
   'Private notes/Diary.md': '# Diary\n\nSecret sourdough ratios.\n',
@@ -347,7 +347,7 @@ function makeHost(dataDir, overrides = {}) {
 const TASKS_VIEW = {
   today: '2026-10-17',
   tasks: [
-    { key: 'a', path: STORE, title: 'Studio Upgrade', line: 11, project: STORE, projectName: 'Studio Upgrade', people: [], allTags: [], mtime: 0, done: false, mark: ' ', text: 'Send the reconciliation v4 to finance', words: 'Send the reconciliation v4 to finance', due: '2026-10-14', time: null, reminder: false, repeats: false, tags: [], links: [] },
+    { key: 'a', path: STUDIO, title: 'Studio Upgrade', line: 11, project: STUDIO, projectName: 'Studio Upgrade', people: [], allTags: [], mtime: 0, done: false, mark: ' ', text: 'Send the reconciliation v4 to finance', words: 'Send the reconciliation v4 to finance', due: '2026-10-14', time: null, reminder: false, repeats: false, tags: [], links: [] },
     { key: 'b', path: 'Notes/Oven service.md', title: 'Oven service', line: 3, project: null, projectName: null, people: [], allTags: [], mtime: 0, done: false, mark: ' ', text: 'Book the oven service', words: 'Book the oven service', due: '2026-11-02', time: null, reminder: false, repeats: false, tags: [], links: [] },
   ],
 };
