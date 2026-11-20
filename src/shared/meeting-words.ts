@@ -258,8 +258,8 @@ export function findUncertain(lines: readonly TranscriptLine[], known: readonly 
   const saidLower = new Map<string, number>();
   for (const t of tokens) saidLower.set(t.lower, (saidLower.get(t.lower) ?? 0) + 1);
   // Words the meeting says steadily, however cased (said twice or more: once on each side is still twice heard).
-  // A near-spelling of one of these, said once, is worth offering ask-first (6 Nov 2026, "Pittsroy" for a meeting
-  // saying "Fitzroy" steadily, "tils" for "tills", both went unflagged).
+  // A near-spelling of one of these, said once, is worth offering ask-first ("Brookfeld" for a meeting saying
+  // "Brookfield" steadily, "flor" for "flour").
   const frequent = new Map<string, { count: number; display: string }>();
   for (const t of tokens) {
     if (STOP.has(t.lower) || t.lower.length < 4 || !/[a-z]/.test(t.lower)) continue;
@@ -407,10 +407,10 @@ export function findUncertain(lines: readonly TranscriptLine[], known: readonly 
     const spots = g.slice(0, 3).map((t) => ({ spelling: t.word, context: t.context, at: t.at }));
     out.push({ display, spellings: spellings.sort(), spots, count: g.length, reason, ...(close ? { known: (close as { part: string }).part } : {}) });
   }
-  // A wrong lowercase word that makes no sense in its sentence ("books counsel" for "books council", missed 6 Nov
-  // 2026 when the Fitzroy run kept it; "tils" for "tills", missed the same day): each spelling said once or twice,
+  // A wrong lowercase word that makes no sense in its sentence ("books counsel" for "books council", "flor" for
+  // "flour"): each spelling said once or twice,
   //  near a word the transcript itself says steadily (three times or more, and more often than the spelling), gets
-  //  its own row, ask-first as ever. Two ordinary words merely alike ("stock" and "store", "starts" and "stores")
+  //  its own row, ask-first as ever. Two ordinary words merely alike ("crumb" and "crust", "scones" and "stones")
   //  stay quiet: in a short word two changed letters make a different word, and a twice-said almost-word is not
   //  steady enough to correct by (6 Nov 2026, "stone" said twice offered itself for "stock"). One word inside the
   //  other is a form of it, not a mishear ("train" for "training"). Dates, generic words and short words never
@@ -448,8 +448,7 @@ export function findUncertain(lines: readonly TranscriptLine[], known: readonly 
         }
         if (!best) continue;
         // This spelling only: one fix corrects every copy, and must never rewrite a word that was already right
-        // ("till" beside a "tils" offered as "tills"; 6 Nov 2026, "stock" was offered as "stone" with "store"
-        // along for the ride).
+        // ("roll" beside a "rols" offered as "rolls" stays "roll").
         const unsure = g.filter((t) => t.lower === l);
         const counts = new Map<string, number>();
         for (const t of unsure) counts.set(t.word, (counts.get(t.word) ?? 0) + 1);

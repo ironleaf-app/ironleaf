@@ -1,6 +1,6 @@
 // A line of a note (or a document) as a search result shows it: the Markdown that marks it up left out — a list, quote or
 // heading's lead, bold and italic stars, highlights (coloured ones' tags too), strike-through, code ticks, link brackets and a table row's bars — so "**High** — 11
-// *regional* tills" reads "High — 11 spare tills". Inline links and images keep their words and drop their targets
+// *old* mic stands" reads "High — 11 old mic stands". Inline links and images keep their words and drop their targets
 // (t200, 10 Nov 2026, judged on real long notes: "where the awning would hang](assets/awning-photo.png)" read raw),
 // and footnote markers go whole. The words found stay marked: each range moves with the text.
 

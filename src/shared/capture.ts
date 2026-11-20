@@ -240,7 +240,7 @@ const bareFolder = (name: string) => name.replace(/^\s*[\d.]+[\s._-]+/, '').trim
 /**
  * The projects a capture most likely belongs to, best first, each with why. Its words count most (the project's name,
  * its folder's name, its people, a distinctive word of its name, its tags), then the window the person was in (its title:
- * "Store_Upgrade_Status.xlsx - Excel"), then recent work. Projects that are done count less. Without anything in the
+ * "Menu_Costs.xlsx - Excel"), then recent work. Projects that are done count less. Without anything in the
  * words or the window, the most recent projects come back (evidence 'recent'), to choose from in one click.
  */
 export function suggestProjects(input: { text: string; nameWords?: string; windowTitle?: string | null; projects: CaptureProject[]; recent?: string[]; now?: number; max?: number }): ProjectSuggestion[] {
