@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE en-export SYSTEM "http://xml.evernote.com/pub/evernote-export4.dtd">
+<en-export export-date="20261020T010203Z" application="Evernote" version="10.105">
+  <note>
+    <title>Banana pancakes</title>
+    <created>20250301T081500Z</created>
+    <updated>20250302T091000Z</updated>
+    <tag>breakfast</tag>
+    <tag>family favourites</tag>
+    <note-attributes><source-url>https://example.com/pancakes</source-url><author>Aroha</author></note-attributes>
+    <content><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">
+<en-note><div><b>Makes 8.</b> Mash two bananas &amp; whisk with eggs.</div><div><en-todo checked="true"/>Buy bananas</div><div><en-todo checked="false"/>Buy maple syrup</div><div><en-media hash="2cd8bde463f5d82aae0f0cec061d6b8f" type="image/png"/></div><ul><li>2 bananas</li><li>2 eggs</li></ul></en-note>]]></content>
+    <resource>
+      <data encoding="base64">iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==</data>
+      <mime>image/png</mime>
+      <resource-attributes><file-name>stack.png</file-name></resource-attributes>
+    </resource>
+  </note>
+  <note>
+    <title>Lemon slice</title>
+    <created>20250410T020000Z</created>
+    <updated>20250410T020000Z</updated>
+    <tag>baking</tag>
+    <content><![CDATA[<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note><h2>Base</h2><div>Crushed biscuits, butter, condensed milk.</div><en-crypt hint="nan">c2VjcmV0</en-crypt></en-note>]]></content>
+  </note>
+</en-export>

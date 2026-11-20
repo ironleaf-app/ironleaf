@@ -1,0 +1,96 @@
+/* The polish system (29 Oct 2026, SPEC section A and "The bar"; Job A): one type scale, the 8 px spacing
+   grid, card and row styles, hover, focus and pressed states and quiet motion for the shell, the nav, the
+   page header and the plan pages (Today, Tasks, Projects, the project page, the note page). Theme tokens
+   only, light first; dark reads through the same tokens. Imported by App.tsx, after the page frame. */
+
+:root {
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --radius-card: var(--r-3);
+  --radius-control: var(--r-2);
+}
+
+/* Numbers line up in counts, dates and figures, on every plan screen. */
+.nv-page-count, .nv-tab-count, .td-count, .la-badge, .pj-late-count, .plan-pill, .td-time {
+  font-variant-numeric: tabular-nums;
+}
+
+/* The quiet path above a page title (PageHead's path), and the same words in the note band. */
+.nv-page-path {
+  margin: 0 0 6px;
+  font-size: var(--fs-caption);
+  line-height: 18px;
+  color: var(--text-faint);
+}
+.view-header .view-title {
+  justify-content: flex-start;
+  text-align: left;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+.nv-page-lead.tone-bad { color: var(--tone-bad); }
+.nv-page-lead.tone-warn { color: var(--tone-warn); }
+.nv-page-lead.tone-ok { color: var(--tone-ok); }
+
+/* Rows: one hover, one focus ring, a pressed dip of colour only, nothing moves or bounces. */
+.place, .calm-kind-open, .td-row, .plan-row-main, .pj-tile, .pj-prow-main, .bin-row {
+  transition:
+    background-color var(--nv-motion-base) ease,
+    color var(--nv-motion-base) ease,
+    border-color var(--nv-motion-base) ease;
+}
+.place:active, .calm-kind-open:active, .pj-tile:active, .pj-prow-main:active {
+  background: var(--bg-active, var(--bg-hover));
+}
+:is(.place, .calm-kind-open, .td-row, .plan-row-main, .pj-tile, .pj-prow-main, .nv-tab, .button, .text-button):focus-visible {
+  outline: 2px solid var(--accent, var(--text));
+  outline-offset: 2px;
+}
+
+/* Cards raised only where they are cards; rows stay flat. */
+.td-next, .td-welcome, .bin-list {
+  border-radius: var(--radius-card);
+}
+.button, .sv-tool, .show-chip, .segmented, .setting-input {
+  border-radius: var(--radius-control);
+}
+
+/* The nav's new pieces: late badge, pinned rows with their health dot, the collapsed Modules row. */
+.la-badge.is-late {
+  background: color-mix(in srgb, var(--tone-bad) 14%, transparent);
+  color: var(--tone-bad);
+}
+.calm-pin .calm-kind-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  text-align: left;
+}
+.calm-health-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--tone-none, var(--text-faint));
+}
+.calm-health-dot.tone-ok { background: var(--tone-ok); }
+.calm-health-dot.tone-warn { background: var(--tone-warn); }
+.calm-health-dot.tone-bad { background: var(--tone-bad); }
+.mp-modules-toggle { width: 100%; }
+
+/* Lists arrive quietly; nothing fades up from below, nothing bounces. */
+@keyframes nv-arrive {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.td-section, .pj-tile, .bin-row {
+  animation: nv-arrive var(--nv-motion-base) var(--nv-ease-fade);
+}
+@media (prefers-reduced-motion: reduce) {
+  .place, .calm-kind-open, .td-row, .plan-row-main, .pj-tile, .pj-prow-main, .bin-row { transition: none; }
+  .td-section, .pj-tile, .bin-row { animation: none; }
+}

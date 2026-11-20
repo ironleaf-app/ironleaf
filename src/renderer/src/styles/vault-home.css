@@ -1,0 +1,528 @@
+/* One standard home for vaults (components/VaultHome.tsx): Settings › Files and links › Your vaults and Your PCs, the
+   warning when your PCs have different vaults open (also on Today), the old folder kept after a move, and the New vault,
+   Import and Export windows. Calm like Where your vault is (vault-place.css, whose colours it shares): settled things
+   quiet, a vault only on this PC a gentle amber, never an alarm. */
+
+/* ── The warning ─────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.vh-warn {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 12px;
+  margin: 10px 0 var(--td-gap, 18px);
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.vh-warn-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-4);
+  color: var(--amber-tx);
+  background: color-mix(in srgb, var(--amber-tx) 13%, transparent);
+}
+
+.vh-warn-words {
+  min-width: 0;
+}
+
+.vh-warn-words h2 {
+  margin: 1px 0 4px;
+  font-size: var(--fs-body);
+  font-weight: 650;
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.vh-warn-words p {
+  max-width: 72ch;
+  margin: 0;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.vh-warn-pcs {
+  display: grid;
+  gap: 4px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.vh-warn-pcs li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.vh-warn-pcs li > svg {
+  flex: none;
+  color: var(--text-faint);
+}
+
+.vh-warn-pcs strong {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.vh-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.vh-warn .vh-actions {
+  margin-top: 12px;
+}
+
+.vh-faint {
+  color: var(--text-faint);
+}
+
+.vh-ok-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--vp-ok);
+}
+
+.vh-warn-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--amber-tx);
+}
+
+.vh-ok-text.small,
+.vh-warn-text.small {
+  display: inline;
+  font-size: var(--fs-caption);
+}
+
+/* ── The old folder kept after a move ──────────────────────────────────────────────────────────────────────────── */
+
+.vh-old {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+}
+
+.vh-old > svg {
+  flex: none;
+  color: var(--text-faint);
+}
+
+.vh-old-words {
+  display: grid;
+  flex: 1 1 260px;
+  gap: 2px;
+  min-width: 0;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.vh-old-words strong {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.vh-path {
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+/* ── Your vaults ─────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.vh-lead {
+  max-width: 76ch;
+  margin: 4px 0 10px;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.vh-lead strong {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.vh-faint-lead {
+  color: var(--text-faint);
+}
+
+.vh-list {
+  container-type: inline-size;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.vh-empty {
+  padding: 16px;
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+}
+
+.vh-vault {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 14px;
+}
+
+.vh-vault + .vh-vault {
+  border-top: 1px solid var(--border);
+}
+
+.vh-vault.is-open {
+  background: var(--sel);
+}
+
+.vh-vault-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-4);
+  color: var(--vp-ok);
+  background: color-mix(in srgb, var(--vp-ok) 11%, transparent);
+}
+
+.vh-vault.is-local .vh-vault-icon {
+  color: var(--amber-tx);
+  background: color-mix(in srgb, var(--amber-tx) 12%, transparent);
+}
+
+.vh-vault-words {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.vh-vault-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.vh-pill {
+  padding: 1px 8px;
+  border-radius: var(--r-1);
+  font-size: var(--fs-caption);
+  font-weight: 550;
+  line-height: 18px;
+  color: var(--text-muted);
+  background: var(--bg-sunken, color-mix(in srgb, var(--text) 6%, transparent));
+}
+
+.vh-pill.on {
+  color: var(--text-strong);
+  background: var(--sel);
+}
+
+.vh-pill.warn {
+  color: var(--amber-tx);
+  background: color-mix(in srgb, var(--amber-tx) 12%, transparent);
+}
+
+.vh-vault-path {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  overflow-wrap: anywhere;
+}
+
+.vh-vault-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-top: 2px;
+  font-size: var(--fs-caption);
+}
+
+.vh-vault-meta > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.vh-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 4px;
+}
+
+@container (max-width: 520px) {
+  .vh-vault {
+    grid-template-columns: 36px minmax(0, 1fr);
+  }
+
+  .vh-vault > .vh-actions {
+    grid-column: 2;
+  }
+}
+
+/* ── Your PCs ───────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.vh-pcs {
+  container-type: inline-size;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+}
+
+.vh-pc {
+  display: grid;
+  grid-template-columns: minmax(150px, 1.1fr) minmax(0, 1.4fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  font-size: var(--fs-small);
+  color: var(--text);
+}
+
+.vh-pc + .vh-pc {
+  border-top: 1px solid var(--border);
+}
+
+.vh-pc.head {
+  padding-block: 8px;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-faint);
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+}
+
+.vh-pc-name {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.vh-pc-name > span:last-child {
+  display: grid;
+  min-width: 0;
+}
+
+.vh-pc-name strong {
+  font-weight: 600;
+}
+
+.vh-pc-name .vh-faint {
+  font-size: var(--fs-caption);
+}
+
+.vh-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: color-mix(in srgb, var(--text) 22%, transparent);
+}
+
+.vh-dot.on {
+  background: var(--vp-ok);
+}
+
+@container (max-width: 560px) {
+  .vh-pc {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3px;
+  }
+
+  .vh-pc.head {
+    display: none;
+  }
+
+  .vh-pc > span:not(.vh-pc-name) {
+    padding-left: 17px;
+  }
+}
+
+/* ── Windows ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.vh-field {
+  display: grid;
+  gap: 6px;
+  margin: 14px 0 0;
+  font-size: var(--fs-small);
+  font-weight: 550;
+  color: var(--text-muted);
+}
+
+.vh-field .setting-input {
+  width: 100%;
+  max-width: none;
+}
+
+.vh-where-line {
+  margin: 6px 0 0;
+  font-size: var(--fs-caption);
+  overflow-wrap: anywhere;
+}
+
+.vh-split {
+  align-items: center;
+}
+
+.vh-grow {
+  flex: 1;
+}
+
+.vh-summary {
+  display: grid;
+  gap: 6px;
+  max-height: 220px;
+  margin: 10px 0 0;
+  overflow: auto;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.vh-summary summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.vh-summary ul {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  overflow-wrap: anywhere;
+}
+
+/* Notes from another app (V9, 28 Oct 2026; components/PairedSources.tsx). */
+.pair-head {
+  margin: 18px 0 2px;
+  font-size: 0.95em;
+}
+
+.pair-apps {
+  margin-top: 8px;
+}
+
+.pair-sample {
+  list-style: none;
+  margin: 4px 0 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: var(--bg-hover);
+  display: grid;
+  gap: 4px;
+  max-height: 180px;
+  overflow: auto;
+}
+
+.pair-sample li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-wrap: anywhere;
+}
+
+.pair-sample .pair-more {
+  color: var(--text-faint);
+  padding-left: 21px;
+}
+
+.pair-conflicts {
+  display: grid;
+  gap: 8px;
+  margin: 6px 0 10px;
+  max-height: 340px;
+  overflow: auto;
+}
+
+.pair-conflict {
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  padding: 8px 12px;
+}
+
+.pair-conflict-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pair-conflict-head .pair-diff-toggle {
+  margin-left: auto;
+}
+
+.pair-skipped {
+  display: grid;
+  gap: 6px;
+  margin: 6px 0 10px;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.pair-skip {
+  display: grid;
+  gap: 2px;
+  border-top: 1px solid var(--border);
+  padding-top: 6px;
+}
+
+.pair-skip .nm {
+  font-weight: 600;
+}
+
+.vp-bar.is-busy > span {
+  width: 30%;
+  animation: pair-busy var(--nv-shimmer) ease-in-out infinite;
+}
+
+.pair-token {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 0.9em;
+}
+
+.pair-token input {
+  width: 100%;
+}
+
+@keyframes pair-busy {
+  0% {
+    margin-left: 0;
+  }
+  50% {
+    margin-left: 70%;
+  }
+  100% {
+    margin-left: 0;
+  }
+}

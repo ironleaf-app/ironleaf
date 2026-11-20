@@ -1,0 +1,254 @@
+/* Drawings (views/DrawingView.tsx; 21 Oct 2026, gap G23): a calm sheet with a floating tool bar in the canvas's manner.
+   Each named colour is a token, so a drawing (and its card on a canvas) follows light and dark; exports write the light
+   shades out (src/shared/drawing.ts DRAW_PALETTE, kept the same as these). */
+
+:root {
+  --draw-ink: #141a2e;
+  --draw-red: #b0422f;
+  --draw-orange: #b8692a;
+  --draw-green: #3f7a49;
+  --draw-blue: #33628f;
+  --draw-violet: #6b4ea0;
+  --draw-dot: color-mix(in srgb, var(--text-faint) 38%, transparent);
+}
+:root[data-theme='dark'] {
+  --draw-ink: #ffffff;
+  --draw-red: #e88573;
+  --draw-orange: #e8a46c;
+  --draw-green: #8fcb95;
+  --draw-blue: #8db8e6;
+  --draw-violet: #b9a0e6;
+}
+
+.nvd-view {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.nvd-surface {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  user-select: none;
+  outline: none;
+}
+.nvd-surface:focus-visible {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+.nvd-dot {
+  fill: var(--draw-dot);
+}
+.nvd-selection {
+  fill: var(--accent-softer);
+  stroke: var(--accent);
+  pointer-events: none;
+}
+.nvd-marquee {
+  fill: var(--accent-softer);
+  stroke: var(--accent-line);
+  pointer-events: none;
+}
+
+.nvd-toolbar {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  max-width: calc(100% - 24px);
+  padding: 5px;
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-small);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nvd-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.nvd-sep {
+  flex: none;
+  width: 1px;
+  height: 20px;
+  margin: 0 4px;
+  background: var(--border);
+}
+.nvd-tool {
+  flex: none;
+  min-width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-3);
+  color: var(--text-muted);
+}
+.nvd-tool:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+.nvd-tool.is-on {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+.nvd-tool:disabled {
+  opacity: 0.4;
+}
+.nvd-tool:focus-visible,
+.nvd-swatch:focus-visible,
+.nvd-zoom-level:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.nvd-swatch {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin: 0 2px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--swatch);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--text) 14%, transparent);
+}
+.nvd-swatch.is-on {
+  box-shadow: 0 0 0 2px var(--bg-raised), 0 0 0 4px var(--swatch);
+}
+.nvd-swatch:disabled {
+  opacity: 0.4;
+}
+.nvd-width {
+  display: block;
+  width: 16px;
+  border-radius: var(--r-1);
+  background: currentColor;
+}
+.nvd-fill {
+  display: block;
+  width: 15px;
+  height: 12px;
+  border: 1.6px solid currentColor;
+  border-radius: var(--r-1);
+}
+.nvd-fill.is-on {
+  background: color-mix(in srgb, currentColor 22%, transparent);
+}
+
+.nvd-zoom {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border-radius: var(--r-4);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-small);
+}
+.nvd-zoom .nvd-tool {
+  min-width: 28px;
+  height: 28px;
+}
+.nvd-zoom-level {
+  min-width: 48px;
+  height: 28px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+.nvd-zoom-level:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.nvd-text-edit {
+  position: absolute;
+  z-index: 6;
+  min-width: 140px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  outline: 1.5px dashed var(--accent-line);
+  outline-offset: 4px;
+  background: transparent;
+  font-family: var(--font-ui);
+  line-height: 1.3;
+  resize: none;
+  overflow: hidden;
+  white-space: pre;
+  field-sizing: content;
+}
+.nvd-text-edit::placeholder {
+  color: var(--text-faint);
+}
+
+.nvd-empty {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 320px;
+  text-align: center;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--text-faint);
+  pointer-events: none;
+}
+
+.nvd-problem {
+  position: absolute;
+  top: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: min(560px, calc(100% - 32px));
+  padding: 10px 14px;
+  border-radius: var(--r-4);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-small);
+  color: var(--danger);
+  font-size: var(--fs-small);
+}
+
+/* On a canvas: the drawing fitted to its card. */
+.nvd-preview {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 6px;
+}
+.nvd-preview > svg {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+}
+
+@media (max-width: 720px) {
+  .nvd-toolbar {
+    top: 8px;
+  }
+  .nvd-zoom {
+    right: 8px;
+    bottom: 8px;
+  }
+}

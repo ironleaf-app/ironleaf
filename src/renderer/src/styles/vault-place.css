@@ -1,0 +1,378 @@
+/* Where your vault is (components/VaultPlace.tsx): Settings › Files and links, the Move my vault window, Today's cards.
+   Calm: a synced vault reads as settled (a quiet green tick), one only on this PC as a gentle amber note, never an alarm. */
+
+:root {
+  --vp-ok: #2e7d5b;
+}
+
+:root[data-theme='dark'] {
+  --vp-ok: #74c69d;
+}
+
+/* ── Settings › Files and links ────────────────────────────────────────────────────────────────────────────────── */
+
+.vp-card {
+  container-type: inline-size;
+  margin: 10px 0 0;
+  padding: 16px 16px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+}
+
+/* An at-risk vault is said by its amber tag and mark (the card stays quiet): never a beige panel (8.7 w4a round 2). */
+
+.vp-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.vp-mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-4);
+  color: var(--accent-text);
+  background: var(--accent-soft);
+}
+
+.vp-mark.small {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-3);
+}
+
+.vp-mark.done,
+.is-synced .vp-mark {
+  color: var(--vp-ok);
+  background: color-mix(in srgb, var(--vp-ok) 12%, transparent);
+}
+
+.is-local .vp-mark {
+  color: var(--amber-tx);
+  background: color-mix(in srgb, var(--amber-tx) 13%, transparent);
+}
+
+.vp-where {
+  flex: 1;
+  min-width: 0;
+}
+
+.vp-title {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.vp-path {
+  margin-top: 2px;
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+  overflow-wrap: anywhere;
+}
+
+.vp-actions {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.vp-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.vp-status strong {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.vp-status > svg {
+  flex: none;
+  margin-top: 3px;
+  color: var(--vp-ok);
+}
+
+.is-local .vp-status {
+  border-top-color: var(--border);
+}
+
+.is-local .vp-status > svg {
+  color: var(--amber-tx);
+}
+
+.is-network .vp-status > svg {
+  color: var(--text-faint);
+}
+
+.vp-tip {
+  margin: 8px 2px 4px;
+  font-size: var(--fs-caption);
+  line-height: 1.5;
+  color: var(--text-faint);
+}
+
+@container (max-width: 560px) {
+  .vp-head {
+    flex-wrap: wrap;
+  }
+  .vp-actions {
+    width: 100%;
+    justify-content: flex-start;
+    padding-left: 54px;
+  }
+}
+
+/* ── Move my vault ──────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.vp-dialog {
+  width: min(560px, calc(100vw - 32px));
+  padding: 20px 22px 20px;
+}
+
+.vp-dialog-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.vp-dialog-head h2 {
+  flex: 1;
+  margin: 0;
+}
+
+.vp-close {
+  margin: -4px -6px 0 0;
+}
+
+.vp-dialog .dialog-message strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.vp-targets {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.vp-target {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: var(--bg-raised);
+  text-align: left;
+}
+
+.vp-target:hover:not(:disabled),
+.vp-target:focus-visible {
+  border-color: var(--accent-line);
+  background: var(--accent-softer);
+ outline: 2px solid var(--focus); outline-offset: 2px;}
+
+.vp-target-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-3);
+  color: var(--vp-ok);
+  background: color-mix(in srgb, var(--vp-ok) 11%, transparent);
+}
+
+.vp-target.other .vp-target-icon {
+  color: var(--text-muted);
+  background: var(--bg-hover);
+}
+
+.vp-target-words {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.vp-target-label {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.vp-target-path {
+  margin-top: 1px;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.vp-faint {
+  color: var(--text-faint);
+}
+
+.vp-note {
+  display: flex;
+  gap: 7px;
+  align-items: flex-start;
+  margin: 14px 0 0;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.vp-note > svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--text-faint);
+}
+
+.vp-fromto {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 6px 14px;
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: var(--bg-side);
+  font-size: var(--fs-small);
+}
+
+.vp-fromto dt {
+  font-weight: 600;
+  color: var(--text-faint);
+}
+
+.vp-fromto dd {
+  margin: 0;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.vp-progress {
+  padding-top: 2px;
+}
+
+.vp-bar {
+  height: 8px;
+  margin: 16px 0 10px;
+  border-radius: var(--r-2);
+  background: var(--bg-active);
+  overflow: hidden;
+}
+
+.vp-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 0.2s ease-out;
+}
+
+.vp-phase {
+  margin: 0;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.vp-failed {
+  color: var(--text);
+}
+
+/* ── Today's cards ───────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.vp-today {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 12px;
+  margin-bottom: var(--td-gap, 18px);
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.vp-today.found {
+  border-color: color-mix(in srgb, var(--vp-ok) 34%, var(--border));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--vp-ok) 7%, var(--bg-raised)), var(--bg-raised) 75%);
+}
+
+.vp-today.only-here {
+  border-color: var(--border);
+  background: var(--bg-raised);
+}
+
+.vp-today-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-4);
+}
+
+.found .vp-today-icon {
+  color: var(--vp-ok);
+  background: color-mix(in srgb, var(--vp-ok) 12%, transparent);
+}
+
+.only-here .vp-today-icon {
+  color: var(--amber-tx);
+  background: color-mix(in srgb, var(--amber-tx) 13%, transparent);
+}
+
+.vp-today-words h2 {
+  margin: 1px 0 4px;
+  font-size: var(--fs-body);
+  font-weight: 650;
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.vp-today-words p {
+  max-width: 72ch;
+  margin: 0;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.vp-inline-path {
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.vp-today-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-top: 12px;
+}
+
+.home-view .vp-today {
+  margin: 0 0 22px;
+}

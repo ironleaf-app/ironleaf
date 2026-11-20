@@ -1,0 +1,636 @@
+/* The peek (components/Peek.tsx; WS1 part B, 24 Oct 2026): a record and everything connected to it, at the right of the
+   window. Calm: the page's own surface, one soft edge and shadow, kinds told apart by a small tinted icon only. */
+
+.peek {
+  --peek-w: min(420px, 92vw);
+  position: absolute;
+  /* Below Windows' own minimise, maximise and close (the title bar overlay): at the top they covered the peek's
+     Close, and the window's × closed Ironleaf instead (26 Oct 2026). The band's own variable (8.6.1):
+     env(titlebar-area-height) never arrives in this window, so it fell to 0px. */
+  top: var(--wbtn-h, 40px);
+  right: 0;
+  bottom: 0;
+  width: var(--peek-w);
+  z-index: 34; /* over the page, under the side drawers (36), menus and windows */
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  border-left: 1px solid var(--border);
+  box-shadow: -18px 0 40px -28px color-mix(in srgb, var(--text) 45%, transparent);
+  animation: peek-in 0.16s ease-out;
+  outline: none;
+  container: peek / inline-size;
+}
+
+/* The connected lists (the peek, a note's Connected): rows told apart by kind. */
+
+/* Just opened: clicks go through to the page for a moment (a double-click to edit lands on its value). */
+.peek.is-entering {
+  pointer-events: none;
+}
+
+/* Docked beside the page at a wide window: the page made room, so no shadow over it. */
+.peek.is-docked {
+  box-shadow: none;
+}
+
+@keyframes peek-in {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .peek {
+    animation: none;
+  }
+}
+
+/* Kinds: a hue each, used only for the icon's small tile. */
+.rec-kinds .kind-project,
+.rec-kinds .kind-action {
+  --kind-hue: var(--accent);
+}
+.rec-kinds .kind-milestone {
+  --kind-hue: #b7791f;
+}
+.rec-kinds .kind-workstream {
+  --kind-hue: #2c7a7b;
+}
+.rec-kinds .kind-meeting {
+  --kind-hue: #2b6cb0;
+}
+.rec-kinds .kind-decision {
+  --kind-hue: #2f855a;
+}
+.rec-kinds .kind-risk {
+  --kind-hue: #c05621;
+}
+.rec-kinds .kind-file {
+  --kind-hue: #4a5568;
+}
+.rec-kinds .kind-person {
+  --kind-hue: #805ad5;
+}
+.rec-kinds .kind-org {
+  --kind-hue: #6b5b4b;
+}
+.rec-kinds .kind-note {
+  --kind-hue: #718096;
+}
+
+/* ── The bar: back, forward, the trail, close ── */
+.peek-bar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 44px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--border);
+  flex: none;
+}
+
+.peek-icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-2);
+  color: var(--text-muted);
+  flex: none;
+}
+
+.peek-icon-button:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.peek-icon-button:disabled {
+  opacity: 0.35;
+}
+
+.peek-trail {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+  margin: 0 4px;
+  overflow: hidden;
+}
+
+.peek-crumb-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+.peek-crumb {
+  min-width: 0;
+  max-width: 150px;
+  padding: 3px 6px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.peek-crumb:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.peek-crumb.is-here {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.peek-trail-sep {
+  color: var(--text-faint);
+  opacity: 0.6;
+  flex: none;
+}
+
+.peek-trail-gap {
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  padding: 0 2px;
+}
+
+/* ── The record ── */
+.peek-scroll {
+  flex: 1;
+  overflow: auto;
+  padding: 18px 20px 32px;
+}
+
+.peek-loading {
+  height: 120px;
+  margin: 8px 0;
+  border-radius: var(--r-4);
+  background: linear-gradient(90deg, var(--bg-hover), var(--bg-side), var(--bg-hover));
+  background-size: 200% 100%;
+  animation: nv-shimmer var(--nv-shimmer) ease-in-out infinite;
+  opacity: 0.6;
+}
+
+.peek-gone {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+
+.peek-gone p {
+  margin: 0;
+}
+
+.peek-head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 16px;
+}
+
+.peek-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--kind-hue) 82%, var(--text));
+}
+
+.peek-kind svg {
+  padding: 3px;
+  box-sizing: content-box;
+  border-radius: var(--r-2);
+  background: color-mix(in srgb, var(--kind-hue) 13%, transparent);
+}
+
+.peek-title {
+  margin: 0;
+  font-family: var(--font-text);
+  font-size: var(--fs-section);
+  line-height: 1.3;
+  font-weight: 600;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.peek-title.is-done {
+  color: var(--text-muted);
+}
+
+.peek-where {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.peek-soft {
+  color: var(--text-faint);
+}
+
+.peek-where-link,
+.peek-fact-link {
+  color: var(--text-strong);
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+  text-align: left;
+}
+
+.peek-where-link:hover,
+.peek-fact-link:hover {
+  text-decoration-color: currentColor;
+}
+
+.peek-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.peek-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: var(--r-3);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+}
+
+.peek-button:hover {
+  background: var(--bg-hover);
+}
+
+.peek-button.primary {
+  color: var(--on-primary);
+  background: var(--primary);
+  border-color: transparent;
+}
+
+.peek-button.primary:hover {
+  background: color-mix(in srgb, var(--primary) 88%, var(--text));
+}
+
+/* ── Its fields ── */
+.peek-facts {
+  margin: 0 0 18px;
+  padding: 12px 0 0;
+  border-top: 1px solid var(--border);
+  display: grid;
+  gap: 9px;
+}
+
+.peek-fact {
+  display: grid;
+  grid-template-columns: 104px 1fr;
+  gap: 12px;
+  align-items: baseline;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+}
+
+.peek-fact dt {
+  color: var(--text-faint);
+  font-size: var(--fs-small);
+}
+
+.peek-fact dd {
+  margin: 0;
+  color: var(--text);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.peek-fact dd a {
+  color: var(--text-strong);
+}
+
+.peek-pill {
+  height: 22px;
+  font-size: var(--fs-caption);
+}
+
+.peek-tone {
+  color: var(--tone);
+  font-weight: 600;
+}
+/* The peek's health and status read the one set (p13-vault-status): on track neutral, at risk and off track
+   attention, off track stronger, never a third hue. */
+.peek-tone.tone-ok {
+  --tone: var(--ns-status);
+}
+.peek-tone.tone-warn {
+  --tone: var(--ns-attention-words);
+}
+.peek-tone.tone-bad {
+  --tone: var(--ns-attention-words);
+  font-weight: 700;
+}
+
+/* ── Connected ── */
+.peek-groups {
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+/* A peeked note summarises (t7-note-window, 8 Nov 2026): its opening words, then what connects in
+   quiet count lines — never the page's lists again. */
+.peek-summary {
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.peek-lead {
+  margin: 6px 0 12px;
+  font-size: var(--fs-small);
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.peek-summary-counts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.peek-summary-counts li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 3px 0;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.peek-section-head {
+  margin: 0 0 4px;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.peek-group {
+  margin-top: 12px;
+}
+
+.peek-group-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 0 0 4px;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.peek-group-count {
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  color: var(--text-faint);
+}
+
+.peek-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.peek-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 8px;
+  margin: 0 -8px;
+  width: calc(100% + 16px);
+  border-radius: var(--r-3);
+  text-align: left;
+  color: var(--text);
+}
+
+.peek-row:hover,
+.peek-row:focus-visible {
+  background: var(--bg-hover);
+}
+
+.peek-row-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  border-radius: var(--r-2);
+  color: color-mix(in srgb, var(--kind-hue) 85%, var(--text));
+  background: color-mix(in srgb, var(--kind-hue) 11%, transparent);
+}
+
+.peek-row-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.peek-row-title {
+  font-size: var(--fs-small);
+  line-height: 1.4;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.peek-row.is-done .peek-row-title {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--text-faint) 60%, transparent);
+}
+
+.peek-row-meta {
+  display: block;
+  font-size: var(--fs-caption);
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.peek-row-meta > span + span::before {
+  content: '·';
+  margin: 0 6px;
+  color: var(--text-faint);
+  font-weight: 400;
+}
+
+.peek-row-why {
+  font-size: var(--fs-caption);
+  line-height: 1.4;
+  color: var(--text-faint);
+}
+
+.peek-row-go {
+  flex: none;
+  margin-top: 6px;
+  color: var(--text-faint);
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+.peek-row:hover .peek-row-go,
+.peek-row:focus-visible .peek-row-go {
+  opacity: 1;
+}
+
+.peek-more {
+  margin-top: 2px;
+  padding: 4px 0;
+  font-size: var(--fs-small);
+  color: var(--accent-text, var(--accent));
+}
+
+.peek-more:hover {
+  text-decoration: underline;
+}
+
+.peek-none {
+  margin: 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--text-faint);
+}
+
+/* A narrow window: the peek takes the whole middle. */
+@media (max-width: 700px) {
+  .peek {
+    --peek-w: 100vw;
+  }
+}
+
+@container peek (max-width: 360px) {
+  .peek-fact {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  .peek-scroll {
+    padding: 14px 14px 28px;
+  }
+}
+
+/* ── A record on a page: a click opens its peek; editing is deliberate (the pencil, a double-click, E) ── */
+.rec-peekable,
+[data-rec] {
+  cursor: pointer;
+}
+
+[data-rec] :is(input, button, select, .pj-grip, .pj-ed-empty) {
+  cursor: revert-layer;
+}
+
+.pj-ed.has-pencil:not(.rec-peekable) {
+  cursor: default;
+}
+
+.pj-ed.rec-peekable:hover {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+  text-underline-offset: 3px;
+}
+
+/* The pencil: over the value itself (or with the keys on it), taking no room; it edits with one click. Hidden, it
+   is out of the layout entirely (t74 vault-three-sizes, 9 Nov 2026: the hidden 20px box still counted toward
+   scroll overflow — then t261, 13 Nov 2026: the zero-width box still held a 20px line under every block value,
+   so the project head stood 22px tall on empty space below its summary; width 0 was never zero-size there);
+   shown, the geometry is unchanged. */
+.rec-pencil {
+  display: none;
+  place-items: center;
+  width: 0;
+  height: 20px;
+  margin: -3px 0 -3px 0;
+  overflow: hidden;
+  vertical-align: middle;
+  border-radius: var(--r-2);
+  color: var(--text-faint);
+  cursor: pointer;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+.pj-ed:hover > .rec-pencil,
+.pj-ed:focus-visible > .rec-pencil {
+  display: inline-grid;
+  width: 20px;
+  margin: -3px -22px -3px 2px;
+  visibility: visible;
+  opacity: 1;
+}
+
+.rec-pencil:hover {
+  color: var(--text);
+  background: var(--bg-hover);
+}
+
+/* The dashboards' drawn pencil gives way to the real one. */
+.ly-dash .pj-ed.has-pencil:is(:hover, :focus-visible)::after {
+  content: none !important;
+}
+
+.pj-ed.block:hover > .rec-pencil,
+.pj-ed.block:focus-visible > .rec-pencil {
+  margin-left: 6px;
+}
+
+/* ── A note's Connected (components/NoteFoot.tsx): the peek's groups, side by side where the page is wide ── */
+.foot-connected {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 4px 32px;
+  align-items: start;
+  padding: 2px 2px 6px;
+}
+
+.foot-connected .peek-group {
+  margin-top: 10px;
+  min-width: 0;
+}
+
+.foot-connected .peek-row {
+  margin: 0 -8px;
+}
+
+.foot-connected-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: -2px 0 6px 34px;
+}
+
+.foot-connected-lines .foot-snippet {
+  font-size: var(--fs-small);
+}
+
+/* Long roles and reasons stay short in a row (the whole is on the record's own peek). */
+.peek-row-meta,
+.peek-row-why {
+  overflow: hidden; overflow-wrap: break-word;
+}

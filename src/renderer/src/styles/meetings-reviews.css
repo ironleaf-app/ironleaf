@@ -1,0 +1,761 @@
+/* Meetings → next steps (views/MeetingActions.tsx) and the weekly review (views/WeeklyReview.tsx, components/
+   ReviewNotice.tsx). Calm cards on the page's own colours; light first, dark follows the same variables. */
+
+/* ── A meeting's "Actions found" panel, under the note's title and properties ─────────────────────────────────────── */
+
+.mt-panel {
+  margin: 14px 0 10px;
+  font: 400 var(--fs-small)/1.45 var(--font-ui);
+  color: var(--text);
+  overflow: hidden;
+}
+
+.mt-panel.settled {
+  background: transparent;
+  box-shadow: none;
+}
+
+.mt-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px 9px 10px;
+  text-align: left;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.mt-head:hover {
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+}
+
+.mt-head:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+.mt-head-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  border-radius: 50%;
+  corner-shape: round;
+  color: var(--accent-text);
+  background: var(--accent-soft);
+}
+
+.settled .mt-head-icon {
+  color: var(--tone-ok, var(--ok));
+  background: color-mix(in srgb, var(--tone-ok, var(--ok)) 12%, transparent);
+}
+
+.mt-head-words {
+  flex: 1;
+  min-width: 0;
+}
+
+.mt-head-words strong {
+  font-weight: 600;
+}
+
+.settled .mt-head-words strong {
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.mt-faint {
+  color: var(--text-faint);
+}
+
+.mt-chevron {
+  flex: none;
+  color: var(--text-faint);
+  transition: transform 0.16s ease;
+  transform: rotate(-90deg);
+}
+
+.mt-panel.open .mt-chevron {
+  transform: none;
+}
+
+.mt-body {
+  border-top: 1px solid var(--border);
+}
+
+.mt-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+}
+
+.mt-row {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: start;
+  gap: 8px;
+  padding: 6px 14px 6px 12px;
+  transition: background-color 0.12s ease;
+}
+
+.mt-row:hover {
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+}
+
+.mt-row input[type='checkbox'],
+.wr-prop input[type='checkbox'] {
+  width: 15px;
+  height: 15px;
+  margin: 3px 0 0 3px;
+  accent-color: var(--accent);
+  flex: none;
+}
+
+.mt-words {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  min-width: 0;
+}
+
+.mt-what {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.mt-row:not(.picked) .mt-what {
+  color: var(--text-faint);
+  font-weight: 400;
+}
+
+.mt-meta {
+  display: flex;
+  flex-basis: 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.mt-meta:empty {
+  display: none;
+}
+
+.mt-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-caption);
+}
+
+.mt-chip svg {
+  opacity: 0.6;
+}
+
+/* The empty "+ Who" and "+ By when" show only while the pointer is over the row. */
+.mt-row:hover .pj-ed-empty.quiet,
+.mt-row:focus-within .pj-ed-empty.quiet {
+  opacity: 1;
+}
+
+.mt-ai,
+.wr-ai {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 7px;
+  border-radius: var(--r-1);
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  color: var(--accent-text);
+  background: var(--accent-softer);
+}
+
+.mt-more {
+  margin: 0 0 6px 42px;
+  font-size: var(--fs-small);
+}
+
+.mt-filed {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 14px 8px 15px;
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+}
+
+.mt-filed svg {
+  flex: none;
+  margin-top: 3px;
+  color: var(--tone-ok, var(--ok));
+}
+
+.mt-said {
+  margin: 0 14px 8px 42px;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.mt-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px 10px 14px;
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 55%, var(--bg-raised));
+}
+
+.mt-ask {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--fs-small);
+}
+
+.mt-space {
+  flex: 1;
+}
+
+/* "Add 3 to Harbour Fit-out" with its project choice joined to it. */
+.mt-add {
+  display: inline-flex;
+}
+
+.mt-add .button.primary {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.mt-add .mt-pick {
+  width: 30px;
+  padding: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: 1px solid color-mix(in srgb, var(--on-primary) 22%, transparent);
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.mt-add .mt-pick:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--primary) 86%, var(--bg));
+}
+
+.mt-add .button:disabled {
+  opacity: 0.55;
+}
+
+/* ── The weekly review ───────────────────────────────────────────────────────────────────────────────────────────── */
+
+.wr-page .pj-inner {
+  max-width: 1080px;
+  padding-bottom: 0;
+}
+
+.wr-said {
+  margin: -6px 0 16px;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+/* Tidy lives here now (8 Nov 2026, calm list): one quiet row, as it was on Today. */
+.wr-tidy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin: -8px 0 16px;
+  padding: 7px 8px;
+  border: 0;
+  border-radius: var(--r-3);
+  background: none;
+  font-size: var(--fs-small);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+}
+
+.wr-tidy:hover {
+  background: var(--bg-hover);
+}
+
+.wr-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 48px 0;
+  color: var(--text-muted);
+}
+
+.wr-spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  corner-shape: round;
+  border: 2px solid var(--border-strong);
+  border-top-color: var(--accent);
+  animation: nv-spin var(--nv-spin) linear infinite;
+}
+
+.wr-project {
+  margin-bottom: 16px;
+  padding: 16px 20px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.wr-project-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin-bottom: 12px;
+}
+
+.wr-project-name {
+  font: 620 var(--fs-card)/1.25 var(--font-ui);
+  letter-spacing: -0.01em;
+  color: var(--text);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.wr-project-name:hover {
+  color: var(--accent-text);
+}
+
+.wr-status {
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+}
+
+.wr-space {
+  flex: 1;
+}
+
+.wr-since {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  cursor: help;
+}
+
+.wr-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 6px 24px;
+}
+
+.wr-block h3,
+.wr-props h3 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 6px;
+  font: 600 var(--fs-small)/1.3 var(--font-ui);
+  color: var(--text-muted);
+}
+
+.wr-block h3 svg {
+  color: var(--tone);
+}
+
+.wr-count {
+  min-width: 18px;
+  padding: 0 6px;
+  border-radius: var(--r-1);
+  font-size: var(--fs-caption);
+  line-height: 17px;
+  text-align: center;
+  color: var(--tone);
+  background: color-mix(in srgb, var(--tone) 11%, transparent);
+}
+
+.wr-block ul,
+.wr-props ul {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+}
+
+.wr-item {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) 22px;
+  align-items: start;
+  gap: 6px;
+  padding: 4px 4px 4px 2px;
+  border-radius: var(--r-2);
+}
+
+.wr-item:hover {
+  background: color-mix(in srgb, var(--text) 3.5%, transparent);
+}
+
+.wr-dot {
+  width: 6px;
+  height: 6px;
+  margin: 8px 0 0 3px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: color-mix(in srgb, var(--tone) 70%, transparent);
+}
+
+.wr-item-words {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.wr-item.opens .wr-item-words {
+  cursor: pointer;
+}
+
+.wr-item.opens .wr-item-words:hover > span:first-child {
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+}
+
+.wr-detail {
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+}
+
+.wr-item.left .wr-item-words {
+  color: var(--text-faint);
+  text-decoration: line-through;
+  text-decoration-color: var(--border-strong);
+}
+
+.wr-leave {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: var(--r-2);
+  background: none;
+  color: var(--text-faint);
+  opacity: 0;
+  cursor: pointer;
+}
+
+.wr-item:hover .wr-leave,
+.wr-leave:focus-visible,
+.wr-item.left .wr-leave {
+  opacity: 1;
+}
+
+.wr-leave:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.wr-props {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.wr-prop {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 8px;
+  padding: 7px 8px 7px 4px;
+  border-radius: var(--r-3);
+}
+
+.wr-prop:hover {
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+}
+
+.wr-prop:not(.on) .wr-prop-body {
+  opacity: 0.62;
+}
+
+.wr-prop-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  font-size: var(--fs-small);
+  min-height: 24px;
+}
+
+.wr-arrow {
+  color: var(--text-faint);
+}
+
+.wr-choices {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.wr-choices .pj-pill {
+  cursor: pointer;
+  opacity: 0.55;
+  font-weight: 500;
+}
+
+.wr-choices .pj-pill.chosen {
+  opacity: 1;
+  font-weight: 600;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--tone) 30%, transparent);
+}
+
+.wr-prop-update {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.wr-prop-label {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.wr-update-words {
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+
+.wr-why {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+}
+
+.wr-quiet {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  margin: 6px 0 16px;
+  padding: 10px 4px;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.wr-quiet-label {
+  margin-right: 4px;
+  font-weight: 600;
+  color: var(--text-faint);
+}
+
+.wr-quiet-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.wr-quiet-name:hover {
+  color: var(--text);
+  background: var(--bg-hover);
+}
+
+/* The bar that finishes the review, always in reach at the foot of the page. */
+.wr-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin: 8px -20px 0;
+  padding: 14px 20px 18px;
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+.wr-bar-words {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.wr-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin: 24px auto 48px;
+  padding: 36px 28px 30px;
+  max-width: 560px;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.wr-done h2 {
+  margin: 6px 0 0;
+  font: 640 var(--fs-section)/1.25 var(--font-ui);
+}
+
+.wr-done p {
+  margin: 0 0 14px;
+  color: var(--text-muted);
+}
+
+.wr-done .pj-actions {
+  justify-content: center;
+}
+
+.wr-done-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  corner-shape: round;
+  color: var(--tone-ok, var(--ok));
+  background: color-mix(in srgb, var(--tone-ok, var(--ok)) 12%, transparent);
+}
+
+/* ── The Friday notice: in the corner of the middle, above the status line (never over a side panel or the chat) ── */
+
+.wr-notice {
+  position: absolute;
+  right: 16px;
+  bottom: 40px;
+  /* Over the page, under a drawer's shade (35) and any window over the app (Settings, menus: 40 and up). */
+  z-index: 30;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) 24px;
+  gap: 10px;
+  width: min(360px, calc(100% - 32px));
+  transition: bottom 0.16s ease-out;
+  padding: 14px 12px 14px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-small);
+  font: 400 var(--fs-small)/1.45 var(--font-ui);
+  color: var(--text);
+  animation: wr-rise 0.22s ease-out;
+}
+
+@keyframes wr-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.wr-notice-icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  corner-shape: round;
+  color: var(--accent-text);
+  background: var(--accent-soft);
+}
+
+.wr-notice-words {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.wr-notice-words strong {
+  font-weight: 600;
+}
+
+.wr-notice-words > span:not(.wr-notice-actions) {
+  color: var(--text-muted);
+}
+
+.wr-notice-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.wr-notice-close {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: var(--r-2);
+  background: none;
+  color: var(--text-faint);
+  cursor: pointer;
+}
+
+.wr-notice-close:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wr-notice,
+  .wr-spinner {
+    animation: none;
+  }
+}
+
+/* A message along the bottom (with its Undo) comes first: the notice steps up out of its way. */
+.app:has(> .toast) .wr-notice {
+  bottom: 96px;
+}
+
+/* The review's own bar sits along the bottom of its page: a message rises above it rather than over its button. */
+.app:has(.wr-bar) > .toast {
+  bottom: 104px;
+}
+
+/* A small window: the notice keeps to its heading and buttons, so it covers as little of the page as it can. */
+@media (max-width: 1100px) {
+  .wr-notice {
+    width: min(320px, calc(100% - 32px));
+    padding: 12px 10px 12px 12px;
+  }
+
+  .wr-notice-words > span:not(.wr-notice-actions) {
+    display: none;
+  }
+
+  .wr-notice-actions {
+    margin-top: 6px;
+  }
+}
+
+.wr-notice-actions {
+  flex-wrap: wrap;
+  row-gap: 6px;
+}
+
+.wr-notice-actions > * {
+  white-space: nowrap;
+}

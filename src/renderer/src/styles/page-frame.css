@@ -1,0 +1,630 @@
+/* The one page frame (8.0 U6, 28 Oct 2026; the shape 8.7 wave 1, item 4; 10.0 Endless Tech: the 64 px header from
+   the kit, then the title (components/PageHead.tsx), key facts (PageProps), one view bar, then content, all starting
+   at one left edge: 36 px at the sides, 36 px above the title. Reading pages read in the 920 px column (.read);
+   boards and calendars run full width (.full). Loaded last but one (before feel.css), so it settles the pages'
+   own headers. */
+
+:root {
+  /* The width system (20 Nov 2026, on a ~2000 px monitor). Three named widths and one side column; no page keeps a number
+     of its own:
+       --w-reading  prose: a note's body, minutes, a summary (about 70 characters a line)
+       --w-content  lists, forms, settings, overviews: no row runs wider than this
+       --w-full     the room: boards, the graph, canvases, timelines, tables
+       --w-side     the second column a wide window adds (detail, attendees, a preview) beside --w-content
+       --w-wide     content plus side: the most a list-and-detail page takes, centred in the room
+     Every frame is centred in the room; a wide window gets a second column, never a longer row or a dead band. */
+  --w-reading: 720px;
+  --w-content: 1160px;
+  --w-full: 100%;
+  --w-side: 360px;
+  --w-wide: 1900px;
+  /* One spacing scale: 4, 8, 12, 16, 24, 36, 64. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 36px;
+  --space-7: 64px;
+  --page-pad-top: var(--space-6);
+  --page-pad-side: var(--space-6);
+  /* The frame's box holds its side padding, so the content inside it is exactly the named width. */
+  --page-max: calc(var(--w-content) + 2 * var(--page-pad-side));
+  --page-read: calc(var(--w-reading) + 2 * var(--page-pad-side));
+  --page-wide: calc(var(--w-wide) + 2 * var(--page-pad-side));
+  --page-title: var(--fs-page);
+}
+/* At 3456 wide: there the list-and-detail frame takes the room too (the detail grows, two groups
+   across), so the pair never stands as an island between two 600 px bands. */
+@media (min-width: 3000px) {
+  :root {
+    --w-wide: 2600px;
+  }
+}
+
+/* The column every page sits in (its own inner box, whatever it was called). */
+.nv-page,
+.tk-inner,
+.pj-inner,
+.pj-inner.wide,
+.tp-inner,
+.pv-inner,
+.au-inner:not(.with-panel),
+.td-inner,
+.nv-page-frame {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--page-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--page-pad-side);
+  padding-right: var(--page-pad-side);
+}
+
+.nv-page-head.nv-page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 0 0 24px;
+  padding: var(--page-pad-top) 0 0;
+}
+
+/* Reading pages read in the 880 px column; boards and calendars run full width. */
+.nv-page.read {
+  max-width: var(--page-read);
+}
+.nv-page.full {
+  max-width: none;
+}
+/* Lists and packs are read, not boards: on a wide window (3456 wide) a name at one edge and its amount 2,500 px away
+   read as two things, so they keep the column every other page has (4 Nov 2026, seen in the real window). */
+.nv-page.full.p87,
+.nv-page.full.w3b-page,
+.nv-page.full.w2b-list {
+  max-width: var(--page-max);
+}
+
+/* A page whose content runs full width (the Timeline) keeps its head in the column. */
+.nv-page-head.nv-page-head.tl-head {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--page-max);
+  margin: 0 auto 24px;
+  padding-left: var(--page-pad-side);
+  padding-right: var(--page-pad-side);
+}
+
+/* The box a page head sits in starts at the top: the head's 36 px is the only space above the title, on every page
+   (p27: 24 sat Today's date 4 px under the header's line, cramped; 36 gives it 16 and puts every title at 92, as
+   the spec's --page-pad and the kit's .vpage already say). */
+:has(> .nv-page-head.nv-page-head) {
+  padding-top: 0;
+}
+
+/* The title keeps room for itself: when the head's buttons would squeeze it (a narrow window, the side panel open), the
+   buttons move below it instead (30 Oct 2026: "Financ / e" broke mid-word beside four buttons). */
+.nv-page-words {
+  min-width: 0;
+  flex: 1 1 320px;
+}
+
+/* Tripled to settle every page's own h1 rule (.nt-head h1, .pj-home-head h1, feel.css's list…). */
+/* Page titles in Geist 650 with tight tracking, not the serif (8.1; the former host app's "Page titles in Geist display"
+   rule, native-runtime/plugins/desktop/look.css there; 10.0: the spec's Page step, 38 px, ink strongest). */
+h1.nv-page-title.nv-page-title.nv-page-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 8px;
+  font: 650 var(--page-title) / 1.15 var(--font-ui);
+  letter-spacing: -0.02em;
+  color: var(--text-strong);
+}
+
+/* A long title takes a second line rather than losing its end to the head's buttons (30 Oct 2026: "POS last cafe …");
+   past two lines it ends in an ellipsis. */
+.nv-page-name {
+  min-width: 0;
+  overflow: hidden;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+.nv-page-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-3);
+  background: var(--bg-hover);
+  color: var(--text-muted);
+}
+
+.nv-page-count {
+  flex: none;
+  font: 500 var(--fs-body)/1 var(--font-ui, inherit);
+  color: var(--text-faint);
+  letter-spacing: 0;
+}
+
+.nv-page-lead.nv-page-lead {
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: 22px;
+  color: var(--text-muted);
+}
+
+.nv-page-lead select,
+.nv-page-lead button {
+  font-size: var(--fs-small);
+}
+
+.nv-page-actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+/* Page tabs: underlined, as the former host app's (.ns-tabs), never pills. The kit's one strip rule shows the
+thumb. */
+.nv-tabs {
+  display: flex;
+  gap: 20px;
+  margin: 0 0 20px;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.nv-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.nv-tab:hover {
+  color: var(--text);
+}
+
+.nv-tab.is-on {
+  color: var(--text-strong);
+}
+
+.nv-tab.is-on::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  border-radius: var(--r-1);
+  background: var(--text-strong);
+}
+
+.nv-tab-count {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+@media (max-width: 760px) {
+  :root {
+    --page-pad-top: 32px;
+    --page-pad-side: 16px;
+    --page-title: 32px;
+  }
+  .nv-page-head.nv-page-head {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+/* Today keeps its date above the greeting; the greeting is the page's title, at the title's size and on the title's
+   baseline (p25 one column, 5 Nov 2026). The date's block is exactly 20 px and the head gives those 20 px back
+   out of the frame's pad, so the greeting starts where every other room's title starts. Before: 36 px of pad plus
+   the date (3 Nov 2026 sweep D), which sat the greeting lowest of every room. */
+.td-inner:has(> .nv-today-head) {
+  padding-top: 0;
+}
+.nv-today-head {
+  padding-top: calc(var(--page-pad-top) - 20px);
+}
+/* The date block, exactly 20 px: the greeting's baseline depends on it. */
+.td-head-top .td-date {
+  line-height: 20px;
+}
+/* Today's gaps join the rooms': 8 px under the greeting to its line, 24 px under the head to the body. */
+.td-head {
+  margin-bottom: 24px;
+}
+.td-line {
+  margin-top: 8px;
+}
+/* One subtitle line of figures (p28-today-line, 5 Nov 2026, the window: the line wrapped early, and the wrap
+   orphaned its separator — "· 31 waiting on others" started the next line): every figure keeps its separator
+   trailing, glued with it in one unit that never breaks, so the line only ever breaks after a separator — a
+   separator never starts a line. Today and the project workspace read this same rule; their own sheets keep
+   only their spacing. */
+.td-line > .nv-fig,
+.ph-figures > .nv-fig {
+  white-space: nowrap;
+}
+
+/* Recently deleted (8.0 U13, views/BinView.tsx): one row a thing, Restore and Delete now on the right; a question asked
+   in the page, never a dialog box. */
+.nv-page-scroll {
+  height: 100%;
+  overflow-y: auto;
+  /* Both edges keep the scrollbar's gutter, as .vscroll and .td-view (p25 one column): with any other gutter the
+     column sits up to 10 px off the vscroll rooms' whenever the window leaves it narrower than --page-max. */
+  scrollbar-gutter: stable both-edges;
+}
+.bin-page .nv-page {
+  padding-bottom: 64px;
+}
+.bin-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  overflow: hidden;
+}
+.bin-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 10px 16px;
+}
+.bin-row + .bin-row {
+  border-top: 1px solid var(--border);
+}
+.bin-row:hover {
+  background: var(--bg-hover);
+}
+.bin-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-3);
+  background: var(--bg-hover);
+  color: var(--text-muted);
+}
+.bin-words {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.bin-words b {
+  font-weight: 550;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+.bin-words small {
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+.bin-actions,
+.bin-ask {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bin-ask:not(.is-row) {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border: 1px solid color-mix(in srgb, var(--danger, #b42318) 30%, transparent);
+  border-radius: var(--r-4);
+  background: color-mix(in srgb, var(--danger, #b42318) 6%, var(--bg-raised));
+}
+.bin-ask:not(.is-row) > span {
+  flex: 1;
+}
+.bin-delete {
+  color: var(--danger, #b42318);
+}
+/* (A second .button.danger here once turned the text danger-red over styles.css's danger-red fill: every solid
+   danger button read as a blank coral block, Settings › AI's Remove connection among them, 20 Nov 2026. One rule
+   now: .button.danger is the solid confirm inside a confirm dialog; a destructive action on a page is the quiet
+   text button, .button.danger-text / .btn.danger-text, and asks first.) */
+.bin-done {
+  color: var(--ok, #1a7f4b);
+  font-weight: 500;
+  font-size: var(--fs-small);
+}
+.bin-row.is-back .bin-words b {
+  color: var(--text-muted);
+}
+.bin-none,
+.bin-error {
+  padding: 16px;
+  color: var(--text-muted);
+}
+@media (max-width: 760px) {
+  .bin-row {
+    flex-wrap: wrap;
+  }
+  .bin-actions,
+  .bin-ask.is-row {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+/* One column and one title place on every Vault page (p25, 5 Nov 2026). Every room's page box is --page-max with the
+   frame's pads, every room's title starts at the frame's pad with the title's size and line-height, and the gaps
+   under the title are the head's: 8 px to its sub line, 24 px to the body. The icon sits INSIDE the column at its
+   left edge; the lead, the facts and the body start at the column edge on every room (packs-87.css and
+   w3b-packs.css indent nothing off the title any more). A title's words start past their own icon, so words shift
+   with icon size; edges and baselines never do. The tripled and chained selectors settle the kit and the wave
+   files, which load after this one, the way the tripled h1 rule above settles the pages' own. */
+
+/* The w2b pages' own marker shares its name with their inner list (.w2b-list { margin-top: 12px } in w2b.css), which
+   sat Notes, People and Meetings 12 px below every other room. The inner lists keep their 12; the pages keep none. */
+.nv-page.w2b-list {
+  margin-top: 0;
+}
+
+/* Wide room pages stand in the one column (was: Inbox 960, Projects/Shared spaces/Tasks 980, each its own
+   edges; the project page and the spaces' own pages keep their inline widths: out of p25's rooms, untouched).
+   A page that truly runs full width (Projects' board, gallery and timeline, Tasks' board) says .full. Scoped to
+   the frame's own scroller, so the graph's page (in .nv-page-scroll) and the project page (in .pj-page) keep
+   their width. */
+.vscroll > .vpage.wide {
+  max-width: var(--page-max);
+  padding: var(--page-pad-top) var(--page-pad-side) 48px;
+}
+.vscroll > .vpage.wide.full {
+  max-width: none;
+}
+
+/* Every w2a title keeps the title's line-height (was: the inherited 57 px, so the title ran 13 px taller than
+   every PageHead and its baseline sat apart). Tripled past w2a.css, as the nv-page-title rule above. */
+.w2a-title.w2a-title.w2a-title {
+  line-height: 1.15;
+}
+
+/* A bare page title (Home) ends 8 px above its sub line, as a PageHead title does above its lead (was: the
+   browser's own margins, which sat Home's title lowest and its sentence far below). Titles inside a head row keep
+   the head row's own margins. */
+.vpage.wide > h1.w2a-title {
+  margin: 0 0 8px;
+}
+
+/* A w2a head row ends 24 px above the body, as a PageHead does (was: whatever followed set the gap — 12 on Inbox,
+   14 on Projects, none on an empty page). Adjoining margins collapse, so a follower with its own room keeps it. */
+.vpage.wide > .w2a-head {
+  margin-bottom: 24px;
+}
+
+/* A bare page sub line (Home's) carries no margins of its own, as a PageHead lead carries none: the title's 8 px
+   above it is the whole gap (was: the browser's paragraph margins plus an inline 4 px). */
+.vscroll > .vpage.wide > p.vsub {
+  margin: 0;
+}
+
+/* Settings' own pages stand in the one column too (was: 980 px with 32 px sides). Their titles stay the two-pane
+   layout's own 20 px section titles beside the nav: an exception with its reason, in tests/p25-one-column.test.mjs. */
+.settings-scroll .settings.settings-page {
+  max-width: var(--page-max);
+  padding-left: var(--page-pad-side);
+  padding-right: var(--page-pad-side);
+}
+
+/* Past 2400 px the note column widens and pins near the rail, never a lost island (5 Nov 2026, both audits'
+   F11; the direction mock's own numbers: 1140 px, pinned left of the void). One variable widens the main and its
+   content together; the base stays centred (p14) and only the very wide window pins. */
+@media (min-width: 2400px) {
+  .note-view .nv-note-layout {
+    --page-column: 1028px;
+    justify-content: flex-start;
+    padding-left: clamp(48px, 6%, 160px);
+  }
+}
+
+/* The note centres again past 2400 px (5 Nov 2026, the huge right panel): the left pinning above left the whole
+   right half a void that read as one giant panel, its dividing line down the middle. The note stays the visual
+   centre; the wide column stays for tables and code. */
+@media (min-width: 2400px) {
+  .note-view .nv-note-layout {
+    justify-content: center;
+    padding-left: 0;
+  }
+}
+
+/* ---------- List and detail (20 Nov 2026, components/ListDetail.tsx) ----------
+   A list page on a wide window: the list at --w-content, the chosen row's detail beside it (--w-side or more, the
+   rest of the frame), the pair centred in the room. The frame widens to --w-wide only where the window has the room
+   for both; the split itself answers the frame's own width, so a right column or a folded side bar is counted.
+   Narrower, the detail folds away and the list stands alone in the content column, as every list did. */
+.nv-page.has-split,
+.vpage.has-split {
+  container: frame / inline-size;
+}
+@media (min-width: 1880px) {
+  .nv-page.has-split.has-split,
+  .vscroll > .vpage.wide.has-split {
+    max-width: var(--page-wide);
+  }
+}
+.nv-split-side {
+  display: none;
+}
+@container frame (min-width: 1480px) {
+  .nv-split {
+    display: grid;
+    /* The detail takes at least about a third; the list keeps the rest but never runs past --w-content, and
+       what a very wide frame has beyond that goes to the detail (never to a longer row). */
+    grid-template-columns: minmax(0, var(--w-content)) minmax(max(var(--w-side), 36%), 1fr);
+    gap: var(--space-5);
+    align-items: start;
+  }
+  .nv-split-side {
+    display: block;
+    position: sticky;
+    top: var(--space-4);
+    min-width: 0;
+  }
+}
+.nv-split-side-inner {
+  box-sizing: border-box;
+  /* As tall as the window at most, and never taller than the list beside it (ListDetail sets --nv-list-h). */
+  max-height: min(calc(100vh - 56px - 2 * var(--space-4)), max(320px, var(--nv-list-h, 100vh)));
+  overflow: auto;
+  padding: var(--space-5);
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: var(--bg-raised, var(--bg));
+}
+.nv-split-main {
+  min-width: 0;
+}
+/* A short list (four rows or fewer) reads its detail under it, across the frame: the overview fills the page
+   instead of a window-tall pane standing beside one row (or a cavern under it). */
+@container frame (min-width: 1480px) {
+  .nv-split.is-short {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-5);
+  }
+  .nv-split.is-short > .nv-split-main {
+    max-width: none;
+  }
+  .nv-split.is-short > .nv-split-side {
+    position: static;
+  }
+  .nv-split.is-short .nv-split-side-inner {
+    max-height: none;
+  }
+  /* The groups flow in columns (each whole), so a long group beside short ones leaves no hole. */
+  .nv-split.is-short .nv-detail-groups {
+    display: block;
+    columns: 3 320px;
+    column-gap: var(--space-6);
+  }
+  .nv-split.is-short .nv-detail-groups > * {
+    break-inside: avoid;
+    margin-bottom: var(--space-4);
+  }
+}
+/* A row's pick wrapper (the list says which row the detail shows) has no box of its own. */
+.nv-pick {
+  display: contents;
+}
+
+/* The detail itself: what it is, Open, its facts, its opening words, then what it connects to. */
+.nv-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.nv-detail.is-loading {
+  min-height: 200px;
+}
+.nv-detail-head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+.nv-detail-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-3);
+  background: var(--bg-hover);
+  color: var(--text-muted);
+}
+.nv-detail-words {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.nv-detail-kind {
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+}
+h2.nv-detail-title {
+  margin: 0;
+  font: 650 var(--fs-section) / 1.25 var(--font-ui);
+  letter-spacing: -0.01em;
+  color: var(--text-strong);
+  overflow-wrap: anywhere;
+}
+.nv-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.nv-detail-facts {
+  display: grid;
+  grid-template-columns: minmax(88px, max-content) minmax(0, 1fr);
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+  font-size: var(--fs-small);
+}
+.nv-detail-fact {
+  display: contents;
+}
+.nv-detail-fact dt {
+  color: var(--text-faint);
+}
+.nv-detail-fact dd {
+  margin: 0;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.nv-detail-lead {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.5;
+  max-width: var(--w-reading);
+}
+.nv-detail-quiet {
+  margin: 0;
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+}
+.nv-detail-groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+/* A wide detail lays its connected groups two across, so the pane reads in one look instead of one long column. */
+@container frame (min-width: 1860px) {
+  .nv-detail-groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--space-4) var(--space-5);
+    align-items: start;
+  }
+}

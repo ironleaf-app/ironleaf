@@ -1,0 +1,301 @@
+/* The premium layer (8.0, 29 Oct 2026). One finish for every card, tile and row in the vault, loaded after every other
+   sheet: depth that rests and lifts, a calm cool page, tinted icon tiles by kind, a clear type hierarchy, considered
+   hover and focus. Theme tokens only; the dark theme gets its own depth below. */
+
+:root {
+  --pl-radius: var(--r-3);
+  --pl-radius-small: var(--r-2);
+  --pl-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --pl-line: color-mix(in srgb, var(--border) 70%, transparent);
+  --pl-line-hover: var(--border-strong);
+  --pl-rest: var(--e-1);
+  --pl-lift: var(--e-2);
+  --pl-wash: var(--bg-soft);
+  /* Row hover is the kit's cool selection tint (8.9 round 2: the warm accent mix read peach). */
+  --pl-row-hover: var(--sel);
+  --pl-kind-person: color-mix(in srgb, var(--hl-blue) 18%, var(--bg-raised));
+  --pl-kind-meeting: color-mix(in srgb, var(--hl-orange) 18%, var(--bg-raised));
+  --pl-kind-project: color-mix(in srgb, var(--text-muted) 10%, var(--bg-raised));
+  --pl-kind-note: color-mix(in srgb, var(--text-muted) 10%, var(--bg-raised));
+  --pl-kind-file: color-mix(in srgb, var(--hl-purple) 14%, var(--bg-raised));
+}
+:root[data-theme='dark'] {
+  --pl-line: color-mix(in srgb, var(--border) 85%, transparent);
+  --pl-rest: var(--e-1);
+  --pl-lift: var(--e-2);
+  --pl-wash: var(--bg-soft);
+  /* Dark follows: the same cool tint, never the accent's warmth. */
+  --pl-row-hover: var(--sel);
+}
+
+/* ---- Cards and tiles: rest, then lift on hover ---- */
+:root :is(.td-section, .td-next, .pj-tile, .ph-tile, .rm-card, .rm-tile, .needs-card, .wmt-series-card, .mt-top, .pm-card, .th-daybox) {
+  background: var(--bg-raised);
+  border: 1px solid var(--pl-line);
+  border-radius: var(--pl-radius);
+  box-shadow: var(--pl-rest);
+  transition: box-shadow 180ms var(--pl-ease), border-color 180ms var(--pl-ease), transform 180ms var(--pl-ease), background-color 180ms var(--pl-ease);
+}
+/* Cards you can act on lift; reading panels only deepen their edge. */
+:root :is(.pj-tile, .needs-card, .rm-tile, .wmt-series-card):hover {
+  transform: translateY(-2px);
+  box-shadow: var(--pl-lift);
+  border-color: var(--pl-line-hover);
+}
+:is(.td-section, .ph-tile, .rm-card):hover { border-color: color-mix(in srgb, var(--border-strong) 60%, var(--pl-line)); }
+:is(.pj-tile, .needs-card, .rm-tile):active { transform: translateY(0); box-shadow: var(--pl-rest); transition-duration: 80ms; }
+:root :is(.pj-tile, .needs-card, .rm-tile):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+/* The centre of the graph's focus view and Today's "Next for you" lead the page: a soft quiet wash and a deeper rest. */
+:root :is(.td-next) {
+  background: linear-gradient(180deg, var(--pl-wash), var(--bg-raised) 70%);
+  box-shadow: var(--pl-lift);
+}
+
+/* ---- Rows in lists: a quiet tint and their actions on hover ---- */
+:root :is(.td-row, .tk-row, .pm-row, .nj-row, .rm-row, .wmt-row, .ph-row, .ib-item, .nj-inbox-item, .bin-row) {
+  border-radius: var(--pl-radius-small);
+  transition: background-color 140ms var(--pl-ease), box-shadow 140ms var(--pl-ease);
+}
+:root :is(.td-row, .tk-row, .pm-row, .nj-row, .rm-row, .wmt-row, .ph-row, .ib-item, .nj-inbox-item, .bin-row):hover {
+  background: var(--pl-row-hover);
+}
+:is(.td-row, .tk-row, .pm-row, .nj-row, .rm-row, .wmt-row, .ph-row):focus-within { background: var(--pl-row-hover); }
+
+/* ---- Type: a clear hierarchy ---- */
+:root :is(.pj-tile-name, .needs-card strong, .pm-row-main strong, .nj-row-title, .rm-row-name, .wmt-row-name) {
+  font-weight: 600;
+  letter-spacing: -0.008em;
+  color: var(--text-strong);
+}
+:root :is(.pj-tile, .needs-card, .rm-tile, .rm-card, .td-section) :is(small, .pj-tile-foot, .nj-row-snippet, .rm-row-sub, .pm-row-words) {
+  color: var(--text-muted);
+}
+:is(.rm-tile-value, .rm-row-amount, .pj-tile, .needs-card, .td-section, .ph-tile) :is(b, strong, .rm-tile-value, .rm-row-amount) { font-variant-numeric: tabular-nums; }
+:root :is(.td-section-head, .pc-section-head, .ph-tile-head, .rm-card-head) :is(h2, h3) {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--text-muted);
+}
+
+/* ---- Icon tiles by kind (rows and cards) ---- */
+:root :is(.nj-row-icon, .rm-row-icon) {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-3);
+  background: var(--pl-kind-note);
+  color: var(--text-muted);
+  flex: none;
+}
+
+/* ---- Chips and state pills: soft, tinted, never loud ---- */
+/* No .td-due/.tk-due here (t208, 11 Nov 2026, second look at real content: those name Today's task rows, never a
+   chip, so the chip's padding, caption size and weight landed on step rows and not on note rows — one list read
+   as three). */
+:root :is(.pj-tile-status, .nj-chip, .nj-row-chip) {
+  border-radius: var(--r-1);
+  padding: 2px 9px;
+  font-size: var(--fs-caption);
+  font-weight: 550;
+}
+
+/* ---- Buttons on cards: quiet until wanted ---- */
+:root :is(.needs-card, .rm-tile) :is(button.button, .button, button.btn, .btn) {
+  border-radius: var(--r-2);
+  transition: background-color 140ms var(--pl-ease), border-color 140ms var(--pl-ease), box-shadow 140ms var(--pl-ease);
+}
+:is(.needs-card, .rm-tile) :is(button.button, .button, button.btn, .btn):hover { box-shadow: var(--pl-rest); border-color: var(--pl-line-hover); }
+
+/* ---- Lists inside cards breathe ---- */
+:is(.td-section, .ph-tile, .rm-card) { padding: 18px 20px; }
+:is(.pj-tile, .needs-card, .rm-tile) { padding: 16px 18px; }
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.pj-tile, .needs-card, .rm-tile, .wmt-series-card):hover { transform: none; }
+}
+
+/* ---- Fixes seen in the pictures (29 Oct 2026) ---- */
+/* A Notes row's project chip keeps its whole name (sweep 042: "Marlowe Gallery Fit-o..." with no way to
+   read the rest); the snippet beside it gives up the room, and the chip carries its full name as a title. */
+:root .nj-chip {
+  max-width: 280px;
+  flex-shrink: 1;
+}
+:root .nj-row-snippet {
+  min-width: 0;
+}
+/* "N late for you" is a small pill beside its line, never a bar across the card. */
+:root .pj-late-count {
+  display: inline-flex;
+  align-self: flex-start;
+  width: auto;
+  margin-top: 6px;
+  padding: 2px 9px;
+  border-radius: var(--r-1);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--tone-bad);
+  background: color-mix(in srgb, var(--tone-bad) 10%, var(--bg-raised));
+}
+/* Today's rows breathe with the standard rhythm (t218): today.css carries the kit's 12px, no override here. */
+:root .td-section :is(.td-row) + :is(.td-row) { margin-top: 2px; }
+
+/* ---- The same finish on every surface it had not reached (29 Oct 2026, the plan) ----
+   Note page (property block, context rail), meeting top, People and the person page, Inbox, Search,
+   the module overviews, Publications, Automations, Weekly review, Settings inside the vault and the
+   graph's card map columns. Page sheets no longer set their own shadow, border or radius on these. */
+
+/* Cards and panels: rest only (they are read, not pressed). */
+:root :is(.properties, .nv-rail-section, .mt-panel, .wmt-prep, .wmt-summary, .pc-card-main, .pm-card, .pb-card, .pb-panel, .pb-today-card, .pb-template, .pb-piece, .au-panel, .au-hero-panel, .au-project-card, .wr-block, .wr-project, .hl-card, .hl-ex-card, .fy-member, .fy-today-card, .lr-habit-card, .lr-version-card, .lr-node, .wu-ws-card, .tm-card, .nb-card, .cv-empty-card, .as-drop-card, .ly-block, .rm-doc, .pf-view-card, .pdfv-card, .pdfv-panel, .flow-card, .cf-card, .wv-overview, .wm-room, .au-recipe, .as-tile) {
+  background: var(--bg-raised);
+  border: 1px solid var(--pl-line);
+  border-radius: var(--pl-radius);
+  box-shadow: var(--pl-rest);
+  transition: box-shadow 180ms var(--pl-ease), border-color 180ms var(--pl-ease), transform 180ms var(--pl-ease), background-color 180ms var(--pl-ease);
+}
+/* The graph's map columns are quiet panels behind their cards, not cards themselves. */
+/* Cards you can act on lift, on every surface. */
+:root :is(.pc-card-main, .pb-card, .au-recipe, .as-tile, .au-project-card, .wu-ws-card, .lr-node, .cf-card):hover {
+  transform: translateY(-2px);
+  box-shadow: var(--pl-lift);
+  border-color: var(--pl-line-hover);
+}
+:is(.pc-card-main, .pb-card, .au-recipe, .as-tile, .au-project-card, .wu-ws-card, .lr-node, .cf-card):active { transform: translateY(0); box-shadow: var(--pl-rest); transition-duration: 80ms; }
+/* A settled meeting panel is plain words on the page, not a card. */
+:root .mt-panel.settled { background: transparent; border-color: transparent; box-shadow: none; }
+/* The note's property block keeps its open head inside the card. */
+:root .properties { padding: 10px 14px 12px; }
+:root .nv-rail-section { padding: 12px 14px; margin-bottom: 10px; }
+
+/* Rows: Inbox, Search, Automations, Weekly review, modules and the rest. */
+:root :is(.nv-rail-row, .fh-row, .result-title, .result-row, .nt-item, .ag-agent, .au-row, .au-run, .pb-kept-row, .pb-pick-row, .pb-sec-row, .wr-item, .pf-row, .pf-row-inside, .as-row, .lr-item, .fy-today-row, .fy-item, .rm-today-row, .set-hit, .peek-row, .fm-row, .imp-row, .page-links-row, .cf-row, .connection-row, .keys-row, .setting-row, .nv-rail-task-words) {
+  border-radius: var(--pl-radius-small);
+  transition: background-color 140ms var(--pl-ease), box-shadow 140ms var(--pl-ease);
+}
+:root :is(.nv-rail-row, .fh-row, .result-title, .result-row, .nt-item, .ag-agent, .au-row, .au-run, .pb-kept-row, .pb-pick-row, .pb-sec-row, .wr-item, .pf-row, .pf-row-inside, .as-row, .lr-item, .fy-today-row, .fy-item, .rm-today-row, .set-hit, .peek-row, .fm-row, .imp-row, .page-links-row, .cf-row, .connection-row, .keys-row, .nv-rail-task-words):hover {
+  background: var(--pl-row-hover);
+}
+/* Settings rows are divided, not boxed: they only take the tint. */
+:root .setting-row:hover { background: var(--pl-row-hover); }
+
+/* Focus: every interactive card and row shows the accent ring on keyboard focus. */
+:root :is(.properties, .nv-rail-section, .mt-panel, .wmt-prep, .wmt-summary, .pc-card-main, .pm-card, .pb-card, .pb-panel, .pb-today-card, .pb-template, .pb-piece, .au-panel, .au-hero-panel, .au-project-card, .wr-block, .wr-project, .hl-card, .hl-ex-card, .fy-member, .fy-today-card, .lr-habit-card, .lr-version-card, .lr-node, .wu-ws-card, .tm-card, .nb-card, .cv-empty-card, .as-drop-card, .ly-block, .rm-doc, .pf-view-card, .pdfv-card, .pdfv-panel, .flow-card, .cf-card, .wv-overview, .wm-room, .au-recipe, .as-tile, .nv-rail-row, .fh-row, .result-title, .result-row, .nt-item, .ag-agent, .au-row, .au-run, .pb-kept-row, .pb-pick-row, .pb-sec-row, .wr-item, .pf-row, .pf-row-inside, .as-row, .lr-item, .fy-today-row, .fy-item, .rm-today-row, .set-hit, .peek-row, .fm-row, .imp-row, .page-links-row, .cf-row, .connection-row, .keys-row, .nv-rail-task-words):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+:root :is(.td-row, .tk-row, .pm-row, .nj-row, .rm-row, .wmt-row, .ph-row, .ib-item, .nj-inbox-item, .bin-row, .nv-rail-row, .fh-row, .au-row, .wr-item, .as-row, .lr-item, .fy-item, .set-hit):focus-within { background: var(--pl-row-hover); }
+
+/* Avatars: initials on a soft tint from the person's hue, a 1px inner ring, 28 / 36 / 48 px. */
+:root :is(.pj-avatar, .pc-avatar, .pm-avatar, .cv-avatar, .fy-avatar, .ag-avatar, .td-avatar, .nv-rail-avatar, .cv-ov-avatar, .ws-avatar) {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 28%, transparent);
+}
+/* 36 px is the standard face. */
+:root :is(.pm-avatar, .pc-avatar, .ag-avatar, .cv-avatar) { width: 36px; height: 36px; }
+/* 28 px wherever a face sits inside a row. */
+:root :is(.pj-avatar.small, .pj-avatar.tiny, .cv-avatar.small, .fy-avatar.is-small, .ag-avatar.small, .td-avatar.small, .nv-rail-avatar) { width: 28px; height: 28px; }
+:root .pm-avatars .pm-avatar { width: 28px; height: 28px; font-size: var(--fs-caption); }
+/* 48 px where a person leads a page. */
+:root :is(.fy-avatar, .ag-avatar.large) { width: 48px; height: 48px; }
+:root .nv-page-icon :is(.pm-avatar, .pc-avatar, .pj-avatar, .ag-avatar) { width: 48px; height: 48px; font-size: var(--fs-reading); }
+/* Where a face leads, the tile stands down (9.5 polished): the 32 px tile behind a 48 px face only peeks out. */
+:root .nv-page-icon:has(> :is(.pm-avatar, .pc-avatar, .pj-avatar, .ag-avatar)) { width: 48px; height: 48px; background: none; }
+
+/* Empty places: one 44 px mist tile, one line, one primary action (components/EmptyState.tsx). */
+:root .nv-empty .nv-empty-tile {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--pl-line);
+  border-radius: var(--r-3);
+  background: var(--bg-side);
+  color: var(--text-muted);
+  box-shadow: var(--pl-rest);
+}
+:root .nv-empty.is-panel .nv-empty-tile { width: 44px; height: 44px; border-radius: var(--r-3); }
+
+/* Buttons: one primary, one secondary, one quiet, everywhere in the vault. .btn is the same scale under its older
+   spelling (9.5 polished, 1 Nov 2026): every finish below styles both spellings, so the two can never drift apart
+   again. */
+:root :is(.button, .button.small, .button.large) {
+  height: 32px;
+  min-height: 32px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+/* The .btn twin of the one button rule above: same size, radius, type, pinned to match by uplift-95-kit. */
+:root :is(.btn) {
+  height: 32px;
+  min-height: 32px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+:root .button { border-color: var(--pl-line); box-shadow: var(--pl-rest); }
+:root .btn { border-color: var(--pl-line); box-shadow: var(--pl-rest); }
+/* A primary keeps its primary look on hover (9.5 polished: the hover below used to wash every primary, .btn.pri
+   missed, to the pale selection tint with pale words). */
+:root .button:hover:not(:disabled):not(.primary):not(.pri) { border-color: var(--pl-line-hover); background: var(--pl-row-hover); }
+:root .btn:hover:not(:disabled):not(.pri):not(.primary) { border-color: var(--pl-line-hover); background: var(--pl-row-hover); }
+:root .button.pri, :root .button.primary { background: var(--primary); border-color: var(--primary); color: var(--on-primary); box-shadow: var(--pl-rest); }
+:root .btn.primary, :root .btn.pri { background: var(--primary); border-color: var(--primary); color: var(--on-primary); box-shadow: var(--pl-rest); }
+:root :is(.text-button, .button.quiet, .btn.quiet, .au-link-button, .link-button) {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  color: var(--text-strong);
+}
+/* Destructive words stay destructive red, never the accent (10.0 Endless Tech, 2 Nov 2026, the reviewer:
+   Vault still paints coral everywhere: row actions are quiet ink, danger is red). */
+:root :is(.btn.danger-text, .button.danger-text) {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  color: var(--danger);
+}
+:root :is(.button, .btn, .text-button, .icon-button):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Section headers inside cards: 13 px semibold, a muted count, links on the right in ink (10.0 Endless Tech:
+   the accent never colours an action or a link). */
+:root :is(.nv-rail-section h3, .fh-section-head, .au-section-head, .au-section-head h3, .pb-panel-head, .pb-sec-head, .pb-today-head, .hl-card-head h3, .fy-mini-head, .fy-today-head, .lr-list-head, .ag-section-head, .ag-section-head h3, .pc-section-head, .wr-project-head, .wmt-tofile-head, .settings-body h3, .set-results-page h2) {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--text);
+}
+:root :is(.td-section-head, .pc-section-head, .ph-tile-head, .rm-card-head, .nv-rail-section, .fh-section-head, .au-section-head, .pb-panel-head, .pb-sec-head, .hl-card-head, .fy-mini-head, .lr-list-head, .ag-section-head) :is(small, .nv-rail-count, .result-count, .seg-count, .au-count) {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+:root :is(.td-section-head, .pc-section-head, .ph-tile-head, .rm-card-head, .nv-rail-section h3, .fh-section-head, .au-section-head, .pb-panel-head, .pb-sec-head, .hl-card-head, .fy-mini-head, .lr-list-head, .ag-section-head) :is(a, .text-button) {
+  color: var(--text-strong);
+  margin-left: auto;
+}
+
+/* Names on the new surfaces carry the same weight as on the first ones. */
+:root :is(.pc-name, .pm-name, .pb-card-lead, .au-row-title, .wr-item, .fh-name, .result-title, .lr-item-title, .fy-item-what, .set-hit-title) {
+  font-weight: 600;
+  letter-spacing: -0.008em;
+  color: var(--text-strong);
+}
+:root :is(.pc-card-main, .pm-card, .pb-card, .au-panel, .hl-card, .fy-member, .lr-item, .wu-ws-card, .wr-block, .nv-rail-section) :is(small, .pc-sub, .pm-sub, .pb-card-meta, .au-row-brief, .hl-faint, .fy-member-sub, .lr-item-meta, .set-hit-hint) {
+  color: var(--text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.pc-card-main, .pb-card, .au-recipe, .as-tile, .au-project-card, .wu-ws-card, .lr-node, .cf-card):hover { transform: none; }
+}
+
+/* The note's context rail reads as one panel, not cards in a panel (5 Nov 2026): each section is a heading
+   over its rows with a dividing line, never a box. A later rule at the same weight, so it settles the card
+   lists above without touching them. */
+:root .nv-rail-section { background: transparent; border-style: none; border-radius: 0; box-shadow: none; padding: 10px 0 12px; margin-bottom: 0; }
+:root .nv-rail:not(.is-strip):not(.is-shut) > section + section { border-top: 1px solid var(--border); }

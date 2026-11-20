@@ -1,0 +1,23 @@
+/* Settings › Backup and sync (21 Oct 2026, gap G28): what each one protects as a quiet paragraph under its heading, the
+   sign-in choice above its boxes, and a problem said in full (never cut to one line). */
+.backup-protects {
+  max-width: 62ch;
+  line-height: 1.55;
+  margin: 2px 0 10px;
+}
+
+.backup-signin {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.backup-error {
+  white-space: normal;
+  color: var(--text);
+}
+
+.setting-row .capture-status + .capture-status {
+  margin-top: 3px;
+}

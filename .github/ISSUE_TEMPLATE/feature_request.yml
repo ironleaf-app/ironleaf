@@ -1,0 +1,23 @@
+name: Feature request
+description: An idea for Ironleaf
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: "Everything in an issue is public: please use made-up examples, never real notes, names or keys."
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: "The job, not the solution: what gets in your way today."
+    validations: { required: true }
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would help?
+      description: "Your idea, and anything you tried."
+  - type: dropdown
+    id: who
+    attributes:
+      label: Who is it for?
+      options: ["Me, personally", "A team or organisation"]

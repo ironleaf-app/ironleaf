@@ -1,0 +1,843 @@
+/* The PDF reader (views/pdf/PdfView.tsx; 19 Oct 2026, 5.0.0): pages on a calm desk, a slim tool row, page pictures on
+   the left, highlights on the right, and floating bars that match the editor's formatting bar. Pages are paper-white in
+   both themes (a PDF's own colours are part of it); in dark mode "Dim pages" softens them instead of inverting. */
+
+.pdfv {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  outline: none;
+  --pdfv-desk: color-mix(in srgb, var(--bg-side) 70%, var(--bg-active));
+}
+
+:root[data-theme='dark'] .pdfv {
+  --pdfv-desk: color-mix(in srgb, var(--bg-side) 80%, black);
+}
+
+/* The tool row */
+
+.pdfv-bar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 38px;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  flex: none;
+}
+
+.pdfv-bar-gap {
+  flex: 1;
+}
+
+.pdfv-bar .icon-button.is-active,
+.pdfv-hl-toggle.is-active {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.pdfv-pageno {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 6px;
+  color: var(--text-faint);
+  font-size: var(--fs-small);
+  font-variant-numeric: tabular-nums;
+}
+
+.pdfv-pageno-field {
+  height: 24px;
+  min-width: 3ch;
+  padding: 0 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-2);
+  background: var(--bg-raised);
+  color: var(--text);
+  font: inherit;
+  text-align: center;
+}
+
+.pdfv-pageno-field:focus {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+  border-color: var(--accent-line);
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.pdfv-zoom {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  min-width: 78px;
+  justify-content: center;
+  padding: 0 8px;
+  border-radius: var(--r-2);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  font-variant-numeric: tabular-nums;
+}
+
+.pdfv-zoom:hover,
+.pdfv-zoom.menu-open {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.pdfv-hl-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  min-width: 28px;
+  padding: 0 6px;
+  border-radius: var(--r-2);
+  color: var(--text-faint);
+  justify-content: center;
+}
+
+.pdfv-hl-toggle:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.pdfv-hl-count {
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Dim pages is only offered in dark mode. */
+:root:not([data-theme='dark']) .pdfv-dim-btn {
+  display: none;
+}
+
+.pdfv-dim-btn[aria-pressed='true'] {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+/* Find */
+
+.pdfv-find {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 40px;
+  padding: 0 10px 0 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-faint);
+  flex: none;
+  animation: fade-in 0.12s ease-out;
+}
+
+.pdfv-find-field {
+  flex: 1;
+  max-width: 360px;
+  height: 28px;
+  margin-left: 4px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-2);
+  background: var(--bg-raised);
+  color: var(--text);
+  font: inherit;
+}
+
+.pdfv-find-field:focus {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+  border-color: var(--accent-line);
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.pdfv-find-count {
+  min-width: 84px;
+  padding: 0 6px;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  font-variant-numeric: tabular-nums;
+}
+
+.pdfv-up {
+  transform: rotate(-90deg);
+}
+
+/* The pages */
+
+.pdfv-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+.pdfv-scroll {
+  flex: 1;
+  min-width: 0;
+  overflow: auto;
+  /* Its size comes from the tab, never from the pages in it (the zoom follows its width, so the two must not chase). */
+  contain: size;
+  background: var(--pdfv-desk);
+  position: relative;
+}
+
+.pdfv-pages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: max-content;
+  min-width: 100%;
+  box-sizing: border-box;
+}
+
+.pdfv-page {
+  position: relative;
+  flex: none;
+  background: #ffffff;
+  border-radius: var(--r-1);
+  box-shadow: 0 1px 2px rgba(20, 26, 46, 0.08), 0 4px 18px rgba(20, 26, 46, 0.08);
+  overflow: hidden;
+}
+
+:root[data-theme='dark'] .pdfv-page {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 22px rgba(0, 0, 0, 0.35);
+}
+
+.pdfv-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+:root[data-theme='dark'] .pdfv.is-dim .pdfv-canvas,
+:root[data-theme='dark'] .pdfv.is-dim .pdfv-thumb canvas {
+  filter: brightness(0.78) sepia(0.06);
+}
+
+:root[data-theme='dark'] .pdfv.is-dim .pdfv-page {
+  background: #c7c4bd;
+}
+
+.pdfv-page-wait {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #c9c5bb;
+  font: 600 var(--fs-section) var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+.pdfv-loading {
+  height: 100%;
+  min-height: 200px;
+  background: radial-gradient(circle at 50% 40%, var(--bg-hover), transparent 60%);
+  animation: fade-in 0.4s ease-out;
+}
+
+/* With no pages to bed, no desk (13 Nov 2026, the picture: the whole area was a flat pink): the failed
+   page sits on the page's own surface. */
+.pdfv-failed {
+  height: 100%;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
+  color: var(--text-muted);
+  text-align: center;
+  background: var(--bg);
+}
+
+.pdfv-failed p {
+  max-width: 420px;
+  margin: 0;
+}
+
+/* Highlights and find marks sit under the words (so words still select over them) and colour the page through. */
+
+.pdfv-marks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.pdfv-hl {
+  position: absolute;
+  border-radius: var(--r-1);
+  mix-blend-mode: multiply;
+  transition: background-color 0.15s;
+}
+
+/* Each colour is the editor's own (--hl-*). On the page it tints the paper; the swatches, dots and bars around it show
+   it the same way, laid on white, so in dark mode they still match what the page shows. */
+.pdfv-hl-yellow {
+  --pdfv-c: var(--hl-yellow);
+}
+.pdfv-hl-green {
+  --pdfv-c: var(--hl-green);
+}
+.pdfv-hl-blue {
+  --pdfv-c: var(--hl-blue);
+}
+.pdfv-hl-pink {
+  --pdfv-c: var(--hl-pink);
+}
+
+.pdfv-hl {
+  background-color: var(--pdfv-c);
+}
+
+.pdfv-swatch,
+.pdfv-dot,
+.pdfv-panel-bar,
+.pdfv-note-pin {
+  background: linear-gradient(var(--pdfv-c), var(--pdfv-c)), #ffffff;
+}
+
+/* In dark mode the theme's see-through highlight colours, laid on the white page, come out as the same soft paper tints
+   as in light mode, so the tokens serve both. */
+
+.pdfv-hl.is-flash {
+  animation: pdfv-flash 1.6s ease-out;
+}
+
+@keyframes pdfv-flash {
+  0%,
+  40% {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 55%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 3px transparent;
+  }
+}
+
+/* A highlight with a note carries a small dot in the margin beside its first line. */
+.pdfv-note-pin {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin-top: 3px;
+  border-radius: 50%;
+  corner-shape: round;
+  box-shadow: 0 0 0 1.5px rgba(20, 26, 46, 0.35);
+}
+
+.pdfv-find-mark {
+  position: absolute;
+  border-radius: var(--r-1);
+  background: rgba(90, 140, 220, 0.28);
+  mix-blend-mode: multiply;
+}
+
+.pdfv-find-mark.is-current {
+  background: rgba(230, 140, 40, 0.5);
+  box-shadow: 0 0 0 1.5px rgba(200, 110, 20, 0.7);
+}
+
+/* PDF.js's word layer: invisible words laid exactly over the drawing, there to be selected, copied and found. */
+
+.pdfv-text {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  line-height: 1;
+  text-align: initial;
+  text-size-adjust: none;
+  forced-color-adjust: none;
+  transform-origin: 0 0;
+  caret-color: transparent;
+  z-index: 1;
+  /* PDF.js's word layer sizes itself from these (TextLayer, setLayerDimensions); the page sets --scale-factor and
+     --user-unit on this element, so the sums are made here too. */
+  --total-scale-factor: calc(var(--scale-factor, 1) * var(--user-unit, 1));
+  --scale-round-x: 1px;
+  --scale-round-y: 1px;
+  --min-font-size: 1;
+  --text-scale-factor: calc(var(--total-scale-factor) * var(--min-font-size));
+  --min-font-size-inv: calc(1 / var(--min-font-size));
+}
+
+.pdfv-text :is(span, br) {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+}
+
+.pdfv-text > :not(.markedContent),
+.pdfv-text .markedContent span:not(.markedContent) {
+  z-index: 1;
+  --font-height: 0;
+  font-size: calc(var(--text-scale-factor) * var(--font-height));
+  --scale-x: 1;
+  --rotate: 0deg;
+  transform: rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv));
+}
+
+.pdfv-text span.markedContent {
+  top: 0;
+  height: 0;
+}
+
+.pdfv-text span[role='img'] {
+  user-select: none;
+  cursor: default;
+}
+
+.pdfv-text ::selection {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.pdfv-text br::selection {
+  background: transparent;
+}
+
+.pdfv-text .endOfContent {
+  display: block;
+  position: absolute;
+  inset: 100% 0 0;
+  z-index: 0;
+  cursor: default;
+  user-select: none;
+}
+
+.pdfv-text.selecting .endOfContent {
+  top: 0;
+}
+
+/* Page pictures down the left */
+
+.pdfv-rail {
+  width: 152px;
+  flex: none;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0 20px;
+  background: var(--bg-side);
+  border-right: 1px solid var(--border);
+}
+
+.pdfv-thumb {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 4px;
+  border-radius: var(--r-3);
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+}
+
+.pdfv-thumb canvas {
+  display: block;
+  background: #ffffff;
+  border-radius: var(--r-1);
+  box-shadow: 0 0 0 1px var(--border), 0 1px 4px rgba(20, 26, 46, 0.08);
+}
+
+.pdfv-thumb:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.pdfv-thumb.is-current canvas {
+  box-shadow: 0 0 0 2px var(--accent), 0 1px 4px rgba(20, 26, 46, 0.1);
+}
+
+.pdfv-thumb.is-current {
+  color: var(--accent-strong);
+  font-weight: 600;
+}
+
+/* The highlights list on the right */
+
+.pdfv-panel {
+  width: 300px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--bg-side);
+  border-left: 1px solid var(--border);
+}
+
+.pdfv-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 8px 6px 16px;
+}
+
+.pdfv-panel-title {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.pdfv-panel-count {
+  flex: 1;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+}
+
+.pdfv-panel-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 2px 14px 10px;
+}
+
+.pdfv-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: var(--r-1);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+}
+
+.pdfv-chip:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.pdfv-chip.is-on {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+  color: var(--accent-strong);
+}
+
+.pdfv-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  corner-shape: round;
+  box-shadow: inset 0 0 0 1px rgba(20, 26, 46, 0.18);
+}
+
+.pdfv-panel-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 8px 10px;
+}
+
+.pdfv-panel-item {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  padding: 9px 8px;
+  border-radius: var(--r-3);
+  text-align: left;
+  color: var(--text);
+}
+
+.pdfv-panel-item:hover {
+  background: var(--bg-hover);
+}
+
+.pdfv-panel-bar {
+  width: 4px;
+  flex: none;
+  border-radius: var(--r-2);
+}
+
+.pdfv-panel-body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pdfv-panel-quote {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: var(--fs-small);
+  line-height: 1.45; overflow-wrap: break-word;
+}
+
+.pdfv-panel-note {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  line-height: 1.4;
+  white-space: pre-line; overflow-wrap: break-word;
+}
+
+.pdfv-panel-page {
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+}
+
+.pdfv-panel-empty {
+  margin: 8px 8px 0;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+
+.pdfv-panel-foot {
+  padding: 10px 14px 14px;
+  border-top: 1px solid var(--border);
+}
+
+.pdfv-panel-foot .button {
+  width: 100%;
+}
+
+/* Floating bars: over selected words, and a highlight's card (the same look as the editor's formatting bar). */
+
+.pdfv-float {
+  position: fixed;
+  z-index: 50;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  box-shadow: var(--shadow-small);
+  font-family: var(--font-ui);
+  animation: pdfv-float-in 0.14s ease-out;
+}
+
+@keyframes pdfv-float-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+}
+
+.pdfv-selbar {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  padding: 3px;
+}
+
+.pdfv-float-sep {
+  width: 1px;
+  height: 18px;
+  margin: 0 4px;
+  background: var(--border);
+}
+
+.pdfv-float-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 9px;
+  border-radius: var(--r-2);
+  color: var(--text-muted);
+  font: 500 var(--fs-small) var(--font-ui);
+  white-space: nowrap;
+}
+
+.pdfv-float-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.pdfv-swatches {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 3px;
+}
+
+.pdfv-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  corner-shape: round;
+  box-shadow: inset 0 0 0 1px rgba(20, 26, 46, 0.16);
+  transition: transform 0.1s;
+  margin: 0 2px;
+}
+
+.pdfv-swatch:hover {
+  transform: scale(1.12);
+}
+
+.pdfv-swatch.is-on {
+  box-shadow: inset 0 0 0 1px rgba(20, 26, 46, 0.16), 0 0 0 2px var(--bg-raised), 0 0 0 3.5px var(--text-muted);
+}
+
+.pdfv-swatch:focus-visible,
+.pdfv-float-btn:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.pdfv-card {
+  width: 340px;
+  padding: 10px 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pdfv-card-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pdfv-card-page {
+  flex: 1;
+  text-align: right;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+}
+
+.pdfv-card-quote {
+  margin: 0;
+  padding: 0 0 0 10px;
+  border-left: 2px solid var(--border-strong);
+  max-height: 96px;
+  overflow: auto;
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-size: var(--fs-small);
+  line-height: 1.45;
+}
+
+.pdfv-card-note {
+  width: 100%;
+  min-height: 56px;
+  max-height: 220px;
+  field-sizing: content;
+  resize: none;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg);
+  color: var(--text);
+  font: var(--fs-small)/1.45 var(--font-text);
+  box-sizing: border-box;
+}
+
+.pdfv-card-note:focus {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+  border-color: var(--accent-line);
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.pdfv-card-note.is-read {
+  margin: 0;
+  min-height: 0;
+  white-space: pre-line;
+}
+
+.pdfv-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin: 0 -4px -2px;
+}
+
+/* A link's preview of a PDF page (components/HoverPreview.tsx). */
+
+.hover-body img.hover-pdf-page {
+  display: block;
+  width: 100%;
+  background: #ffffff;
+  border-radius: var(--r-1);
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+.hover-pdf-wait {
+  color: var(--text-faint);
+  font-size: var(--fs-small);
+}
+
+/* Clips (31 Oct 2026, 8.9): the box drawn on the page, and a clip's outline (its picture lives in the note). */
+
+.pdfv.is-clip .pdfv-page,
+.pdfv.is-clip .pdfv-text :is(span, br) {
+  cursor: crosshair;
+}
+
+.pdfv.is-clip .pdfv-text {
+  user-select: none;
+}
+
+.pdfv-band {
+  position: absolute;
+  z-index: 2;
+  border: 1.5px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-radius: var(--r-1);
+  pointer-events: none;
+}
+
+/* A clip outlines its box rather than washing it, so the pictured part still shows through. */
+.pdfv-hl.is-clip {
+  background: transparent;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--pdfv-c) 62%, black);
+}
+
+/* A PDF without words says so, with the former host app's make-searchable path when inside it. */
+
+.pdfv-scan {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-side);
+  color: var(--text-muted);
+  flex: none;
+}
+
+.pdfv-scan-words {
+  flex: 1;
+  min-width: 0;
+}
+
+.pdfv-scan-title {
+  margin: 0;
+  color: var(--text);
+  font-weight: 600;
+  font-size: var(--fs-small);
+}
+
+.pdfv-scan-body {
+  margin: 0;
+  font-size: var(--fs-small);
+}
+
+/* A clip's picture in the highlights list and on its card. */
+
+.pdfv-panel-thumb {
+  display: block;
+  width: 100%;
+  max-height: 110px;
+  object-fit: cover;
+  background: #ffffff;
+  border-radius: var(--r-2);
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+.pdfv-card-clip {
+  display: block;
+  width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  background: #ffffff;
+  border-radius: var(--r-3);
+  box-shadow: 0 0 0 1px var(--border);
+}

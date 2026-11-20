@@ -1,0 +1,235 @@
+/* Other AI apps (4.9.5): Settings › Connect an AI (components/ConnectAiSettings.tsx) and What agents did
+   (components/AgentsSettings.tsx), and the change sets waiting (components/ChangesWaiting.tsx). Calm cards on the
+   app's own colours. */
+
+.ag-page {
+  padding-bottom: 6px;
+}
+
+.ag-section {
+  margin-top: 6px;
+}
+
+.ag-section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 22px 0 8px;
+}
+
+.settings-body .ag-section-head h3 {
+  margin: 0;
+}
+
+/* ── An agent's face: its initials on a soft square of its own colour ── */
+.ag-avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-4);
+  background: hsl(var(--hue) 46% 92%);
+  color: hsl(var(--hue) 42% 32%);
+  font: 600 var(--fs-small) var(--font-ui);
+  letter-spacing: 0.02em;
+  box-shadow: inset 0 0 0 1px hsl(var(--hue) 40% 84%);
+}
+
+.ag-avatar.small {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--r-3);
+  font-size: var(--fs-caption);
+}
+
+:root[data-theme='dark'] .ag-avatar {
+  background: hsl(var(--hue) 28% 24%);
+  color: hsl(var(--hue) 55% 82%);
+  box-shadow: inset 0 0 0 1px hsl(var(--hue) 24% 32%);
+}
+
+.ag-dot {
+  color: var(--text-faint);
+  opacity: 0.7;
+}
+
+/* ── What agents did ── */
+.ag-activity {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ag-act {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 2px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ag-act:last-child {
+  border-bottom: 0;
+}
+
+.ag-act-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.ag-act-words {
+  font-size: var(--fs-small);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.ag-act.is-undone .ag-act-words {
+  color: var(--text-faint);
+  text-decoration: line-through;
+  text-decoration-color: var(--border-strong);
+}
+
+.ag-act-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin-top: 1px;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+}
+
+.ag-act-link {
+  color: var(--text-muted);
+  font: inherit;
+  padding: 0;
+}
+
+.ag-act-link:hover {
+  color: var(--accent-text);
+  text-decoration: underline;
+}
+
+.ag-undo {
+  flex: none;
+  height: 28px;
+  padding: 0 10px;
+  font-size: var(--fs-small);
+}
+
+.ag-act-state {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: var(--r-1);
+  background: var(--bg-hover);
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  font-weight: 500;
+}
+
+.ag-act-state.refused {
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 9%, transparent);
+}
+
+.ag-act-state.started {
+  color: var(--accent-text);
+  background: var(--accent-soft);
+}
+
+.ag-more {
+  margin-top: 6px;
+  font-size: var(--fs-small);
+}
+
+.ag-quiet {
+  margin: 2px 0 0;
+  color: var(--text-faint);
+  font-size: var(--fs-small);
+}
+
+/* The lead line under Connect an AI's heading. */
+.ag-lead {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+
+/* ── Changes waiting for the person ── */
+.ag-requests {
+  display: grid;
+  gap: 10px;
+}
+
+.ag-requests-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+
+.ag-requests-head svg {
+  color: var(--accent-text);
+}
+
+.ag-requests-head span {
+  flex: 1;
+}
+
+/* On Today: under the greeting, the width of the page. */
+.td-view .ag-requests {
+  margin: 4px 0 18px;
+}
+
+.ag-copy {
+  flex: none;
+  min-width: 84px;
+}
+
+.ag-setup {
+  display: grid;
+  gap: 12px;
+}
+
+.ag-setup-body {
+  display: grid;
+  gap: 8px;
+}
+
+.ag-port {
+  width: 7em;
+}
+
+.ag-step {
+  margin: 0;
+  font-size: var(--fs-small);
+  color: var(--text);
+}
+
+.ag-code {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 10px 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: var(--bg-code);
+}
+
+.ag-code pre {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font: var(--fs-caption)/1.55 var(--font-mono);
+  color: var(--text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 180px;
+  overflow-y: auto;
+}

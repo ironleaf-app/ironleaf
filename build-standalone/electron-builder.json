@@ -1,0 +1,98 @@
+{
+  "appId": "com.kaitiaki.neuralvault",
+  "productName": "Ironleaf",
+  "copyright": "Copyright 2026 Kaitiaki IT Pty Ltd",
+  "npmRebuild": false,
+  "nodeGypRebuild": false,
+  "buildDependenciesFromSource": false,
+  "asar": true,
+  "asarUnpack": [
+    "resources/models/**",
+    "extensions/**",
+    "extra-loopback/**",
+    "node_modules/onnxruntime-web/**",
+    "node_modules/onnxruntime-common/**",
+    "**/*.node"
+  ],
+  "electronLanguages": [
+    "en-US",
+    "en-GB"
+  ],
+  "files": [
+    "package.json",
+    "out/**",
+    "resources/**",
+    "extensions/**",
+    "extra-loopback/**",
+    "node_modules/**",
+    "!**/*.map",
+    "!node_modules/**/{test,tests,__tests__,benchmark,benchmarks,.github}/**",
+    "!**/*.{ts,tsx,mts,cts,flow}",
+    "!**/{README,readme,CHANGELOG,changelog,HISTORY,AUTHORS,CONTRIBUTING}{,.*}",
+    "!**/*.{md,markdown,png~,orig,log}",
+    "!**/{.eslintrc*,.prettierrc*,.editorconfig,.npmignore,.travis.yml,tsconfig*.json}",
+    "resources/models/**/*.md"
+  ],
+  "protocols": [
+    {
+      "name": "Ironleaf link",
+      "schemes": [
+        "ironleaf",
+        "neuralvault"
+      ]
+    }
+  ],
+  "electronFuses": {
+    "runAsNode": false,
+    "enableNodeOptionsEnvironmentVariable": false,
+    "enableNodeCliInspectArguments": false
+  },
+  "toolsets": {
+    "appimage": "1.0.3"
+  },
+  "linux": {
+    "target": [
+      {
+        "target": "AppImage",
+        "arch": [
+          "x64"
+        ]
+      }
+    ],
+    "category": "Office",
+    "icon": "../resources/icon.png",
+    "executableName": "ironleaf",
+    "synopsis": "Plain Markdown notes with links, a graph and canvases",
+    "artifactName": "Ironleaf-${version}.AppImage"
+  },
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": [
+          "x64"
+        ]
+      }
+    ],
+    "signAndEditExecutable": false,
+    "icon": "build/icon.ico"
+  },
+  "nsis": {
+    "artifactName": "Ironleaf-Setup-${version}.exe",
+    "installerIcon": "build/icon.ico",
+    "uninstallerIcon": "build/icon.ico",
+    "installerSidebar": "build/installerSidebar.bmp",
+    "uninstallerSidebar": "build/uninstallerSidebar.bmp",
+    "shortcutName": "Ironleaf",
+    "uninstallDisplayName": "Ironleaf",
+    "guid": "64ba8a54-550e-4c87-9030-91574132cfd2",
+    "oneClick": false,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": true,
+    "deleteAppDataOnUninstall": false,
+    "differentialPackage": "store-asar",
+    "include": "build/update-progress.nsh"
+  },
+  "publish": null,
+  "compression": "normal"
+}

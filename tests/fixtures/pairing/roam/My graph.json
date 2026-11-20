@@ -1,0 +1,15 @@
+[
+ {"title":"Reading list","create-time":1697000000000,"children":[
+   {"string":"Type:: Book list","uid":"attr01xyz"},
+   {"string":"{{[[TODO]]}} Finish [[The Kind Garden]]","uid":"todo01abc"},
+   {"string":"Quotes","uid":"quotes0_1","heading":2,"children":[{"string":"Water deeply, not often.","uid":"q1_water"}]},
+   {"string":"__Italic__ and ^^bright^^ words","uid":"fmt01abcd"}
+ ]},
+ {"title":"The Kind Garden","children":[
+   {"string":"By Mere Tane. Best line: ((q1_water))","uid":"kg01abcde"},
+   {"string":"{{embed: ((q1_water))}}","uid":"kg02abcde"}
+ ]},
+ {"title":"October 27th, 2026","children":[
+   {"string":"{{[[DONE]]}} Library run, see [[Reading list]] #reading","uid":"day01abcd"}
+ ]}
+]

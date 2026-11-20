@@ -1,0 +1,105 @@
+/* From outside the vault (21 Oct 2026, gap G26): a Markdown file opened where it is (views/LooseView.tsx), and Settings ›
+   Files and links › Links from other apps and the command line (components/ExternalSettings.tsx). */
+
+.nv-loose {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+.nv-loose-band {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-side);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+}
+.nv-loose-where {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  line-height: 1.35;
+}
+.nv-loose-note {
+  color: var(--text);
+  font-weight: 550;
+}
+.nv-loose-folder {
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  color: var(--text-faint);
+}
+.nv-loose-saved {
+  flex: none;
+  color: var(--text-faint);
+}
+.nv-loose-saved.is-failed {
+  color: var(--danger);
+}
+.nv-loose-editor {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+.nv-loose-editor .cm-editor {
+  min-height: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 28px 24px 120px;
+}
+.nv-loose-problem {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 32px auto;
+  max-width: 560px;
+  padding: 12px 14px;
+  border-radius: var(--r-4);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--danger);
+  font-size: var(--fs-small);
+}
+.nv-loose-problem .button {
+  white-space: nowrap;
+}
+
+.external-allow {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+.external-allow-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+.external-allow-row > span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.external-allow-label {
+  color: var(--text);
+  font-size: var(--fs-small);
+}
+.external-allow-code,
+.external-cli {
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  overflow-wrap: anywhere;
+}
+.external-cli {
+  max-width: 320px;
+  user-select: all;
+}

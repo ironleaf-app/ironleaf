@@ -1,0 +1,97 @@
+/* The weekly tidy (2 Nov 2026, 10.0 plan item 21; views/WeeklyTidyView.tsx): this week's proposal as one
+   review list. One row per waiting line: the kind, the title, what its fix does, and its fix button with Skip.
+   Theme tokens only, square-ish radii, no pills. */
+
+.tidy-list {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tidy-line {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  padding: 14px 16px;
+}
+
+.tidy-line-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.tidy-kind {
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.tidy-title {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.tidy-detail {
+  font-size: var(--fs-small);
+  line-height: 19px;
+  color: var(--text-muted);
+}
+
+.tidy-link {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: var(--fs-small);
+  color: var(--text-strong);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 2px;
+}
+
+.tidy-link:disabled {
+  color: var(--text-faint);
+  cursor: default;
+  text-decoration: none;
+}
+
+.tidy-failed {
+  font-size: var(--fs-small);
+  color: var(--danger);
+}
+
+.tidy-line-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.tidy-decided {
+  margin-top: 32px;
+}
+
+.tidy-decided-title {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text-muted);
+  margin: 0 0 4px;
+}
+
+.tidy-list.is-decided .tidy-line {
+  background: var(--bg-side);
+}
+
+.tidy-list.is-decided .tidy-title {
+  font-weight: 500;
+}

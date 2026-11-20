@@ -1,0 +1,1804 @@
+/* A project's page: values edited in place, rows added and taken off, and the folder's files (find, kinds, sort, list
+   or grid, a preview beside them). The page's cards and pills are in styles.css (.pj-…); these come after and add to
+   them. Light first; dark follows the same variables. */
+
+.pj-page:focus {
+  outline: none;
+}
+
+/* ── Editing in place ─────────────────────────────────────────────────────────────────────────────────────────────── */
+
+/* A value that can be changed: nothing shows until the pointer is over it, then a soft wash around it (no shift). */
+.pj-ed {
+  border-radius: var(--r-2);
+  cursor: text;
+  transition:
+    background-color 0.12s ease,
+    box-shadow 0.12s ease,
+    opacity 0.12s ease;
+  outline: none;
+}
+
+.pj-ed:hover {
+  background: color-mix(in srgb, var(--text) 5%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--text) 5%, transparent);
+}
+
+.pj-ed:focus-visible {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.pj-ed.block {
+  display: block;
+  border-radius: var(--r-3);
+}
+
+.pj-ed.block:hover {
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--text) 4%, transparent);
+  background: color-mix(in srgb, var(--text) 4%, transparent);
+}
+
+/* Links inside a value still open with a click (the value is edited by clicking its words). */
+.pj-ed a {
+  cursor: pointer;
+}
+
+.pj-ed-empty {
+  color: var(--text-faint);
+  font-weight: 400;
+}
+
+.pj-ed-empty.pj-chip {
+  border-style: dashed;
+  background: transparent;
+}
+
+/* The optional parts of a line ("+ Who", "+ Why") show only when the pointer is over the line, or it has the keys. */
+.pj-ed-empty.quiet {
+  opacity: 0;
+}
+
+/* An empty, quiet "+ Who" comes after the parts that are filled, so it never leaves a hole before "by Fri 23 Oct". */
+.pj-next-meta > .pj-ed-empty.quiet,
+.mt-meta > .pj-ed-empty.quiet {
+  order: 1;
+}
+
+.pj-row:hover .pj-ed-empty.quiet,
+.pj-row:focus-within .pj-ed-empty.quiet,
+.pj-head:hover .pj-ed-empty.quiet,
+.pj-ed-empty.quiet:focus-visible {
+  opacity: 1;
+}
+
+.pj-ed-wrap {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  min-width: 0;
+  vertical-align: top;
+}
+
+.pj-ed-wrap.block,
+.pj-ed-wrap.wide {
+  display: block;
+  width: 100%;
+}
+
+/* A field of words, in the same type as the value it replaces, where it was: its words wrap inside it and it grows with
+   them, never wider than the box it sits in (no one-line field running off the card). One look everywhere. */
+.pj-ed-wrap > textarea.pj-ed-input {
+  display: block;
+  box-sizing: border-box;
+  width: calc(100% + 10px);
+  max-width: calc(100% + 10px);
+  min-width: 4ch;
+  height: auto;
+  min-height: 0;
+  margin: -1px -5px;
+  padding: 1px 5px;
+  /* The size comes from the value's own class (a chip's, the title's) or the words around it (inputs inherit it). */
+  font-family: inherit;
+  font-weight: inherit;
+  font-style: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  text-transform: inherit;
+  text-align: left;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  border: 0;
+  border-radius: var(--r-2);
+  background: var(--bg-raised);
+  box-shadow:
+    0 0 0 1px var(--accent),
+    0 0 0 4px var(--accent-soft);
+  field-sizing: content;
+  resize: none;
+  overflow: hidden;
+  outline: none;
+}
+
+.pj-ed-wrap > textarea.pj-ed-input:focus {
+  border: 0;
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* A small value (a chip, the owner, a tag): as wide as its words, up to its column. */
+.pj-ed-wrap.compact > textarea.pj-ed-input {
+  display: inline-block;
+  width: auto;
+  max-width: 100%;
+  margin: 0;
+  vertical-align: top;
+}
+
+.pj-ed-wrap.compact > textarea.pj-chip {
+  height: auto;
+  min-height: 20px;
+  padding: 1px 7px;
+  line-height: 16px;
+}
+
+/* Words of several lines (the summary, notes): a roomier box. */
+.pj-ed-wrap.block > textarea.pj-ed-input {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: var(--r-3);
+  min-height: 4.5lh;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* The calendar field of a date. */
+input.pj-ed-input {
+  font: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0 3px;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  border: 0;
+  border-radius: var(--r-2);
+  background: var(--bg-raised);
+  box-shadow:
+    0 0 0 1px var(--accent),
+    0 0 0 4px var(--accent-soft);
+  vertical-align: baseline;
+}
+
+input.pj-ed-input:focus {
+  border: 0;
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.pj-ed-hint {
+  display: block;
+  margin-top: 7px;
+  font: var(--fs-caption)/1.3 var(--font-ui);
+  color: var(--text-faint);
+}
+
+.pj-title {
+  display: inline-block;
+  max-width: 100%;
+}
+
+.pj-ed-wrap > textarea.pj-title {
+  min-width: 8ch;
+}
+
+/* The summary reads as it did, and is edited in a box of the same type. */
+.pj-summary .markdown {
+  font: var(--fs-body)/1.6 var(--font-text);
+}
+
+.pj-summary.pj-ed-empty {
+  font: var(--fs-body)/1.6 var(--font-text);
+  padding: 2px 0;
+}
+
+.pj-ed-wrap.block:has(> textarea.pj-summary) {
+  margin: 4px 0 22px;
+  max-width: 76ch;
+}
+
+.pj-ed-wrap > textarea.pj-summary {
+  font: var(--fs-body)/1.6 var(--font-text);
+}
+
+.pj-notes .markdown {
+  font-size: var(--fs-body);
+}
+
+.pj-ed-wrap > textarea.pj-notes {
+  font: var(--fs-body)/1.6 var(--font-text);
+}
+
+.pj-notes.pj-ed-empty {
+  font-size: var(--fs-small);
+  padding: 2px 0;
+}
+
+/* The words of a row (a step, an update, a decision, a key date, a risk, a person) take their column and no more: a long
+   file name or a field being edited wraps inside it instead of widening the row past its card. */
+.pj-next-words,
+.pj-update-words,
+.pj-decision-words,
+.pj-tl-what,
+.pj-risk-words,
+.pj-person {
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+
+.pj-from,
+.pj-why,
+.pj-tl-what,
+.pj-update-words,
+.pj-next-words,
+.pj-risk-words,
+.pj-decision-words {
+  overflow-wrap: anywhere;
+}
+
+/* Dates: the calendar field, and a way to leave no date. */
+.pj-date-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+input.pj-date-input {
+  font-size: var(--fs-small);
+  padding: 1px 4px;
+  color-scheme: light dark;
+}
+
+.pj-date-clear {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  corner-shape: round;
+  color: var(--text-faint);
+}
+
+.pj-date-clear:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+/* Suggestions under a field: people across every project, tags. */
+.pj-suggest {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: -4px;
+  z-index: 30;
+  display: grid;
+  min-width: 230px;
+  max-width: 340px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow);
+  font: var(--fs-small)/1.3 var(--font-ui);
+  color: var(--text);
+  animation: pj-drop 0.12s ease-out;
+}
+
+.pj-suggest-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 7px 9px;
+  border-radius: var(--r-2);
+  white-space: nowrap;
+  cursor: default;
+}
+
+.pj-suggest-item.is-picked {
+  background: var(--sel);
+}
+
+.pj-suggest-hint {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+@keyframes pj-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+}
+
+/* ── Rows: the actions at their end, dragging steps into order, adding ─────────────────────────────────────────────── */
+
+.pj-row {
+  position: relative;
+}
+
+.pj-row-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  margin-left: auto;
+  align-self: flex-start;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.pj-row:hover > .pj-row-actions,
+.pj-row:focus-within > .pj-row-actions {
+  opacity: 1;
+}
+
+.pj-row-action {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--r-2);
+  color: var(--text-faint);
+}
+
+.pj-row-action:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.pj-row-action.danger:hover {
+  color: var(--danger);
+}
+
+.pj-next li {
+  align-items: flex-start;
+}
+
+.pj-next .pj-next-words {
+  flex: 1;
+}
+
+.pj-next-meta:empty {
+  display: none;
+}
+
+.pj-grip {
+  position: absolute;
+  left: -15px;
+  top: 9px;
+  display: grid;
+  place-items: center;
+  width: 13px;
+  height: 18px;
+  color: var(--text-faint);
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.pj-row:hover > .pj-grip {
+  opacity: 1;
+}
+
+.pj-row.is-dragging {
+  opacity: 0.45;
+}
+
+.pj-row.drop-before {
+  box-shadow: inset 0 2px 0 var(--accent);
+}
+
+.pj-row.drop-after {
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+/* The lists get a column at the end for their row actions. */
+.pj-updates li,
+.pj-decisions li {
+  grid-template-columns: 92px minmax(0, 1fr) auto;
+  align-items: start;
+}
+
+.pj-update-date.pj-ed,
+.pj-update-date.pj-ed-empty {
+  justify-self: start;
+}
+
+.pj-decision-words {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.pj-decision-what strong {
+  font-weight: 560;
+  color: var(--text);
+}
+
+.pj-why.pj-ed-empty {
+  font-size: var(--fs-caption);
+}
+
+.pj-timeline li {
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+}
+
+.pj-tl-when.pj-ed {
+  justify-self: start;
+}
+
+.pj-tl-status {
+  justify-self: start;
+  text-align: left;
+}
+
+.pj-page .pj-tl-status {
+  text-transform: none;
+}
+
+button.pj-tl-status {
+  font-size: var(--fs-caption);
+  color: var(--tone, var(--text-faint));
+  padding: 0;
+}
+
+button.pj-tl-status.pj-ed-empty {
+  text-transform: none;
+  color: var(--text-faint);
+}
+
+.pj-risks li {
+  align-items: flex-start;
+}
+
+.pj-risk-words {
+  display: grid;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+button.pj-level {
+  cursor: pointer;
+}
+
+button.pj-level:hover {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 30%, transparent);
+}
+
+.pj-risks li.is-closed .pj-risk-words > .pj-ed,
+.pj-risks li.is-closed .pj-risk-words > span:first-child {
+  color: var(--text-faint);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--text-faint) 60%, transparent);
+}
+
+.pj-risks li.is-closed .pj-level {
+  opacity: 0.55;
+}
+
+.pj-people li {
+  align-items: center;
+}
+
+.pj-person {
+  flex: 1;
+}
+
+.pj-person-name strong {
+  font-weight: 600;
+}
+
+.pj-person .pj-person-role,
+.pj-person span.pj-person-role {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  justify-self: start;
+}
+
+.pj-person .pj-ed {
+  justify-self: start;
+}
+
+.pj-person .pj-ed-empty.pj-person-role {
+  font-size: var(--fs-caption);
+}
+
+/* "Add a key date…": quiet until wanted. */
+.pj-addrow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  margin-top: 4px;
+  padding: 7px 4px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+  text-align: left;
+  transition:
+    color 0.12s ease,
+    background-color 0.12s ease;
+}
+
+.pj-addrow:hover,
+.pj-addrow:focus-visible {
+  color: var(--text-muted);
+  background: var(--bg-hover);
+}
+
+.pj-addrow svg {
+  opacity: 0.8;
+}
+
+.pj-addform {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 4px 6px;
+  margin-top: 6px;
+  padding: 4px 4px 4px 6px;
+  border: 1px solid var(--accent);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  animation: pj-drop 0.12s ease-out;
+}
+
+.pj-addfield {
+  position: relative;
+  display: inline-flex;
+  flex: 0 1 140px;
+  min-width: 0;
+}
+
+.pj-addfield.grow {
+  flex: 1 1 180px;
+}
+
+.pj-addinput {
+  width: 100%;
+  min-height: 30px;
+  padding: 5px 6px;
+  border: 0;
+  border-radius: var(--r-2);
+  background: transparent;
+  font-size: var(--fs-small);
+  line-height: 20px;
+  box-shadow: none;
+}
+
+textarea.pj-addinput {
+  display: block;
+  height: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  field-sizing: content;
+  resize: none;
+  overflow: hidden;
+}
+
+.pj-addinput:focus {
+  border: 0;
+  box-shadow: none;
+  background: var(--bg-hover);
+}
+
+input.pj-addinput[type='date'] {
+  height: 30px;
+  padding: 0 6px;
+  color-scheme: light dark;
+  flex: none;
+  width: auto;
+}
+
+.pj-addfield:has(input[type='date']) {
+  flex: 0 0 auto;
+}
+
+.pj-add-go {
+  margin-top: 1px;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--on-primary);
+  background: var(--primary);
+}
+
+.pj-add-go:disabled {
+  opacity: 0.35;
+}
+
+.pj-levels {
+  display: inline-flex;
+  gap: 3px;
+  margin-top: 3px;
+}
+
+.pj-levels .pj-level {
+  min-width: 56px;
+  height: 24px;
+  opacity: 0.55;
+  border: 1px solid transparent;
+}
+
+.pj-levels .pj-level.is-on {
+  opacity: 1;
+  border-color: color-mix(in srgb, currentColor 35%, transparent);
+}
+
+.pj-show-all {
+  margin-top: 4px;
+  padding: 4px 8px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-small);
+  color: var(--accent-text);
+}
+
+.pj-show-all:hover {
+  background: var(--bg-hover);
+}
+
+/* ── The head: progress set by dragging, the due date, the owner, tags ────────────────────────────────────────────── */
+
+.pj-progress-edit {
+  position: relative;
+  padding: 6px 4px;
+  margin: -6px -4px;
+  border-radius: var(--r-2);
+  cursor: pointer;
+  touch-action: none;
+  outline: none;
+}
+
+.pj-progress-edit .pj-progress-track {
+  overflow: visible;
+  transition: height 0.12s ease;
+}
+
+.pj-progress-edit:hover .pj-progress-track,
+.pj-progress-edit.is-live .pj-progress-track,
+.pj-progress-edit:focus-visible .pj-progress-track {
+  height: 8px;
+}
+
+.pj-progress-knob {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--bg-raised);
+  border: 2px solid var(--tone, var(--accent));
+  box-shadow: var(--shadow-small);
+  transform: translate(-50%, -50%) scale(0.6);
+  opacity: 0;
+  transition:
+    opacity 0.12s ease,
+    transform 0.12s ease;
+  pointer-events: none;
+}
+
+.pj-progress-edit:hover .pj-progress-knob,
+.pj-progress-edit.is-live .pj-progress-knob,
+.pj-progress-edit:focus-visible .pj-progress-knob {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.pj-progress-edit:focus-visible {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.pj-progress-edit.is-live .pj-progress-words {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.pj-due.pj-ed,
+.pj-started {
+  font-size: var(--fs-small);
+}
+
+.pj-due.pj-ed-empty {
+  color: var(--text-faint);
+  font-weight: 400;
+}
+
+.pj-owner .pj-ed-empty {
+  font-size: var(--fs-small);
+}
+
+.pj-head-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.pj-head-tags:not(:has(.pj-tag, .pj-ed-wrap)) {
+  margin-top: 6px;
+}
+
+/* Tags on the header's meta line are quiet text there, not a row of pills under it (polish item 2). */
+.pj-head-tags.pj-tags-quiet {
+  margin-top: 0;
+}
+
+.pj-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: var(--r-1);
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--bg-hover);
+  border: 1px solid var(--border);
+}
+
+.pj-tag-x {
+  display: inline-grid;
+  place-items: center;
+  width: 0;
+  height: 14px;
+  margin-right: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  corner-shape: round;
+  opacity: 0;
+  color: inherit;
+  transition:
+    width 0.12s ease,
+    margin 0.12s ease,
+    opacity 0.12s ease;
+}
+
+.pj-tag:hover .pj-tag-x,
+.pj-tag-x:focus-visible {
+  width: 14px;
+  margin-right: -4px;
+  opacity: 0.7;
+}
+
+.pj-tag-x:hover {
+  opacity: 1;
+  background: var(--sel);
+}
+
+.pj-tag-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: var(--r-1);
+  border: 1px dashed var(--border-strong);
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.pj-head:hover .pj-tag-add,
+.pj-tag-add:focus-visible {
+  opacity: 1;
+}
+
+.pj-tag-add:hover {
+  color: var(--text-muted);
+  border-color: var(--text-faint);
+}
+
+.pj-ed-wrap > textarea.pj-tag-new {
+  min-height: 22px;
+  padding: 2px 9px;
+  font-size: var(--fs-caption);
+  line-height: 18px;
+  border-radius: var(--r-1);
+  min-width: 10ch;
+}
+
+button.pj-folder {
+  cursor: pointer;
+}
+
+button.pj-folder:hover {
+  color: var(--text-strong);
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+}
+
+/* ── Files ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.pj-files-card {
+  container-type: inline-size;
+}
+
+.pf-files {
+  display: grid;
+  gap: 0;
+}
+
+.pf-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.pf-find {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 1 280px;
+  min-width: 160px;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg);
+  color: var(--text-faint);
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.pf-find:focus-within {
+  border-color: var(--accent);
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.pf-find input {
+  flex: 1;
+  min-width: 0;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: var(--fs-small);
+  box-shadow: none;
+}
+
+.pf-find input:focus {
+  border: 0;
+  box-shadow: none;
+}
+
+.pf-kinds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  /* The kinds have a line of their own under the find box. */
+  order: 5;
+  flex-basis: 100%;
+  margin-left: -4px;
+}
+
+.pf-kind-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: var(--r-1);
+  border: 1px solid transparent;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  transition: background-color 0.12s ease;
+}
+
+.pf-kind-chip span {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.pf-kind-chip:hover {
+  background: var(--bg-hover);
+}
+
+.pf-kind-chip.is-on {
+  color: var(--text);
+  font-weight: 600;
+  background: var(--bg);
+  border-color: var(--border);
+  box-shadow: var(--shadow-small);
+}
+
+.pf-kind-chip.is-on span {
+  color: var(--text-muted);
+}
+
+.pf-bar-end {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.pf-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 9px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.pf-sort:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.pf-views {
+  display: inline-flex;
+  padding: 2px;
+  gap: 2px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg);
+}
+
+.pf-views button {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 24px;
+  border-radius: var(--r-2);
+  color: var(--text-faint);
+}
+
+.pf-views button:hover {
+  color: var(--text);
+}
+
+.pf-views button.is-on {
+  color: var(--text);
+  background: var(--bg-active);
+}
+
+.pf-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.pf-body.with-preview {
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.8fr);
+}
+
+.pf-list {
+  display: grid;
+  min-width: 0;
+}
+
+/* The pinned documents: once, at the top. */
+.pf-pinned {
+  margin-bottom: 10px;
+}
+
+.pf-sub {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px 6px;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.pf-sub span {
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+/* A folder: one whole row that opens and shuts. */
+.pf-group {
+  border-top: 1px solid color-mix(in srgb, var(--border) 75%, transparent);
+}
+
+.pf-pinned + .pf-group {
+  border-top-color: var(--border);
+}
+
+.pf-group-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 42px;
+  padding: 0 10px 0 6px;
+  border-radius: var(--r-3);
+  font-size: var(--fs-small);
+  color: var(--text);
+  text-align: left;
+  transition: background-color 0.12s ease;
+  outline: none;
+}
+
+.pf-group-row:hover {
+  background: var(--bg-hover);
+}
+
+.pf-group-row:focus-visible {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.pf-chevron {
+  color: var(--text-faint);
+  transition: transform 0.2s ease;
+  flex: none;
+}
+
+.pf-group.is-open .pf-chevron {
+  transform: rotate(90deg);
+}
+
+.pf-folder-icon {
+  color: var(--text-muted);
+  flex: none;
+}
+
+.pf-group-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.pf-group-words {
+  flex: none;
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+.pf-group-words::before {
+  content: '·';
+  margin: 0 7px 0 1px;
+}
+
+.pf-group-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.22s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.pf-group.is-open .pf-group-body {
+  grid-template-rows: 1fr;
+}
+
+.pf-group-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.pf-group-inner > .pf-rows {
+  padding: 0 0 10px 26px;
+}
+
+/* Tiles line up with the pinned ones above, at the same size, whichever folder they are in. */
+.pf-group-inner > .pf-grid {
+  padding: 0 0 10px;
+}
+
+.pf-show-all {
+  margin: -4px 0 10px 30px;
+}
+
+.pf-rows {
+  display: grid;
+  gap: 1px;
+}
+
+.pf-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 88px 64px 26px;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 5px 6px 5px 8px;
+  border-radius: var(--r-3);
+  cursor: default;
+  outline: none;
+  transition: background-color 0.1s ease;
+}
+
+.pf-row:hover {
+  background: var(--bg-hover);
+}
+
+.pf-row:focus-visible {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.pf-row.is-selected {
+  background: var(--sel);
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+}
+
+.pf-row .pj-kind {
+  height: 26px;
+}
+
+.pf-row-words {
+  display: grid;
+  min-width: 0;
+}
+
+.pf-row-name {
+  font-size: var(--fs-small);
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.pf-row-what {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.pf-row-when,
+.pf-row-size {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.pf-row.is-missing .pf-row-name {
+  color: var(--text-muted);
+}
+
+.pf-row.is-missing .pj-kind {
+  opacity: 0.45;
+}
+
+.pf-pin {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--r-2);
+  color: var(--text-faint);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.pf-row:hover .pf-pin,
+.pf-tile:hover .pf-pin,
+.pf-row.is-selected .pf-pin,
+.pf-pin.is-on {
+  opacity: 1;
+}
+
+.pf-pin:hover {
+  background: var(--bg-active);
+  color: var(--text);
+}
+
+.pf-pin.is-on {
+  color: var(--text-strong);
+}
+
+/* The grid: pictures show themselves; other files their first page, or a designed sheet of their kind. */
+.pf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.pf-pinned > .pf-grid {
+  padding-bottom: 6px;
+}
+
+.pf-tile {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 3px;
+  padding: 7px 7px 9px;
+  border-radius: var(--r-3);
+  border: 1px solid transparent;
+  cursor: default;
+  outline: none;
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.pf-tile:hover {
+  background: var(--bg-hover);
+}
+
+.pf-tile:focus-visible {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.pf-tile.is-selected {
+  background: var(--sel);
+  border-color: var(--border-strong);
+}
+
+.pf-thumb {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  margin-bottom: 5px;
+  overflow: hidden;
+  border-radius: var(--r-3);
+  background: var(--bg-side);
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+}
+
+.pf-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pf-thumb img.pf-page-thumb {
+  object-fit: contain;
+  background: var(--paper);
+}
+
+.pf-tile-name {
+  font-size: var(--fs-small);
+  line-height: 1.3;
+  color: var(--text);
+  overflow: hidden;
+  overflow-wrap: break-word;
+}
+
+.pf-tile-meta {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.pf-tile .pf-pin {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-small);
+}
+
+/* A sheet of paper for a kind of file: its marks (lines, cells, a slide), its type on a coloured band. */
+.pf-art {
+  display: grid;
+  height: 74%;
+  aspect-ratio: 0.77;
+}
+
+.pf-paper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--r-1) var(--r-4) var(--r-1) var(--r-1);
+  background: var(--bg-raised);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 4px 12px -6px rgba(0, 0, 0, 0.18),
+    0 0 0 1px color-mix(in srgb, var(--kind, var(--text-faint)) 16%, var(--border));
+}
+
+.pf-paper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 13px;
+  height: 13px;
+  border-bottom-left-radius: var(--r-1);
+  background: linear-gradient(225deg, var(--bg-side) 50%, color-mix(in srgb, var(--kind, var(--text-faint)) 18%, var(--bg-raised)) 50%);
+}
+
+.pf-marks {
+  flex: 1;
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: 18% 14% 0;
+}
+
+.pf-marks i {
+  display: block;
+  height: 3px;
+  border-radius: var(--r-1);
+  background: color-mix(in srgb, var(--kind, var(--text-faint)) 22%, var(--border));
+}
+
+.pf-marks i:nth-child(1) {
+  width: 62%;
+  height: 4px;
+  background: color-mix(in srgb, var(--kind, var(--text-faint)) 45%, var(--border));
+}
+
+.pf-marks i:nth-child(3n) {
+  width: 78%;
+}
+
+.pf-marks i:nth-child(4) {
+  width: 90%;
+}
+
+.pf-marks-sheet {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  padding-top: 14%;
+}
+
+.pf-marks-sheet i,
+.pf-marks-sheet i:nth-child(n) {
+  width: auto;
+  height: 7px;
+  border-radius: var(--r-1);
+  background: color-mix(in srgb, var(--kind) 14%, var(--bg-side));
+}
+
+.pf-marks-sheet i:nth-child(-n + 3) {
+  background: color-mix(in srgb, var(--kind) 34%, var(--bg-side));
+}
+
+.pf-marks-slides,
+.pf-marks-image {
+  padding: 16% 12% 0;
+}
+
+.pf-marks-slides i,
+.pf-marks-image i,
+.pf-marks-slides i:nth-child(n),
+.pf-marks-image i:nth-child(n) {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--r-1);
+  background: color-mix(in srgb, var(--kind) 16%, var(--bg-side));
+  box-shadow: inset 0 -6px 0 color-mix(in srgb, var(--kind) 26%, var(--bg-side));
+}
+
+.pf-band {
+  display: grid;
+  place-items: center;
+  height: 22%;
+  min-height: 16px;
+  font: 700 var(--fs-caption)/1 var(--font-ui);
+  color: var(--paper);
+  background: var(--kind, var(--text-faint));
+}
+
+/* The preview beside the list. */
+.pf-preview {
+  position: sticky;
+  top: 12px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-height: calc(100vh - 140px);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg);
+  box-shadow: var(--shadow-small);
+  animation: pf-in 0.16s ease-out;
+}
+
+@keyframes pf-in {
+  from {
+    opacity: 0;
+    transform: translateX(6px);
+  }
+}
+
+.pf-preview-head,
+.pf-overlay-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px 10px 12px;
+}
+
+.pf-preview-head .pj-kind,
+.pf-overlay-head .pj-kind {
+  width: 34px;
+  flex: none;
+}
+
+.pf-preview-title {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.pf-preview-name {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.pf-preview-meta {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.pf-preview-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  border-block: 1px solid var(--border);
+  background: var(--bg-side);
+}
+
+.pf-view {
+  display: block;
+  width: 100%;
+  border: 0;
+}
+
+.pf-view-image {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  padding: 14px;
+}
+
+.pf-view-image img {
+  max-width: 100%;
+  max-height: 380px;
+  object-fit: contain;
+  border-radius: var(--r-2);
+  box-shadow: var(--shadow-small);
+}
+
+.pf-view-pdf {
+  height: 460px;
+  background: var(--paper);
+}
+
+.pf-view-video {
+  max-height: 380px;
+  background: var(--paper-ink);
+}
+
+.pf-view-audio {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 34px 16px;
+  color: var(--text-faint);
+}
+
+.pf-view-text {
+  max-height: 460px;
+  overflow: auto;
+  padding: 14px 16px;
+  background: var(--bg-raised);
+}
+
+.pf-markdown {
+  font-size: var(--fs-small);
+}
+
+.pf-pre {
+  margin: 0;
+  font: var(--fs-caption)/1.55 var(--font-mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--text);
+}
+
+.pf-csv {
+  border-collapse: collapse;
+  font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+}
+
+.pf-csv th,
+.pf-csv td {
+  padding: 4px 10px 4px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  text-align: left;
+  white-space: nowrap;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.pf-csv th {
+  position: sticky;
+  top: -14px;
+  background: var(--bg-raised);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.pf-more {
+  margin: 10px 0 0;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+.pf-loading {
+  min-height: 160px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--text) 4%, transparent), transparent) 0 0 / 200% 100%;
+  animation: nv-shimmer var(--nv-shimmer) linear infinite;
+}
+
+.pf-view-card {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 30px 18px 26px;
+  text-align: center;
+}
+
+.pf-card-art {
+  display: grid;
+  place-items: center;
+  width: 150px;
+  height: 150px;
+  margin-bottom: 6px;
+}
+
+.pf-card-art .pf-thumb {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  background: transparent;
+  border: 0;
+}
+
+.pf-card-art .pf-art {
+  height: 100%;
+}
+
+.pf-card-kind {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.pf-card-words {
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+  max-width: 34ch;
+}
+
+.pf-desc {
+  padding: 10px 12px 2px;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.pf-desc .pj-ed-empty {
+  color: var(--text-faint);
+}
+
+.pf-preview-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px 12px;
+}
+
+.pf-preview-foot .button {
+  height: 30px;
+  padding: 0 11px;
+  font-size: var(--fs-small);
+}
+
+.pf-pin-button.is-on {
+  color: var(--text-strong);
+  border-color: var(--border-strong);
+  background: var(--sel);
+}
+
+.pf-nothing {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 22px 8px;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.pf-loading-rows {
+  display: grid;
+  gap: 6px;
+}
+
+.pf-loading-rows span {
+  height: 36px;
+  border-radius: var(--r-3);
+  background: linear-gradient(90deg, var(--bg-hover), color-mix(in srgb, var(--text) 6%, var(--bg-hover)), var(--bg-hover)) 0 0 / 200% 100%;
+  animation: nv-shimmer var(--nv-shimmer) linear infinite;
+}
+
+.pf-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+.pf-foot .text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Shown large over the page. */
+.pf-overlay {
+  align-items: center;
+  padding: 3vh 3vw;
+  /* Its head holds the Close: never up under the window buttons (8.6.1, 31 Oct 2026). */
+  padding-top: max(3vh, calc(var(--wbtn-h, 40px) + 12px));
+}
+
+.pf-overlay-box {
+  display: flex;
+  flex-direction: column;
+  width: min(1240px, 100%);
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow);
+  animation: pf-zoom 0.16s ease-out;
+}
+
+@keyframes pf-zoom {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+}
+
+.pf-overlay-head {
+  border-bottom: 1px solid var(--border);
+}
+
+.pf-overlay-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background: var(--bg-side);
+}
+
+.pf-overlay-body .pf-view-pdf {
+  height: 100%;
+}
+
+.pf-overlay-body .pf-view-image {
+  height: 100%;
+}
+
+.pf-overlay-body .pf-view-image img {
+  max-height: calc(94vh - 110px);
+}
+
+.pf-overlay-body .pf-view-video {
+  max-height: calc(94vh - 110px);
+}
+
+.pf-overlay-body .pf-view-text {
+  max-height: none;
+  min-height: 100%;
+  padding: 24px 32px;
+}
+
+/* A narrow card (between two side panels): the kinds get their own line, the preview opens in the list under the file
+   chosen, and the list's columns tighten. */
+.pf-rows > .pf-preview,
+.pf-files.is-narrow .pf-preview {
+  position: static;
+  max-height: 560px;
+  margin: 6px 0 12px;
+  animation: pj-drop 0.16s ease-out;
+}
+
+.pf-files.is-narrow .pf-row {
+  grid-template-columns: 34px minmax(0, 1fr) 80px 26px;
+}
+
+.pf-files.is-narrow .pf-row-size {
+  display: none;
+}
+
+.pf-group-row .pf-group-name {
+  flex: 0 1 auto;
+}
+
+.pf-group-row .pf-group-words {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pf-group-body,
+  .pf-chevron,
+  .pj-ed,
+  .pf-preview,
+  .pf-overlay-box,
+  .pj-suggest,
+  .pj-addform {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* Dark: the sheets' marks a little stronger, so the kinds still read. */
+[data-theme='dark'] .pf-marks i {
+  background: color-mix(in srgb, var(--kind, var(--text-faint)) 40%, var(--bg-raised));
+}
+
+[data-theme='dark'] .pf-marks i:nth-child(1) {
+  background: color-mix(in srgb, var(--kind, var(--text-faint)) 70%, var(--bg-raised));
+}
+
+[data-theme='dark'] .pf-marks-sheet i,
+[data-theme='dark'] .pf-marks-sheet i:nth-child(n) {
+  background: color-mix(in srgb, var(--kind) 30%, var(--bg-raised));
+}
+
+/* A risks table's owner and status, edited where they are (22 Oct 2026). */
+.pj-risk-meta {
+  align-items: center;
+  margin-top: 3px;
+}
+
+.pj-risk-meta .pj-risk-status.pj-pill {
+  height: 20px;
+  padding: 0 7px;
+  gap: 4px;
+  font-size: var(--fs-caption);
+}

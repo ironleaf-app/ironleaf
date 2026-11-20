@@ -1,0 +1,40 @@
+# Weekly dependency updates, grouped so they arrive as a few pull requests rather than many.
+# Dependabot's pull requests skip the CLA (the bot is on the CLA allowlist) but still need CI and a maintainer's review.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Australia/Melbourne
+    # Wait a week after a version is published before proposing it (time for a bad release to be pulled).
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 5
+    labels: [dependencies]
+    commit-message:
+      prefix: deps
+    groups:
+      # All minor and patch updates in one pull request; each major update gets its own.
+      npm-minor-and-patch:
+        patterns: ['*']
+        update-types: [minor, patch]
+    ignore:
+      # Patched in place by tools/patch-pi-ai.mjs and pinned to the version the patches were written for; upgraded
+      # by hand together with tools/pi-ai-patches/.
+      - dependency-name: '@earendil-works/pi-ai'
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Australia/Melbourne
+    open-pull-requests-limit: 5
+    labels: [dependencies]
+    commit-message:
+      prefix: ci
+    groups:
+      github-actions:
+        patterns: ['*']

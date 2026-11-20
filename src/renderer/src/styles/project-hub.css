@@ -1,0 +1,2140 @@
+/* A project's Overview (the hub), its lifecycle and its Timeline (23 Oct 2026, workstream 1 part C). Calm and corporate:
+   white tiles on the page, one accent, red only for what's overdue, amber for what needs a look. Light first; dark and
+   the palettes follow the same variables. The hub lays itself out by its own width (the page is a size container). */
+
+/* ── The page's tabs ──────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.ph-tabs {
+  display: flex;
+  gap: 2px;
+  margin: 2px 0 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ph-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 12px 10px;
+  margin-bottom: -1px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--fs-small);
+  font-weight: 550;
+  cursor: pointer;
+}
+
+.ph-tab:hover {
+  color: var(--text);
+}
+
+.ph-tab.is-on {
+  color: var(--text-strong);
+  border-bottom-color: var(--text-strong);
+}
+
+.ph-tab:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+  border-radius: var(--r-2) var(--r-2) 0 0;
+}
+
+/* ── The hub ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.ph-hub {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ph-grid {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.42fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.ph-grid.is-one {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.ph-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.ph-tile {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  padding: 14px 14px 12px;
+  min-width: 0;
+  box-shadow: var(--shadow-card);
+}
+
+.ph-tile-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 2px 8px;
+  color: var(--text-faint);
+}
+
+.ph-tile-head h3 {
+  margin: 0;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.ph-space {
+  flex: 1;
+}
+
+.ph-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--r-3);
+  background: var(--bg-hover);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  font-weight: 650;
+}
+
+.ph-count.is-bad {
+  background: color-mix(in srgb, var(--ns-attention) 14%, transparent);
+  color: var(--ns-attention-words);
+}
+
+.ph-tile-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 6px;
+  border: 0;
+  border-radius: var(--r-2);
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--fs-caption);
+  cursor: pointer;
+}
+
+.ph-tile-link:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.ph-sub {
+  margin: 10px 8px 2px;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.ph-faint {
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+}
+
+.ph-indent {
+  margin: 4px 0 0 10px;
+}
+
+.ph-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* A row: the whole line is the way to its item. */
+.ph-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  padding: 7px 8px;
+  border: 0;
+  border-radius: var(--r-3);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-small);
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ph-row:hover {
+  background: color-mix(in srgb, var(--text) 4.5%, transparent);
+}
+
+.ph-row:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -1px;
+}
+
+.ph-row-top {
+  align-items: flex-start;
+}
+
+.ph-row-words {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.ph-clamp {
+  overflow: hidden; overflow-wrap: break-word;
+}
+
+.ph-when {
+  flex: none;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ph-date {
+  flex: none;
+  padding: 2px 7px;
+  border-radius: var(--r-2);
+  background: var(--bg-hover);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ph-date.is-soon {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.ph-date.is-bad {
+  background: color-mix(in srgb, var(--ns-attention) 12%, transparent);
+  color: var(--ns-attention-words);
+}
+
+.ph-more {
+  margin: 4px 0 0 8px;
+  padding: 3px 6px;
+  border: 0;
+  border-radius: var(--r-2);
+  background: none;
+  color: var(--accent-strong);
+  font: inherit;
+  font-size: var(--fs-small);
+  font-weight: 550;
+  cursor: pointer;
+}
+
+.ph-more:hover {
+  background: var(--accent-softer);
+}
+
+/* Stats along the top: each one goes to its list. */
+.ph-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.ph-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1 1 120px;
+  min-width: 0;
+  padding: 11px 16px 12px;
+  border: 0;
+  border-right: 1px solid var(--border);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+}
+
+.ph-stat:last-child {
+  border-right: 0;
+}
+
+button.ph-stat {
+  cursor: pointer;
+}
+
+button.ph-stat:hover {
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+}
+
+.ph-stat-n {
+  font-size: var(--fs-section);
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.ph-stat-unit {
+  font-size: var(--fs-small);
+  font-weight: 550;
+  color: var(--text-muted);
+}
+
+.ph-stat-label {
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.ph-stat.is-bad .ph-stat-n {
+  color: var(--ns-attention-words);
+}
+
+.ph-stat.is-warn .ph-stat-n {
+  color: var(--ns-attention-words);
+}
+
+/* Links written in the project's words, in the page's own colour. */
+.ph-hub a {
+  color: var(--accent-strong);
+  text-decoration: none;
+}
+
+.ph-hub a:hover {
+  text-decoration: underline;
+}
+
+/* The summary: two lines, the rest on More. */
+.ph-summary {
+  margin: 0 2px;
+}
+
+.ph-summary p {
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--text-muted);
+  overflow: hidden; overflow-wrap: break-word;
+}
+
+.ph-summary.is-open p {
+  display: block;
+}
+
+.ph-summary .ph-more {
+  margin-left: -6px;
+}
+
+/* Next for you: one line, the single most urgent of the person's own actions. */
+.ph-next {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  padding: 7px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--surface, var(--bg-raised));
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-small);
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ph-next:hover {
+  background: color-mix(in srgb, var(--text) 4.5%, transparent);
+}
+
+.ph-next:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -1px;
+}
+
+.ph-next.is-late {
+  background: color-mix(in srgb, var(--ns-attention) 8%, var(--bg-raised));
+}
+
+.ph-next-label {
+  flex: none;
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+}
+
+.ph-next .ph-clamp {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Your next steps: the person's own actions, full width. */
+.ph-plan {
+  width: 100%;
+  min-width: 0;
+}
+
+.ph-plan-group h4 {
+  margin: 10px 8px 2px;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.ph-plan-group:first-child h4 {
+  margin-top: 2px;
+}
+
+/* Dates to confirm: gone-by dates, folded until the person opens it. */
+.ph-confirm {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  padding: 14px 14px 12px;
+  min-width: 0;
+  box-shadow: var(--shadow-card);
+}
+
+.ph-confirm summary {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 2px 8px;
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* The key figures in one subtitle line, and More about this project folded (29 Oct 2026, redesign). */
+.ph-figures { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 0; margin: 0 2px; color: var(--text-muted); font-size: var(--fs-small); }
+.ph-sep { margin: 0 6px; }
+.ph-figure { padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+.ph-figure:hover { color: var(--text); text-decoration: underline; }
+.ph-figures strong.is-bad { color: var(--ns-attention-words); }
+.ph-more-fold summary { margin: 4px 2px 10px; font-size: var(--fs-small); font-weight: 650; color: var(--text-muted); cursor: pointer; }
+
+/* Needs attention. */
+.ph-att-icon {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  align-self: flex-start;
+  width: 24px;
+  height: 24px;
+  margin-top: 1px;
+  border-radius: var(--r-2);
+  background: color-mix(in srgb, var(--tone) 12%, transparent);
+  color: var(--tone);
+}
+
+.ph-att.tone-bad {
+  --tone: var(--ns-attention-words);
+}
+
+.ph-att.tone-warn {
+  --tone: var(--ns-attention-words);
+}
+.ph-att.tone-bad .ph-att-title {
+  font-weight: 650;
+}
+
+.ph-att-title {
+  font-weight: 550;
+}
+
+.ph-att-detail {
+  color: var(--tone);
+  font-size: var(--fs-small);
+}
+
+.ph-att.tone-warn .ph-att-detail {
+  color: color-mix(in srgb, var(--ns-attention-words) 85%, var(--text));
+}
+
+/* Actions: a tick box beside the way to it. */
+.ph-action {
+  display: flex;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.ph-action .ph-row {
+  padding-left: 6px;
+}
+
+.ph-box {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 17px;
+  height: 17px;
+  margin: 9px 0 0 8px;
+  padding: 0;
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--r-2);
+  background: var(--bg-raised);
+  color: var(--on-primary);
+  cursor: pointer;
+}
+
+.ph-box:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.ph-box[aria-checked='true'] {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.ph-box.is-ghost {
+  border-style: dashed;
+}
+
+/* A meeting's plain line (no tick box where it's written): a quiet dot where the box would be. */
+.ph-box.is-dot {
+  border: none;
+  background: transparent;
+  cursor: default;
+}
+
+.ph-box.is-dot::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--text-faint);
+}
+
+.ph-action.is-done .ph-row-words {
+  color: var(--text-faint);
+  text-decoration: line-through;
+}
+
+.ph-action-meta {
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+}
+
+/* Waiting on others: by person, with Chase. */
+.ph-wait {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ph-wait-group + .ph-wait-group {
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.ph-wait-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px 0 2px;
+}
+
+.ph-person-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 4px 8px 4px 4px;
+  border: 0;
+  border-radius: var(--r-3);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  font-size: var(--fs-small);
+  cursor: pointer;
+}
+
+.ph-person-chip:hover {
+  background: var(--bg-hover);
+}
+
+.ph-wait-name {
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.ph-wait-age {
+  flex: 1;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  white-space: nowrap;
+}
+
+.ph-wait-age.is-bad {
+  color: var(--ns-attention-words);
+  font-weight: 600;
+}
+
+.ph-wait-age.is-warn {
+  color: var(--ns-attention-words);
+}
+
+.ph-chase {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  padding: 4px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-2);
+  background: var(--bg-raised);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-caption);
+  font-weight: 550;
+  cursor: pointer;
+}
+
+.ph-chase:hover {
+  border-color: var(--accent);
+  color: var(--accent-strong);
+}
+
+.ph-wait-items .ph-row {
+  padding: 5px 8px 5px 38px;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+/* Next milestones: a small line, then the list. */
+.ph-mini {
+  position: relative;
+  height: 44px;
+  margin: 0 8px 4px;
+}
+
+.ph-mini-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 26px;
+  height: 2px;
+  border-radius: var(--r-1);
+  background: var(--border);
+}
+
+.ph-mini-today {
+  position: absolute;
+  top: 18px;
+  width: 2px;
+  height: 18px;
+  margin-left: -1px;
+  background: var(--accent);
+  border-radius: var(--r-1);
+}
+
+.ph-mini-today span {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--accent-strong);
+  font-size: var(--fs-caption);
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.ph-mini-month {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+}
+
+.ph-mini-month::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 16px;
+  width: 1px;
+  height: 14px;
+  background: var(--border-strong);
+}
+
+.ph-mini-mark {
+  position: absolute;
+  top: 19px;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.ph-diamond {
+  display: inline-block;
+  flex: none;
+  width: 9px;
+  height: 9px;
+  transform: rotate(45deg);
+  border-radius: var(--r-1);
+  background: var(--text-muted);
+}
+
+.ph-mini-mark .ph-diamond {
+  width: 10px;
+  height: 10px;
+  box-shadow: 0 0 0 2px var(--bg-raised);
+}
+
+.ph-mini-mark.is-next .ph-diamond,
+.ph-list li:first-child .ph-row .ph-diamond {
+  background: var(--accent);
+}
+
+.ph-mini-mark:hover .ph-diamond {
+  transform: rotate(45deg) scale(1.25);
+}
+
+/* Latest files. */
+.ph-files {
+  display: flex;
+  flex-direction: column;
+}
+
+.ph-file-group:first-child .ph-sub {
+  margin-top: 2px;
+}
+
+.ph-glyph {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--r-2);
+  background: var(--bg-hover);
+  color: var(--text-muted);
+}
+
+/* File kinds read the one kind colours (9.5 polished): --kind-* in styles.css, light and dark. */
+.ph-glyph.kind-pdfs {
+  background: color-mix(in srgb, var(--kind-pdf) 12%, transparent);
+  color: var(--kind-pdf);
+}
+
+.ph-glyph.kind-spreadsheets {
+  background: color-mix(in srgb, var(--kind-sheet) 13%, transparent);
+  color: var(--kind-sheet);
+}
+
+.ph-glyph.kind-documents {
+  background: color-mix(in srgb, var(--kind-doc) 13%, transparent);
+  color: var(--kind-doc);
+}
+
+.ph-glyph.kind-slides {
+  background: color-mix(in srgb, var(--kind-slides) 14%, transparent);
+  color: var(--kind-slides);
+}
+
+.ph-glyph.kind-note {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.ph-file-name {
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.ph-file-what {
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+}
+
+/* Recent activity. */
+.ph-activity {
+  list-style: none;
+  margin: 0;
+  padding: 0 4px;
+}
+
+.ph-act {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  padding: 5px 0;
+}
+
+.ph-act:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 30px;
+  bottom: -6px;
+  width: 1px;
+  background: var(--border);
+}
+
+.ph-act-icon {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--bg-hover);
+  color: var(--text-muted);
+}
+
+.ph-act-icon.kind-update {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.ph-act-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  padding-top: 2px;
+}
+
+.ph-act-words {
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  text-align: left; overflow-wrap: break-word;
+}
+
+button.ph-act-words {
+  cursor: pointer;
+}
+
+button.ph-act-words:hover {
+  color: var(--text-strong);
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+}
+
+.ph-act-meta {
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+}
+
+/* People. */
+.ph-people {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 2px 6px;
+}
+
+.ph-person {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-width: 0;
+  padding: 6px 8px 6px 6px;
+  border: 0;
+  border-radius: var(--r-3);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ph-person:hover {
+  background: color-mix(in srgb, var(--text) 4.5%, transparent);
+}
+
+.ph-person-words {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.ph-person-name {
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+
+.ph-person-role {
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+}
+
+.ph-badge {
+  flex: none;
+  padding: 1px 7px;
+  border-radius: var(--r-3);
+  background: var(--bg-hover);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  font-weight: 650;
+}
+
+.ph-badge.is-bad {
+  background: color-mix(in srgb, var(--ns-attention) 12%, transparent);
+  color: var(--ns-attention-words);
+}
+
+/* Decisions. */
+.ph-why {
+  color: var(--text-faint);
+  font-size: var(--fs-small);
+}
+
+.ph-empty-hub {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 22px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--r-3);
+  color: var(--text-muted);
+}
+
+.ph-empty-hub strong {
+  color: var(--text);
+}
+
+.ph-empty-hub p {
+  margin: 2px 0 0;
+  font-size: var(--fs-small);
+}
+
+.ph-empty-hub > div {
+  flex: 1;
+}
+
+/* ── The lifecycle ────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.ph-life {
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+}
+
+/* A thin step line, not a card (polish 29 Oct 2026, item 2): no box or shadow, small dots, quiet words. */
+.ph-life.is-thin {
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.ph-life.is-thin .ph-life-row {
+  padding: 2px 2px;
+}
+
+.ph-life.is-thin .ph-step-dot {
+  width: 10px;
+  height: 10px;
+  border-width: 1px;
+}
+
+.ph-life.is-thin .ph-step-button {
+  font-size: var(--fs-caption);
+  padding: 2px 4px;
+}
+
+.ph-life.is-thin .ph-life-panel {
+  border-top: 0;
+}
+
+.ph-life-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 5px 14px;
+}
+
+.ph-steps {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ph-step {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+/* The line joining one stage to the next. */
+.ph-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: calc(50% + 46px);
+  right: calc(-50% + 46px);
+  height: 2px;
+  margin-top: -1px;
+  border-radius: var(--r-1);
+  background: var(--border);
+}
+
+.ph-step.is-past:not(:last-child)::after {
+  background: var(--accent-line);
+}
+
+.ph-step-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  padding: 3px 4px;
+  border: 0;
+  border-radius: var(--r-3);
+  background: none;
+  color: var(--text-faint);
+  font: inherit;
+  font-size: var(--fs-small);
+  font-weight: 550;
+  cursor: pointer;
+}
+
+.ph-step-button:hover {
+  color: var(--text);
+}
+
+.ph-step-dot {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border-strong);
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--bg-raised);
+  color: var(--on-primary);
+}
+
+.ph-step.is-past .ph-step-button {
+  color: var(--text-muted);
+}
+
+.ph-step.is-past .ph-step-dot {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.ph-step.is-now .ph-step-button {
+  color: var(--text);
+  font-weight: 650;
+}
+
+.ph-step.is-now .ph-step-dot {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 3px var(--bg-raised);
+  background: var(--accent);
+}
+
+.ph-step.is-shown .ph-step-button {
+  background: var(--bg-hover);
+}
+
+.ph-life-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  padding: 5px 9px;
+  border: 0;
+  border-radius: var(--r-2);
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--fs-small);
+  cursor: pointer;
+}
+
+.ph-life-toggle:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.ph-life.is-open .ph-life-toggle svg {
+  transform: rotate(180deg);
+}
+
+.ph-life-panel {
+  padding: 4px 18px 16px;
+  border-top: 1px solid var(--border);
+}
+
+.ph-life-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 12px 0 6px;
+}
+
+.ph-life-head > div:first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.ph-life-head h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: 650;
+}
+
+.ph-life-head p {
+  margin: 2px 0 0;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+}
+
+.ph-now {
+  padding: 1px 7px;
+  border-radius: var(--r-3);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: var(--fs-caption);
+  font-weight: 650;
+}
+
+.ph-life-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.ph-check {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  columns: 2 300px;
+  column-gap: 24px;
+}
+
+.ph-check-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 3px 0;
+  break-inside: avoid;
+  font-size: var(--fs-small);
+}
+
+.ph-check-row .ph-box {
+  margin: 2px 0 0;
+}
+
+.ph-check-words {
+  flex: 1;
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.ph-check-row.is-done .ph-check-words {
+  color: var(--text-faint);
+  text-decoration: line-through;
+}
+
+.ph-row-tools {
+  display: inline-flex;
+  gap: 2px;
+  opacity: 0;
+}
+
+.ph-check-row:hover .ph-row-tools,
+.ph-check-row:focus-within .ph-row-tools {
+  opacity: 1;
+}
+
+.ph-tool {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-2);
+  background: none;
+  color: var(--text-faint);
+  cursor: pointer;
+}
+
+.ph-tool:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.ph-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 4px 0 0;
+  padding: 3px 6px 3px 0;
+  border: 0;
+  background: none;
+  color: var(--text-faint);
+  font: inherit;
+  font-size: var(--fs-small);
+  cursor: pointer;
+}
+
+.ph-add:hover {
+  color: var(--accent-strong);
+}
+
+.ph-line-input {
+  flex: 1;
+  min-width: 0;
+  padding: 1px 6px;
+  margin: -2px 0 0 -6px;
+  border: 0;
+  border-radius: var(--r-2);
+  background: var(--bg-raised);
+  color: var(--text);
+  font: inherit;
+  box-shadow:
+    0 0 0 1px var(--accent),
+    0 0 0 4px var(--accent-soft);
+  outline: none;
+}
+
+.ph-closeout {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: var(--r-4);
+  background: var(--bg-side);
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+.ph-closeout-words {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 200px;
+  font-size: var(--fs-small);
+}
+
+.ph-closeout-words strong {
+  color: var(--text);
+  font-size: var(--fs-small);
+}
+
+/* ── The Timeline ─────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.pt-plan {
+  --pt-label: 320px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.pt-plan.pt-empty {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 22px;
+  color: var(--text-muted);
+}
+
+.pt-empty strong {
+  color: var(--text);
+}
+
+.pt-empty p {
+  margin: 2px 0 0;
+  font-size: var(--fs-small);
+}
+
+.pt-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.pt-legend {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  flex-wrap: wrap;
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+}
+
+.pt-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pt-hint {
+  color: var(--text-faint);
+}
+
+.pt-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Narrow pages (p18, 4 Nov 2026, the 1219 walk: the legend crushed into an eight-line rail beside its
+   switches): below a 940 px page the switches step under the legend, which keeps the row's full width.
+   The page is 893 at 1219, 980 at 1440 and up (it caps), narrower still with the chat open, so 1219
+   always stacks and wider windows keep the row, in every rail state. Named pj (never a new container):
+   the anonymous width queries below still read the page. */
+@container pj (max-width: 940px) {
+  .pt-plan .pt-tools {
+    flex-basis: 100%;
+  }
+}
+
+.pt-zoom {
+  display: inline-flex;
+  padding: 2px;
+  border-radius: var(--r-3);
+  background: var(--bg-hover);
+}
+
+.pt-zoom button {
+  padding: 4px 11px;
+  border: 0;
+  border-radius: var(--r-2);
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--fs-small);
+  font-weight: 550;
+  cursor: pointer;
+}
+
+.pt-zoom button.is-on {
+  background: var(--bg-raised);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.pt-body {
+  max-height: calc(100vh - 250px);
+  min-height: 220px;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.pt-canvas {
+  position: relative;
+}
+
+.pt-scale {
+  position: sticky;
+  top: 0;
+  /* Above the rows' sticky names (7), which are above every mark and its day (24 Oct 2026: a day scrolled under the
+     names drew over them, "Progr 16 Sep ort"). */
+  z-index: 10;
+  display: flex;
+  height: 46px;
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border);
+}
+
+.pt-corner {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  flex: none;
+  width: var(--pt-label);
+  padding: 26px 16px 0;
+  border-right: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+}
+
+.pt-scale-track {
+  position: relative;
+  flex: none;
+}
+
+.pt-major {
+  position: absolute;
+  top: 6px;
+  padding-left: 6px;
+  border-left: 1px solid var(--border-strong);
+  color: var(--text);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pt-minor {
+  position: absolute;
+  top: 27px;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  transform: translateX(3px);
+}
+
+.pt-minor[style*='width'] {
+  transform: none;
+  text-align: center;
+}
+
+.pt-today-tag {
+  position: absolute;
+  top: 25px;
+  transform: translateX(-50%);
+  padding: 1px 6px;
+  border-radius: var(--r-2);
+  background: var(--accent);
+  color: var(--on-primary);
+  font-size: var(--fs-caption);
+  font-weight: 650;
+  z-index: 1;
+}
+
+.pt-rows {
+  position: relative;
+}
+
+.pt-under {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.pt-weekend {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: color-mix(in srgb, var(--text) 2.5%, transparent);
+}
+
+.pt-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+}
+
+.pt-today {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--accent);
+  opacity: 0.85;
+  z-index: 2;
+}
+
+.pt-group,
+.pt-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+}
+
+.pt-group {
+  height: 38px;
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-side) 55%, transparent);
+}
+
+.pt-group:first-child {
+  border-top: 0;
+}
+
+.pt-group-label {
+  position: sticky;
+  left: 0;
+  z-index: 7;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  width: var(--pt-label);
+  padding: 0 10px 0 6px;
+  border-right: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-side) 55%, var(--bg-raised));
+}
+
+.pt-fold {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-2);
+  background: none;
+  color: var(--text-faint);
+  cursor: pointer;
+}
+
+.pt-fold:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.pt-group.is-folded .pt-fold svg {
+  transform: rotate(-90deg);
+}
+
+.pt-group-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  padding: 3px 4px;
+  border: 0;
+  border-radius: var(--r-2);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-small);
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pt-group-name:hover {
+  color: var(--accent-strong);
+}
+
+.pt-group-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  max-width: 55%;
+  overflow: hidden;
+}
+
+.pt-status {
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  max-width: 96px;
+  padding: 1px 7px;
+  border-radius: var(--r-3);
+  background: color-mix(in srgb, var(--tone) 12%, transparent);
+  color: var(--tone);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+}
+
+.pt-status.tone-none {
+  background: var(--bg-hover);
+  color: var(--text-muted);
+}
+.pt-status.tone-ok {
+  --tone: var(--ns-status);
+}
+.pt-status.tone-warn,
+.pt-status.tone-bad {
+  --tone: var(--ns-attention-words);
+}
+.pt-status.tone-bad {
+  font-weight: 700;
+}
+
+.pt-progress {
+  width: 38px;
+  height: 5px;
+  border-radius: var(--r-1);
+  background: var(--bg-active);
+  overflow: hidden;
+}
+
+.pt-progress span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.pt-undated {
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  white-space: nowrap;
+}
+
+.pt-span {
+  position: absolute;
+  top: 16px;
+  height: 6px;
+  border-radius: var(--r-1);
+  background: color-mix(in srgb, var(--text) 16%, transparent);
+}
+
+.pt-span.tone-bad {
+  background: color-mix(in srgb, var(--ns-attention) 36%, transparent);
+}
+
+.pt-span.tone-ok {
+  background: color-mix(in srgb, var(--ns-status) 30%, transparent);
+}
+
+.pt-span.tone-warn {
+  background: color-mix(in srgb, var(--ns-attention) 30%, transparent);
+}
+
+.pt-row {
+  height: 32px;
+}
+
+.pt-row:hover {
+  background: color-mix(in srgb, var(--text) 2.5%, transparent);
+}
+
+.pt-label {
+  position: sticky;
+  left: 0;
+  z-index: 7;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: none;
+  width: var(--pt-label);
+  padding: 0 12px 0 36px;
+  border: 0;
+  border-right: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-small);
+  text-align: left;
+  cursor: pointer;
+}
+
+.pt-row:hover .pt-label {
+  background: color-mix(in srgb, var(--text) 2.5%, var(--bg-raised));
+}
+
+.pt-label-words {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.pt-label:hover .pt-label-words {
+  color: var(--accent-strong);
+}
+
+.pt-label-who {
+  flex: none;
+  max-width: 34%;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+}
+
+.pt-row.is-done .pt-label-words {
+  color: var(--text-faint);
+}
+
+.pt-row.is-overdue .pt-label-words {
+  color: var(--ns-attention-words);
+}
+
+.pt-track {
+  position: relative;
+  flex: none;
+}
+
+.pt-glyph {
+  display: inline-block;
+  flex: none;
+  width: 9px;
+  height: 9px;
+  background: var(--text-muted);
+}
+
+.pt-glyph.milestone {
+  transform: rotate(45deg);
+  border-radius: var(--r-1);
+  background: var(--accent);
+}
+
+.pt-glyph.action {
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--text-muted);
+}
+
+.pt-glyph.is-done {
+  background: var(--border-strong);
+}
+
+.pt-glyph.is-overdue {
+  background: var(--ns-attention);
+}
+
+/* A mark: a diamond for a milestone, a dot for an action; it drags to another day. */
+.pt-mark {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  padding: 0;
+  border: 2px solid var(--bg-raised);
+  background: var(--text-muted);
+  cursor: grab;
+  z-index: 2;
+  touch-action: none;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--text) 12%, transparent);
+}
+
+.pt-mark.milestone {
+  width: 15px;
+  height: 15px;
+  margin: -7.5px 0 0 -7.5px;
+  transform: rotate(45deg);
+  border-radius: var(--r-1);
+  background: var(--accent);
+}
+
+.pt-mark.action {
+  border-radius: 50%;
+  corner-shape: round;
+}
+
+.pt-mark.is-done {
+  background: var(--border-strong);
+}
+
+.pt-mark.is-overdue {
+  background: var(--ns-attention);
+}
+
+.pt-mark:hover {
+  box-shadow: 0 0 0 3px var(--accent-soft), 0 0 0 1px var(--accent);
+}
+
+.pt-mark:focus-visible {
+  outline: none;
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.pt-mark.is-moving {
+  cursor: grabbing;
+  box-shadow: 0 0 0 4px var(--accent-soft), 0 0 0 1px var(--accent);
+  z-index: 5;
+}
+
+.pt-ghost {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border: 1.5px dashed var(--text-faint);
+  border-radius: 50%;
+  corner-shape: round;
+}
+
+.pt-mark-date {
+  position: absolute;
+  top: 50%;
+  margin: -8px 0 0 10px;
+  padding: 0 3px;
+  border-radius: var(--r-1);
+  background: color-mix(in srgb, var(--bg-raised) 88%, transparent);
+  z-index: 3;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.pt-mark-date.is-left {
+  transform: translateX(calc(-100% - 24px));
+}
+
+.pt-mark-date.is-moving {
+  padding: 1px 7px;
+  margin-top: -10px;
+  border-radius: var(--r-2);
+  background: var(--ink);
+  color: var(--on-ink);
+  font-weight: 600;
+  z-index: 8;
+}
+
+/* A line's day out of sight (scrolled off to one side): its day pinned at that edge of what shows, a click brings it in. */
+.pt-pin {
+  position: absolute;
+  top: 50%;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 18px;
+  margin-top: -9px;
+  padding: 0 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  color: var(--text-faint);
+  font: inherit;
+  font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.pt-pin.is-right {
+  transform: translateX(-100%);
+}
+
+.pt-pin:hover {
+  border-color: var(--accent-line);
+  color: var(--accent-strong);
+}
+
+.pt-row.is-overdue .pt-pin {
+  color: var(--ns-attention-words);
+}
+
+.pt-row.is-overdue .pt-mark-date {
+  color: var(--ns-attention-words);
+}
+
+.pt-deps {
+  position: absolute;
+  top: 0;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 1;
+}
+
+.pt-dep {
+  fill: none;
+  stroke: var(--text-faint);
+  stroke-width: 1.4;
+}
+
+.pt-dep.is-clash {
+  stroke: var(--ns-attention);
+  stroke-dasharray: 4 3;
+}
+
+#pt-arrow path {
+  fill: var(--text-faint);
+}
+
+/* ── Narrow: one column, in the order a person reads it ──────────────────────────────────────────────────────────── */
+
+@container (max-width: 820px) {
+  .ph-grid {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ph-tile {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .ph-col {
+    display: contents;
+  }
+
+  .ph-a-attention { order: 1; }
+  .ph-a-mine { order: 2; }
+  .ph-a-waiting { order: 3; }
+  .ph-a-milestones { order: 4; }
+  .ph-a-files { order: 5; }
+  .ph-a-activity { order: 6; }
+  .ph-a-people { order: 7; }
+  .ph-a-decisions { order: 8; }
+
+  .ph-step-name {
+    font-size: var(--fs-caption);
+  }
+
+  .ph-step:not(:last-child)::after {
+    left: calc(50% + 40px);
+    right: calc(-50% + 40px);
+  }
+}
+
+@container (max-width: 640px) {
+  .ph-life-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+
+  .ph-step-button {
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .ph-step:not(:last-child)::after {
+    top: 14px;
+    left: calc(50% + 12px);
+    right: calc(-50% + 12px);
+  }
+
+  .ph-life-toggle {
+    align-self: center;
+  }
+
+  .ph-stat {
+    flex-basis: 30%;
+    padding: 8px 12px 9px;
+  }
+
+  .ph-stat-n {
+    font-size: var(--fs-card);
+  }
+
+  .pt-plan {
+    --pt-label: 200px;
+  }
+
+  .pt-label-who {
+    display: none;
+  }
+
+  /* Narrow, the name comes first: a group's status shows as its dot of colour, its counts and progress step aside. */
+  .pt-group-meta .pt-undated,
+  .pt-group-meta .pt-progress {
+    display: none;
+  }
+
+  .pt-group-meta .pt-status {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    padding: 0;
+    background: var(--tone);
+    border-radius: 50%;
+    corner-shape: round;
+    font-size: 0;
+  }
+}
+
+/* Wide (p14, 4 Nov 2026 at 3456): the Timeline tab's names cut with "…" in the 320 px label
+   ("Reproduce the Safari timeout…"): nothing cut off with "...". The track scrolls by design, so the
+   label takes what long names need. Narrow keeps 200 px (above). */
+@container (min-width: 980px) {
+  .pt-plan {
+    --pt-label: 460px;
+  }
+}
+
+/* Tidy (29 Oct 2026): its preview dialog, in a project and for every project at once. */
+.tidy-dialog {
+  max-width: 640px;
+  width: min(640px, calc(100vw - 48px));
+  max-height: calc(100vh - 80px);
+  overflow: auto;
+}
+.tidy-dialog h3 {
+  margin: 16px 0 6px;
+  font-size: var(--fs-small);
+  color: var(--text);
+}
+.tidy-moves ul,
+.tidy-said ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--text-muted);
+}
+.tidy-moves li {
+  margin: 6px 0;
+}
+.tidy-move-words {
+  display: block;
+  color: var(--text);
+}
+.tidy-move-text {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+.tidy-all {
+  list-style: none;
+  margin: 8px 0;
+  padding: 0;
+}
+.tidy-all li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+}
+.tidy-all-name {
+  color: var(--text);
+}
+.tidy-all-count {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.td-tidy {
+  width: 100%;
+  text-align: left;
+  margin-top: 8px;
+}
+
+/* Closing with open tasks (p12-close-and-noise A, 4 Nov 2026): the shared dialog, and the quiet line on a finished
+   project that still has tasks open. */
+.close-dialog {
+  max-width: 640px;
+  width: min(640px, calc(100vw - 48px));
+  max-height: calc(100vh - 80px);
+  overflow: auto;
+}
+.close-tasks {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.close-task {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+.close-task-words {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  color: var(--text);
+  overflow-wrap: break-word;
+}
+.close-task-meta {
+  color: var(--text-faint);
+  font-size: var(--fs-small);
+}
+.close-task-acts {
+  flex: none;
+  display: flex;
+  gap: 6px;
+}
+.pj-loose {
+  display: block;
+  margin: 2px auto 10px;
+  border: 0;
+  background: none;
+  color: var(--text-faint);
+  font: inherit;
+  font-size: var(--fs-small);
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: var(--r-1);
+}
+.pj-loose:hover {
+  color: var(--text-muted);
+  background: var(--bg-hover);
+}
+
+/* Projects home, list view and finished fold (29 Oct 2026, redesign Job B). */
+.pj-next-label { flex: none; color: var(--text-muted); font-size: var(--fs-caption); font-weight: 600; }
+.pj-late-count { flex: none; padding: 2px 8px; border-radius: var(--r-1); color: var(--ns-attention-words); background: color-mix(in srgb, var(--ns-attention) 12%, transparent); font-size: var(--fs-caption); font-weight: 600; white-space: nowrap; }
+.pj-prows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.pj-prow-main { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border: 0; border-bottom: 1px solid var(--border); background: none; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+.pj-prow-main:hover { background: var(--bg-hover); }
+.pj-prow-words { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.pj-prow-name { font-weight: 600; overflow: hidden; text-overflow: clip; white-space: nowrap; }
+.pj-prow-meta { color: var(--text-faint); font-size: var(--fs-small); overflow: hidden; text-overflow: clip; white-space: nowrap; }
+.pj-done-fold { margin-top: 18px; }
+.pj-done-fold summary { color: var(--text-muted); font-size: var(--fs-small); font-weight: 600; cursor: pointer; padding: 6px 2px; }
+.pj-view-link.active { color: var(--text); background: var(--bg-hover); }
+.pj-other-notes { margin-top: 4px; }
+.pj-other-notes > summary { color: var(--text-muted); font-size: var(--fs-small); font-weight: 650; cursor: pointer; padding: 6px 2px; }

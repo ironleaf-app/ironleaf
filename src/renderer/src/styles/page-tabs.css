@@ -1,0 +1,51 @@
+/* One page's own tabs (t255, 13 Nov 2026): the bar every long page shares. Plain words on the theme
+   tokens, light first; the open tab reads strong with the one accent under it. The bar is scoped to its
+   tablist role (t265, 13 Nov 2026: the bare .pt-bar sat on the Timeline plan header too, and this later
+   sheet unwrapped it, so the p18 narrow legend stopped stacking under its switches). */
+
+.pt-bar[role="tablist"] {
+  display: flex;
+  gap: 2px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 4px 0 0;
+  margin: 0;
+  border-bottom: 1px solid var(--border);
+  font-size: var(--fs-small);
+}
+.pt-bar[role="tablist"]::-webkit-scrollbar { display: none; }
+/* The fade at the end that hides more (never cut with dots): follows the scroll, both ends at once. */
+.pt-bar[data-fade="right"] { mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); }
+.pt-bar[data-fade="left"] { mask-image: linear-gradient(90deg, transparent, #000 28px); }
+.pt-bar[data-fade="both"] { mask-image: linear-gradient(90deg, transparent, #000 28px), linear-gradient(90deg, #000 calc(100% - 28px), transparent); }
+.pt-bar[data-fade="none"] { mask-image: none; }
+
+.pt-tab {
+  flex: none;
+  border: 0;
+  background: none;
+  padding: 8px 10px 10px;
+  font: inherit;
+  white-space: nowrap;
+  color: var(--text-muted);
+  cursor: pointer;
+  box-shadow: inset 0 -2px 0 transparent;
+}
+.pt-tab:hover { color: var(--text-strong); background: var(--bg-soft); }
+.pt-tab.is-on { color: var(--text-strong); font-weight: 650; box-shadow: inset 0 -2px 0 var(--accent); }
+/* A tab with nothing in it reads quietly, never hidden (the order never shifts). Quiet titles and counts
+   read in the muted ink, never the faint (t266, 13 Nov 2026 break job: faint titles and counts fell to
+   3.1:1 in the light looks; muted holds 4.5:1 in every look, light and dark — the missing badge still
+   says the tab is empty). */
+.pt-tab.is-quiet { color: var(--text-muted); }
+.pt-tab .pt-title { white-space: nowrap; }
+.pt-tab .pt-count { margin-left: 6px; font-weight: 400; color: var(--text-muted); }
+
+/* A tab's own Find: one row above a list that runs past one screen. */
+.pt-find { display: flex; align-items: center; gap: 8px; margin: 12px 0 4px; }
+.pt-find .pt-find-box { max-width: 320px; height: 32px; }
+/* One Clear only (t262): the native search cancel would double the Find's own Clear. */
+.pt-find .pt-find-box::-webkit-search-cancel-button { display: none; }
+.pt-find .pt-find-n { font-size: var(--fs-small); color: var(--text-muted); white-space: nowrap; }
+.pt-find .pt-find-x { height: 28px; }
