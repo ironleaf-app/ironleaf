@@ -156,7 +156,7 @@ export interface Contract {
 export interface Attention {
   kind: 'quote' | 'contract' | 'order';
   path: string;
-  /** What it is, in a line ("Northwind Builders’s quote lapses in 5 days"). */
+  /** What it is, in a line ("Northwind Builders’ quote lapses in 5 days"). */
   words: string;
   sub: string;
   tone: 'bad' | 'warn';
