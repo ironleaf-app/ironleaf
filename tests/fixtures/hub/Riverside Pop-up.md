@@ -20,7 +20,7 @@ A four-week pop-up shop at the Riverside markets, opening Fri 4 Dec.
 
 - [x] Site booked with the market office — Sam Reid · 20 Oct
 - [ ] Confirm the power supply with the market office — Sam Reid · by 2026-11-11
-- [ ] Order the point-of-sale kit — Dee Park · by 2026-11-16
+- [ ] Order the card reader — Dee Park · by 2026-11-16
 
 ### Build week
 
