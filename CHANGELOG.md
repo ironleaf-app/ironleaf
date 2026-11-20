@@ -6,6 +6,10 @@ the website. `tools/release.mjs` takes a release's notes from here when `--notes
 
 Format: one `## <version> — <YYYY-MM-DD>` heading a release, then one `- ` line a change.
 
+## 2.0.7 — 2026-11-20
+
+- Security updates: Electron 44.11.5 (it no longer trusts certificates from a compromised authority), and patched versions of the Markdown, diagram (mermaid) and maths (KaTeX) libraries.
+
 ## 2.0.6 — 2026-11-20
 
 - Tidier sample and help text throughout, and plain Ironleaf wording in the AI library's network messages.
