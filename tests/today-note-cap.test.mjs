@@ -130,7 +130,7 @@ test('Today in your notes shows five with Show all past twenty changed', async (
   for (let i = 1; i <= 14; i++) {
     const p = path.join(h.vaultDir, 'Notes', `Evening notes ${i} about the quarterly review.md`);
     mkdirSync(path.dirname(p), { recursive: true });
-    writeFileSync(p, `# Evening notes ${i} about the quarterly review with the area coordinators\n\nWords about the review written today, long enough to read like a real note.\n`);
+    writeFileSync(p, `# Evening notes ${i} about the quarterly review with the garden volunteers\n\nWords about the review written today, long enough to read like a real note.\n`);
   }
   await h.services.rescanAll();
   await h.browser.send('Page.navigate', { url: `${h.origin}/harness.html` });
