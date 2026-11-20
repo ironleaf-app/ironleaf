@@ -649,7 +649,7 @@ function dayName(iso: string): string {
   const d = dateOf(iso);
   return `${DAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}`;
 }
-/** A meeting's title without the day its note name starts with ("2026-10-31 POS check" → "POS check"). */
+/** A meeting's title without the day its note name starts with ("2026-10-31 Menu tasting" → "Menu tasting"). */
 const bareTitle = (t: string) => t.replace(/^\d{4}-\d{2}-\d{2}\s*/, '') || t;
 
 /** The prep sheet saved into the meeting's note (8.3 wave 1), written for a person to read before walking in: days in
