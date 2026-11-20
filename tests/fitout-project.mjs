@@ -351,7 +351,7 @@ ${role} at ${org}, on the [[${HALL_NAME}]]. Contact for ${i % 2 ? 'site and inst
     'Notes/lighting lessons from last year.md',
     `# lighting lessons from last year
 
-What last year's rollout taught: order mounts early, test firmware before install week, and keep one spare stage light in Northside. Relevant to the [[${HALL_NAME}]].
+What last year's fit-out taught: order mounts early, test firmware before install week, and keep one spare stage light in Northside. Relevant to the [[${HALL_NAME}]].
 `,
     TODAY - 30 * DAY,
   );
