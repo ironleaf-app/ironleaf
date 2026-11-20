@@ -43,7 +43,7 @@ before(async () => {
 });
 after(() => rmSync(work, { recursive: true, force: true }));
 
-const STORE = 'Projects/Studio Upgrade/Studio Upgrade.md';
+const STUDIO = 'Projects/Studio Upgrade/Studio Upgrade.md';
 const WINTER = 'Projects/Winter Menu Launch/Winter Menu Launch.md';
 const HARBOUR = 'Projects/Harbour Lane/Harbour Lane.md';
 const REMOTE = 'remote:3f2b8c1e-9d4a-4b7e-8c2f-1a2b3c4d5e6f:/home/office/harbour-lane';
@@ -58,7 +58,7 @@ function setup({ level = 'edit' } = {}) {
   mkdirSync(pcFolder, { recursive: true });
   writeFileSync(path.join(pcFolder, 'Closeout report.pdf'), 'an older closeout');
   const notes = {
-    [STORE]: `---\ntype: project\nstatus: active\nhealth: on track\nfolder: ${pcFolder}\n---\n# Studio Upgrade\n\n## Summary\n\nEvery store’s tills move to the new build.\n`,
+    [STUDIO]: `---\ntype: project\nstatus: active\nhealth: on track\nfolder: ${pcFolder}\n---\n# Studio Upgrade\n\n## Summary\n\nThe studio gets a new mixing desk and speakers.\n`,
     [WINTER]: `---\ntype: project\nstatus: active\n---\n# Winter Menu Launch\n\n## Summary\n\nThe bakery’s winter menu.\n`,
     [HARBOUR]: `---\ntype: project\nstatus: active\nneuralspark-project: ${REMOTE}\n---\n# Harbour Lane\n\n## Summary\n\nOn officebox, in /home/office/harbour-lane.\n`,
     'Notes/Oven service.md': '# Oven service\n\nThe deck oven is serviced every March.\n',
@@ -160,23 +160,23 @@ test('names: only the last part, nothing Windows refuses, never a program; the n
   assert.equal(M.freeName('Report.pdf', new Set(['report.pdf'])), 'Report (2).pdf');
   assert.equal(M.freeName('Report.pdf', new Set(['report.pdf', 'report (2).pdf'])), 'Report (3).pdf');
   assert.equal(M.freeName('Report (2).pdf', new Set(['report (2).pdf'])), 'Report (3).pdf');
-  assert.equal(M.ownFilesFolder(STORE), 'Projects/Studio Upgrade/Files');
+  assert.equal(M.ownFilesFolder(STUDIO), 'Projects/Studio Upgrade/Files');
   assert.equal(M.ownFilesFolder('Clients/Harbour.md'), 'Clients/Files/Harbour', 'one rule for every record: Files beside it');
   assert.throws(() => M.safeSubfolder('../outside'), /inside the project/);
   assert.equal(M.safeSubfolder('Reports\\2026'), 'Reports/2026');
   assert.deepEqual(M.namedFiles('Closeout report saved: Harbour closeout.pdf (6 pages)', ['Harbour closeout.pdf', 'closeout.pdf', 'Other.docx']), ['Harbour closeout.pdf']);
   assert.throws(() => M.decodeBase64('***'), /valid base64/);
   assert.throws(() => M.decodeBase64('A'.repeat(M.CHUNK_CHARS + 4)), /in parts/);
-  assert.equal(M.deliveredWords({ agentName: 'Other AI apps', name: 'Plan.pdf', project: { path: STORE, name: 'Studio Upgrade' } }), 'Other AI apps delivered Plan.pdf to Studio Upgrade');
+  assert.equal(M.deliveredWords({ agentName: 'Other AI apps', name: 'Plan.pdf', project: { path: STUDIO, name: 'Studio Upgrade' } }), 'Other AI apps delivered Plan.pdf to Studio Upgrade');
 });
 
 test('a file whole in one call lands in the project’s folder on this PC, shows as a card, and a name already there gets a new name', async () => {
   const t = setup();
   const a = await agent(t);
-  const r = await callAs(t.access, a.who, 'project_save_file', { project: 'Studio Upgrade', name: 'Rollout plan.md', what: 'The rollout plan, store by store', content: '# Rollout plan\n\n- Week 1: Melbourne\n' });
+  const r = await callAs(t.access, a.who, 'project_save_file', { project: 'Studio Upgrade', name: 'Fitting plan.md', what: 'The fitting plan, room by room', content: '# Fitting plan\n\n- Week 1: the control room\n' });
   assert.ok(!r.isError, words(r));
-  assert.match(words(r), /Saved Rollout plan\.md .* into Studio Upgrade’s folder\. Tell the person in one line: it’s in Studio Upgrade as Rollout plan\.md/);
-  assert.equal(readFileSync(path.join(t.pcFolder, 'Rollout plan.md'), 'utf8'), '# Rollout plan\n\n- Week 1: Melbourne\n');
+  assert.match(words(r), /Saved Fitting plan\.md .* into Studio Upgrade’s folder\. Tell the person in one line: it’s in Studio Upgrade as Fitting plan\.md/);
+  assert.equal(readFileSync(path.join(t.pcFolder, 'Fitting plan.md'), 'utf8'), '# Fitting plan\n\n- Week 1: the control room\n');
   // A name already there: never written over unless asked.
   const pdf = Buffer.from('%PDF-1.7 new closeout');
   const r2 = await callAs(t.access, a.who, 'project_save_file', { project: 'Studio Upgrade', name: 'Closeout report.pdf', what: '6-page closeout', base64: pdf.toString('base64') });
@@ -203,10 +203,10 @@ test('a file whole in one call lands in the project’s folder on this PC, shows
   // Read can’t save; a folder inside the project’s folder is made.
   const reader = await agent(t, 'read');
   assert.match(words(await callAs(t.access, reader.who, 'project_save_file', { project: 'Studio Upgrade', name: 'x.txt', content: 'x' })), /Read only/);
-  const r3 = await callAs(t.access, a.who, 'project_save_file', { project: 'Studio Upgrade', name: 'Till audit.csv', folder: 'Reports/2026', content: 'store,tills\nMelbourne,12\n' });
+  const r3 = await callAs(t.access, a.who, 'project_save_file', { project: 'Studio Upgrade', name: 'Gear audit.csv', folder: 'Reports/2026', content: 'item,count\nMicrophone stands,11\n' });
   assert.ok(!r3.isError, words(r3));
-  assert.ok(existsSync(path.join(t.pcFolder, 'Reports', '2026', 'Till audit.csv')));
-  assert.match(words(r3), /\(Reports\/2026\/Till audit\.csv\)/);
+  assert.ok(existsSync(path.join(t.pcFolder, 'Reports', '2026', 'Gear audit.csv')));
+  assert.match(words(r3), /\(Reports\/2026\/Gear audit\.csv\)/);
 });
 
 test('Full control may replace a file of the same name when it asks', async () => {
