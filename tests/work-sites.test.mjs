@@ -1,7 +1,7 @@
 // node --test tests/work-sites.test.mjs — Sites and Equipment (Wave 6 part b): sites and devices read from plain notes
 // (src/shared/work-sites.ts), their records and views, a change written as one property or one cell (a hand-made table's
 // own columns kept), the agent tools through a real gate (src/main/work/sites.ts through src/main/work-modules.ts), the
-// bell's notices said once, and nothing at all while the module is off. A made-up company, Harbour Retail; a fixed day
+// bell's notices said once, and nothing at all while the module is off. A made-up company, Harbour Studio; a fixed day
 // (Sat 24 Oct 2026).
 import assert from 'node:assert/strict';
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';

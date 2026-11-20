@@ -45,52 +45,52 @@ about: Weekly status updates to Sam Lee, newest first.
 
 ## Week of 19 October 2026 (prepared Wed 21 Oct)
 
-Source: figures from the asset export of 21 Oct 2026.
+Source: figures from the seed list export of 21 Oct 2026.
 
-### 1. Store Relocation
-Status: Planned. Onsite Thursday, hardware in store, back Friday.
+### 1. Studio Relocation
+Status: Planned. Onsite Thursday, gear in the van, back Friday.
 
 Blockers / Risks: None
 
 ### 2. Spring Festival
 Status: On track
-- 6x tills have landed with the vendor.
+- 6x marquees have landed with the vendor.
 - One support person locked in.
   Interviews for the second start next week.
 
 Blockers / Risks: None currently
 
-### 3. Laptop Refresh
-Status: Working through the last devices
+### 3. Seed Library
+Status: Working through the last packets
 
 | Measure | Count |
 |---|---|
 | In scope | 1,047 |
-| Refreshed | 1,009 |
+| Catalogued | 1,009 |
 | % of scope | 96.4% |
 
-Outstanding by region: North 12, South 9, (blank) 4.
+Outstanding by shelf: Top 12, Bottom 9, (blank) 4.
 
-Blockers / Risks: A few laptops won't take the image; asked the vendor for help.
+Blockers / Risks: A few packets have no label; asked the donors for help.
 
 ### Attachments
-- Refresh_Status.xlsx
+- Seed_Count.xlsx
 
-[[Files/Refresh_Status.xlsx|Refresh_Status.xlsx]] — refresh workbook, 21 Oct export
+[[Files/Seed_Count.xlsx|Seed_Count.xlsx]] — seed count workbook, 21 Oct export
 
 ## Week of 12 October 2026
 
-### 1. Laptop Refresh
+### 1. Seed Library
 Status: At risk
-- Image fixed for the new model.
+- Labels fixed for the new packets.
 
 | Measure | Count |
 |---|---|
 | In scope | 1,050 |
-| Refreshed | 980 |
+| Catalogued | 980 |
 | % of scope | 93.3% |
 
-Blockers / Risks: Vendor stock low.
+Blockers / Risks: Donations low.
 `;
 
 test('a week’s note reads and writes back exactly, and numbers stay numbers', () => {
@@ -106,16 +106,16 @@ test('a week’s note reads and writes back exactly, and numbers stay numbers', 
   assert.equal(W.readDayWords('2026-13-45'), null, 'a day that is not there is no day');
   assert.equal(W.readDayWords('30 February 2026'), null, '30 February is no day');
   const u = W.newWeekly('2026-10-21', null, { audience: 'Sam Lee' });
-  W.applyWeeklyEdit(u, { kind: 'add-section', name: 'Store Relocation', project: 'Harbour Store' });
+  W.applyWeeklyEdit(u, { kind: 'add-section', name: 'Studio Relocation', project: 'Harbour Studio' });
   W.applyWeeklyEdit(u, { kind: 'section', section: 0, field: 'flag', value: 'At risk' });
   W.applyWeeklyEdit(u, { kind: 'section', section: 0, field: 'status', value: 'Hardware late' });
   W.applyWeeklyEdit(u, { kind: 'add-item', section: 0, list: 'progress', text: 'Racks delivered' });
   W.applyWeeklyEdit(u, { kind: 'add-item', section: 0, list: 'blockers', text: 'Switch on back order' });
   W.applyWeeklyEdit(u, { kind: 'metric', section: 0, name: 'Points live', value: 42, unit: '' });
-  W.applyWeeklyEdit(u, { kind: 'metric', section: 0, name: 'North', value: 3, group: 'By floor' });
+  W.applyWeeklyEdit(u, { kind: 'metric', section: 0, name: 'Top', value: 3, group: 'By floor' });
   const text = W.writeWeekly({ ...u, path: 'Work/Weekly Updates/Weekly update 2026-10-19.md' });
   assert.match(text, /^---\ntype: weekly-update\nweek: 2026-10-19\naudience: Sam Lee\nstatus: Draft/);
-  assert.match(text, /## Store Relocation\nProject: \[\[Harbour Store\]\]\nFlag: At risk\nStatus: Hardware late/);
+  assert.match(text, /## Studio Relocation\nProject: \[\[Harbour Studio\]\]\nFlag: At risk\nStatus: Hardware late/);
   assert.match(text, /\| Points live \| 42 \|  \|  \|/);
   const back = W.readWeekly('Work/Weekly Updates/Weekly update 2026-10-19.md', text);
   assert.deepEqual(back, { ...u, path: 'Work/Weekly Updates/Weekly update 2026-10-19.md' }, 'read back exactly');
@@ -129,8 +129,8 @@ test('a week’s note reads and writes back exactly, and numbers stay numbers', 
   assert.deepEqual(hand.sections[0].progress, ['Watered']);
   assert.deepEqual(hand.sections[0].blockers, ['frost']);
   assert.equal(hand.sections[0].notes, 'A note to self.');
-  assert.throws(() => W.applyWeeklyEdit(back, { kind: 'add-section', name: 'store relocation' }), /already/);
-  assert.throws(() => W.applyWeeklyEdit(back, { kind: 'add-section', name: 'Store Relokation' }), /Store Relocation/, 'a near-miss is a typo until proven otherwise');
+  assert.throws(() => W.applyWeeklyEdit(back, { kind: 'add-section', name: 'studio relocation' }), /already/);
+  assert.throws(() => W.applyWeeklyEdit(back, { kind: 'add-section', name: 'Studio Relokation' }), /Studio Relocation/, 'a near-miss is a typo until proven otherwise');
   assert.throws(() => W.applyWeeklyEdit(back, { kind: 'metric', section: 0, name: 'X', value: Number.NaN }), /number/);
 });
 
@@ -144,17 +144,17 @@ test('an older long note of updates comes in one week each, every fact kept, and
   assert.equal(now.prepared, '2026-10-21');
   assert.equal(now.status, 'Draft', 'this week is a draft');
   assert.equal(before.status, 'Sent', 'an earlier week was sent');
-  assert.equal(now.intro, 'Source: figures from the asset export of 21 Oct 2026.');
-  assert.deepEqual(now.sections.map((s) => s.name), ['Store Relocation', 'Spring Festival', 'Laptop Refresh']);
-  assert.equal(now.sections[0].status, 'Planned. Onsite Thursday, hardware in store, back Friday.');
+  assert.equal(now.intro, 'Source: figures from the seed list export of 21 Oct 2026.');
+  assert.deepEqual(now.sections.map((s) => s.name), ['Studio Relocation', 'Spring Festival', 'Seed Library']);
+  assert.equal(now.sections[0].status, 'Planned. Onsite Thursday, gear in the van, back Friday.');
   assert.equal(now.sections[0].none, true);
   assert.equal(now.sections[1].flag, 'On track');
-  assert.deepEqual(now.sections[1].progress, ['6x tills have landed with the vendor.', 'One support person locked in. Interviews for the second start next week.']);
+  assert.deepEqual(now.sections[1].progress, ['6x marquees have landed with the vendor.', 'One support person locked in. Interviews for the second start next week.']);
   assert.equal(now.sections[1].noneWords, 'None currently');
   const lr = now.sections[2];
-  assert.deepEqual(lr.metrics.map((m) => [m.name, m.value, m.unit, m.group]), [['In scope', 1047, '', ''], ['Refreshed', 1009, '', ''], ['% of scope', 96.4, '%', ''], ['North', 12, '', 'Outstanding by region'], ['South', 9, '', 'Outstanding by region'], ['(blank)', 4, '', 'Outstanding by region']]);
-  assert.deepEqual(lr.blockers, ["A few laptops won't take the image; asked the vendor for help."]);
-  assert.deepEqual(now.attachments, [{ link: 'Files/Refresh_Status.xlsx', name: 'Refresh_Status.xlsx', what: 'refresh workbook, 21 Oct export' }]);
+  assert.deepEqual(lr.metrics.map((m) => [m.name, m.value, m.unit, m.group]), [['In scope', 1047, '', ''], ['Catalogued', 1009, '', ''], ['% of scope', 96.4, '%', ''], ['Top', 12, '', 'Outstanding by shelf'], ['Bottom', 9, '', 'Outstanding by shelf'], ['(blank)', 4, '', 'Outstanding by shelf']]);
+  assert.deepEqual(lr.blockers, ["A few packets have no label; asked the donors for help."]);
+  assert.deepEqual(now.attachments, [{ link: 'Files/Seed_Count.xlsx', name: 'Seed_Count.xlsx', what: 'seed count workbook, 21 Oct export' }]);
   // Every line of the original survives in the records (words, or numbers equal to what was written).
   const written = weeks.map((w) => W.writeWeekly({ ...w.update, path: 'x.md' })).join('\n');
   for (const line of LONG_NOTE.split('\n').slice(6)) {
@@ -178,9 +178,9 @@ test('an older long note of updates comes in one week each, every fact kept, and
   // progress yet; numbers to fill; a Done workstream left behind.
   now.sections[0].flag = 'Done';
   const next = W.newWeekly('2026-10-26', now);
-  assert.deepEqual(next.sections.map((s) => s.name), ['Spring Festival', 'Laptop Refresh']);
+  assert.deepEqual(next.sections.map((s) => s.name), ['Spring Festival', 'Seed Library']);
   assert.deepEqual(next.sections[0].progress, []);
-  assert.equal(next.sections[1].status, 'Working through the last devices');
+  assert.equal(next.sections[1].status, 'Working through the last packets');
   assert.ok(next.sections[1].metrics.every((m) => m.value === null) && next.sections[1].metrics.length === 6);
   assert.equal(next.audience, 'Sam Lee');
 });
@@ -193,30 +193,30 @@ test('history per workstream with trends, due on its day, and the update as text
   assert.equal(m.current.path, 'W/0.md');
   assert.equal(m.last.path, 'W/1.md');
   assert.deepEqual(m.due, { state: 'draft', dueDay: '2026-10-22', overdue: true, dueToday: false }, 'due Thursday, a draft on Saturday is overdue');
-  const lr = m.workstreams.find((h) => h.key === 'laptop refresh');
+  const lr = m.workstreams.find((h) => h.key === 'seed library');
   assert.deepEqual(lr.weeks.map((p) => [p.week, p.flag]), [['2026-10-12', 'At risk'], ['2026-10-19', '']]);
   assert.deepEqual(lr.metrics.find((s) => s.name === '% of scope').points, [{ week: '2026-10-12', value: 93.3 }, { week: '2026-10-19', value: 96.4 }]);
   weeks[0].status = 'Sent';
   assert.equal(W.weeklyModel(weeks, TODAY, 3).due.state, 'sent');
   // Plain text, as sent.
   const text = W.weeklyText(weeks[0]);
-  assert.match(text, /^Week of 19 October 2026\n\n1\. Store Relocation\nStatus: Planned\. Onsite Thursday/);
-  assert.match(text, /2\. Spring Festival\nStatus: On track\n- 6x tills have landed/);
-  assert.match(text, /In scope: 1,047\nRefreshed: 1,009\n% of scope: 96\.4%\nOutstanding by region: North 12, South 9, \(blank\) 4\./);
+  assert.match(text, /^Week of 19 October 2026\n\n1\. Studio Relocation\nStatus: Planned\. Onsite Thursday/);
+  assert.match(text, /2\. Spring Festival\nStatus: On track\n- 6x marquees have landed/);
+  assert.match(text, /In scope: 1,047\nCatalogued: 1,009\n% of scope: 96\.4%\nOutstanding by shelf: Top 12, Bottom 9, \(blank\) 4\./);
   assert.match(text, /Blockers \/ Risks: None currently/);
-  assert.match(text, /Attachments:\n- Refresh_Status\.xlsx \(refresh workbook, 21 Oct export\)/);
+  assert.match(text, /Attachments:\n- Seed_Count\.xlsx \(seed count workbook, 21 Oct export\)/);
   // Word: a real .docx (read back by Ironleaf's own reader), in the brand kit's colour.
-  const docx = W.weeklyDocx(weeks[0], { name: 'Harbour Retail', colour: '#0f766e', font: 'Inter' });
+  const docx = W.weeklyDocx(weeks[0], { name: 'Harbour Studio', colour: '#0f766e', font: 'Inter' });
   const words = await M.docxText(Buffer.from(docx));
-  for (const t of ['Harbour Retail', 'Week of 19 October 2026', '3. Laptop Refresh', 'In scope', '1,047', 'Blockers / Risks:', 'None currently']) assert.ok(words.includes(t), `docx holds ${t}`);
+  for (const t of ['Harbour Studio', 'Week of 19 October 2026', '3. Seed Library', 'In scope', '1,047', 'Blockers / Risks:', 'None currently']) assert.ok(words.includes(t), `docx holds ${t}`);
   // The page printed to PDF: escaped, in the brand colour.
   const html = W.weeklyHtml({ ...weeks[0], sections: [{ ...weeks[0].sections[0], name: 'A <b>bold</b> move' }] }, { colour: '#0f766e' });
   assert.match(html, /A &lt;b&gt;bold&lt;\/b&gt; move/);
   assert.match(html, /color:#0f766e/);
   // A workstream's project, surely or not at all.
-  const projects = [{ path: 'P/Harbour Store Relocation.md', name: 'Harbour Store Relocation' }, { path: 'P/Spring Festival North.md', name: 'Spring Festival North' }, { path: 'P/Spring Festival South.md', name: 'Spring Festival South' }];
-  assert.equal(W.sureProject('Store Relocation', projects), 'Harbour Store Relocation');
-  assert.equal(W.sureProject('Laptop Refresh', [{ path: 'P/Laptop Refresh (North South)/Laptop Refresh (North South).md', name: 'Laptop Refresh (North/South)' }]), 'Laptop Refresh (North South)', 'linked by its file’s name, never a slash');
+  const projects = [{ path: 'P/Harbour Studio Relocation.md', name: 'Harbour Studio Relocation' }, { path: 'P/Spring Festival North.md', name: 'Spring Festival North' }, { path: 'P/Spring Festival South.md', name: 'Spring Festival South' }];
+  assert.equal(W.sureProject('Studio Relocation', projects), 'Harbour Studio Relocation');
+  assert.equal(W.sureProject('Seed Library', [{ path: 'P/Seed Library (Front Back)/Seed Library (Front Back).md', name: 'Seed Library (Front/Back)' }]), 'Seed Library (Front Back)', 'linked by its file’s name, never a slash');
   assert.equal(W.sureProject('Spring Festival', projects), '', 'two equally likely: never a guess');
   assert.equal(W.suggestProjects('SF 2027', [{ path: 'a', name: 'Spring Festival 2027' }])[0].name, 'Spring Festival 2027', 'initials count');
 });
@@ -411,9 +411,9 @@ test('weekly updates on the main side: started from last week, changed, written 
   assert.equal(model.current.path, 'Work/Weekly Updates/Weekly update 2026-10-19.md');
   // A change on the page: one change of the note; a progress line and a blocker written into the linked project.
   const rel = model.current.path;
-  await v.op('weekly', 'edit', rel, [{ kind: 'section', section: 0, field: 'project', value: 'Harbour Fit-out' }, { kind: 'add-item', section: 0, list: 'progress', text: 'Hardware in store' }]);
+  await v.op('weekly', 'edit', rel, [{ kind: 'section', section: 0, field: 'project', value: 'Harbour Fit-out' }, { kind: 'add-item', section: 0, list: 'progress', text: 'Gear in the van' }]);
   assert.match(await v.op('weekly', 'to-project', rel, 0, 'progress', 0), /Written into Harbour Fit-out’s updates/);
-  assert.match(v.read('Work/Projects/Harbour Fit-out/Harbour Fit-out.md'), /Hardware in store/);
+  assert.match(v.read('Work/Projects/Harbour Fit-out/Harbour Fit-out.md'), /Gear in the van/);
   assert.match(await v.op('weekly', 'to-project', rel, 0, 'progress', 0), /already/, 'once');
   await v.op('weekly', 'edit', rel, { kind: 'add-item', section: 0, list: 'blockers', text: 'Lift booking not confirmed' });
   assert.match(await v.op('weekly', 'to-project', rel, 0, 'risk', 0), /Added to Harbour Fit-out’s risks/);
@@ -439,17 +439,17 @@ test('weekly updates on the main side: started from last week, changed, written 
 });
 
 test('weekly tools through the gate: drafted from words and numbers, read back, and refused what isn’t allowed', async () => {
-  const v = setup({ 'Work/Weekly Updates/Weekly update 2026-10-12.md': S.weeklyUpdates.writeWeekly({ ...S.weeklyUpdates.newWeekly('2026-10-12'), sections: [{ name: 'Laptop Refresh', project: '', flag: 'At risk', status: 'Vendor stock low', progress: [], next: ['Order more'], blockers: [], none: false, noneWords: '', metrics: [{ name: '% of scope', value: 93.3, unit: '%', group: '' }], notes: '' }] }) }, { weekly: { on: true } });
+  const v = setup({ 'Work/Weekly Updates/Weekly update 2026-10-12.md': S.weeklyUpdates.writeWeekly({ ...S.weeklyUpdates.newWeekly('2026-10-12'), sections: [{ name: 'Seed Library', project: '', flag: 'At risk', status: 'Donations low', progress: [], next: ['Order more'], blockers: [], none: false, noneWords: '', metrics: [{ name: '% of scope', value: 93.3, unit: '%', group: '' }], notes: '' }] }) }, { weekly: { on: true } });
   const L = S.sensitivity;
   const store = L.emptyStore();
   const spark = gateFor(v.index, 'neuralspark', 'the host app', store);
-  let r = await v.w.callTool('weekly_update_add_section', { workstream: 'Laptop Refresh', flag: 'On track', status: 'Last devices', progress: ['Image fixed'], blockers: ['None'] }, spark);
-  assert.match(r.text, /Started the week of 19 October 2026 from last week first\. Brought Laptop Refresh up to date/);
-  r = await v.w.callTool('weekly_update_set_metric', { workstream: 'laptop refresh', measure: '% of scope', value: 96.4, unit: '%' }, spark);
+  let r = await v.w.callTool('weekly_update_add_section', { workstream: 'Seed Library', flag: 'On track', status: 'Last packets', progress: ['Labels fixed'], blockers: ['None'] }, spark);
+  assert.match(r.text, /Started the week of 19 October 2026 from last week first\. Brought Seed Library up to date/);
+  r = await v.w.callTool('weekly_update_set_metric', { workstream: 'seed library', measure: '% of scope', value: 96.4, unit: '%' }, spark);
   assert.match(r.text, /Set % of scope to 96\.4%/);
   r = await v.w.callTool('weekly_update_get', {}, spark);
-  assert.match(r.text, /1\. Laptop Refresh\nStatus: On track\. Last devices\n- Image fixed\nNext steps:\n- Order more\n% of scope: 96\.4%/);
-  r = await v.w.callTool('weekly_update_get', { workstream: 'Laptop refresh' }, spark);
+  assert.match(r.text, /1\. Seed Library\nStatus: On track\. Last packets\n- Labels fixed\nNext steps:\n- Order more\n% of scope: 96\.4%/);
+  r = await v.w.callTool('weekly_update_get', { workstream: 'Seed library' }, spark);
   assert.match(r.text, /% of scope: w\/c 12 Oct 93\.3%, w\/c 19 Oct 96\.4%/);
   r = await v.w.callTool('weekly_update_mark_sent', { sent_by: 'Alex Example' }, spark);
   assert.match(r.text, /marked sent/);
@@ -569,22 +569,22 @@ test('questions: asked, answered, and made a task or a decision in one click', a
   const areas = JSON.stringify({ version: 1, areas: [{ id: 'work', name: 'Work', folder: 'Work' }] });
   const m27 = 'Work/Meetings/2026-10-27 Fit-out sync.md';
   const v = setup({ '.neuralvault/areas.json': areas, 'Work/Projects/Harbour Fit-out/Harbour Fit-out.md': PROJECT, [m27]: MEETING, 'Work/People/Sam Okafor.md': '---\ntype: person\n---\n' }, { meetings: { on: true } });
-  await v.op('meetings', 'add-item', m27, 'question', 'Who signs off the till logs?');
+  await v.op('meetings', 'add-item', m27, 'question', 'Who signs off the oven logs?');
   await v.op('meetings', 'add-item', m27, 'question', 'Does the receipt show the tax line? — for [[Sam Okafor]]');
-  assert.match(v.read(m27), /## Questions\n\n- \? Who signs off the till logs\?\n- \? Does the receipt show the tax line\? — for \[\[Sam Okafor\]\]/);
+  assert.match(v.read(m27), /## Questions\n\n- \? Who signs off the oven logs\?\n- \? Does the receipt show the tax line\? — for \[\[Sam Okafor\]\]/);
   let qs = (await v.op('meetings', 'model')).meetings.find((m) => m.path === m27).questions;
   assert.equal(qs.filter((q) => !q.answered).length, 2);
   assert.equal(qs[1].owner, 'Sam Okafor');
   assert.equal(qs[1].ownerPath, 'Work/People/Sam Okafor.md', 'its for is a typed link to their note');
   await assert.rejects(v.op('meetings', 'question-task', m27, qs[0].line, qs[0].raw), /Answer it first/);
-  await v.op('meetings', 'answer-question', m27, qs[0].line, qs[0].raw, 'the shop manager signs');
-  assert.match(v.read(m27), /Who signs off the till logs\? — answer: the shop manager signs/);
+  await v.op('meetings', 'answer-question', m27, qs[0].line, qs[0].raw, 'the head baker signs');
+  assert.match(v.read(m27), /Who signs off the oven logs\? — answer: the head baker signs/);
   qs = (await v.op('meetings', 'model')).meetings.find((m) => m.path === m27).questions;
   assert.equal(qs[0].answered, true);
-  assert.equal(qs[0].answer, 'the shop manager signs');
+  assert.equal(qs[0].answer, 'the head baker signs');
   await v.op('meetings', 'question-task', m27, qs[0].line, qs[0].raw);
-  assert.match(v.read(m27), /- \[ \] Who signs off the till logs\?/);
-  assert.match(v.read(m27), /Who signs off the till logs\? — answer: the shop manager signs/, 'the question keeps its answer');
+  assert.match(v.read(m27), /- \[ \] Who signs off the oven logs\?/);
+  assert.match(v.read(m27), /Who signs off the oven logs\? — answer: the head baker signs/, 'the question keeps its answer');
   await v.op('meetings', 'answer-question', m27, qs[1].line, qs[1].raw, 'yes, every line');
   const qs2 = (await v.op('meetings', 'model')).meetings.find((m) => m.path === m27).questions;
   await v.op('meetings', 'question-decision', m27, qs2[1].line, qs2[1].raw);
