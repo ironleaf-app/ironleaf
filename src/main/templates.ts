@@ -228,7 +228,7 @@ tags: [brief]
 Why this is happening, and why now.
 
 ## Goal
-What done looks like, in a way you could check: for example, every laptop on Windows 11 by 30 June, or the new site trading on 1 March.
+What done looks like, in a way you could check: for example, every laptop on Windows 11 by 30 June, or the new office open on 1 March.
 
 ## Scope
 **In:**
@@ -324,7 +324,7 @@ Three things that went well, a line each.
 // Project shapes. Dates count from the day the project is made; every one is the person's to change.
 const IT_ROLLOUT = `---
 type: project-template
-description: Rolling something out across devices, sites or people — a new system, an upgrade, a replacement.
+description: A small office IT project — new computers or a new system, from the inventory to sign-off.
 status: planning
 health: on track
 due: {{date+10w:YYYY-MM-DD}}
@@ -334,33 +334,33 @@ tags: [it-rollout]
 
 ## Summary
 
-What’s being rolled out, to whom, and what done looks like (for example: every laptop in the region on the new version by the end of the quarter, with fewer than 2% exempt).
+What’s changing, for whom, and what done looks like (for example: everyone in the office on a new laptop, set up, shown the basics and signed off by the end of next month).
 
 ## What’s next
 
-- [ ] Agree the scope: which devices, sites and people are in, and who’s exempt — by {{date+1w:D MMM YYYY}}
-- [ ] Get the device and user list from the asset register or management tool — by {{date+1w:D MMM YYYY}}
-- [ ] Build and test on a small pilot group — by {{date+3w:D MMM YYYY}}
-- [ ] Write the message for staff: what changes, when, and who to call — by {{date+4w:D MMM YYYY}}
-- [ ] Book the change through change approval — by {{date+4w:D MMM YYYY}}
-- [ ] Set up a tracker: done, to do, failed and exempt
+- [ ] Take an inventory: who has what, and what needs replacing — by {{date+1w:D MMM YYYY}}
+- [ ] Order the equipment and licences — by {{date+2w:D MMM YYYY}}
+- [ ] Set up and test one first, then the rest — by {{date+4w:D MMM YYYY}}
+- [ ] Write a short how-to: what changes, when, and who to ask — by {{date+5w:D MMM YYYY}}
+- [ ] Hand each one over and show people the basics — by {{date+7w:D MMM YYYY}}
+- [ ] Get sign-off that everything works, and note what was done
 
 ## Key dates
 
 | When | What | Status |
 | --- | --- | --- |
 | {{date:D MMM YYYY}} | Kick-off | planned |
-| {{date+2w:D MMM YYYY}} | Pilot starts | planned |
-| {{date+4w:D MMM YYYY}} | Pilot signed off | planned |
-| {{date+5w:D MMM YYYY}} | First wave | planned |
-| {{date+10w:D MMM YYYY}} | Everyone done | planned |
+| {{date+2w:D MMM YYYY}} | Order placed | planned |
+| {{date+5w:D MMM YYYY}} | Set up and tested | planned |
+| {{date+8w:D MMM YYYY}} | Handed over, training done | planned |
+| {{date+10w:D MMM YYYY}} | Signed off | planned |
 
 ## Risks and issues
 
-- **High** — Devices that fail the change (old hardware, little disk space) hold up the waves.
-- **Medium** — An app the business relies on doesn’t work afterwards; test the main ones in the pilot.
-- **Medium** — People are away or offline when their device is due.
-- **Low** — A change freeze (month end, holidays) lands in the middle of a wave.
+- **High** — The equipment or licences arrive late; order early.
+- **Medium** — A program people rely on doesn’t work on the new setup; test the main ones first.
+- **Medium** — People are away when their handover is due.
+- **Low** — Old files or settings don’t come across; back them up before the swap.
 
 ## Notes
 `;
@@ -439,7 +439,7 @@ Which site is closing, when, why, and where its people and equipment are going.
 | --- | --- | --- |
 | {{date:D MMM YYYY}} | Closure confirmed | planned |
 | {{date+2w:D MMM YYYY}} | Notice given on contracts | planned |
-| {{date+6w:D MMM YYYY}} | Last day of trading | planned |
+| {{date+6w:D MMM YYYY}} | Last working day | planned |
 | {{date+7w:D MMM YYYY}} | Equipment out | planned |
 | {{date+8w:D MMM YYYY}} | Keys handed back | planned |
 
