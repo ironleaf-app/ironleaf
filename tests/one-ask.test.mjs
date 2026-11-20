@@ -41,11 +41,13 @@ test('no floating ask bar or answer card anywhere: files, mounts, markers and he
   const ws = read('src/renderer/src/views/Workspace.tsx');
   assert.ok(!ws.includes('AskBar') && !ws.includes('AskFloat'), 'the frame mounts neither the bar nor the card');
   // The whole mechanism's tokens: the opt-out marker, the declaration, the card state, the bar's height.
-  const tokens = ['data-no-askbar', 'NoAskBar', 'sas-askbar', 'sas-asksuggest', 'sas-askmeta', 'sas-askfloat', 'sas-float-', 'sas-mic', 'sas-model', 'is-roomy', 'openAskFloat', 'closeAskFloat', 'toggleAskFloat', 'useAskFloat', 'askFloatOpen', 'askFloatTab', '--askbar-h'];
+  const tokens = ['data-no-askbar', 'NoAskBar', 'sas-askbar', 'sas-asksuggest', 'sas-askmeta', 'sas-askfloat', 'sas-float-', 'sas-mic', 'sas-model', 'openAskFloat', 'closeAskFloat', 'toggleAskFloat', 'useAskFloat', 'askFloatOpen', 'askFloatTab', '--askbar-h'];
   const hits = [];
   for (const f of walk('src')) {
     const src = read(f);
     for (const t of tokens) if (src.includes(t)) hits.push(`${f}: ${t}`);
+    // The bar's roomy state; the project overview's own .pj-ov.is-roomy (its wide layout, 20 Nov 2026) is another thing.
+    for (const line of src.split('\n')) if (line.includes('is-roomy') && !line.includes('pj-ov')) hits.push(`${f}: is-roomy`);
   }
   assert.deepEqual(hits, [], 'no bar or card token left in src (the search foot .sas-askfoot and the panel head .sas-askhead stay, untracked here)');
 });
