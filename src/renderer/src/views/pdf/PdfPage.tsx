@@ -46,6 +46,9 @@ interface Props {
 /** Big pages at high zoom are drawn at fewer pixels than the screen has, so memory stays sane. */
 const MAX_PIXELS = 16_000_000;
 
+/** How long a zoom must hold still before the words are laid again at the new size. */
+const SETTLE_MS = 180;
+
 function PdfPageView({ path, doc, index, scale, width, height, live, highlights, flash, matches, register, clip, onClip, ocr }: Props) {
   const box = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -121,7 +124,9 @@ function PdfPageView({ path, doc, index, scale, width, height, live, highlights,
     }
     let ok = true;
     let layer: { cancel(): void } | null = null;
-    void (async () => {
+    // A zoom changes the scale many times a second (each wheel step, each key): the words are laid again once it has
+    // settled, not for every step on the way (PDF.js measures every word, and doing that per step held the window).
+    const lay = async () => {
       try {
         const [m, content] = await Promise.all([pdfjsFull(), pageTextContent(path, doc, index + 1)]);
         if (!ok) return;
@@ -173,9 +178,11 @@ function PdfPageView({ path, doc, index, scale, width, height, live, highlights,
       } catch {
         // A page without words (a scan) still reads; it just can't be selected.
       }
-    })();
+    };
+    const settle = setTimeout(() => void lay(), words ? SETTLE_MS : 0);
     return () => {
       ok = false;
+      clearTimeout(settle);
       layer?.cancel();
     };
   }, [live, page, scale, ocr, width, height]);
@@ -308,7 +315,7 @@ function PdfPageView({ path, doc, index, scale, width, height, live, highlights,
               return <span key={`n${h.id}`} className={`pdfv-note-pin pdfv-hl-${h.colour}`} style={{ left: Math.min(10, Math.max(3, b.left / 2 - 4)), top: b.top + (b.bottom - b.top) / 2 - 7 }} />;
             })}
       </div>
-      <div ref={textBox} className="pdfv-text textLayer" />
+      <div ref={textBox} className={`pdfv-text textLayer${words && words.scale !== scale ? ' is-stale' : ''}`} />
       {band && <div className="pdfv-band" aria-hidden style={{ left: band.left, top: band.top, width: band.right - band.left, height: band.bottom - band.top }} />}
     </div>
   );

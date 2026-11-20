@@ -675,10 +675,17 @@ export function PdfView({ tab }: { tab: TabState }) {
   useEffect(() => {
     const el = scroller.current;
     if (!el) return;
+    // A trackpad or a free-spinning wheel sends dozens of small events a second: their travel is added up and the zoom
+    // moves one step per notch's worth (about 100 px), so a flick is a step or two, not twenty re-layouts.
+    let travel = 0;
     const wheel = (e: WheelEvent) => {
       if (!e.ctrlKey && !e.metaKey) return;
       e.preventDefault();
-      setZoom(stepZoom(scale, e.deltaY < 0 ? 1 : -1));
+      travel += e.deltaMode === 1 ? e.deltaY * 33 : e.deltaY;
+      if (Math.abs(travel) < 90) return;
+      const dir = travel < 0 ? 1 : -1;
+      travel = 0;
+      setZoom(stepZoom(scale, dir));
     };
     el.addEventListener('wheel', wheel, { passive: false });
     return () => el.removeEventListener('wheel', wheel);
