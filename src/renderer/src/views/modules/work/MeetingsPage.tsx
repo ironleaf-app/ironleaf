@@ -50,6 +50,7 @@ import { WeekCalendar } from '../../meetings/WeekCalendar';
 import { MeetingRecorder, MicPicker } from '../../MeetingRecorder';
 import { MeetingMinutesHere } from '../../MeetingMinutes';
 import { ContextPaneProvider, ListDetail, readingBody, RecordConnections, RecordDetail, useSettled, useWidth } from '../../../components/ListDetail';
+import { usePanesMark } from '../../../lib/panesMark';
 import { ReadingView } from '../../../components/ReadingView';
 import { requestSearch } from '../../../state/modals';
 import { ViewHeader } from '../../ViewHeader';
@@ -694,8 +695,9 @@ function AfterMeeting({ m, canEdit }: { m: Meet; canEdit: boolean }) {
   // notes, key figures, questions, discussion) read under the minutes, so the minutes region holds the whole
   // record; what the minutes card and the transcript already show stays out.
   const rest = useMemo(() => restOfMeeting(noteText ?? '', minutesMade || !!summary), [noteText, minutesMade, summary]);
-  const [measure, width] = useWidth();
+  const [measure, width, regions] = useWidth();
   const wide = width >= 1180;
+  usePanesMark(regions, wide);
   const three = width >= 2100;
   const [slot, setSlot] = useState<HTMLElement | null>(null);
   return (

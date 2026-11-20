@@ -34,6 +34,7 @@ import { prompt } from '../../components/Dialogs';
 import { activityWords } from '../../lib/assistantWords';
 import { hashTint, initials, readDate, shortDate, sizeWords, whenAgo } from '../../lib/projectLook';
 import { noteChainNodes } from '../../lib/docNodes';
+import { usePanesMark } from '../../lib/panesMark';
 import { renderMarkdown } from '../../lib/markdownRender';
 import * as A from '../../state/actions';
 import { askInChat } from '../../state/chat';
@@ -1876,6 +1877,8 @@ export function OverviewSection({ ctx, shown = true }: { ctx: TabsCtx; /** Wheth
   // Tall and wide enough (a user's 3440x1400), the panes fill the window to its foot; shorter, they stand a
   // fixed height under the blocks and the page scrolls to them.
   const fills = useRoomy('(min-width: 2300px) and (min-height: 1250px)');
+  const more = useRef<HTMLDivElement>(null);
+  usePanesMark(more, roomy && fills && shown);
   const cap = roomy ? 50 : 3;
   const latestUpdates = updates.slice(-cap).reverse();
   const risks = useMemo(() => openRisksRanked(p), [p]);
@@ -2026,7 +2029,7 @@ export function OverviewSection({ ctx, shown = true }: { ctx: TabsCtx; /** Wheth
         a panes root anywhere in the page's scroller turns that scroller's own scrolling off (panes.css 1). Kept on,
         Notes and files and every other tab of a big project would not scroll at all on a tall wide window. */}
     {roomy && (
-      <div className={`pj-ov-more${fills && shown ? ' nv-panes-root' : ''}`}>
+      <div ref={more} className={`pj-ov-more${fills && shown ? ' nv-panes-root' : ''}`}>
         <div className="pj-ov-pane">
           <NotesSection ctx={ctx} />
         </div>

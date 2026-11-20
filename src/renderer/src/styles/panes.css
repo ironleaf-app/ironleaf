@@ -21,13 +21,17 @@
   --pane-radius: var(--r-4, 10px);
 }
 
-/* ---------- 1. The fill chain: from the page's scroller down to the panes, every box takes the height left ---------- */
-:is(.vscroll, .nv-page-scroll, .tp-page):has(.nv-panes-root) {
+/* ---------- 1. The fill chain: from the page's scroller down to the panes, every box takes the height left ----------
+   [data-has-panes] marks every box above a panes root (lib/panesMark.ts sets it when the root mounts): what
+   :has(.nv-panes-root) said here before. Those :has() rules, some as :not(:has()) on any element, were checked again
+   for the whole page each time anything was added to it (21 Nov 2026, at 3,530 px: adding 40 rows to a list cost
+   0.7-2.8 s of style work, 8-30 ms with the mark). A doubled [data-has-panes] keeps each rule's old weight. */
+:is(.vscroll, .nv-page-scroll, .tp-page)[data-has-panes] {
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
-:is(.vscroll, .nv-page-scroll, .tp-page):has(.nv-panes-root) :has(.nv-panes-root.nv-panes-root):not(.w2b-split) {
+:is(.vscroll, .nv-page-scroll, .tp-page)[data-has-panes] [data-has-panes][data-has-panes]:not(.w2b-split) {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
@@ -37,39 +41,39 @@
   padding-bottom: 0;
 }
 /* What stands above the panes (the head, chips, the find) keeps its own height. */
-:is(.vscroll, .nv-page-scroll, .tp-page):has(.nv-panes-root) :has(.nv-panes-root.nv-panes-root) > :not(:has(.nv-panes-root)):not(.nv-panes-root) {
+:is(.vscroll, .nv-page-scroll, .tp-page)[data-has-panes] [data-has-panes][data-has-panes] > :not([data-has-panes]):not(.nv-panes-root) {
   flex: none;
 }
 /* The frame's head a little tighter; the window's foot one gap under the panes (.nv-split's margin below). */
-:is(.nv-page, .vpage):has(.nv-panes-root) > .nv-page-head.nv-page-head {
+:is(.nv-page, .vpage)[data-has-panes] > .nv-page-head.nv-page-head {
   padding-top: var(--space-5);
   margin-bottom: var(--space-4);
 }
-.vpage.wide:has(.nv-panes-root) {
+.vpage.wide[data-has-panes] {
   padding-top: var(--space-5);
 }
-.vpage.wide:has(.nv-panes-root) > .w2a-head {
+.vpage.wide[data-has-panes] > .w2a-head {
   margin-bottom: var(--space-4);
 }
 
 /* Notes: the folders rail beside the list keeps its grid, both as tall as the window. */
-.w2b-split:has(.nv-panes-root) {
+.w2b-split[data-has-panes] {
   flex: 1 1 auto;
   min-height: 0;
   grid-template-rows: minmax(0, 1fr);
   align-items: stretch;
 }
-.w2b-split:has(.nv-panes-root) > .w2b-folders {
+.w2b-split[data-has-panes] > .w2b-folders {
   position: static;
   max-height: none;
   overflow: auto;
 }
-.w2b-split:has(.nv-panes-root) > .w2b-main {
+.w2b-split[data-has-panes] > .w2b-main {
   display: flex;
   flex-direction: column;
   min-height: 0;
 }
-.w2b-split:has(.nv-panes-root) > .w2b-main > :not(:has(.nv-panes-root)):not(.nv-panes-root) {
+.w2b-split[data-has-panes] > .w2b-main > :not([data-has-panes]):not(.nv-panes-root) {
   flex: none;
 }
 
@@ -228,8 +232,7 @@ h3.nv-context-head {
    height), and from about a 2560 window a far-right region: the words to check, the meeting note's counts and what
    the meeting connects to. The minutes region is only as wide as its measure; the transcript takes the rest. Narrow
    (.mt-regions without .nv-panes-root), one column that scrolls with the page. */
-.nv-page:has(> .w2b-meeting .nv-panes-root),
-.nv-page:has(> * > .w2b-meeting .nv-panes-root) {
+.nv-page:has(> .w2b-meeting[data-has-panes], > * > .w2b-meeting[data-has-panes]) {
   padding-top: var(--space-5);
 }
 .w2b-meeting:has(> .nv-panes-root) > .metapills {
@@ -675,7 +678,7 @@ h3.nv-context-head {
 .tp-inner.has-split {
   container: frame / inline-size;
 }
-.tp-body:has(.nv-panes-root) {
+.tp-body[data-has-panes] {
   display: flex;
   flex-direction: column;
 }
@@ -688,7 +691,7 @@ h3.nv-context-head {
   background: none;
   box-shadow: none;
 }
-.nv-split.is-panes > .nv-split-side:has(.tp-preview.in-pane) > .nv-split-side-inner {
+.nv-split.is-panes > .nv-split-side > .nv-split-side-inner:has(> .tp-preview.in-pane) {
   padding: 0;
 }
 /* The Inbox's captures read one under another in their pane (round 2 flowed them in columns across the page). */
