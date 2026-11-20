@@ -35,12 +35,12 @@ due: "2026-10-22"
 
 ## Summary
 
-Every store's tills on the new build.
+The studio's new mixing desk and speakers.
 
 ## What’s next
 
 - [ ] Send the reconciliation v4 to finance — Sam · by 17 Oct
-- [ ] Book the second wave for Sydney cafes — Priya
+- [ ] Book the second soundproofing session — Priya
 - [x] Export the device inventory
 
 ## Key dates
@@ -48,21 +48,21 @@ Every store's tills on the new build.
 | When | What | Status |
 | --- | --- | --- |
 | 17 Oct 2026 | Finance sign-off | planned |
-| 22 Oct 2026 | All stores upgraded | on track |
+| 22 Oct 2026 | Studio reopens | on track |
 
 ## People
 
 - **Sam Taylor** — Project owner
-- **Priya Shah** — Rollout lead, Sydney
+- **Priya Shah** — Sound engineer
 
 ## Risks and issues
 
-- **High** — 11 spare tills can’t be reached remotely
-- **Medium** — 5 tills under 30 GB free
+- **High** — 11 old microphone stands can’t be found
+- **Medium** — 5 speaker cables frayed
 
 ## Documents
 
-- \`Current/Store_Reconciliation_v4.docx\` — The reconciliation for finance
+- \`Current/Studio_Reconciliation_v4.docx\` — The reconciliation for finance
 - \`Site photos/IMG_2041.jpg\` — The new counter
 
 ## Notes
@@ -112,7 +112,7 @@ test('a project lays out around its card: every group, every fact in its group, 
   for (const s of ['next', 'dates', 'risks', 'people', 'documents']) for (const n of bound(board, 'item', s)) assert.ok(within(n, group(board, s)), `${n.text} inside ${s}`);
   // Cards read as ordinary text in other readers: the project file's own lines.
   assert.equal(bound(board, 'item', 'next')[0].text, '- [ ] Send the reconciliation v4 to finance — Sam · by 17 Oct');
-  assert.equal(bound(board, 'item', 'risks')[0].text, '**High** — 11 spare tills can’t be reached remotely');
+  assert.equal(bound(board, 'item', 'risks')[0].text, '**High** — 11 old microphone stands can’t be found');
   assert.equal(bound(board, 'notes')[0].text, 'Keep the outer cafes until last.');
   // A picture document is drawn taller (shown as the picture).
   const photo = bound(board, 'item', 'documents').find((n) => n.text.includes('IMG_2041'));
@@ -141,7 +141,7 @@ test('every kind of card round-trips through the project file’s own lines', ()
   // Edited words keep what the words don't hold (the tick, the level, the status, the path).
   const step = { done: true, what: 'Old', who: 'Sam' };
   assert.deepEqual(C.withWords('next', step, 'Send the list — Priya · by 24 Oct'), { done: true, what: 'Send the list', who: 'Priya', when: '24 Oct' });
-  assert.deepEqual(C.withWords('risks', { level: 'high', what: 'x' }, 'Tills unreachable'), { level: 'high', what: 'Tills unreachable' });
+  assert.deepEqual(C.withWords('risks', { level: 'high', what: 'x' }, 'Stands missing'), { level: 'high', what: 'Stands missing' });
   assert.deepEqual(C.withWords('dates', { when: '1 Nov', what: 'x', status: 'planned' }, '2 Nov — Freeze starts'), { when: '2 Nov', what: 'Freeze starts', status: 'planned' });
   assert.deepEqual(C.withWords('people', { name: 'A' }, 'Alex Lee — Chef'), { name: 'Alex Lee', role: 'Chef' });
   assert.deepEqual(C.withWords('documents', { path: 'a/b.pdf' }, 'The plan'), { path: 'a/b.pdf', what: 'The plan' });
@@ -173,15 +173,15 @@ test('edits on bound cards write the project file, and the cards follow without 
   assert.equal(again.risks[1].level, 'high');
   assert.equal(again.next[0].what, 'Send the reconciliation v5 to finance');
   assert.equal(again.notes, 'Outer cafes last.\nQuiet week first.');
-  assert.match(written, /- \[x\] Book the second wave for Sydney cafes — Priya/);
-  assert.match(written, /\*\*High\*\* — 5 tills under 30 GB free/);
+  assert.match(written, /- \[x\] Book the second soundproofing session — Priya/);
+  assert.match(written, /\*\*High\*\* — 5 speaker cables frayed/);
 
   const { board: next, changed } = C.syncProject(board, again, FILE);
   assert.ok(changed);
   for (const n of next.nodes) if (before.has(n.id)) assert.deepEqual({ x: n.x, y: n.y }, before.get(n.id), `${n.text ?? n.label ?? n.id} stayed put`);
-  assert.equal(next.nodes.find((n) => n.id === step.id).text, '- [x] Book the second wave for Sydney cafes — Priya');
+  assert.equal(next.nodes.find((n) => n.id === step.id).text, '- [x] Book the second soundproofing session — Priya');
   assert.equal(next.nodes.find((n) => n.id === step.id).color, '1');
-  assert.equal(next.nodes.find((n) => n.id === risk.id).text, '**High** — 5 tills under 30 GB free');
+  assert.equal(next.nodes.find((n) => n.id === risk.id).text, '**High** — 5 speaker cables frayed');
   // The reworded step kept its card (found by where it was) and now carries its new words.
   const reworded = bound(next, 'item', 'next').find((n) => n.text.includes('v5'));
   assert.equal(reworded.id, bound(board, 'item', 'next')[0].id);
@@ -244,7 +244,7 @@ test('facts gone from the project leave the board; a card taken off stays off', 
   p.risks.shift();
   const { board: next } = C.syncProject(board, p, FILE);
   assert.equal(bound(next, 'item', 'risks').length, 1);
-  assert.match(bound(next, 'item', 'risks')[0].text, /5 tills/);
+  assert.match(bound(next, 'item', 'risks')[0].text, /5 speaker cables/);
   // Taken off by the person (remembered on the board): not put back.
   const person = bound(next, 'item', 'people')[0];
   const off = { ...next, nodes: next.nodes.filter((n) => n.id !== person.id), neuralvault: { ...next.neuralvault, hidden: [C.hiddenKey(person.neuralvault)] } };
@@ -282,8 +282,8 @@ const entry = (name, props, body = '') => ({ path: `Projects/${name}/${name}.md`
 
 test('the portfolio board: columns by status or health, related projects joined, moves follow status', () => {
   const entries = [
-    entry('Studio Upgrade', 'status: active\nhealth: at risk\nowner: Sam Taylor', '## People\n\n- **Priya Shah** — Rollout lead\n- **Finance team** — sign-off\n'),
-    entry('Harbour Fit-out', 'status: planning\nhealth: on track\nowner: Priya Shah', '## Summary\n\nThe new office. Waits on the Studio Upgrade tills.\n'),
+    entry('Studio Upgrade', 'status: active\nhealth: at risk\nowner: Sam Taylor', '## People\n\n- **Priya Shah** — Sound engineer\n- **Finance team** — sign-off\n'),
+    entry('Harbour Fit-out', 'status: planning\nhealth: on track\nowner: Priya Shah', '## Summary\n\nThe new office. Waits on the Studio Upgrade desk.\n'),
     entry('Winter Menu', 'status: active\nhealth: off track\nowner: Alex Lee', '## People\n\n- **Finance team** — budget\n'),
     entry('Supplier Review', 'status: closed\nhealth: on track'),
   ];

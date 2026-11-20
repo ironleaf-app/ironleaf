@@ -25,7 +25,7 @@ const D = (y, m, d) => T.dayFrom(y, m - 1, d);
 const TODAY = () => D(2026, 10, 17);
 const project = (text, file = 'Projects/X/X.md') => T.projectTimeline(file, P.parseProject(text, file), TODAY());
 
-const STORE = `---
+const STUDIO = `---
 type: project
 status: active
 health: at risk
@@ -38,8 +38,8 @@ due: "2026-10-31"
 ## What’s next
 
 - [ ] Send the reconciliation to finance — Sam Taylor · by 15 Oct
-- [ ] Book the second wave — Priya Shah · by 7 Nov
-- [ ] Chase the spare tills — Shift leads · by end of month
+- [ ] Book the speaker fitting — Priya Shah · by 7 Nov
+- [ ] Chase the spare microphone stands — Studio hands · by end of month
 - [x] Export the device inventory — Sam Taylor · by 1 Oct
 
 ## Key dates
@@ -48,12 +48,12 @@ due: "2026-10-31"
 | --- | --- | --- |
 | 9 Sep 2026 | Scope signed off | done |
 | 30 Sep 2026 | First target | missed |
-| 24 Oct 2026 | Wave two go-live | on track |
+| 24 Oct 2026 | Mixing desk live | on track |
 | 10 Oct 2026 | Finance check | — |
 
 ## People
 
-- **Priya Shah** — Rollout lead
+- **Priya Shah** — Sound engineer
 - **Finance team** — Sign-off
 
 ## Decisions
@@ -62,7 +62,7 @@ due: "2026-10-31"
 
 ## Updates
 
-- **16 Oct 2026** — 212 of 236 tills done.
+- **16 Oct 2026** — 8 of 12 soundproofing panels up.
 `;
 const HARBOUR = `---
 type: project
@@ -130,18 +130,18 @@ test('a moved date is written the way the one it replaces was', () => {
 });
 
 test('a project’s dates: start, due, key dates, next steps by when, decisions and updates; words that aren’t dates counted, never guessed', () => {
-  const p = project(STORE);
+  const p = project(STUDIO);
   assert.equal(p.start, D(2026, 9, 9));
   assert.equal(p.due, D(2026, 10, 31));
   const kinds = p.marks.reduce((o, m) => ({ ...o, [m.kind]: (o[m.kind] ?? 0) + 1 }), {});
   assert.deepEqual(kinds, { start: 1, due: 1, date: 4, next: 3, decision: 1, update: 1 });
   assert.equal(p.unread, 1, '“by end of month” isn’t placed');
   assert.deepEqual(p.marks.map((m) => m.day), [...p.marks.map((m) => m.day)].sort((a, b) => a - b), 'in date order');
-  const golive = p.marks.find((m) => m.words === 'Wave two go-live');
+  const golive = p.marks.find((m) => m.words === 'Mixing desk live');
   assert.equal(golive.index, 2);
   assert.equal(golive.movable, true);
   assert.equal(p.marks.find((m) => m.kind === 'next').movable, false);
-  assert.deepEqual(p.people.sort(), ['finance team', 'priya shah', 'sam taylor', 'shift leads']);
+  assert.deepEqual(p.people.sort(), ['finance team', 'priya shah', 'sam taylor', 'studio hands']);
 });
 
 test('clashes: the person on every project is not a clash by being there; a pair of projects is listed once a day', () => {
@@ -160,11 +160,11 @@ test('clashes: the person on every project is not a clash by being there; a pair
 });
 
 test('clashes: two key dates on the same day in projects that share people, with a plain reason on both', () => {
-  const store = project(STORE, 'Projects/Store/Store.md');
+  const studio = project(STUDIO, 'Projects/Studio/Studio.md');
   const harbour = project(HARBOUR, 'Projects/Harbour/Harbour.md');
   const bakery = project(BAKERY, 'Projects/Bakery/Bakery.md');
-  const r = T.findProblems([store, harbour, bakery], TODAY());
-  const golive = store.marks.find((m) => m.words === 'Wave two go-live');
+  const r = T.findProblems([studio, harbour, bakery], TODAY());
+  const golive = studio.marks.find((m) => m.words === 'Mixing desk live');
   const quote = harbour.marks.find((m) => m.words === 'Lighting quote approved');
   assert.match(r.marks.get(golive.id).find((x) => x.kind === 'clash').words, /^Same day as “Lighting quote approved” \(Harbour Fit-out\): Priya Shah is on both\.$/);
   assert.match(r.marks.get(quote.id).find((x) => x.kind === 'clash').words, /Studio Upgrade.*Priya Shah/);
@@ -174,10 +174,10 @@ test('clashes: two key dates on the same day in projects that share people, with
 });
 
 test('slips: a next step due after its project, past dates not done; a missed date shows as missed; done things left alone', () => {
-  const store = project(STORE);
-  const r = T.findProblems([store], TODAY());
-  const words = (w) => r.marks.get(store.marks.find((m) => m.words === w).id) ?? [];
-  assert.deepEqual(words('Book the second wave').map((x) => x.words), ['Due 7 days after the project itself (31 Oct).']);
+  const studio = project(STUDIO);
+  const r = T.findProblems([studio], TODAY());
+  const words = (w) => r.marks.get(studio.marks.find((m) => m.words === w).id) ?? [];
+  assert.deepEqual(words('Book the speaker fitting').map((x) => x.words), ['Due 7 days after the project itself (31 Oct).']);
   assert.deepEqual(words('Send the reconciliation to finance').map((x) => x.words), ['2 days overdue and not ticked off.']);
   assert.deepEqual(words('Export the device inventory'), [], 'a ticked step is never overdue');
   assert.deepEqual(words('Scope signed off'), [], 'a date done is fine');
@@ -189,7 +189,7 @@ test('slips: a next step due after its project, past dates not done; a missed da
   const late = project(BAKERY.replace('due: 2026-10-24', 'due: 2026-10-14'));
   assert.equal(T.findProblems([late], TODAY()).marks.get(late.marks.find((m) => m.kind === 'due').id)[0].words, 'The project was due 3 days ago.');
   // A done project: nothing.
-  const done = project(STORE.replace('status: active', 'status: done'));
+  const done = project(STUDIO.replace('status: active', 'status: done'));
   assert.equal(T.findProblems([done], TODAY()).list.length, 0);
 });
 
@@ -208,11 +208,11 @@ test('days to x and back, at every zoom', () => {
 });
 
 test('the span covers every date and today with room, starting on a Monday, a month or a quarter', () => {
-  const store = project(STORE);
+  const studio = project(STUDIO);
   const today = TODAY();
   for (const zoom of T.ZOOMS) {
-    const { from, to } = T.span([store], today, zoom);
-    assert.ok(from < store.marks[0].day && to > store.marks.at(-1).day && from < today && to > today, zoom);
+    const { from, to } = T.span([studio], today, zoom);
+    assert.ok(from < studio.marks[0].day && to > studio.marks.at(-1).day && from < today && to > today, zoom);
     const { d, weekday } = T.ymd(from);
     if (zoom === 'weeks') assert.equal(weekday, 1, 'weeks start on Monday');
     else assert.equal(d, 1);
@@ -255,12 +255,12 @@ test('marks are packed into lanes so none overlap; when the lanes are full they 
 });
 
 test('a row: the bar from start to due, marks above it, history along its foot; taller only when it needs lanes', () => {
-  const store = project(STORE);
-  const { from } = T.span([store], TODAY(), 'months');
+  const studio = project(STUDIO);
+  const { from } = T.span([studio], TODAY(), 'months');
   const ppd = T.PX_PER_DAY.months;
-  const row = T.layoutRow(store, from, ppd);
+  const row = T.layoutRow(studio, from, ppd);
   assert.equal(row.bar.open, 'none');
-  assert.ok(Math.abs(row.bar.x1 - (T.xOf(store.start, from, ppd) + ppd / 2)) < 1e-9);
+  assert.ok(Math.abs(row.bar.x1 - (T.xOf(studio.start, from, ppd) + ppd / 2)) < 1e-9);
   assert.ok(row.bar.x2 > row.bar.x1);
   assert.equal(row.history.shown.length + [...row.history.folded.values()].flat().length, 2);
   assert.equal(row.height, T.ROW.base + (row.points.lanes - 1) * T.ROW.lane);
@@ -272,9 +272,9 @@ test('a row: the bar from start to due, marks above it, history along its foot; 
 });
 
 test('filters: at risk, mine, this quarter', () => {
-  const store = project(STORE, 'a'), harbour = project(HARBOUR, 'b'), bakery = project(BAKERY, 'c');
+  const studio = project(STUDIO, 'a'), harbour = project(HARBOUR, 'b'), bakery = project(BAKERY, 'c');
   const old = project(`---\ntype: project\nstarted: 2025-01-01\ndue: 2025-03-01\n---\n# Old\n`, 'd');
-  const all = [store, harbour, bakery, old];
+  const all = [studio, harbour, bakery, old];
   const ctx = { problems: T.findProblems(all, TODAY()), today: TODAY(), me: 'Priya Shah' };
   assert.deepEqual(T.filterRows(all, { risk: true }, ctx).map((p) => p.name), ['Studio Upgrade', 'Harbour Fit-out', 'Old'], 'health at risk, a clash, an overdue due date');
   assert.deepEqual(T.filterRows(all, { mine: true }, ctx).map((p) => p.name), ['Studio Upgrade', 'Harbour Fit-out']);
@@ -284,9 +284,9 @@ test('filters: at risk, mine, this quarter', () => {
 });
 
 test('groups: by status, by when due, by owner, by health; each sorted', () => {
-  const store = project(STORE, 'a'), harbour = project(HARBOUR, 'b'), bakery = project(BAKERY, 'c');
+  const studio = project(STUDIO, 'a'), harbour = project(HARBOUR, 'b'), bakery = project(BAKERY, 'c');
   const none = project(`---\ntype: project\nstatus: done\n---\n# Finished\n`, 'd');
-  const rows = [store, harbour, bakery, none];
+  const rows = [studio, harbour, bakery, none];
   const labels = (g) => g.map((x) => `${x.label}: ${x.rows.map((r) => r.name).join(', ')}`);
   assert.deepEqual(labels(T.groupRows(rows, 'status', 'due', TODAY())), ['Active: Winter Menu, Studio Upgrade', 'Planning: Harbour Fit-out', 'Done: Finished']);
   assert.deepEqual(labels(T.groupRows(rows, 'due', 'name', TODAY())), ['Due this quarter (Oct–Dec 2026): Harbour Fit-out, Studio Upgrade, Winter Menu', 'Done: Finished']);
@@ -296,21 +296,21 @@ test('groups: by status, by when due, by owner, by health; each sorted', () => {
 });
 
 test('dragging a mark makes one change to its project file, through the page’s own edit, which writes it as it was written', () => {
-  const store = project(STORE);
-  const golive = store.marks.find((m) => m.words === 'Wave two go-live');
+  const studio = project(STUDIO);
+  const golive = studio.marks.find((m) => m.words === 'Mixing desk live');
   const edit = T.moveEdit(golive, D(2026, 10, 27));
   assert.deepEqual(edit, { kind: 'change', list: 'dates', index: 2, item: { when: '27 Oct 2026' } });
-  const p = P.parseProject(STORE);
+  const p = P.parseProject(STUDIO);
   P.applyProjectEdit(p, edit);
-  const text = P.serializeProject(p, STORE);
-  assert.match(text, /\| 27 Oct 2026 \| Wave two go-live \| on track \|/);
-  assert.equal(text.replace('27 Oct 2026', '24 Oct 2026').split('\n').filter((l) => l.startsWith('|')).length, STORE.split('\n').filter((l) => l.startsWith('|')).length, 'nothing else in the table changes');
-  assert.deepEqual(T.moveEdit(store.marks.find((m) => m.kind === 'due'), D(2026, 11, 7)), { kind: 'set', field: 'due', value: '2026-11-07' });
-  assert.deepEqual(T.moveEdit(store.marks.find((m) => m.kind === 'start'), D(2026, 9, 1)), { kind: 'set', field: 'started', value: '2026-09-01' });
+  const text = P.serializeProject(p, STUDIO);
+  assert.match(text, /\| 27 Oct 2026 \| Mixing desk live \| on track \|/);
+  assert.equal(text.replace('27 Oct 2026', '24 Oct 2026').split('\n').filter((l) => l.startsWith('|')).length, STUDIO.split('\n').filter((l) => l.startsWith('|')).length, 'nothing else in the table changes');
+  assert.deepEqual(T.moveEdit(studio.marks.find((m) => m.kind === 'due'), D(2026, 11, 7)), { kind: 'set', field: 'due', value: '2026-11-07' });
+  assert.deepEqual(T.moveEdit(studio.marks.find((m) => m.kind === 'start'), D(2026, 9, 1)), { kind: 'set', field: 'started', value: '2026-09-01' });
   assert.equal(T.moveEdit(golive, golive.day), null, 'dropped where it was: nothing to write');
-  assert.equal(T.moveEdit(store.marks.find((m) => m.kind === 'next'), D(2026, 11, 1)), null);
-  assert.equal(T.moveWords(golive, D(2026, 10, 27), 'Studio Upgrade'), 'Moved “Wave two go-live” to Tue 27 Oct 2026.');
-  assert.equal(T.moveWords(store.marks.find((m) => m.kind === 'due'), D(2026, 11, 7), 'Studio Upgrade'), 'Moved Studio Upgrade’s due date to Sat 7 Nov 2026.');
+  assert.equal(T.moveEdit(studio.marks.find((m) => m.kind === 'next'), D(2026, 11, 1)), null);
+  assert.equal(T.moveWords(golive, D(2026, 10, 27), 'Studio Upgrade'), 'Moved “Mixing desk live” to Tue 27 Oct 2026.');
+  assert.equal(T.moveWords(studio.marks.find((m) => m.kind === 'due'), D(2026, 11, 7), 'Studio Upgrade'), 'Moved Studio Upgrade’s due date to Sat 7 Nov 2026.');
 });
 
 test('fast with 50 projects of 30 dates each', () => {
@@ -346,8 +346,8 @@ test('each project as one bar (8.7 wave 2 round 2): its dates on it, its standin
   assert.equal(T.barWords(D(2026, 12, 12), D(2027, 1, 5), TODAY()), '12 Dec 2026 – 5 Jan 2027');
   const sub = (text) => T.rowSub(project(text), TODAY());
   const tint = (text) => T.barTint(project(text), TODAY());
-  assert.equal(sub(STORE), 'At risk · due 31 Oct');
-  assert.equal(tint(STORE), 'amber');
+  assert.equal(sub(STUDIO), 'At risk · due 31 Oct');
+  assert.equal(tint(STUDIO), 'amber');
   assert.equal(sub(`---\ntype: project\nstatus: active\nhealth: on track\ndue: "2026-11-06"\n---\n# Milk\n`), 'Doing · due 6 Nov');
   assert.equal(tint(`---\ntype: project\nstatus: active\nhealth: on track\ndue: "2026-11-06"\n---\n# Milk\n`), 'blue');
   assert.equal(sub(`---\ntype: project\nstatus: planning\ndue: "2026-12-18"\n---\n# Lease\n`), 'To do · due 18 Dec');

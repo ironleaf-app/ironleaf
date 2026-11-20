@@ -29,10 +29,10 @@ test('weekdays: the next one after today; "this" can be today; "next" is next we
   assert.equal(due('Send the quote to Priya by Friday').line, '16 Oct 2026');
   assert.equal(due('by fri: book the room').iso, '2026-10-16');
   assert.equal(due('by fri: book the room').rest, 'book the room');
-  assert.equal(due('Chase the tills by Wednesday').iso, '2026-10-21', 'said on a Wednesday: next week’s');
-  assert.equal(due('Chase the tills this Wednesday').iso, '2026-10-14', '"this" on the day is today');
-  assert.equal(due('Book the second wave next Friday').iso, '2026-10-23', '"next Friday" is the Friday of next week');
-  assert.equal(due('Book the second wave next Monday').iso, '2026-10-19');
+  assert.equal(due('Chase the microphone stands by Wednesday').iso, '2026-10-21', 'said on a Wednesday: next week’s');
+  assert.equal(due('Chase the microphone stands this Wednesday').iso, '2026-10-14', '"this" on the day is today');
+  assert.equal(due('Book the second session next Friday').iso, '2026-10-23', '"next Friday" is the Friday of next week');
+  assert.equal(due('Book the second session next Monday').iso, '2026-10-19');
   assert.equal(due('Call Sam Friday').iso, '2026-10-16', 'a weekday in full, last');
   assert.equal(due('Call Sam on Mon').iso, '2026-10-19');
   // Said on a Friday: "by Friday" is a week away; "this Friday" is today.
@@ -98,7 +98,7 @@ test('several dates: the one said with "by" or "due" wins, else the last', () =>
 const day = 86400000;
 const NOW = WED.getTime();
 const PROJECTS = [
-  { path: 'Projects/Studio Upgrade/Studio Upgrade.md', name: 'Studio Upgrade', folderName: '01 Studio upgrade', people: ['Sam Taylor', 'Priya Shah', 'Finance team'], tags: ['stores', 'rollout'], status: 'active', modified: NOW - 2 * 3600000 },
+  { path: 'Projects/Studio Upgrade/Studio Upgrade.md', name: 'Studio Upgrade', folderName: '01 Studio upgrade', people: ['Sam Taylor', 'Priya Shah', 'Finance team'], tags: ['studio', 'gear'], status: 'active', modified: NOW - 2 * 3600000 },
   { path: 'Projects/Harbour Fit-out/Harbour Fit-out.md', name: 'Harbour Fit-out', folderName: '02 Harbour fit-out', people: ['Priya Shah'], tags: [], status: 'planning', modified: NOW - 4 * day },
   { path: 'Projects/Winter Menu Launch/Winter Menu Launch.md', name: 'Winter Menu Launch', people: ['Alex Lee'], tags: ['menu'], status: 'active', modified: NOW - 9 * day },
   { path: 'Projects/Supplier Review/Supplier Review.md', name: 'Supplier Review', people: [], tags: [], status: 'done', modified: NOW - 20 * day },
@@ -106,7 +106,7 @@ const PROJECTS = [
 const suggest = (text, more = {}) => C.suggestProjects({ text, projects: PROJECTS, now: NOW, ...more });
 
 test('a project named in the words comes first, with why', () => {
-  const s = suggest('Studio upgrade: the Bendigo tills still need disk space');
+  const s = suggest('Studio upgrade: the old microphone stands still need new clips');
   assert.equal(s[0].name, 'Studio Upgrade');
   assert.equal(s[0].evidence, 'words');
   assert.equal(s[0].reason, 'Says “Studio Upgrade”');
@@ -148,7 +148,7 @@ test('one short word is not evidence; two short words are, and a long word still
 });
 
 test('the window the person was in', () => {
-  const s = suggest('Chase this one', { windowTitle: 'Store_Upgrade_Status_2026-10-16.xlsx - Excel' });
+  const s = suggest('Chase this one', { windowTitle: 'Studio_Upgrade_Status_2026-10-16.xlsx - Excel' });
   assert.equal(s[0].name, 'Studio Upgrade');
   assert.equal(s[0].evidence, 'window');
   assert.equal(s[0].reason, 'From the window you were in');
@@ -156,7 +156,7 @@ test('the window the person was in', () => {
   const folder = suggest('Floor plan comments', { windowTitle: '02 Harbour fit-out - File Explorer' });
   assert.equal(folder[0].name, 'Harbour Fit-out');
   // The words beat the window.
-  const both = suggest('Alex needs the soup photos', { windowTitle: 'Store_Upgrade_Status.xlsx - Excel' });
+  const both = suggest('Alex needs the soup photos', { windowTitle: 'Studio_Upgrade_Status.xlsx - Excel' });
   assert.equal(both[0].name, 'Winter Menu Launch');
 });
 
@@ -187,22 +187,22 @@ const files = (kind, text, project, extra = {}) =>
     now: WED,
     ...extra,
   });
-const STORE = { path: 'Projects/Studio Upgrade/Studio Upgrade.md', name: 'Studio Upgrade', pcFolder: 'C:\\Work\\01 Studio upgrade' };
+const STUDIO = { path: 'Projects/Studio Upgrade/Studio Upgrade.md', name: 'Studio Upgrade', pcFolder: 'C:\\Work\\01 Studio upgrade' };
 const MENU = { path: 'Projects/Winter Menu Launch/Winter Menu Launch.md', name: 'Winter Menu Launch', pcFolder: null };
 
 test('where it files: a task becomes a next step in the project, with its by-when', () => {
-  const plan = files('task', 'Send the reconciliation to finance by Friday', STORE);
-  assert.deepEqual(plan.nextStep, { project: STORE.path, what: 'Send the reconciliation to finance', when: '16 Oct 2026' });
+  const plan = files('task', 'Send the reconciliation to finance by Friday', STUDIO);
+  assert.deepEqual(plan.nextStep, { project: STUDIO.path, what: 'Send the reconciliation to finance', when: '16 Oct 2026' });
   assert.equal(plan.newNote, undefined);
   assert.equal(plan.append, undefined);
   assert.deepEqual(files('task', 'Photograph the soups', MENU).nextStep, { project: MENU.path, what: 'Photograph the soups' });
 });
 
 test('a task keeps its whole body: the first line is the task, the rest rides along', () => {
-  const plan = files('task', 'Ring Priya\nabout the lease\nbefore lunch', STORE);
+  const plan = files('task', 'Ring Priya\nabout the lease\nbefore lunch', STUDIO);
   assert.equal(plan.what, 'Ring Priya');
   assert.equal(plan.rest, 'about the lease\nbefore lunch');
-  assert.deepEqual(plan.nextStep, { project: STORE.path, what: 'Ring Priya', more: 'about the lease\nbefore lunch' });
+  assert.deepEqual(plan.nextStep, { project: STUDIO.path, what: 'Ring Priya', more: 'about the lease\nbefore lunch' });
   const daily = files('task', 'Ring Priya\nabout the lease', null);
   assert.equal(C.taskLine(daily.what, daily.due, daily.rest), '- [ ] Ring Priya\n  about the lease');
   assert.equal(C.taskLine('Ring Priya', null, ''), '- [ ] Ring Priya');
@@ -225,16 +225,16 @@ test('a capture note lands where the note keeps such lines, even renamed', () =>
 });
 
 test('where it files: a note goes in the project’s folder of notes; its pictures beside it', () => {
-  const plan = files('note', 'Bendigo tills\nFive are short of disk space.', STORE, { pictures: 1 });
-  assert.deepEqual(plan.newNote, { folder: 'Projects/Studio Upgrade', title: 'Bendigo tills' });
+  const plan = files('note', 'Microphone stands\nFive are missing their clips.', STUDIO, { pictures: 1 });
+  assert.deepEqual(plan.newNote, { folder: 'Projects/Studio Upgrade', title: 'Microphone stands' });
   assert.deepEqual(plan.attach, { place: 'library', folder: 'Projects/Studio Upgrade/Captures' });
 });
 
 test('where it files: a picture on its own goes to the project’s folder on the PC › Captures', () => {
-  assert.deepEqual(files('note', '', STORE, { pictures: 1 }).attach, { place: 'pc', folder: 'C:\\Work\\01 Studio upgrade\\Captures' });
+  assert.deepEqual(files('note', '', STUDIO, { pictures: 1 }).attach, { place: 'pc', folder: 'C:\\Work\\01 Studio upgrade\\Captures' });
   assert.deepEqual(files('note', '', MENU, { pictures: 1 }).attach, { place: 'library', folder: 'Projects/Winter Menu Launch/Captures' }, 'no folder on the PC: the library’s');
-  assert.deepEqual(files('task', 'Fix the till screen', STORE, { pictures: 1 }).attach, { place: 'pc', folder: 'C:\\Work\\01 Studio upgrade\\Captures' }, 'with a next step: the folder too');
-  assert.deepEqual(files('note', 'Signage', STORE, { pictures: 1, toAssets: true }).attach, { place: 'assets', folder: '' }, 'Save to assets');
+  assert.deepEqual(files('task', 'Fix the desk screen', STUDIO, { pictures: 1 }).attach, { place: 'pc', folder: 'C:\\Work\\01 Studio upgrade\\Captures' }, 'with a next step: the folder too');
+  assert.deepEqual(files('note', 'Signage', STUDIO, { pictures: 1, toAssets: true }).attach, { place: 'assets', folder: '' }, 'Save to assets');
 });
 
 test('where it files: no project → today’s note, or the Inbox', () => {
@@ -249,10 +249,10 @@ test('where it files: no project → today’s note, or the Inbox', () => {
 });
 
 test('note names from the first line', () => {
-  assert.equal(C.noteTitle('# Bendigo tills: 5 short of space\nmore', WED), 'Bendigo tills 5 short of space');
+  assert.equal(C.noteTitle('# Microphone stands: 5 missing clips\nmore', WED), 'Microphone stands 5 missing clips');
   assert.equal(C.noteTitle('- [ ] a/b test?', WED), 'a b test');
   assert.equal(C.noteTitle('', WED), 'Capture 14 Oct 2026 1030');
-  const long = C.noteTitle('The regional shift leads asked for a quiet week before the change freeze so we wait', WED);
+  const long = C.noteTitle('The studio hands asked for a quiet week before the big recording session so we wait', WED);
   assert.ok(long.length <= 61 && !long.endsWith(' '), long);
   assert.equal(C.screenshotName(WED), 'Screenshot 14 Oct 2026 1030.png');
 });

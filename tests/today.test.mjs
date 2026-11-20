@@ -32,7 +32,7 @@ const iso = (days) => { const d = new Date(2026, 9, 17 + days); return `${d.getF
 
 // Made-up projects: a bakery and an IT shop, owned (mostly) by Mia Tran.
 const files = {
-  'Projects/Studio Upgrade/Studio Upgrade.md': `---\ntype: project\nstatus: active\nhealth: at risk\nprogress: 90\nowner: Mia Tran\ndue: "${iso(5)}"\n---\n# Studio Upgrade\n\n## What’s next\n\n- [ ] Send the reconciliation to finance — Mia · by 17 Oct\n- [ ] Chase the spare tills — Shift leads · by 14 Oct\n- [ ] Book the Sydney wave — Priya\n- [x] Export the device inventory — Mia · by 10 Oct\n- [ ] Order spare tills — me · by Tue 20 Oct\n- [ ] Write the wrap-up — Mia · by 30 Nov\n\n## Key dates\n\n| When | What | Status |\n| --- | --- | --- |\n| 9 Sep 2026 | Scope signed off | done |\n| 30 Sep 2026 | First target | missed |\n| ${iso(5)} | All stores upgraded | on track |\n\n## Risks and issues\n\n- **High** — 11 spare tills can’t be reached remotely\n- **Medium** — 5 tills under 30 GB free\n- **High** — The vendor’s patch is late *Closed:* 15 Oct 2026\n\n## Updates\n\n- **17 Oct 2026** — 212 of 236 tills done. *From:* Status.xlsx\n- **16 Oct 2026** — Reconciliation v4 ready.\n- **14 Oct 2026** — Inventory reconciled.\n`,
+  'Projects/Studio Upgrade/Studio Upgrade.md': `---\ntype: project\nstatus: active\nhealth: at risk\nprogress: 90\nowner: Mia Tran\ndue: "${iso(5)}"\n---\n# Studio Upgrade\n\n## What’s next\n\n- [ ] Send the reconciliation to finance — Mia · by 17 Oct\n- [ ] Chase the spare microphone stands — Studio hands · by 14 Oct\n- [ ] Book the speaker fitting — Priya\n- [x] Export the device inventory — Mia · by 10 Oct\n- [ ] Order spare microphone stands — me · by Tue 20 Oct\n- [ ] Write the wrap-up — Mia · by 30 Nov\n\n## Key dates\n\n| When | What | Status |\n| --- | --- | --- |\n| 9 Sep 2026 | Scope signed off | done |\n| 30 Sep 2026 | First target | missed |\n| ${iso(5)} | Studio reopens | on track |\n\n## Risks and issues\n\n- **High** — 11 old microphone stands can’t be found\n- **Medium** — 5 speaker cables frayed\n- **High** — The vendor’s patch is late *Closed:* 15 Oct 2026\n\n## Updates\n\n- **17 Oct 2026** — 8 of 12 soundproofing panels up. *From:* Status.xlsx\n- **16 Oct 2026** — Reconciliation v4 ready.\n- **14 Oct 2026** — Inventory reconciled.\n`,
   'Projects/Winter Menu/Winter Menu.md': `---\ntype: project\nstatus: active\nhealth: off track\nprogress: 60\nowner: Mia Tran\ndue: "${iso(-2)}"\n---\n# Winter Menu\n\n## What’s next\n\n- [ ] Photograph the soups — Alex Lee · by 2026-10-15\n- [ ] Print the menu cards — Alex\n\n## Key dates\n\n| When | What | Status |\n| --- | --- | --- |\n| 18/10/2026 | Tasting day | planned |\n| 12 Oct 2026 | Supplier call | |\n`,
   'Projects/Harbour Fit-out/Harbour Fit-out.md': `---\ntype: project\nstatus: planning\nhealth: on track\nprogress: 30\nowner: Mia Tran\ndue: "2026-12-12"\n---\n# Harbour Fit-out\n\n## What’s next\n\n- [ ] Approve the lighting quote — Mia · by Oct 24, 2026\n\n## Risks and issues\n\n- **Critical** — The lease isn’t signed\n`,
   'Projects/Old Review/Old Review.md': `---\ntype: project\nstatus: done\nhealth: off track\nowner: Sam\ndue: "${iso(-30)}"\n---\n# Old Review\n\n## What’s next\n\n- [ ] Never finished — Sam · by 1 Oct\n`,
@@ -40,7 +40,7 @@ const files = {
 const projects = () =>
   Object.entries(files).map(([p, text], i) => ({ path: p, version: `v${i}`, modified: at(-10 + i), project: P.parseProject(text, p) }));
 const notes = [
-  { path: 'Projects/Studio Upgrade/Activity/Fix the till report.md', title: 'Fix the till report', mtime: at(0, 8), props: { status: 'done' } },
+  { path: 'Projects/Studio Upgrade/Activity/Fix the gear report.md', title: 'Fix the gear report', mtime: at(0, 8), props: { status: 'done' } },
   { path: 'Projects/Studio Upgrade/Activity/Older task.md', title: 'Older task', mtime: at(-3), props: { status: 'done' } },
   { path: 'Projects/Winter Menu/Tasting notes.md', title: 'Tasting notes', mtime: at(-1, 15), props: {} },
   { path: 'Meetings/Supplier call.md', title: 'Supplier call', mtime: at(-1), props: { date: '2026-10-17', time: '14:00', attendees: ['Mia Tran', 'Western Plains Mill'] } },
@@ -101,12 +101,12 @@ test('due and overdue: steps, key dates and projects’ due dates by day, across
   const words = (list) => list.map((x) => `${x.projectName}: ${x.what}${x.who ? ` (${x.who})` : ''} @${x.offset}`);
   // Someone else's steps wait on them (Waiting on others), never the person's own overdue work (29 Oct 2026).
   assert.deepEqual(words(d.due.overdue), ['Winter Menu: Winter Menu is due @-2']);
-  assert.ok(d.waiting.some((w) => w.what === 'Chase the spare tills') && d.waiting.some((w) => w.what === 'Photograph the soups'));
+  assert.ok(d.waiting.some((w) => w.what === 'Chase the spare microphone stands') && d.waiting.some((w) => w.what === 'Photograph the soups'));
   assert.deepEqual(words(d.due.today), ['Studio Upgrade: Send the reconciliation to finance (Mia) @0']);
   assert.deepEqual(words(d.due.soon), [
     'Winter Menu: Tasting day @1',
-    'Studio Upgrade: Order spare tills (me) @3',
-    'Studio Upgrade: All stores upgraded @5',
+    'Studio Upgrade: Order spare microphone stands (me) @3',
+    'Studio Upgrade: Studio reopens @5',
     'Harbour Fit-out: Approve the lighting quote (Mia) @7',
   ]);
   // A done step, a finished or missed key date, a past date with no status, a step far off and a done project: none.
@@ -125,7 +125,7 @@ test('waiting on others: steps owned by someone else, the longest waiting first'
   assert.equal(d.me, 'Mia Tran', 'the person whose projects these are');
   assert.deepEqual(
     d.waiting.map((w) => `${w.who}: ${w.what}`),
-    ['Shift leads: Chase the spare tills', 'Alex Lee: Photograph the soups', 'Priya: Book the Sydney wave', 'Alex: Print the menu cards'],
+    ['Studio hands: Chase the spare microphone stands', 'Alex Lee: Photograph the soups', 'Priya: Book the speaker fitting', 'Alex: Print the menu cards'],
   );
   // "Mia", "me" and the person's full name are theirs; done steps and done projects never wait.
   assert.ok(!d.waiting.some((w) => /Mia|^me$/.test(w.who)));
@@ -154,14 +154,14 @@ test('at risk: off track and at risk projects, and open high risks, worst first'
     ['Studio Upgrade', 'warn', 'high'],
     ['Harbour Fit-out', 'ok', 'critical'],
   ]);
-  assert.equal(d.atRisk[1].risks[0].what, '11 spare tills can’t be reached remotely', 'a closed risk is left out');
+  assert.equal(d.atRisk[1].risks[0].what, '11 old microphone stands can’t be found', 'a closed risk is left out');
   assert.equal(d.atRisk[0].next, 'Photograph the soups');
 });
 
 test('changed since yesterday: updates, the host app’s task notes, the project’s notes, then its folder’s files', () => {
   const d = T.buildToday({ projects: projects(), notes }, TODAY);
   assert.deepEqual(d.changed.map((g) => g.projectName), ['Studio Upgrade', 'Winter Menu']);
-  assert.deepEqual(d.changed[0].lines.map((l) => `${l.kind}: ${l.what}`), ['update: 212 of 236 tills done.', 'activity: Fix the till report', 'update: Reconciliation v4 ready.']);
+  assert.deepEqual(d.changed[0].lines.map((l) => `${l.kind}: ${l.what}`), ['update: 8 of 12 soundproofing panels up.', 'activity: Fix the gear report', 'update: Reconciliation v4 ready.']);
   assert.equal(d.changed[0].lines[1].status, 'done');
   assert.deepEqual(d.changed[1].lines.map((l) => `${l.kind}: ${l.what}`), ['note: Tasting notes']);
   assert.equal(d.since, new Date(2026, 9, 16).getTime());
@@ -280,10 +280,10 @@ test('an undated own step waits in Unscheduled instead of vanishing (9.5 fourth 
 });
 
 test('key dates marked finished, shipped or resolved are done; held and met stay done too (9.5 fourth pass)', () => {
-  const text = `---\ntype: project\nstatus: active\nowner: Mia Tran\n---\n# Dates\n\n## Key dates\n\n| When | What | Status |\n| --- | --- | --- |\n| ${iso(-3)} | Old launch | Finished |\n| ${iso(-3)} | Store rollout | Shipped |\n| ${iso(-3)} | Till dispute | Resolved |\n| ${iso(-3)} | Supplier call | held |\n| ${iso(-3)} | Scope review | met |\n| ${iso(-3)} | Quote lapses | planned |\n`;
+  const text = `---\ntype: project\nstatus: active\nowner: Mia Tran\n---\n# Dates\n\n## Key dates\n\n| When | What | Status |\n| --- | --- | --- |\n| ${iso(-3)} | Old launch | Finished |\n| ${iso(-3)} | Studio move | Shipped |\n| ${iso(-3)} | Invoice dispute | Resolved |\n| ${iso(-3)} | Supplier call | held |\n| ${iso(-3)} | Scope review | met |\n| ${iso(-3)} | Quote lapses | planned |\n`;
   const d = T.buildToday({ projects: [{ path: 'Projects/Dates/Dates.md', version: 'v', modified: at(-1), project: P.parseProject(text, 'Dates.md') }], notes: [], me: 'Mia Tran' }, TODAY);
   const all = [...d.due.overdue, ...d.due.today, ...d.due.soon, ...d.due.later, ...d.due.passed].map((x) => x.what);
-  for (const gone of ['Old launch', 'Store rollout', 'Till dispute', 'Supplier call', 'Scope review']) assert.ok(!all.includes(gone), gone);
+  for (const gone of ['Old launch', 'Studio move', 'Invoice dispute', 'Supplier call', 'Scope review']) assert.ok(!all.includes(gone), gone);
   assert.ok(all.includes('Quote lapses'), 'a past date still marked coming is asked about');
 });
 
