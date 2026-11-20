@@ -143,5 +143,6 @@ export function launchIronleaf(argv: readonly string[], packaged: boolean): void
   const args = packaged ? [] : argv.slice(1, 2);
   const env = { ...process.env };
   delete env.ELECTRON_RUN_AS_NODE;
-  spawn(exe, args, { detached: true, stdio: 'ignore', env }).unref();
+  // Ironleaf itself, a windowed program: windowsHide would hide its first window, so it is stated false.
+  spawn(exe, args, { detached: true, stdio: 'ignore', env, windowsHide: false }).unref();
 }

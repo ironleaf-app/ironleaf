@@ -31,7 +31,9 @@ const DATA_DIR = path.join(app.getPath('appData'), '@neuralspark', 'vault');
 const legacyStart = process.platform === 'win32' && app.isPackaged ? legacyExeTarget(process.execPath, existsSync) : null;
 if (legacyStart && !isMcpCommand(process.argv, app.isPackaged)) {
   try {
-    spawn(legacyStart, process.argv.slice(1), { detached: true, stdio: 'ignore', cwd: path.dirname(legacyStart) }).unref();
+    // A windowed program, not a console one: windowsHide would hide its first window (Windows applies the start-up
+    // SW_HIDE to the first ShowWindow), so it is stated false.
+    spawn(legacyStart, process.argv.slice(1), { detached: true, stdio: 'ignore', cwd: path.dirname(legacyStart), windowsHide: false }).unref();
   } catch {
     // Ironleaf.exe could not be started: this copy carries on as itself.
   }

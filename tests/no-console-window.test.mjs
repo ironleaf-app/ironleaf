@@ -1,6 +1,8 @@
 // node --test tests/no-console-window.test.mjs — no black console window (16 Nov 2026 audit finding 10):
 // every child process started from nv/src hides its console window (windowsHide). A spawn without it flashes
-// a black window on the person's PC. Method calls (utilityProcess.fork, an injected fork) are not spawns.
+// a black window on the person's PC. Method calls (utilityProcess.fork, an injected fork) are not spawns. Starting
+// Ironleaf itself (a windowed program) states windowsHide: false: hiding would hide its first window, and a windowed
+// program has no console to flash; the key must still be written, so every spawn is a decision.
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import path from 'node:path';

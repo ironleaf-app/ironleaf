@@ -1393,7 +1393,7 @@ export function startUpdateCheck(managed?: ManagedUpdates): void {
           if (!restartArmed || !appImage) return;
           try {
             const r = appImageRelaunch({ pid: process.pid, appImage, args: relaunchArgs(process.argv.slice(1), true), env: process.env, bash: fs.existsSync('/bin/bash') });
-            spawn(r.file, r.args, { detached: true, stdio: 'ignore', env: r.env, cwd: path.dirname(appImage) }).unref();
+            spawn(r.file, r.args, { detached: true, stdio: 'ignore', env: r.env, cwd: path.dirname(appImage), windowsHide: true }).unref();
             log(`Update: ${appImage} starts again once this Ironleaf has quit.`);
           } catch (err) {
             log('Update: Ironleaf could not start again: ' + (err instanceof Error ? err.message : String(err)));
