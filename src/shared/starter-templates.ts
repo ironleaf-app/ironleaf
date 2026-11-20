@@ -10,7 +10,7 @@ import { cleanFileName } from './paths';
 import { defaultView, writeView, type ViewDef } from './views';
 
 export interface StarterFile {
-  /** The file's path in the vault, folder first ("CRM/Deals/Acme rollout.md"). */
+  /** The file's path in the vault, folder first ("CRM/Deals/Acme van signs.md"). */
   path: string;
   text: string;
 }
@@ -63,12 +63,12 @@ function crmFiles(folder: string, today: string): StarterFile[] {
     note(F('Start here.md'), 'tags: [crm]', `# Starting your CRM\n\nPeople and companies live as notes, linked to each deal. Move a deal along its board and the deal note keeps the new stage.\n\n- Add a person: a note in People, with their organisation linked.\n- Add a deal: a note in Deals, with its company, contact, value and closing day.\n- The board and the people table read these notes, so they stay current by themselves.\n`),
     note(F('People/Ava Reed.md'), 'type: person\nrole: Office manager\norg: "[[Acme Bakeries]]"\nemail: ava.reed@example.com\nphone: "0412 345 678"', `# Ava Reed\n\nRuns the office at Acme. Prefers email, answers within a day.\n`),
     note(F('People/Liam Cole.md'), 'type: person\nrole: Director\norg: "[[Harbourline Signs]]"\nemail: liam.cole@example.com\nphone: "0423 456 789"', `# Liam Cole\n\nDecides on sign spending. Met at the trade show in September.\n`),
-    note(F('Companies/Acme Bakeries.md'), 'industry: Food wholesaler\nsize: "40 staff"\nwebsite: acme-bakeries.example', `# Acme Bakeries\n\nTwelve shops across the inner west. Their tills are due for replacement.\n`),
+    note(F('Companies/Acme Bakeries.md'), 'industry: Food wholesaler\nsize: "40 staff"\nwebsite: acme-bakeries.example', `# Acme Bakeries\n\nA wholesale bakery supplying cafes across the inner west. Their twelve delivery vans need new signs.\n`),
     note(F('Companies/Harbourline Signs.md'), 'industry: Signwriting\nsize: "8 staff"\nwebsite: harbourline.example', `# Harbourline Signs\n\nSigns for shopfronts and vans. Referred by Priya.\n`),
     note(
-      F('Deals/Acme rollout.md'),
+      F('Deals/Acme van signs.md'),
       `company: "[[Acme Bakeries]]"\ncontact: "[[Ava Reed]]"\nvalue: 45000\nstage: Prospect\nclose: "${plusDays(today, 21)}"`,
-      `# Acme rollout\n\nTwelve tills plus setup. Quote sent ${longDay(plusDays(today, -2))}, follow up next week.\n`,
+      `# Acme van signs\n\nSigns for twelve vans plus design. Quote sent ${longDay(plusDays(today, -2))}, follow up next week.\n`,
     ),
     note(
       F('Deals/Harbourline install.md'),

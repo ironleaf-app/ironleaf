@@ -134,7 +134,7 @@ test('the CRM: people, companies and a deals board', () => {
   const files = S.starterFiles('crm', 'CRM', TODAY);
   assert.ok(files.some((f) => f.path === 'CRM/People/Ava Reed.md'), 'people');
   assert.ok(files.some((f) => f.path === 'CRM/Companies/Acme Bakeries.md'), 'companies');
-  const deal = files.find((f) => f.path === 'CRM/Deals/Acme rollout.md');
+  const deal = files.find((f) => f.path === 'CRM/Deals/Acme van signs.md');
   assert.ok(deal && deal.text.includes('[[Acme Bakeries]]') && deal.text.includes('[[Ava Reed]]'), 'deals link their company and contact');
   const board = files.find((f) => f.path === 'CRM/Views/Deals board.view.json');
   const { def, problem } = V.readView(board.text);
