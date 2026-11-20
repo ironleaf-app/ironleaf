@@ -74,7 +74,7 @@ test('t301 item 1: the map reaches the transcript shown, the mic as the owner, t
 
 test('t301 item 1: one voice alone claims its side\u2019s stray lines; two voices or none keep them', () => {
   const piece = (index, start, side, who, text) => ({ index, start, seconds: 20, side, status: 'done', text, who });
-  const pieces = [piece(0, 0, 'pc', 'Others', 'the quote for the second lane'), piece(1, 20, 'pc', 'Others', 'uncovered words here')];
+  const pieces = [piece(0, 0, 'pc', 'Others', 'the quote for the second counter'), piece(1, 20, 'pc', 'Others', 'uncovered words here')];
   const one = Sp.labelPieces(pieces, [{ id: 'spk1', start: 0, end: 19, side: 'pc' }], 'mic+pc');
   assert.ok(one && one.pieces[1].who === 'Speaker 1', 'one voice claims the piece its turns never touched');
   const two = Sp.labelPieces(pieces, [{ id: 'spk1', start: 0, end: 19, side: 'pc' }, { id: 'spk2', start: 0, end: 19, side: 'pc' }], 'mic+pc');
@@ -215,7 +215,7 @@ test('t301 item 7: empty scaffolding goes with the minutes; anything said stays'
   const out = M.applyMeetingMinutes(note, minutes, { people: PEOPLE, me: ME, date: DATE });
   assert.ok(!/^## Agenda$/m.test(out.text), 'an empty Agenda with its bare box goes');
   assert.ok(!/^## Notes$/m.test(out.text), 'an empty Notes goes');
-  const full = '---\ntype: meeting\ndate: 2026-11-18\n---\n## Agenda\n\n- [ ] The second till lane\n\n## Notes\n\nMia keeps the dock roster.\n\n';
+  const full = '---\ntype: meeting\ndate: 2026-11-18\n---\n## Agenda\n\n- [ ] The second coffee counter\n\n## Notes\n\nMia keeps the dock roster.\n\n';
   const kept = M.applyMeetingMinutes(full, minutes, { people: PEOPLE, me: ME, date: DATE });
   assert.ok(/^## Agenda$/m.test(kept.text) && /^## Notes$/m.test(kept.text), 'a section holding anything said stays');
 });
@@ -238,11 +238,11 @@ test('t301 word check: ordinary words and inflections never flag; the vault term
   assert.ok(!ordinary.some((u) => ['good', 'are'].includes(u.display.toLowerCase())), 'Good and Are are ordinary words');
   const inflected = W.findUncertain(
     [
-      { at: 0, text: 'We will migrate the till lane first.', who: 'You' },
-      { at: 10, text: 'Migrate the dock next, then the till.', who: 'Speaker 1' },
-      { at: 20, text: 'They migrate every lane by Friday.', who: 'Speaker 1' },
+      { at: 0, text: 'We will migrate the coffee counter first.', who: 'You' },
+      { at: 10, text: 'Migrate the dock next, then the counter.', who: 'Speaker 1' },
+      { at: 20, text: 'They migrate every counter by Friday.', who: 'Speaker 1' },
       { at: 30, text: 'We migrate the rest after that.', who: 'You' },
-      { at: 40, text: 'It is about migrating it to the new lane.', who: 'Speaker 1' },
+      { at: 40, text: 'It is about migrating it to the new counter.', who: 'Speaker 1' },
     ],
     [],
   );

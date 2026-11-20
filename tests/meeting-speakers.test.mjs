@@ -599,7 +599,7 @@ test('a 1-2-1’s far side groups as one voice: one person is never split into S
 
 test('in a 1-2-1 the one other voice is the one other attendee, with confidence', () => {
   const lines = [
-    { at: 0, text: 'Morning Darcy, how is the rollout going?', who: 'You' },
+    { at: 0, text: 'Morning Darcy, how is the planting going?', who: 'You' },
     { at: 20, text: 'Morning, going well, the Sydney rooms are nearly done.', who: 'Speaker 1' },
     { at: 40, text: 'Good to hear. Anything blocking?', who: 'You' },
     { at: 60, text: 'Just the landlord on the ceiling mics.', who: 'Speaker 1' },

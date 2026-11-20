@@ -39,9 +39,9 @@ test('merge: the one job written twice, however shortened', () => {
   assert.equal(merges('Ring the bank about the loan approval', 'Mia Tran', 'Ring the bank about the loan — Mia Tran'), true, 'the detail rides along');
   assert.equal(merges('File the BAS for the September quarter', 'Sam Okafor', 'File the BAS for the September quarter before Friday — Sam'), true, 'a first name is its person');
   assert.equal(merges('Draft the December roster for sign-off', 'me', 'Draft the December roster — me'), true, 'me is me on both sides');
-  assert.equal(merges('Set up the new till and train the Saturday crew', 'Sam and June', 'Set up the new till — June and Sam'), true, 'the same pair in either order');
-  assert.equal(merges('Set up the new till and train the Saturday crew', 'Sam with June', 'Set up the new till — Sam and June'), true, 'the same pair however joined');
-  assert.equal(merges('Set up the new till and train the Saturday crew', 'Sam; June', 'Set up the new till — June and Sam'), true, 'a semicolon joins them too');
+  assert.equal(merges('Set up the new oven and train the Saturday crew', 'Sam and June', 'Set up the new oven — June and Sam'), true, 'the same pair in either order');
+  assert.equal(merges('Set up the new oven and train the Saturday crew', 'Sam with June', 'Set up the new oven — Sam and June'), true, 'the same pair however joined');
+  assert.equal(merges('Set up the new oven and train the Saturday crew', 'Sam; June', 'Set up the new oven — June and Sam'), true, 'a semicolon joins them too');
   assert.equal(merges('Water the plants in the front window', '', 'Water the plants in the front window and the back room'), true, 'no owner either side still folds');
 });
 
@@ -69,19 +69,19 @@ test('stay two: the owner differing blocks the merge', () => {
   assert.equal(merges('Send June the October totals', '', 'Send June the October totals — Priya Nair'), false, 'both directions stay two');
   assert.equal(merges('Draft the December roster for sign-off', 'me', 'Draft the December roster — Alex Chen'), false, 'me never resolves to a name here');
   assert.equal(merges('Draft the December roster for sign-off', 'me', 'Draft the December roster'), false, 'me against no one stays two');
-  assert.equal(merges('Set up the new till and train the Saturday crew', 'Sam and June', 'Set up the new till — Sam'), false, 'a pair is not one of them');
-  assert.equal(merges('Set up the new till and train the Saturday crew', 'Sam and June', 'Set up the new till — June'), false, 'a pair is not the other either');
-  assert.equal(merges('Set up the new till and train the Saturday crew', 'Sam and June', 'Set up the new till — Sam and Alex'), false, 'a different pair is another job');
-  assert.equal(merges('Set up the new till and train the Saturday crew', 'Sam with June', 'Set up the new till — Sam'), false, 'with two, one is not the job');
-  assert.equal(merges('Set up the new till and train the Saturday crew', 'Sam; June', 'Set up the new till — June'), false, 'a semicolon pair is not one either');
+  assert.equal(merges('Set up the new oven and train the Saturday crew', 'Sam and June', 'Set up the new oven — Sam'), false, 'a pair is not one of them');
+  assert.equal(merges('Set up the new oven and train the Saturday crew', 'Sam and June', 'Set up the new oven — June'), false, 'a pair is not the other either');
+  assert.equal(merges('Set up the new oven and train the Saturday crew', 'Sam and June', 'Set up the new oven — Sam and Alex'), false, 'a different pair is another job');
+  assert.equal(merges('Set up the new oven and train the Saturday crew', 'Sam with June', 'Set up the new oven — Sam'), false, 'with two, one is not the job');
+  assert.equal(merges('Set up the new oven and train the Saturday crew', 'Sam; June', 'Set up the new oven — June'), false, 'a semicolon pair is not one either');
 });
 
 test('the accepted edge: a prefix reads the words, never the meaning', () => {
-  // "Order the new till roll" prefixes "Order the new till roll holder and shelf brackets…": the rule
+  // "Order the new paper bag" prefixes "Order the new paper bag holder and shelf brackets…": the rule
   // reads words, never meaning (one-task.ts: "no meaning matching beyond that, no guessing"), in the
   // same direction the critics require for Publish (short step, long meeting line). Same project and
   // same owner still required everywhere it is read.
-  assert.equal(merges('Order the new till roll', 'Mia Tran', 'Order the new till roll holder and shelf brackets for the back room — Mia Tran'), true, 'a prefix folds, meaning aside');
+  assert.equal(merges('Order the new paper bag', 'Mia Tran', 'Order the new paper bag holder and shelf brackets for the back room — Mia Tran'), true, 'a prefix folds, meaning aside');
 });
 
 test('ticking either twin closes the other, reopening reopens, and nothing else moves', () => {
