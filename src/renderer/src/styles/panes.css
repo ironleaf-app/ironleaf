@@ -288,8 +288,8 @@ h3.nv-context-head {
   padding-bottom: var(--space-5);
   border-bottom: 1px solid var(--border);
 }
-.mt-links:empty,
-.mt-links:not(:has(*)) {
+/* :empty, not :not(:has(*)): a :has(*) rule is checked again whenever anything anywhere is added to the page. */
+.mt-links:empty {
   display: none;
 }
 .mt-links .nv-detail-groups {
@@ -583,7 +583,7 @@ h3.nv-context-head {
   border-radius: var(--pane-radius);
   background: var(--bg-raised, var(--bg));
 }
-.pj-ov-pane:not(:has(*)) {
+.pj-ov-pane:empty {
   display: none;
 }
 .pj-ov-pane > .pj-folio-sec {
