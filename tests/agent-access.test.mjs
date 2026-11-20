@@ -41,10 +41,10 @@ before(async () => {
 });
 after(() => rmSync(work, { recursive: true, force: true }));
 
-const STORE = 'Projects/Studio Upgrade/Studio Upgrade.md';
+const STUDIO = 'Projects/Studio Upgrade/Studio Upgrade.md';
 const WINTER = 'Projects/Winter Menu Launch/Winter Menu Launch.md';
 const NOTES = {
-  [STORE]: `---\ntype: project\nstatus: active\nhealth: at risk\nprogress: 80\nowner: Sam Taylor\ndue: "2026-11-20"\n---\n# Studio Upgrade\n\n## Summary\n\nEvery store’s point-of-sale PCs move to the new build before the holiday trading period.\n\n## What’s next\n\n- [ ] Send the reconciliation v4 to finance — Sam Taylor · by 14 Oct 2026\n- [ ] Chase the 11 spare tills — Priya Shah · by 24 Oct 2026\n\n## People\n\n- **Sam Taylor** — Project owner\n- **Priya Shah** — Rollout lead\n\n## Risks and issues\n\n- **High** — 11 spare tills can’t be reached remotely\n\n## Updates\n\n- **15 Oct 2026** — 212 of 236 tills done. *From:* Store_Upgrade_Status.xlsx\n`,
+  [STUDIO]: `---\ntype: project\nstatus: active\nhealth: at risk\nprogress: 80\nowner: Sam Taylor\ndue: "2026-11-20"\n---\n# Studio Upgrade\n\n## Summary\n\nThe studio gets a new mixing desk, new speakers and soundproofing before the summer bookings.\n\n## What’s next\n\n- [ ] Send the reconciliation v4 to finance — Sam Taylor · by 14 Oct 2026\n- [ ] Chase the 11 old microphone stands — Priya Shah · by 24 Oct 2026\n\n## People\n\n- **Sam Taylor** — Project owner\n- **Priya Shah** — Sound engineer\n\n## Risks and issues\n\n- **High** — 11 old microphone stands can’t be found\n\n## Updates\n\n- **15 Oct 2026** — 8 of 12 soundproofing panels up. *From:* Studio_Upgrade_Status.xlsx\n`,
   [WINTER]: `---\ntype: project\nstatus: active\nhealth: on track\nprogress: 60\nowner: Alex Lee\n---\n# Winter Menu Launch\n\n## Summary\n\nThe bakery’s winter menu: new soups and the website page.\n\n## What’s next\n\n- [ ] Photograph the soups — Alex Lee\n`,
   'Meetings/Harbour site meeting.md': `---\ntype: meeting\ndate: 2026-10-16\nattendees: [Priya Shah, Sam Taylor]\n---\n## Actions\n- [ ] Approve the lighting quote — Priya — by Friday\n- Sam to confirm the cabling contractor\n`,
   'Notes/Oven service.md': '# Oven service\n\nThe deck oven is serviced every March.\n',
@@ -180,7 +180,7 @@ test('reads: compact answers from the projects, Today, the timeline, meetings an
   assert.equal(list.projects[0].health, 'at risk');
   const p = JSON.parse(words(await callAs(access, a, 'project_get', { project: 'studio upgrade' })));
   assert.equal(p.name, 'Studio Upgrade');
-  assert.deepEqual(p.next.map((x) => [x.n, x.what]), [[1, 'Send the reconciliation v4 to finance'], [2, 'Chase the 11 spare tills']]);
+  assert.deepEqual(p.next.map((x) => [x.n, x.what]), [[1, 'Send the reconciliation v4 to finance'], [2, 'Chase the 11 old microphone stands']]);
   assert.equal(p.risks[0].level, 'high');
   const today = JSON.parse(words(await callAs(access, a, 'today_get', {})));
   assert.equal(today.projects, 2);
@@ -205,7 +205,7 @@ test('reads: compact answers from the projects, Today, the timeline, meetings an
 test('a step is a short action with a person, an update a line or two', async () => {
   const { access, files } = await setup();
   const a = agentOf('edit');
-  const before = files.get(STORE);
+  const before = files.get(STUDIO);
   const long = 'Get Tessaly’s answers to the challenge list: BYOD and standardisation justification, equipment and labour breakdown (columns M and O), the 20% uplift, the LED display and shared screen, and the duplicate PDU lines across the Eastwick rooms';
   const r1 = await callAs(access, a, 'project_add_next_step', { project: 'Studio Upgrade', what: long, who: 'Tessaly' });
   assert.ok(r1.isError && /one short action someone does, under 25 words/.test(words(r1)), words(r1));
@@ -213,7 +213,7 @@ test('a step is a short action with a person, an update a line or two', async ()
   assert.ok(r2.isError && /who is the person who does it, not a day/.test(words(r2)), words(r2));
   const r3 = await callAs(access, a, 'project_log_update', { project: 'Studio Upgrade', what: Array(70).fill('another').join(' ') });
   assert.ok(r3.isError && /one or two plain sentences, under 50 words/.test(words(r3)), words(r3));
-  assert.equal(files.get(STORE), before, 'nothing written');
+  assert.equal(files.get(STUDIO), before, 'nothing written');
   assert.ok(!(await callAs(access, a, 'project_add_next_step', { project: 'Studio Upgrade', what: 'Ask Tessaly for the Northgate re-quote', who: 'Priya Shah', when: '30 Oct 2026' })).isError, 'a short step goes in');
 });
 
@@ -236,45 +236,45 @@ test('systems rows (5 Nov 2026, records as data): an agent reads a list row as i
 test('an edit goes through the project’s own edit: in its history with the agent’s name, in What agents did, and undone', async () => {
   const { access, files, history } = await setup();
   const a = agentOf('edit');
-  const r = await callAs(access, a, 'project_add_next_step', { project: 'Studio Upgrade', what: 'Book the second wave for Sydney cafes', who: 'Priya Shah', when: '30 Oct 2026' });
+  const r = await callAs(access, a, 'project_add_next_step', { project: 'Studio Upgrade', what: 'Book the second soundproofing session', who: 'Priya Shah', when: '30 Oct 2026' });
   assert.ok(!r.isError, words(r));
-  assert.match(words(r), /Added a next step: “Book the second wave for Sydney cafes” in Studio Upgrade/);
-  assert.ok(files.get(STORE).includes('- [ ] Book the second wave for Sydney cafes — Priya Shah · by 30 Oct 2026'));
-  assert.equal(history.peek(STORE).by, `${AS} (agent)`, 'the project’s history says which agent');
+  assert.match(words(r), /Added a next step: “Book the second soundproofing session” in Studio Upgrade/);
+  assert.ok(files.get(STUDIO).includes('- [ ] Book the second soundproofing session — Priya Shah · by 30 Oct 2026'));
+  assert.equal(history.peek(STUDIO).by, `${AS} (agent)`, 'the project’s history says which agent');
   const state = await access.state();
   assert.equal(state.activity[0].agentName, AS);
   assert.equal(state.activity[0].project.name, 'Studio Upgrade');
   assert.equal(state.activity[0].canUndo, true);
   assert.match(await access.undo(state.activity[0].id), /^Undone: added a next step/);
-  assert.equal(files.get(STORE), NOTES[STORE], 'the project is as it was');
+  assert.equal(files.get(STUDIO), NOTES[STUDIO], 'the project is as it was');
   assert.equal((await access.state()).activity[0].undone, true);
   // p12-close-and-noise A (4 Nov 2026): marking done with open tasks never closes silently — the open tasks come back
   // in plain words, and the project stays as it is.
   const blocked = await callAs(access, a, 'project_set_field', { project: 'Studio Upgrade', field: 'status', value: 'done' });
   assert.ok(!blocked.isError);
   assert.match(words(blocked), /Send the reconciliation v4 to finance/);
-  assert.doesNotMatch(files.get(STORE), /^status: done$/m);
+  assert.doesNotMatch(files.get(STUDIO), /^status: done$/m);
   // Facts, updates and ticks too.
   assert.ok(!(await callAs(access, a, 'project_set_field', { project: 'Studio Upgrade', field: 'health', value: 'On track' })).isError);
-  assert.match(files.get(STORE), /^health: on track$/m);
-  assert.ok(!(await callAs(access, a, 'project_log_update', { project: 'Studio Upgrade', what: 'Sydney wave booked', from: 'Email from Priya' })).isError);
-  assert.match(files.get(STORE), /— Sydney wave booked \*From:\* Email from Priya/);
+  assert.match(files.get(STUDIO), /^health: on track$/m);
+  assert.ok(!(await callAs(access, a, 'project_log_update', { project: 'Studio Upgrade', what: 'Speaker fitting booked', from: 'Email from Priya' })).isError);
+  assert.match(files.get(STUDIO), /— Speaker fitting booked \*From:\* Email from Priya/);
   assert.ok(!(await callAs(access, a, 'project_tick_next_step', { project: 'Studio Upgrade', step: 1 })).isError);
-  assert.match(files.get(STORE), /- \[x\] Send the reconciliation v4/);
+  assert.match(files.get(STUDIO), /- \[x\] Send the reconciliation v4/);
   const bad = await callAs(access, a, 'project_set_field', { project: 'Studio Upgrade', field: 'folder', value: 'C:\\Users' });
   assert.equal(bad.isError, true, 'a project’s folder on the PC can’t be pointed elsewhere by an agent');
   // A note made, added to, and a project file refused through the note tools.
-  assert.ok(!(await callAs(access, a, 'note_create', { path: 'Notes/Till audit', content: '# Till audit\n' })).isError);
-  assert.equal(files.get('Notes/Till audit.md'), '# Till audit\n');
-  assert.ok(!(await callAs(access, a, 'note_append', { path: 'Notes/Till audit.md', text: '- 11 spare tills', heading: 'Found' })).isError);
-  assert.match(files.get('Notes/Till audit.md'), /## Found\n\n- 11 spare tills/);
-  const proj = await callAs(access, a, 'note_append', { path: STORE, text: 'sneaky' });
+  assert.ok(!(await callAs(access, a, 'note_create', { path: 'Notes/Gear audit', content: '# Gear audit\n' })).isError);
+  assert.equal(files.get('Notes/Gear audit.md'), '# Gear audit\n');
+  assert.ok(!(await callAs(access, a, 'note_append', { path: 'Notes/Gear audit.md', text: '- 11 old microphone stands', heading: 'Found' })).isError);
+  assert.match(files.get('Notes/Gear audit.md'), /## Found\n\n- 11 old microphone stands/);
+  const proj = await callAs(access, a, 'note_append', { path: STUDIO, text: 'sneaky' });
   assert.equal(proj.isError, true);
   assert.match(words(proj), /project’s file: use the project tools/);
   // A capture: a task for a project with a day in its words becomes its next step with a date.
-  const cap = await callAs(access, a, 'capture', { kind: 'task', text: 'Order two spare tills by Friday', project: 'Studio Upgrade' });
+  const cap = await callAs(access, a, 'capture', { kind: 'task', text: 'Order two microphone stands by Friday', project: 'Studio Upgrade' });
   assert.ok(!cap.isError, words(cap));
-  assert.match(files.get(STORE), /- \[ \] Order two spare tills — by \d+ [A-Z][a-z]{2} \d{4}/);
+  assert.match(files.get(STUDIO), /- \[ \] Order two microphone stands — by \d+ [A-Z][a-z]{2} \d{4}/);
   const capNote = await callAs(access, a, 'capture', { text: 'Ask the landlord about the loading dock' });
   assert.match(words(capNote), /today’s note/);
   assert.match(files.get('Daily/2026-10-17.md'), /## Captured\n\n- \d\d:\d\d Ask the landlord about the loading dock/);
@@ -293,7 +293,7 @@ test('capturing the same note twice grows one note, never a second; a task keeps
   assert.ok(![...files.keys()].some((k) => /Tiler short of grout 2/.test(k)), 'no “ 2” note');
   const task = await callAs(access, a, 'capture', { kind: 'task', text: 'Ring Priya\nabout the lease', project: 'Studio Upgrade' });
   assert.ok(!task.isError, words(task));
-  assert.match(files.get(STORE), /- \[ \] Ring Priya\n  about the lease/, 'the step keeps its detail under it');
+  assert.match(files.get(STUDIO), /- \[ \] Ring Priya\n  about the lease/, 'the step keeps its detail under it');
 });
 
 test('a Read agent can’t change anything', async () => {
@@ -377,7 +377,7 @@ test('Ironleaf’s own AIs call the catalogue: same handlers, their gate, nothin
     { path: 'Private notes/Files/secret.pdf', name: 'secret.pdf', folder: 'Private notes/Files', size: 1, mtime: 0, kind: 'Document', title: 'secret', what: '', version: 1 },
   ];
   const tasks = { today: '2026-10-17', tasks: [
-    { key: 'a', path: 'Projects/Studio Upgrade/Studio Upgrade.md', title: 'Studio Upgrade', line: 1, project: STORE, projectName: 'Studio Upgrade', people: [], allTags: [], mtime: 0, done: false, mark: ' ', text: 'Send the reconciliation', words: 'Send the reconciliation', due: '2026-10-14', time: null, reminder: false, repeats: false, tags: [], links: [] },
+    { key: 'a', path: 'Projects/Studio Upgrade/Studio Upgrade.md', title: 'Studio Upgrade', line: 1, project: STUDIO, projectName: 'Studio Upgrade', people: [], allTags: [], mtime: 0, done: false, mark: ' ', text: 'Send the reconciliation', words: 'Send the reconciliation', due: '2026-10-14', time: null, reminder: false, repeats: false, tags: [], links: [] },
     { key: 'b', path: 'Notes/Oven service.md', title: 'Oven service', line: 1, project: null, projectName: null, people: [], allTags: [], mtime: 0, done: false, mark: ' ', text: 'Book the oven service', words: 'Book the oven service', due: '2026-11-02', time: null, reminder: false, repeats: false, tags: [], links: [] },
   ] };
   const { access, files } = await setup({}, { fileCatalogue: async () => catalogue, tasks: () => tasks, calendar: async () => ({ connected: false, reason: 'not-set-up' }) });
@@ -471,30 +471,30 @@ test('the side chat carries out a host vault tool only when the checked catalogu
 test('a line said again stays single: steps update the line and name it, never doubled (updates, decisions, people still skip)', async () => {
   const { access, files } = await setup();
   const a = agentOf('edit');
-  assert.ok(!(await callAs(access, a, 'project_add_next_step', { project: 'Studio Upgrade', what: 'Book the Sydney wave', who: 'Priya Shah' })).isError);
-  const again = await callAs(access, a, 'project_add_next_step', { project: 'Studio Upgrade', what: 'book the Sydney wave!', who: 'Priya Shah' });
+  assert.ok(!(await callAs(access, a, 'project_add_next_step', { project: 'Studio Upgrade', what: 'Book the speaker fitting', who: 'Priya Shah' })).isError);
+  const again = await callAs(access, a, 'project_add_next_step', { project: 'Studio Upgrade', what: 'book the speaker fitting!', who: 'Priya Shah' });
   assert.equal(again.isError, undefined, 'a repeat is said, not an error');
-  assert.match(words(again), /already there: Book the Sydney wave — Priya Shah in Studio Upgrade\./, 'case and punctuation aside, the same step');
-  assert.equal(files.get(STORE).split('Book the Sydney wave').length - 1, 1, 'on the list once');
-  const mixed = await callAs(access, a, 'project_add_next_step', { project: 'Studio Upgrade', steps: [{ what: 'Book the Sydney wave', who: 'Priya Shah' }, { what: 'Book the Sydney wave' }, { what: 'Ring the landlord' }] });
-  assert.match(words(mixed), /Added a next step\. already there: Book the Sydney wave — Priya Shah/, 'the same words without who update the line, never a second line');
-  assert.equal(files.get(STORE).split('Book the Sydney wave').length - 1, 1, 'still once: no owner, no new line');
+  assert.match(words(again), /already there: Book the speaker fitting — Priya Shah in Studio Upgrade\./, 'case and punctuation aside, the same step');
+  assert.equal(files.get(STUDIO).split('Book the speaker fitting').length - 1, 1, 'on the list once');
+  const mixed = await callAs(access, a, 'project_add_next_step', { project: 'Studio Upgrade', steps: [{ what: 'Book the speaker fitting', who: 'Priya Shah' }, { what: 'Book the speaker fitting' }, { what: 'Ring the landlord' }] });
+  assert.match(words(mixed), /Added a next step\. already there: Book the speaker fitting — Priya Shah/, 'the same words without who update the line, never a second line');
+  assert.equal(files.get(STUDIO).split('Book the speaker fitting').length - 1, 1, 'still once: no owner, no new line');
   const twice = await callAs(access, a, 'project_add_next_step', { project: 'Studio Upgrade', steps: [{ what: 'Mop the floor' }, { what: 'Mop the floor' }] });
   assert.match(words(twice), /Added a next step\. already there: Mop the floor/);
   // A done step said again is a new ask, and goes on.
   await callAs(access, a, 'project_tick_next_step', { project: 'Studio Upgrade', step: 3 });
-  assert.match(words(await callAs(access, a, 'project_add_next_step', { project: 'Studio Upgrade', what: 'Book the Sydney wave', who: 'Priya Shah' })), /Added a next step/);
+  assert.match(words(await callAs(access, a, 'project_add_next_step', { project: 'Studio Upgrade', what: 'Book the speaker fitting', who: 'Priya Shah' })), /Added a next step/);
   // Updates, decisions and people alike.
-  assert.ok(!(await callAs(access, a, 'project_log_update', { project: 'Studio Upgrade', what: 'Tills done' })).isError);
-  assert.match(words(await callAs(access, a, 'project_log_update', { project: 'Studio Upgrade', what: 'Tills done.' })), /Nothing added: “Tills done\.” is already logged \(update \d+\)\./);
+  assert.ok(!(await callAs(access, a, 'project_log_update', { project: 'Studio Upgrade', what: 'Desk wired' })).isError);
+  assert.match(words(await callAs(access, a, 'project_log_update', { project: 'Studio Upgrade', what: 'Desk wired.' })), /Nothing added: “Desk wired\.” is already logged \(update \d+\)\./);
   assert.ok(!(await callAs(access, a, 'project_add_item', { project: 'Studio Upgrade', list: 'decisions', item: { what: 'Close at 8pm' } })).isError);
   assert.match(words(await callAs(access, a, 'project_add_item', { project: 'Studio Upgrade', list: 'decisions', item: { what: 'Close at 8pm!' } })), /Nothing added: “Close at 8pm!” \(already decision \d+\)\./);
   assert.match(words(await callAs(access, a, 'project_add_item', { project: 'Studio Upgrade', list: 'people', item: { name: 'Sam Taylor' } })), /Nothing added: “Sam Taylor” \(already person 1\)\./);
-  assert.equal(files.get(STORE).split('**Sam Taylor** — Project owner').length - 1, 1, 'the person once');
+  assert.equal(files.get(STUDIO).split('**Sam Taylor** — Project owner').length - 1, 1, 'the person once');
   // A captured step already open stays single too.
-  const cap = await callAs(access, a, 'capture', { kind: 'task', text: 'Order two spare tills by Friday', project: 'Studio Upgrade' });
+  const cap = await callAs(access, a, 'capture', { kind: 'task', text: 'Order two microphone stands by Friday', project: 'Studio Upgrade' });
   assert.ok(!cap.isError, words(cap));
-  assert.match(words(await callAs(access, a, 'capture', { kind: 'task', text: 'Order two spare tills by Friday', project: 'Studio Upgrade' })), /already there: Order two spare tills/);
+  assert.match(words(await callAs(access, a, 'capture', { kind: 'task', text: 'Order two microphone stands by Friday', project: 'Studio Upgrade' })), /already there: Order two microphone stands/);
 });
 
 test('a second note on the same subject is refused until it has been read', async () => {

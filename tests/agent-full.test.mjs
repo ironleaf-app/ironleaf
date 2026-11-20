@@ -39,10 +39,10 @@ before(async () => {
 });
 after(() => rmSync(work, { recursive: true, force: true }));
 
-const STORE = 'Projects/Studio Upgrade/Studio Upgrade.md';
+const STUDIO = 'Projects/Studio Upgrade/Studio Upgrade.md';
 const WINTER = 'Projects/Winter Menu Launch/Winter Menu Launch.md';
 const NOTES = {
-  [STORE]: `---\ntype: project\nstatus: active\nhealth: at risk\nprogress: 80\nowner: Sam Taylor\ndue: "2026-11-20"\n---\n# Studio Upgrade\n\n## Summary\n\nEvery store’s point-of-sale PCs move to the new build before the holiday trading period.\n\n## What’s next\n\n- [ ] Send the reconciliation v4 to finance — Sam Taylor · by 14 Oct 2026\n- [ ] Chase the 11 spare tills — Priya Shah · by 24 Oct 2026\n- [ ] Book the Sydney wave — Priya Shah\n\n## Risks and issues\n\n- **High** — 11 spare tills can’t be reached remotely\n`,
+  [STUDIO]: `---\ntype: project\nstatus: active\nhealth: at risk\nprogress: 80\nowner: Sam Taylor\ndue: "2026-11-20"\n---\n# Studio Upgrade\n\n## Summary\n\nThe studio gets a new mixing desk, new speakers and soundproofing before the summer bookings.\n\n## What’s next\n\n- [ ] Send the reconciliation v4 to finance — Sam Taylor · by 14 Oct 2026\n- [ ] Chase the 11 old microphone stands — Priya Shah · by 24 Oct 2026\n- [ ] Book the speaker fitting — Priya Shah\n\n## Risks and issues\n\n- **High** — 11 old microphone stands can’t be found\n`,
   [WINTER]: `---\ntype: project\nstatus: active\nhealth: on track\nprogress: 60\nowner: Alex Lee\n---\n# Winter Menu Launch\n\n## Summary\n\nThe bakery’s winter menu: new soups and the website page.\n\n## What’s next\n\n- [ ] Photograph the soups — Alex Lee\n`,
   'Meetings/Harbour site meeting.md': `---\ntype: meeting\ndate: 2026-10-16\nattendees: [Priya Shah, Sam Taylor]\n---\n## Actions\n- [ ] Approve the lighting quote — Priya — by Friday\n- Sam to confirm the cabling contractor\n`,
   'Notes/Oven service.md': '# Oven service\n\nThe deck oven is serviced every March.\n',
@@ -165,7 +165,7 @@ function makeHost(dataDir, overrides = {}) {
       brand: async () => structuredClone(brand.value),
       setBrand: async (b) => (brand.value = structuredClone(b)),
     },
-    reviewDraft: async () => ({ week: '2026-W42', projects: [{ name: 'Studio Upgrade', moved: 'tills done' }] }),
+    reviewDraft: async () => ({ week: '2026-W42', projects: [{ name: 'Studio Upgrade', moved: 'desk wired' }] }),
     reviewApply: async (draft) => {
       reviews.applied.push(draft);
       await writeNote('Reviews/2026-W42.md', '# Week 42\n');
@@ -261,7 +261,7 @@ test('nothing waits at Full control: deletes and removals run at once, each list
   assert.match(ok(del), /Deleted Notes\/Oven service\.md/);
   assert.deepEqual(t.trashed, ['Notes/Oven service.md']);
   ok(await callAs(t.access, a, 'project_remove_item', { project: 'Studio Upgrade', list: 'next', number: 3 }));
-  assert.ok(!t.files.get(STORE).includes('Book the Sydney wave'));
+  assert.ok(!t.files.get(STUDIO).includes('Book the speaker fitting'));
   const state = await t.access.state();
   assert.ok(state.activity.some((e) => /Deleted the note “Oven service”/.test(e.words) && e.canUndo));
   // Undo brings the deleted note back.
@@ -280,7 +280,7 @@ test('notes and folders: rewrite, move and rename, make folders, properties and 
   assert.match(await t.access.undo(state.activity[0].id), /^Undone/);
   assert.equal(t.files.get('Notes/Oven service.md'), NOTES['Notes/Oven service.md']);
   // A project's file is refused through the note tools.
-  assert.match(words(await callAs(t.access, a, 'note_write', { path: STORE, content: 'x' })), /project’s file/);
+  assert.match(words(await callAs(t.access, a, 'note_write', { path: STUDIO, content: 'x' })), /project’s file/);
   // Move and rename, and Undo moves it back.
   assert.match(ok(await callAs(t.access, a, 'note_move', { from: 'Notes/Oven service.md', to: 'Equipment/Oven service' })), /Moved Notes\/Oven service\.md to Equipment\/Oven service\.md/);
   assert.ok(t.files.has('Equipment/Oven service.md') && !t.files.has('Notes/Oven service.md'));
@@ -307,14 +307,14 @@ test('projects: name, repository, notes and tags; reorder a list; put away and b
   const t = await setup();
   const a = await fullAgent(t);
   ok(await callAs(t.access, a, 'project_set_details', { project: 'Studio Upgrade', field: 'tags', value: ['retail', 'IT'] }));
-  assert.match(t.files.get(STORE), /tags:/);
-  ok(await callAs(t.access, a, 'project_set_details', { project: 'Studio Upgrade', field: 'repository', value: 'github.com/example/tills' }));
-  assert.match(t.files.get(STORE), /github\.com\/example\/tills/);
-  ok(await callAs(t.access, a, 'project_set_details', { project: 'Studio Upgrade', field: 'notes', value: 'Keep the area coordinators in the loop.' }));
-  assert.match(t.files.get(STORE), /Keep the area coordinators in the loop\./);
+  assert.match(t.files.get(STUDIO), /tags:/);
+  ok(await callAs(t.access, a, 'project_set_details', { project: 'Studio Upgrade', field: 'repository', value: 'github.com/example/studio-gear' }));
+  assert.match(t.files.get(STUDIO), /github\.com\/example\/studio-gear/);
+  ok(await callAs(t.access, a, 'project_set_details', { project: 'Studio Upgrade', field: 'notes', value: 'Keep the band in the loop.' }));
+  assert.match(t.files.get(STUDIO), /Keep the band in the loop\./);
   ok(await callAs(t.access, a, 'project_move_item', { project: 'Studio Upgrade', list: 'next', from: 3, to: 1 }));
-  const p = M.parseProject(t.files.get(STORE), STORE);
-  assert.equal(p.next[0].what, 'Book the Sydney wave');
+  const p = M.parseProject(t.files.get(STUDIO), STUDIO);
+  assert.equal(p.next[0].what, 'Book the speaker fitting');
   // p12-close-and-noise A (4 Nov 2026): putting away with open tasks never closes silently — the open tasks come
   // back in plain words, and the project stays as it is until they are answered for.
   assert.match(ok(await callAs(t.access, a, 'project_archive', { project: 'Winter Menu Launch', why: 'Menu launched' })), /Photograph the soups/);
@@ -325,12 +325,12 @@ test('projects: name, repository, notes and tags; reorder a list; put away and b
   assert.match(t.files.get(WINTER), /Menu launched/);
   ok(await callAs(t.access, a, 'project_archive', { project: 'Winter Menu Launch', done: false }));
   assert.match(t.files.get(WINTER), /^status: active$/m);
-  ok(await callAs(t.access, a, 'project_pin_file', { project: 'Studio Upgrade', path: 'Reports/Rollout.xlsx', what: 'Rollout tracker' }));
-  assert.match(t.files.get(STORE), /Rollout\.xlsx/);
+  ok(await callAs(t.access, a, 'project_pin_file', { project: 'Studio Upgrade', path: 'Reports/Gear list.xlsx', what: 'Gear tracker' }));
+  assert.match(t.files.get(STUDIO), /Gear list\.xlsx/);
   assert.equal((await callAs(t.access, a, 'project_pin_file', { project: 'Studio Upgrade', path: '../../secret.txt' })).isError, true);
   assert.equal((await callAs(t.access, a, 'project_set_details', { project: 'Studio Upgrade', field: 'name', value: 'Winter Menu Launch' })).isError, true, 'never two projects of one name');
   // Each in the project's history, named.
-  assert.equal(t.history.peek(STORE).by, 'Other AI apps (agent)');
+  assert.equal(t.history.peek(STUDIO).by, 'Other AI apps (agent)');
 });
 
 test('templates: a note from a template, a new template, a note saved as one', async () => {
@@ -421,10 +421,10 @@ test('a new next step added and undone, and the weekly review drafted and saved,
   // t238: no filing tool — a meeting’s actions are its project’s tasks already. A genuinely new step goes
   // through project_add_next_step, still with Undo.
   await callAs(t.access, a, 'project_add_next_step', { project: 'Studio Upgrade', what: 'Approve the lighting quote', who: 'Priya Nair' });
-  assert.match(t.files.get(STORE), /Approve the lighting quote/);
+  assert.match(t.files.get(STUDIO), /Approve the lighting quote/);
   let state = await t.access.state();
   assert.match(await t.access.undo(state.activity[0].id), /^Undone/);
-  assert.ok(!t.files.get(STORE).includes('Approve the lighting quote'));
+  assert.ok(!t.files.get(STUDIO).includes('Approve the lighting quote'));
   const draft = JSON.parse(ok(await callAs(t.access, a, 'review_draft', {})));
   assert.equal(draft.week, '2026-W42');
   assert.match(ok(await callAs(t.access, a, 'review_apply', { draft })), /Reviews\/2026-W42\.md/);
