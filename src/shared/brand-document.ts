@@ -1238,7 +1238,7 @@ export function brandKitHint(kit: BrandKit | null | undefined): string | null {
 export function brandPreviewHtml(kit: BrandKit | null | undefined, url: (rel: string) => string): string {
   const sample = `---
 date: 3 Mar 2026
-project: Riverside flagship
+project: Riverside cafe
 attendees: [Ana Reyes, Sam Okafor]
 figures:
   - { value: 20 Mar, label: Fit-out finishes }
@@ -1247,12 +1247,12 @@ figures:
 
 ## Summary
 
-The fortnightly now runs from the shared tracker to cut status chasing. Thursday's till trial at the Quay decides the install schedule.
+The fortnightly now runs from the shared tracker to cut status chasing. Thursday's menu tasting at the Quay decides the opening menu.
 
 ## Actions
 
-- [ ] Confirm the trial with the store team — Ana · by 4 Mar 2026
-- [ ] Run one live till trial at the Quay — Sam · by 5 Mar 2026
+- [ ] Confirm the tasting with the kitchen team — Ana · by 4 Mar 2026
+- [ ] Run one menu tasting at the Quay — Sam · by 5 Mar 2026
 `;
   return brandDocument({ title: 'Riverside Cafe Opening', text: sample, path: 'Meetings/Riverside Cafe Opening.md', kit, url, mode: 'preview' });
 }
