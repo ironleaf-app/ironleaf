@@ -4,7 +4,7 @@
 // tab. Fails without each change.
 import assert from 'node:assert/strict';
 import { after, test } from 'node:test';
-import { startHarness } from './vault-controls-harness.mjs';
+import { openSettings, startHarness } from './vault-controls-harness.mjs';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -58,6 +58,8 @@ const H1 = (t) => `(document.querySelector('main h1, .main h1')?.innerText ?? ''
 async function openTestProject(h) {
   assert.equal(await clickWords(h, 'Projects'), 'CLICKED', 'Projects opens');
   assert.ok(await waitFor(h, H1('Projects')), 'the Projects home lands');
+  // The heading lands before the list fills on a busy machine: wait for the row itself.
+  await waitFor(h, `(document.querySelector('main')?.innerText ?? '').includes('Harbourline Cart Fix')`);
   assert.equal(await clickWords(h, 'Harbourline Cart Fix'), 'CLICKED', 'the project opens');
   assert.ok(await waitFor(h, `!!document.querySelector('.pj-page')`), 'the project page lands');
   await sleep(1200);
@@ -131,7 +133,7 @@ test('returning to an open tab restores it', async () => {
   const h = await harness();
   await h.freshView();
   // Tabs on first (Settings › Look › Open pages in tabs), the way a person does: one page shows at a time until then.
-  assert.equal(await clickWords(h, 'Settings'), 'CLICKED', 'Settings opens');
+  assert.equal(await openSettings(h), 'CLICKED', 'Settings opens');
   assert.ok(await waitFor(h, `!!document.querySelector('main')`, 30000), 'Settings lands');
   await sleep(800);
   assert.equal(await clickWords(h, 'Look', 'main'), 'CLICKED', 'Look opens');

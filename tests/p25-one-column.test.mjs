@@ -18,7 +18,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { after, test } from 'node:test';
-import { startHarness } from './vault-controls-harness.mjs';
+import { openSettings, startHarness } from './vault-controls-harness.mjs';
 
 const root = path.join(import.meta.dirname, '..');
 const read = (p) => readFileSync(path.join(root, p), 'utf8');
@@ -123,6 +123,8 @@ async function clickWords(h, words, scope = '') {
 // Open a room the way a person does: its sidebar row, else Ctrl+K (t10 the quiet More, 8 Nov 2026: packs
 // and places left More for the palette, each by its own name; narrow windows still fold rows away).
 async function openRoom(h, name) {
+  // Settings lives in the account menu (the chip at the sidebar's foot), not as a sidebar row.
+  if (name === 'Settings' && (await openSettings(h)) === 'CLICKED') return;
   if ((await clickWords(h, name, '.sidebar.left, aside')) === 'CLICKED') return;
   const label = name === 'Shared spaces' ? 'Open Shared spaces' : name;
   await h.browser.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'k', code: 'KeyK', modifiers: 2, windowsVirtualKeyCode: 75 });

@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { after, before, test } from 'node:test';
-import { startHarness } from './vault-controls-harness.mjs';
+import { openSettings, startHarness } from './vault-controls-harness.mjs';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const SEL = 'button, a[href], select, input, textarea, [role="button"], [role="tab"], [role="menuitem"], [role="checkbox"], [role="switch"], [role="radio"], summary';
@@ -140,6 +140,11 @@ async function clickWords(words, scope = '') {
 
 /** A place opened from the side bar, else from the More menu by name. */
 async function gotoPlace(label) {
+  // Settings lives in the account menu (the chip at the sidebar's foot), not as a sidebar row.
+  if (label === 'Settings') {
+    assert.equal(await openSettings(h), 'CLICKED', 'Settings opens');
+    return;
+  }
   const side = await h.browser.ev(`(async () => {
     const vis = (el) => { const r = el.getBoundingClientRect(); return r.width > 2 && r.height > 2; };
     const roots = [...document.querySelectorAll('.sidebar.left, aside')];

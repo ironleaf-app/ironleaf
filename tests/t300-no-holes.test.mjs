@@ -29,7 +29,7 @@ import assert from 'node:assert/strict';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { after, test } from 'node:test';
-import { startHarness } from './vault-controls-harness.mjs';
+import { openSettings, startHarness } from './vault-controls-harness.mjs';
 import { writeT200Vault } from './t200-vault.mjs';
 
 const root = path.join(import.meta.dirname, '..');
@@ -369,6 +369,8 @@ async function waitFor(h, js, ms = 12000) {
   }
 }
 async function openRoom(h, name) {
+  // Settings lives in the account menu (the chip at the sidebar's foot), not as a sidebar row.
+  if (name === 'Settings' && (await openSettings(h)) === 'CLICKED') return;
   if ((await clickWords(h, name, '.sidebar.left, aside')) === 'CLICKED') return;
   const label = name === 'Graph' ? 'Open the graph' : name === 'Templates' ? 'Open the Templates page' : name === 'Assets' ? 'Open your assets' : name;
   await h.browser.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'k', code: 'KeyK', modifiers: 2, windowsVirtualKeyCode: 75 });

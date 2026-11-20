@@ -499,7 +499,7 @@ test('person 3 brings a zip export in: plan first, originals kept, take-back off
 test('the Kit: Templates opens from Settings and a template makes a note', async () => {
   const h = await boot((v) => writeFreshVault(v));
   assert.ok(await waitFor(h, `!!document.querySelector('.app')`), 'the app boots');
-  assert.equal(await clickWords(h, 'Settings'), 'CLICKED', 'Settings opens');
+  assert.equal(await Harness.openSettings(h), 'CLICKED', 'Settings opens');
   assert.ok(await waitFor(h, `document.body.innerText.includes('Types and templates')`, 15000), 'Settings › General lands');
   assert.equal(await h.browser.ev(`(() => { const row = document.querySelector('main .setting-row[data-setting="Templates"]'); const b = [...(row?.querySelectorAll('button') ?? [])].find((x) => (x.innerText || '').trim() === 'Open'); if (!b) return 'NOTFOUND'; b.click(); return 'CLICKED'; })()`), 'CLICKED', 'Templates Open clicks');
   assert.ok(await waitFor(h, `document.body.innerText.includes('Meeting notes')`, 15000), 'the Templates page lists the ready-made ones');
