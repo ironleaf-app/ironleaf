@@ -1,0 +1,392 @@
+/* The Vault redesign, wave 2b (30 Oct 2026): Notes, meetings and people in the mock-ups' shapes. My own file: the shared
+   kit and frame stay untouched, and every colour comes from the theme tokens, so light, dark and the person's
+   palettes keep working. One-line clip everywhere; nothing between sections but a small grey label. */
+
+.w2b-split { display: flex; gap: 28px; align-items: flex-start; }
+.w2b-folders { width: 220px; flex: none; position: sticky; top: 0; min-width: 0; overflow: hidden; }
+.w2b-folders .glabel { margin-bottom: 8px; }
+.w2b-folders .frow svg { color: var(--text-muted); flex: none; }
+.w2b-folders .frow.on svg { color: var(--text); }
+.w2b-folders .frow .clip { flex: 1; }
+/* A rail folder's own menu (8 Nov 2026): its … sits beside its row, shown on hover, and a kept-out
+   folder reads quietly. */
+.w2b-folders .frow-wrap { display: flex; align-items: center; gap: 2px; }
+.w2b-folders .frow-wrap > .frow { flex: 1; min-width: 0; width: auto; }
+.w2b-folders .frow-more { flex: none; width: 26px; height: 26px; opacity: 0; }
+.w2b-folders .frow-wrap:hover .frow-more, .w2b-folders .frow-more:focus-visible { opacity: 1; }
+.w2b-folders .frow.is-quiet { color: var(--text-muted); font-weight: 400; }
+.w2b-main { flex: 1; min-width: 0; }
+/* The filters sit on the chips row (sweep-vault-b F-B7: the window's select { width: 100% } stacked each as a
+   full-width row of its own at every size); long project names clip with … inside a capped box. */
+.w2b-project { height: 32px; font-size: var(--fs-small); flex: none; width: auto; max-width: 220px; }
+/* The selects' group keeps the right push (t74: the push moved here from .w2b-project, so both drop-downs travel). */
+.w2b-selects { margin-left: auto; }
+.w2b-search { margin-top: 10px; }
+.w2b-list { margin-top: 12px; }
+.w2b-card { padding: 8px 20px; }
+.w2b-group { padding-top: 8px; }
+button.trow.w2b-row { width: 100%; background: none; border: 0; font: inherit; color: inherit; text-align: left; cursor: pointer; border-radius: var(--r-3); }
+button.trow.w2b-row + button.trow.w2b-row { border-top: 1px solid var(--border); }
+button.trow.w2b-row.is-active { background: var(--sel); }
+.w2b-row-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.w2b-row-main .t { display: block; }
+/* Meeting rows and titles read whole (t248, 12 Nov 2026: "Run the Saturday soak test with tw" cut mid word):
+   words wrap whole, never clipped with no dots. */
+.w2b-row-words { white-space: normal; overflow: visible; }
+.w2b-title-words { white-space: normal; overflow: visible; min-width: 0; }
+.w2b-row-line2 { display: flex; align-items: center; gap: 8px; min-width: 0; }
+/* A note's preview wraps whole words and grows, never cut at the edge (t271, 13 Nov 2026: the shared
+   way rows read whole: list-row-standard). Three lines at most (t278 break-it: a 2,000-letter single
+   line drew 2,000 letters, a 400px wall of one row at 1219; markdown paragraphs are often one long
+   line). Three of the meta's own 18px lines, cut at the boundary, never dots (both clamp forms draw
+   dots or nothing here); the row keeps the full words on hover, as clipped titles do. */
+.w2b-row-line2 .clip { flex: 1; min-width: 0; white-space: normal; overflow: hidden; overflow-wrap: break-word; text-overflow: clip; line-height: 18px; max-height: 54px; }
+/* A record's kind in its pack's colour (t277, 13 Nov 2026): Bill ochre, Machine slate, Service teal,
+   Runbook sage and the rest from the type tokens: more colours, never fewer. Theme tokens only. */
+.w2b-kind.nt-stone, .w2b-kind.nt-clay, .w2b-kind.nt-slate, .w2b-kind.nt-sky, .w2b-kind.nt-ochre,
+.w2b-kind.nt-sage, .w2b-kind.nt-plum, .w2b-kind.nt-rose, .w2b-kind.nt-teal {
+  background: var(--type-soft);
+  color: var(--type);
+}
+.w2b-when { margin-left: auto; flex: none; }
+.w2b-keys { margin-top: 10px; font-size: var(--fs-small); }
+/* Notes sort, pin and bulk (10.0 papercuts): the row keeps its shape, with a tick at left and a pin at right. */
+.w2b-sort { height: 32px; font-size: var(--fs-small); flex: none; width: auto; max-width: 180px; }
+.w2b-bulk { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding: 8px 12px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--r-3); }
+.w2b-bulk-count { font-size: var(--fs-small); font-weight: 600; color: var(--text-muted); margin-right: auto; }
+.w2b-tickall { display: flex; justify-content: flex-end; padding-top: 4px; }
+/* Tick all ends its words at the divider, as the row dates do (p25 one column: the quiet button's side pad held
+   its words 14 px short). */
+.w2b-tickall .btn { padding-right: 0; }
+.w2b-rowwrap { display: flex; align-items: stretch; gap: 2px; }
+/* Rows past the fold skip layout and paint until scrolled to (t102, 9 Nov 2026, as the picker's): eighty rows
+   lay out on every filter. The same rows, keyboard and mouse. */
+.w2b-rowwrap, button.trow.w2b-row {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 57px;
+}
+/* The date is the row's last thing, past the pin, so it ends at the divider and Tick all (p25 one column: inside
+   the row button it ended a pin short of both and the right edge wandered). It opens the note, as the row does. */
+.w2b-rowwrap > .w2b-when { align-self: center; flex: none; margin-left: 10px; cursor: pointer; }
+.w2b-rowwrap + .w2b-rowwrap { border-top: 1px solid var(--border); }
+/* The active row reads as one: the wrap carries the highlight under the pin's place and the row-end date too (p25
+   one column: the date sits past the button now, and the button's own highlight would stop short of it). */
+.w2b-rowwrap.is-active { background: var(--sel); border-radius: var(--r-3); }
+/* One highlight, the whole row, hovered or active (t271, 13 Nov 2026: Services' wash stopped before its
+   date while Machines' ran full width: hover lit the button only, active the whole wrap). */
+.w2b-rowwrap:hover { background: var(--sel); border-radius: var(--r-3); }
+.w2b-rowwrap > button.trow.w2b-row { flex: 1; min-width: 0; width: auto; }
+.w2b-rowwrap.is-active > button.trow.w2b-row { background: var(--sel); }
+.w2b-tick { align-self: center; flex: none; width: 15px; height: 15px; margin: 0 6px 0 0; accent-color: var(--text); cursor: pointer; }
+.w2b-pin { align-self: center; flex: none; opacity: 0; }
+.w2b-rowwrap:hover .w2b-pin, .w2b-rowwrap:focus-within .w2b-pin, .w2b-pin.on { opacity: 1; }
+.w2b-pin.on { color: var(--text); }
+@media (max-width: 900px) {
+  .w2b-split { flex-direction: column; }
+  .w2b-folders { width: 100%; position: static; }
+}
+
+/* List pages open with the same 38px title as every other screen (10.0 Endless Tech: no override). */
+
+/* ---------- people ---------- */
+.w2b-chips { margin-top: 14px; }
+.searchbox.w2b-find { flex: none; width: 220px; margin-left: auto; }
+.w2b-people .w2b-card { margin-top: 14px; }
+/* Two names for one person (9 Nov 2026, one person one page): the pairs sit between the filters and the list. */
+.w2b-people .w2b-same { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+.pc-avatar.w2b-pava { width: 44px; height: 44px; }
+.tag.w2b-tag { margin-left: auto; flex: none; }
+/* A promise's day in plain words (t208, 11 Nov 2026, second look: the filled tag is gone): the task rows'
+   right end in the same size, tabular figures, never wrapped. */
+.w2b-when { margin-left: auto; flex: none; font-size: var(--fs-small); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.w2b-lock { margin-left: 6px; color: var(--text-faint); }
+.w2b-faint { color: var(--text-faint); font-weight: 400; font-size: var(--fs-small); }
+.w2b-person .nv-page-icon { width: 56px; height: 56px; background: none; }
+.pc-avatar.w2b-avatar { width: 56px; height: 56px; font-size: var(--fs-section); }
+.w2b-halves { display: flex; gap: 16px; margin: 16px 0 0; }
+.w2b-half { flex: 1; padding: 14px 18px; min-width: 0; }
+.w2b-half .trow { padding-left: 0; padding-right: 0; }
+.glabel.w2b-section { margin: 18px 0 6px; }
+.w2b-link { background: none; border: 0; padding: 0; font: inherit; color: inherit; text-align: left; cursor: pointer; min-width: 0; }
+.w2b-link:hover { text-decoration: underline; }
+@media (max-width: 700px) {
+  .w2b-halves { flex-direction: column; }
+}
+
+/* ---------- a note in the new page shape ---------- */
+.w2b-daily { margin: 0 0 6px; }
+.w2b-daily .vtitle { margin: 2px 0 4px; }
+.btn.quiet.w2b-inline { height: auto; padding: 0; font-size: inherit; text-decoration: none; color: var(--text-faint); display: inline; border: 0; background: none; }
+.btn.quiet.w2b-inline:hover { text-decoration: underline; color: var(--text-muted); }
+/* The sentence's tail and its Change link stay together, so Change never sits alone on a line. */
+.w2b-daily .w2b-keep { white-space: nowrap; }
+.w2b-is-daily .page-type { display: none; }
+/* The spec's title: 32px bold tight, Geist, never serif. */
+.w2b-note .inline-title { font: 700 var(--fs-page)/1.15 var(--font-ui); letter-spacing: -0.02em; }
+/* A note's first line when it only repeats the title (round 2 for the daily note, round 4 for any note): hidden
+   in Live, shown in Source for editing. The editor hides the exact line (live-preview.ts); this keeps a first-line
+   heading out even before it runs. */
+.w2b-note.mode-live.w2b-hide-first .cm-content > .cm-line.cm-nv-heading:first-of-type { display: none; }
+/* The context rail as the mock-up's link strip: one slim column, small grey labels, one button to fold it away. */
+.w2b-note .nv-rail { width: 220px; flex-basis: 220px; }
+.w2b-note .nv-rail-section h3 { font-size: var(--fs-caption); font-weight: 600; color: var(--text-faint); }
+.w2b-note .nv-rail-toggle { color: var(--text-muted); }
+.w2b-note .nv-rail-toggle:hover { color: var(--text); }
+
+/* ---------- meetings ---------- */
+.w2b-stats { display: flex; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+button.card.w2b-stat { flex: 1 1 180px; padding: 14px 18px; text-align: left; cursor: pointer; font: inherit; color: inherit; }
+button.card.w2b-stat:hover { background: var(--bg-hover); }
+.w2b-meetings .w2b-card { margin-top: 12px; }
+.w2b-card .trow > .t { flex: 1; min-width: 0; }
+.w2b-stack { display: flex; flex-direction: column; gap: 16px; }
+.w2b-series { display: flex; gap: 12px; flex-wrap: wrap; }
+.w2b-series-card { flex: 1 1 220px; padding: 14px 18px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.w2b-series-main { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; width: 100%; }
+.w2b-series-main .t { font-size: var(--fs-body); font-weight: 500; }
+.w2b-series-main .meta { font-size: var(--fs-small); color: var(--text-muted); }
+.btn.quiet.w2b-mini { height: 28px; font-size: var(--fs-small); }
+.w2b-title { display: flex; align-items: center; gap: 14px; margin-top: 8px; min-width: 0; }
+/* The title row is the title's height (the h1's margins would add ~50px of dead space). */
+.w2b-title .vtitle { margin: 0; }
+.w2b-title .vtitle { flex: 1; }
+.w2b-titleacts { margin-left: auto; display: flex; align-items: center; gap: 8px; flex: none; }
+/* The page shape: everything under the title starts at one left edge, 54px in. */
+.w2b-meeting > :not(.w2b-title) { margin-left: 54px; }
+.w2b-meeting section { margin-top: 22px; }
+.pill.w2b-person-pill { gap: 4px; padding-right: 6px; }
+.w2b-person-main { display: inline-flex; align-items: center; gap: 6px; }
+.w2b-x { border: 0; background: none; cursor: pointer; color: var(--text-faint); display: inline-grid; place-items: center; padding: 2px; border-radius: var(--r-2); }
+.w2b-x:hover { color: var(--text); }
+.w2b-addperson { display: inline-flex; align-items: center; gap: 6px; color: var(--text-faint); font-size: var(--fs-small); }
+.w2b-addperson input { font: inherit; font-size: var(--fs-small); color: var(--text); background: none; border: 0; outline: 0; width: 140px; }
+.w2b-addperson input::placeholder { color: var(--text-faint); }
+.pill.w2b-quiet { border-style: dashed; }
+.w2b-agenda { list-style: decimal; margin: 8px 0 0 20px; font-size: var(--fs-body); }
+.w2b-agenda li { margin: 5px 0; padding-left: 4px; }
+.w2b-agenda li::marker { color: var(--text-muted); }
+.w2b-agenda-text { margin-right: 10px; }
+.w2b-agenda li.is-done .w2b-agenda-text { color: var(--text-faint); }
+.w2b-agenda .check { vertical-align: -4px; }
+.w2b-add { display: flex; align-items: center; gap: 8px; color: var(--text-faint); margin-top: 8px; }
+.w2b-add input { flex: 1; font: inherit; font-size: var(--fs-body); color: var(--text); background: none; border: 0; outline: 0; }
+.w2b-add input::placeholder { color: var(--text-faint); }
+.w2b-sechead { display: flex; align-items: center; gap: 12px; }
+/* Only the first button takes the free space, so the buttons cluster right instead of spreading out. */
+.w2b-sechead .button { flex: none; }
+.w2b-sechead .button:first-of-type { margin-left: auto; }
+.w2b-file { margin-left: auto; flex: none; }
+.w2b-prep { margin: 8px 0 0; }
+.w2b-prep-group { margin-top: 10px; }
+.srcrow.w2b-src { gap: 8px; }
+.w2b-src-main { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; font-size: var(--fs-body); font-weight: 500; }
+.w2b-prep-btns { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.w2b-failed { color: var(--red-tx); }
+.w2b-recsub { font-weight: 400; opacity: 0.75; }
+.w2b-recbtns { margin-left: auto; display: flex; gap: 8px; }
+.recbanner .rbtn.w2b-stop { background: #d93b2b; border-color: #d93b2b; }
+.w2b-warn { display: flex; gap: 8px; align-items: center; background: var(--amber-bg); color: var(--amber-tx); border-radius: var(--r-4); padding: 10px 14px; font-size: var(--fs-body); margin-top: 12px; }
+.w2b-livecols { display: flex; gap: 24px; margin-top: 16px; }
+.w2b-livecol { flex: 1; min-width: 0; }
+.w2b-livecol:first-child { flex: 1.2; }
+.tline.live .at { color: var(--accent-text); font-weight: 700; }
+.w2b-norec { display: flex; align-items: center; gap: 12px; }
+.w2b-norec .button { margin-left: auto; flex: none; }
+.w2b-reccard { display: flex; align-items: center; gap: 12px; padding: 14px 18px; margin-top: 8px; }
+.w2b-recmain { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.w2b-reccontrols { margin-left: auto; display: flex; align-items: center; gap: 8px; flex: none; }
+.w2b-setup { margin-top: 8px; }
+.w2b-setup .button { margin-left: 8px; }
+/* A meeting's summary reads at a reading width (t273, 13 Nov 2026: a wall of text across the full width). Long
+   summaries break into short paragraphs in MeetingsPage. */
+.w2b-summary { font-size: var(--fs-body); margin-top: 6px; max-width: 76ch; }
+/* The recorder and playback in the meeting page's cards. */
+.w2b-meeting .mr-stack { display: flex; flex-direction: column; gap: 12px; }
+.w2b-meeting .mr { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--r-3); padding: 14px 18px; }
+.w2b-meeting .mr-record { display: inline-flex; align-items: center; gap: 8px; background: var(--primary); color: var(--on-primary); border: 0; border-radius: var(--r-4); height: 36px; padding: 0 16px; font: 600 var(--fs-small) var(--font-ui); cursor: pointer; }
+.w2b-meeting .mr-record:disabled { opacity: 0.5; cursor: default; }
+.w2b-meeting .mp { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--r-3); padding: 12px 18px; }
+/* The week: seven day columns, Monday to Sunday, with full titles; the day column under the grid (p14, 4 Nov 2026, their
+   window: beside it the days squeezed to ~85 px inside the page column; stacked, the grid keeps the full width). */
+.w2b-calwrap { display: flex; flex-direction: column; gap: 24px; }
+.w2b-calmain { min-width: 0; }
+.w2b-daycol { min-width: 0; }
+.w2b-daycard { padding: 14px 18px; }
+.w2b-dayrow { display: flex; gap: 10px; align-items: baseline; width: 100%; background: none; border: 0; font: inherit; color: inherit; cursor: pointer; padding: 6px 0; text-align: left; }
+.w2b-daytime { font-size: var(--fs-caption); color: var(--text-faint); width: 64px; flex: none; }
+.w2b-dayev { flex: 1; }
+.w2b-modes { margin-left: auto; }
+.w2b-monthview { padding: 12px; }
+.w2b-monthsync .monthbar { border-bottom: 0; padding-bottom: 4px; }
+.w2b-monthsync td.outside { background: var(--bg-side); }
+.w2b-monthsync td.outside .d, .w2b-monthsync td.outside .ev { opacity: 0.6; }
+.w2b-dayonly { padding: 16px 20px; }
+.cal td.w2b-weekcell { height: 300px; cursor: pointer; }
+.w2b-weekcell.is-selected { background: var(--bg-hover); }
+/* Full titles on the week: they wrap, never cut. */
+button.ev.w2b-ev { display: block; width: 100%; border: 0; cursor: pointer; font: inherit; text-align: left; white-space: normal; }
+.w2b-evtime { font-size: var(--fs-caption); color: var(--text-faint); padding: 2px 7px; }
+@media (max-width: 900px) {
+  .w2b-calwrap { flex-direction: column; }
+  .w2b-calmain, .w2b-daycol { width: 100%; }
+  .w2b-livecols { flex-direction: column; }
+  .w2b-meeting > :not(.w2b-title) { margin-left: 0; }
+}
+
+/* ---------- a person, and People (p15-person, 4 Nov 2026) ---------- */
+/* The halves' titles take the row's free room, as the timeline's do (.w2b-card .trow > .t above). */
+.w2b-half .trow > .t { flex: 1; min-width: 0; }
+/* The person's page is cards and rows, not prose: on a narrow window it keeps the reading column, on a wide one
+   it takes the list column, and on the window more still, so You owe and Owes you titles are read, not cut.
+   Other reading pages keep 920px: this names the person's page only. */
+@media (min-width: 1280px) {
+  .nv-page.read.w2b-person { max-width: var(--page-max); }
+}
+
+/* Notes Show more sits centred under its rows (5 Nov 2026 speed audit item 6), as the Library's does. */
+.w2b-more { display: flex; justify-content: center; padding: 12px 0 4px; }
+
+/* Notes Show everything (5 Nov 2026, "your notes are yours"): one quiet row after Docs, muted until it is on. */
+.w2b-folders .frow.w2b-showall { color: var(--text-muted); font-weight: 400; }
+.w2b-folders .frow.w2b-showall.on { color: var(--text); font-weight: 600; }
+/* The folders that fit (t190, 10 Nov 2026): the rail folds whole folders behind one quiet row, as the former host
+   app's rail folds workspaces and the side bar tree windows its rows. Opened past what fits, the rail stops
+   sticking and scrolls with the page, so the page's own scroll reaches every row; the rail is sticky only
+   while it fits. */
+.w2b-folders.is-tall { position: static; }
+.w2b-folders .frow.w2b-morefolders { color: var(--text-muted); font-weight: 400; }
+
+/* The showing meetings stat reads current, like the rail's row (5 Nov 2026: unmarked, pressing it read dead). */
+button.card.w2b-stat.on { background: var(--sel); }
+
+/* One meeting's (and series') page joins the rooms' one column and title place (a1, 6 Nov 2026: the title
+   sat 28 px high on an 8 px pad, its body 54 px in while every room starts at the edge). Scoped to the
+   meeting page only; the recorder and minutes keep their own rules (m5/m2, m4 own those). */
+.nv-page .w2b-meeting > .w2b-title { margin-top: var(--page-pad-top); gap: 10px; }
+.nv-page .w2b-meeting > .w2b-title > h1.vtitle { font-weight: 650; letter-spacing: -0.02em; line-height: 1.15; }
+.nv-page .w2b-meeting > .metapills { margin-top: 8px; }
+.nv-page .w2b-meeting > :not(.w2b-title) { margin-left: 0; }
+.nv-page .w2b-meeting section { margin-top: 24px; }
+
+/* Prep as one short block a person (6 Nov 2026, o3-meeting-page item 3), and the agenda's Covered box at the
+ * left in line with its number (item 4). Scoped rules at the end, as this stylesheet is shared. */
+.w2b-prep-blocks { display: flex; flex-direction: column; gap: 12px; }
+.w2b-prep-lead { font-size: var(--fs-small); font-weight: 600; color: var(--text-strong); margin-bottom: 3px; }
+.w2b-prep-line { font-size: var(--fs-body); color: var(--text); line-height: 1.45; padding: 1px 0; }
+.w2b-prep-more { font-size: var(--fs-small); color: var(--text-faint); padding-top: 1px; }
+.w2b-agenda li .check { margin-right: 8px; }
+/* A ticked box is a grid in kit.css (for flex rows); in the numbered agenda it stays on the line. */
+.w2b-agenda li .check.done { display: inline-grid; vertical-align: -4px; }
+.w2b-agenda-text { margin-right: 0; }
+
+/* A meeting's sections pair on very wide windows (t254, 13 Nov 2026). The page that stood one section a row
+   pairs its sections two across (a series' standing agenda beside its meetings, prep beside the
+   recording), and a lone section takes the width. The odd count's first section spans (the agenda, the
+   primary list): first-of-type that is also odd-from-last is the first of an odd count, with no :has. The
+   title, the facts, the recording banner and the live columns (which pair inside themselves) span; the
+   recorder pairs like any section, and dense packing fills behind a spanning box, so a pair slot never
+   stands empty. Row gaps stay nil (the sections keep their own top margin, the rhythm never changes), and
+   below 2400 px nothing changes. Scoped to the room page, as a1. */
+@media (min-width: 2400px) {
+  .nv-page .w2b-meeting {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0 32px;
+    grid-auto-flow: dense;
+    align-items: start;
+  }
+  .nv-page .w2b-meeting > :not(section) {
+    grid-column: 1 / -1;
+  }
+  .nv-page .w2b-meeting > section:first-of-type:nth-last-of-type(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+/* The Notes folder rail widens on very wide windows (t254: at 2400 the list takes the width and long
+   folder names ("Harbourline Cart Fix") still cut in the 220 rail). Below 2400 px nothing changes. */
+@media (min-width: 2400px) {
+  .w2b-folders {
+    width: 280px;
+  }
+}
+
+/* A person's tabs (t255, 13 Nov 2026): a connected person's page scrolled on and on, the head stays
+   fixed while Overview, Promises, Projects and Timeline read under the one shared bar. The Overview
+   shares two columns (four blocks fill two rows whole, never an empty column beside content). Blocks
+   reuse the Overview's own words and links (pj-ov in w2a.css). */
+.pp-stickhead { position: sticky; top: 0; z-index: 3; background: var(--bg); padding-bottom: 4px; }
+.pp-ov { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px 28px; margin: 20px 0 8px; }
+@media (min-width: 900px) {
+  .pp-ov { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.pp-ov .pj-ov-block .card.w2b-half { margin: 0; }
+
+/* After the meeting (20 Nov 2026, on a ~2000 px monitor): the minutes and summary in the main column, the recording,
+   its transcript, Record again and the note's tasks in a side column beside them. The frame is the wide one
+   (page-frame.css .has-split), so the pair is centred in the room; narrow, the side stacks under the main. Inside
+   the minutes, decisions and actions stand side by side when the main column has the room, so the card is filled
+   with minutes, not a 470 px column with a blank beside it. */
+.w2b-after {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  margin-top: var(--space-5);
+}
+.w2b-after-main,
+.w2b-after-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+.w2b-after-main:empty {
+  display: none;
+}
+.w2b-after-main > *,
+.w2b-after-side > * {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+@container frame (min-width: 1100px) {
+  .w2b-after {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(var(--w-side), 34%, 560px);
+    align-items: start;
+  }
+  .w2b-after:has(> .w2b-after-main:empty) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .w2b-after-side {
+    position: sticky;
+    top: var(--space-4);
+  }
+}
+@container frame (min-width: 1100px) {
+  .w2b-after .mm-minutes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-3) var(--space-6);
+    max-width: none;
+    width: 100%;
+    align-self: stretch;
+    box-sizing: border-box;
+    align-items: start;
+  }
+  .w2b-after .mm-minutes > p {
+    grid-column: 1 / -1;
+    max-width: 90ch;
+  }
+}
+.mm-min-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+/* Record again sits at its own size in the side column, its hint beside it, never stretched end to end. */
+.w2b-after-side .mr.is-idle {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin: 0;
+}

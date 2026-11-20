@@ -1,0 +1,746 @@
+/* The Templates page and the New project window (src/renderer/src/views/TemplatesPage.tsx,
+   components/NewProjectDialog.tsx). Colours are the app's tokens; each group has its own hue for its icons. */
+
+.tp-page {
+  height: 100%;
+  overflow: auto;
+  background: var(--bg);
+  container-type: inline-size;
+}
+
+.tp-inner {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 18px 32px 64px;
+}
+
+.tp-page,
+.np-dialog {
+  --tp-notes: var(--accent);
+  --tp-projects: var(--canvas-5);
+  --tp-reports: var(--canvas-6);
+  --tp-docs: var(--doc);
+}
+
+.group-notes {
+  --tp-hue: var(--tp-notes);
+}
+.group-projects {
+  --tp-hue: var(--tp-projects);
+}
+.group-reports {
+  --tp-hue: var(--tp-reports);
+}
+.group-docs {
+  --tp-hue: var(--tp-docs);
+}
+
+/* Header */
+.tp-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px 24px;
+  margin-bottom: 14px;
+}
+
+.tp-head-words {
+  flex: 1 1 420px;
+  min-width: 0;
+}
+
+.tp-head h1 {
+  margin: 0 0 6px;
+  font: 650 var(--fs-page)/1.15 var(--font-ui);
+  letter-spacing: -0.015em;
+  color: var(--text);
+}
+
+.tp-lede {
+  margin: 0;
+  max-width: 720px;
+  color: var(--text-muted);
+  font-size: var(--fs-body);
+  line-height: 1.55;
+}
+
+.tp-folder {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 7px;
+  height: 21px;
+  border-radius: var(--r-2);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  vertical-align: 1px;
+}
+
+.tp-folder:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+}
+
+.tp-context {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 12px 0 0;
+  padding: 5px 6px 5px 11px;
+  border-radius: var(--r-1);
+  background: color-mix(in srgb, var(--tp-projects) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tp-projects) 26%, transparent);
+  color: var(--text);
+  font-size: var(--fs-small);
+}
+
+.tp-context > svg {
+  color: var(--tp-projects);
+}
+
+.tp-context-clear {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--r-1);
+  color: var(--text-faint);
+}
+
+.tp-context-clear:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.tp-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Filters wear the kit chips (4 Nov 2026 polish); the strip keeps only its spacing. */
+.searchbox.tp-search { margin-top: 14px; max-width: 460px; }
+.tp-filters {
+  margin: 6px 0 18px;
+}
+
+/* Body: the list stands alone (8.7 wave 2 round 2, the mock-up); the preview comes in as a sheet over it */
+.tp-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.tp-groups {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 26px;
+  min-width: 0;
+}
+
+.tp-group-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin-bottom: 10px;
+}
+
+.tp-group-head h2 {
+  margin: 0;
+  font: 650 var(--fs-body)/1.3 var(--font-ui);
+  color: var(--text);
+}
+
+.tp-group-head p {
+  margin: 0;
+  color: var(--text-faint);
+  font-size: var(--fs-small);
+  line-height: 1.45;
+}
+
+.tp-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(270px, 100%), 1fr));
+  gap: 12px;
+}
+
+.tp-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 14px 16px 13px 14px;
+  border-radius: var(--r-3);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease, transform 0.12s ease;
+}
+
+.tp-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 1px 2px rgba(20, 26, 46, 0.04), 0 8px 22px rgba(20, 26, 46, 0.07);
+  transform: translateY(-1px);
+}
+
+.tp-card.selected {
+  border-color: color-mix(in srgb, var(--tp-hue) 55%, var(--border));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tp-hue) 14%, transparent);
+}
+
+.tp-card:focus-visible {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.tp-card-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-4);
+  background: color-mix(in srgb, var(--tp-hue) 12%, transparent);
+  color: var(--tp-hue);
+}
+
+.tp-card-words {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.tp-card-name {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text);
+}
+
+.tp-own {
+  padding: 1px 7px;
+  border-radius: var(--r-1);
+  background: var(--bg-active);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.tp-card-desc {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  line-height: 1.45; overflow-wrap: break-word;
+}
+
+.tp-card-used {
+  margin-top: 5px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: clip;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  line-height: 1.35;
+}
+
+.tp-card-used.particular {
+  white-space: normal;
+  color: color-mix(in srgb, var(--tp-hue) 70%, var(--text-muted));
+}
+
+/* Use and Edit, over the top corner while the pointer is on the card (the preview has them too). */
+.tp-card-actions {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  display: flex;
+  gap: 5px;
+  padding: 2px 2px 2px 22px;
+  border-radius: var(--r-3);
+  background: linear-gradient(to right, transparent, var(--bg-raised) 20px);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-1px);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+
+.tp-card:hover .tp-card-actions {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+.tp-mini {
+  height: 24px;
+  padding: 0 9px;
+  border-radius: var(--r-2);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text);
+  font-size: var(--fs-caption);
+  font-weight: 500;
+}
+
+.tp-mini:hover {
+  background: var(--bg-hover);
+}
+
+.tp-mini.primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.tp-mini.primary:hover {
+  background: color-mix(in srgb, var(--primary) 86%, var(--bg));
+}
+
+.tp-none,
+.tp-missing {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+}
+
+.tp-missing .text-button {
+  font-size: var(--fs-small);
+}
+
+/* How templates work */
+.tp-how {
+  padding: 14px 18px 12px;
+  border-radius: var(--r-3);
+  border: 1px dashed var(--border-strong);
+  color: var(--text-muted);
+}
+
+.tp-how h3 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 8px;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.tp-how ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+  gap: 6px 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tp-how li {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+}
+
+.tp-how code {
+  flex: none;
+  padding: 1px 6px;
+  border-radius: var(--r-2);
+  background: var(--bg-code);
+  color: var(--code);
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+}
+
+/* A template variable as a friendly chip (8.6: {{date}} showed raw): the name without its braces, in a pill; the full
+   {{name}} to type is on hover. */
+code.tpl-var {
+  display: inline-block;
+  padding: 1px 9px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+  background: var(--bg-hover);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  white-space: nowrap;
+}
+
+/* Preview */
+.tp-preview {
+  position: sticky;
+  top: 12px;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 120px);
+  border-radius: var(--r-3);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.tp-preview-head {
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tp-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--tp-hue);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.tp-preview-head h2 {
+  margin: 5px 0 4px;
+  font: 650 var(--fs-section)/1.25 var(--font-ui);
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.tp-preview-desc {
+  margin: 0 0 8px;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+
+.tp-preview-used {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--text-faint);
+  font-size: var(--fs-small);
+}
+
+.tp-preview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.tp-paper {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px;
+  background: var(--bg-side);
+}
+
+.tp-props {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.tp-prop {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: var(--r-2);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text);
+  font-size: var(--fs-caption);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.tp-prop > span {
+  color: var(--text-faint);
+}
+
+.tp-preview-body.markdown {
+  padding: 20px 22px;
+  border-radius: var(--r-4);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  box-shadow: 0 1px 2px rgba(20, 26, 46, 0.04);
+  font-size: var(--fs-small);
+  line-height: 1.55;
+}
+
+.tp-preview-body.markdown > :first-child {
+  margin-top: 0;
+}
+
+.tp-preview-body.markdown h1 {
+  font-size: var(--fs-section);
+  margin: 0 0 10px;
+}
+
+.tp-preview-body.markdown h2 {
+  font-size: var(--fs-body);
+  margin: 18px 0 6px;
+}
+
+.tp-preview-body.markdown h3 {
+  font-size: var(--fs-body);
+  margin: 14px 0 4px;
+}
+
+.tp-preview-body.markdown p,
+.tp-preview-body.markdown ul,
+.tp-preview-body.markdown ol {
+  margin: 6px 0;
+}
+
+.tp-preview-body.markdown table {
+  font-size: var(--fs-small);
+}
+
+.tp-preview-foot {
+  margin: 0;
+  padding: 9px 20px 11px;
+  border-top: 1px solid var(--border);
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+}
+
+/* Empty */
+.tp-empty {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  max-width: 560px;
+  margin: 8vh auto 0;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.tp-empty > svg {
+  color: var(--accent-text);
+}
+
+.tp-empty h2 {
+  margin: 4px 0 0;
+  font: 650 var(--fs-section) var(--font-ui);
+  color: var(--text);
+}
+
+.tp-empty p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.tp-empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+@container (max-width: 980px) {
+  .tp-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* No room beside the cards: the chosen template's preview comes in from the right, over the page. */
+.tp-wrap {
+  position: relative;
+  height: 100%;
+}
+.tp-preview.as-sheet {
+  position: absolute;
+  z-index: 30;
+  top: 16px;
+  right: 16px;
+  bottom: 16px;
+  width: min(440px, calc(100% - 32px));
+  max-height: none;
+  box-shadow: var(--shadow-pop, 0 18px 48px rgba(0, 0, 0, 0.18));
+  animation: tp-sheet-in 0.16s ease-out;
+}
+.tp-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 29;
+  background: color-mix(in srgb, var(--bg) 40%, transparent);
+}
+.tp-preview-head {
+  position: relative;
+}
+.tp-sheet-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+@keyframes tp-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+}
+
+@container (max-width: 560px) {
+  .tp-inner {
+    padding: 14px 16px 48px;
+  }
+}
+
+/* New project */
+.dialog.np-dialog {
+  width: min(780px, calc(100vw - 32px));
+  padding: 22px 24px 18px;
+}
+
+.np-head {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.np-mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-4);
+  background: color-mix(in srgb, var(--tp-projects) 13%, transparent);
+  color: var(--tp-projects);
+}
+
+.np-head h2 {
+  margin: 1px 0 3px;
+}
+
+.np-head .hint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+
+.np-field {
+  display: grid;
+  gap: 6px;
+  margin: 18px 0 16px;
+}
+
+.np-field > span,
+.np-label {
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+
+.np-field input {
+  margin: 0;
+  height: 38px;
+  font-size: var(--fs-body);
+}
+
+.np-shapes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.np-shape {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 10px;
+  row-gap: 2px;
+  align-items: center;
+  padding: 11px 12px;
+  border-radius: var(--r-4);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  text-align: left;
+  transition: border-color 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
+}
+
+.np-shape:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+}
+
+.np-shape.active {
+  border-color: color-mix(in srgb, var(--tp-projects) 60%, var(--border));
+  background: color-mix(in srgb, var(--tp-projects) 7%, var(--bg-raised));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tp-projects) 14%, transparent);
+}
+
+.np-shape-icon {
+  grid-row: 1 / span 2;
+  align-self: start;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-3);
+  background: color-mix(in srgb, var(--tp-projects) 12%, transparent);
+  color: var(--tp-projects);
+}
+
+.np-shape-name {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.np-shape-words {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  line-height: 1.4; overflow-wrap: break-word;
+}
+
+.np-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.np-starts {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.np-starts > svg {
+  color: var(--ok);
+}
+
+.np-faint {
+  color: var(--text-faint);
+}
+
+.np-space {
+  flex: 1;
+}
+
+@media (max-width: 720px) {
+  .np-shapes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

@@ -1,0 +1,158 @@
+/* The five working-day features joined up as one product (Today, the weekly review, Quick capture, the Timeline and
+   search inside project files): the ways between them, and the few shared pieces they use. Loaded last, so where a
+   feature's own sheet differs from the Projects pages, the shared look wins here. */
+
+/* ── The Projects home: find, and the other views of every project, beside the filters ─────────────────────────── */
+
+.pj-home-tools {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px 10px;
+  min-width: 0;
+}
+
+.pj-find {
+  flex: 0 1 300px;
+  width: 300px;
+  max-width: 100%;
+}
+
+.pj-views {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.pj-view-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: var(--r-3);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.pj-view-link:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.pj-view-link:focus-visible,
+.pj-home-more:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* A narrow page: the filters on a line, then find (the whole width) and the views. */
+@container (max-width: 760px) {
+  .pj-page .pj-filters > .pj-card-space {
+    display: none;
+  }
+
+  .pj-page .pj-home-tools {
+    flex: 1 1 100%;
+    justify-content: flex-start;
+  }
+
+  .pj-page .pj-find {
+    flex: 1 1 220px;
+    width: auto;
+  }
+}
+
+/* The weekly review when this week's is due: the button says so with a dot (Today puts it up front). */
+.button.is-due {
+  position: relative;
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  color: var(--accent-strong, var(--accent));
+  background: color-mix(in srgb, var(--accent) 7%, var(--bg-raised));
+}
+
+.pj-due-dot {
+  width: 7px;
+  height: 7px;
+  margin-left: 2px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--accent);
+}
+
+/* Words found inside the projects' files, under the projects found. */
+.pj-inside {
+  margin-top: 22px;
+  padding: 14px 8px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.pj-inside-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 10px 8px;
+}
+
+.pj-inside-head h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: 650;
+  color: var(--text);
+}
+
+.pj-inside-head .text-button {
+  margin-left: auto;
+  font-size: var(--fs-small);
+}
+
+.pj-inside-none {
+  margin: 2px 10px 8px;
+  font-size: var(--fs-small);
+}
+
+.pj-inside-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(420px, 100%), 1fr));
+  gap: 2px 12px;
+}
+
+/* ── Empty and first-run pages (Projects, the Timeline, the weekly review): one look ──────────────────────────────── */
+
+.pj-welcome > svg {
+  box-sizing: content-box;
+  padding: 12px;
+  border-radius: 50%;
+  corner-shape: round;
+  color: var(--accent-text);
+  background: var(--accent-soft);
+}
+
+.pj-welcome h2 {
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.pj-welcome p {
+  font-size: var(--fs-small);
+}
+
+.pj-welcome > .button,
+.pj-welcome .pj-actions .button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pj-welcome .pj-actions {
+  justify-content: center;
+}

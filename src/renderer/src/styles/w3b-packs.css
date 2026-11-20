@@ -1,0 +1,132 @@
+/* The life packs' 8.7 pages (30 Oct 2026). Only what the kit lacks for the mock-ups: the week strip, photo tiles, budget
+   meters and the home-card strip. Every colour is a theme token or a kit tint, so palettes and dark mode keep
+   working. No cream anywhere. */
+
+.w3b-page { padding-bottom: 56px; }
+/* The pack head in the one page shape: the mock-ups' 40 px tinted tile, the 32 px title, the sub and facts starting
+   at the column edge with the tile (p25 one column; was: under the title's words). */
+.w3b-page .nv-page-icon { width: 40px; height: 40px; background: none; }
+/* The lead and the facts start at the column edge with the title's tile, as every other page (p25 one column;
+   was: 50 px in, off the title's words). */
+.w3b-page .nv-page-lead { font-size: var(--fs-body); }
+/* A person's round mark in a pack head (family), as the mock-ups draw it. */
+.w3b-ava { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-size: var(--fs-body); font-weight: 700; }
+
+/* The family week: seven day columns with their happenings as small tinted blocks. */
+.w3b-week { display: flex; gap: 8px; }
+.w3b-day { flex: 1; min-width: 0; background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--r-4); padding: 8px; min-height: 118px; }
+.w3b-day > b { font-size: var(--fs-caption); display: block; margin-bottom: 6px; }
+.w3b-day.is-today { border-color: var(--coral); }
+.w3b-day.is-today > b { color: var(--accent-text); }
+.w3b-evt { display: block; font-size: var(--fs-caption); font-weight: 600; border-radius: var(--r-2); padding: 2px 6px; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: clip; border: 0; width: 100%; text-align: left; cursor: pointer; font-family: inherit; }
+.w3b-free { display: block; font-size: var(--fs-caption); color: var(--text-faint); margin-top: 4px; }
+.w3b-cols { display: flex; gap: 12px; margin-top: 14px; }
+.w3b-cols > * { flex: 1; min-width: 0; }
+@media (max-width: 900px) { .w3b-cols { flex-direction: column; } .w3b-week { flex-wrap: wrap; } .w3b-day { flex: 1 1 120px; } }
+
+/* Photo tiles (memories): square glyph tiles with a caption line under each. */
+.w3b-photos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+@media (max-width: 900px) { .w3b-photos { grid-template-columns: repeat(2, 1fr); } }
+.w3b-photo { border: 1px solid var(--border); border-radius: var(--r-3); overflow: hidden; background: var(--bg-raised); padding: 0; cursor: pointer; font: inherit; color: var(--text); text-align: left; }
+.w3b-photo .ph { aspect-ratio: 4 / 3; display: grid; place-items: center; font-size: var(--fs-section); }
+.w3b-photo .cap { display: block; font-size: var(--fs-small); font-weight: 600; padding: 8px 12px; white-space: nowrap; overflow: hidden; text-overflow: clip; }
+.w3b-photo .sub { display: block; font-size: var(--fs-caption); color: var(--text-muted); padding: 0 12px 10px; white-space: nowrap; overflow: hidden; text-overflow: clip; }
+
+/* Budget meters: one bar per envelope with spent against budget. */
+.w3b-meter { margin: 10px 0; }
+.w3b-meter .top { display: flex; align-items: baseline; gap: 8px; font-size: var(--fs-body); }
+.w3b-meter .top b { font-weight: 600; }
+.w3b-meter .top span { margin-left: auto; font-size: var(--fs-small); color: var(--text-muted); }
+.w3b-meter .bar { height: 8px; border-radius: var(--r-2); background: var(--bg-side); margin-top: 6px; overflow: hidden; }
+.w3b-meter .bar i { display: block; height: 100%; border-radius: var(--r-2); background: var(--green-tx); }
+.w3b-meter.is-over .bar i { background: var(--red-tx); }
+.w3b-meter.is-near .bar i { background: var(--amber-tx); }
+
+/* The home-card strip: what Home shows for this pack, opening Home. */
+.w3b-home { display: flex; align-items: center; gap: 12px; padding: 12px 20px; width: 100%; text-align: left; cursor: pointer; font: inherit; color: var(--text); }
+.w3b-home .t { font-size: var(--fs-body); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: clip; }
+.w3b-home .meta { margin-left: auto; font-size: var(--fs-small); color: var(--text-muted); flex: none; }
+
+/* Tick rows: a round checkbox, a title and a right tag, as one button. */
+.w3b-tick { display: flex; align-items: center; gap: 12px; padding: 9px 0; width: 100%; background: none; border: 0; font: inherit; color: var(--text); cursor: pointer; text-align: left; }
+.w3b-tick + .w3b-tick { border-top: 1px solid var(--border); }
+.w3b-tick .t { font-size: var(--fs-body); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: clip; }
+.w3b-tick .meta { margin-left: auto; font-size: var(--fs-small); color: var(--text-muted); flex: none; }
+
+/* Small stat tiles in a row (visits, counts). */
+.w3b-stats { display: flex; gap: 12px; flex-wrap: wrap; }
+.w3b-stat { flex: 1; min-width: 140px; background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--r-3); padding: 12px 16px; }
+.w3b-stat b { display: block; font-size: var(--fs-section); font-weight: 700; }
+.w3b-stat span { font-size: var(--fs-caption); font-weight: 600; color: var(--text-faint); }
+
+/* A section holding only its quiet line reads bare, never a card (t258, 13 Nov 2026: the t254 bare pattern,
+   in one shared place — the detail pages' one-liners in House, Travel, Lists, Vehicles and Family read
+   through it, as the overviews do. Cards with rows, tables or a primary action keep their boxes). */
+.w3b-bare { padding: 9px 0; }
+
+/* A quiet disclosure holding the previous layout's extras, so nothing is lost. */
+.w3b-more { margin-top: 24px; }
+.w3b-more > summary { font-size: var(--fs-small); font-weight: 600; color: var(--text-muted); cursor: pointer; list-style: none; }
+.w3b-more > summary::-webkit-details-marker { display: none; }
+.w3b-more > summary:hover { color: var(--text); }
+.w3b-more .body { margin-top: 12px; }
+
+/* Numbered source rows (the weekly draft's sources). */
+.w3b-src { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: var(--fs-body); font-weight: 500; min-width: 0; }
+.w3b-src .n { color: var(--text-faint); font-size: var(--fs-small); flex: none; }
+.w3b-src .t { white-space: nowrap; overflow: hidden; text-overflow: clip; }
+
+/* The draft's edited lines: each with its source chips at the end. */
+.w3b-draft p { font-size: var(--fs-body); margin: 10px 0; }
+.w3b-draft p .cite { margin-left: 4px; cursor: pointer; }
+
+/* p15-packs-work (Nov 2026): one left edge, and quiet empty lines, for Weekly and Memories. Scoped under each page's
+   own module class. The sub and the facts start at the column edge with the title's tile, like every other page; a
+   card holding a muted line but no rows drops its box chrome and reads as one quiet line. A card with rows, or with
+   the primary action (this week's Start), keeps its box. The padding needs !important: the views set card padding
+   inline, and the quiet line starts at the edge whatever they set. */
+.wm-weekly .w3b-page .nv-page-lead,
+.wm-weekly .w3b-page .page-props,
+.wm-memories .w3b-page .nv-page-lead,
+.wm-memories .w3b-page .page-props { margin-left: 0; }
+.wm-weekly .w3b-page .card:has(> .vsub):not(:has(> .trow)):not(:has(.btn.pri)),
+.wm-memories .w3b-page .card:has(> .vsub):not(:has(> .trow)):not(:has(.btn.pri)) { background: none; border: 0; box-shadow: none; padding: 2px 0 !important; }
+
+/* One left edge (p25 one column): the body starts at the column edge with the title's tile, as every other
+   page (was, p15 packs-life: 50 px in, off the title, as the p87 pages did). */
+
+/* The week blocks read two lines at word edges before they clip (p15 packs-life, 4 Nov 2026, "nothing cut off with
+   '...'"): one line cut every real event mid-word; past two lines the shared ellipsis ends it, as the kit's clip-2. */
+.w3b-page .w3b-evt { white-space: normal; overflow-wrap: break-word;    }
+
+/* A row's meta never wraps, and a long one shrinks with its ellipsis instead of squeezing the row's name (p15
+   packs-life, 4 Nov 2026: dates wrapped to two lines, person names cut to "Alex …"). */
+.w3b-page .trow .meta { white-space: nowrap; min-width: 0; }
+
+/* Sections pair on very wide windows (t254, 13 Nov 2026). The page that stood one section a row pairs its
+   sections two across — Health's week spans and food-and-water stands beside Visits, Goals beside Habits —
+   and a lone section takes the width. The odd count's first section spans: first-of-type that is also
+   odd-from-last is the first of an odd count, with no :has. The head, the fills line, the home card and the
+   ask box are not sections, so they span; dense packing fills behind a spanning box, so a pair slot never
+   stands empty. Row gaps stay nil — the sections keep their own top margin, the rhythm never changes — and
+   below 2400 px nothing changes. */
+@media (min-width: 2400px) {
+  .w3b-page {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0 32px;
+    grid-auto-flow: dense;
+    align-items: start;
+  }
+  .w3b-page > :not(section) {
+    grid-column: 1 / -1;
+  }
+  .w3b-page > section:first-of-type:nth-last-of-type(odd) {
+    grid-column: 1 / -1;
+  }
+  /* Photo tiles reflow to the width instead of four fixed columns (t254: at 2400 four tiles would each
+     stand 570 wide with one short caption). */
+  .w3b-photos {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}

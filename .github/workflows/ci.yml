@@ -1,0 +1,51 @@
+# Typecheck, build and the fast unit checks on Linux and Windows (tools/test-fast.mjs picks the tests that need no
+# window, browser or built app). The long UI walks (`npm test`, under xvfb) are run before a release, not here.
+#
+# Branch protection on main requires the two jobs below by name: `check (ubuntu-latest)` and
+# `check (windows-latest)` (tools/github-setup.sh). Renaming the job or the matrix means updating that script.
+#
+# Pull requests from forks run with the `pull_request` event: a read-only token and no secrets. This workflow uses
+# no secrets at all. Actions are pinned to full commit SHAs; Dependabot (.github/dependabot.yml) proposes updates.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # A new push to a pull request cancels its older run; runs on main always finish.
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    name: check (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    env:
+      # The fast checks never start Electron, so its binary is not downloaded.
+      ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm run test:fast
+      - name: Licences of bundled packages
+        if: matrix.os == 'ubuntu-latest'
+        run: node tools/third-party-notices.mjs --check

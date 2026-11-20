@@ -1,0 +1,1148 @@
+/* The Timeline (views/TimelineView.tsx): every project's dates on one board (a project's own plan is its Timeline tab,
+   views/project/PlanTimeline.tsx, styles/project-hub.css). Everything on the board is placed from two variables — --ppd (pixels a day) on the
+   board and --d (days from its start) on each thing — so zooming is one variable gliding, not every mark redrawn. */
+
+.tl-page,
+.tl-card {
+  --tl-date: var(--accent);
+  --tl-line: color-mix(in srgb, var(--border) 72%, transparent);
+  --tl-weekend: color-mix(in srgb, var(--text) 2.6%, transparent);
+}
+
+:root[data-theme='dark'] .tl-page,
+:root[data-theme='dark'] .tl-card {
+  --tone-ok: #6fc29a;
+  --tone-warn: #e2a64b;
+  --tone-bad: #ec8b78;
+  --tl-weekend: color-mix(in srgb, var(--text) 3.5%, transparent);
+}
+
+.tl-page {
+  height: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  container: tl / inline-size;
+}
+
+/* The tab draws its own top bar (Rows / Board / Timeline above the page, 8.7 wave 2 round 2). */
+.tl-top {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+.tl-top > .tl-page {
+  height: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── The head: title, counts, filters, grouping, zoom ─────────────────────────────────────────────────────────────── */
+
+.tl-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding: 18px 28px 14px;
+}
+
+.tl-head-words {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.tl-head h1 {
+  margin: 0 0 6px;
+  font: 650 var(--fs-page)/1.15 var(--font-ui);
+  letter-spacing: -0.015em;
+  color: var(--text);
+}
+
+.tl-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 0;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.tl-stats .tone-bad,
+.tl-stats .tone-warn {
+  color: var(--tone);
+  font-weight: 600;
+}
+
+.tl-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.tl-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-right: 4px;
+}
+
+.tl-chip,
+.tl-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  white-space: nowrap;
+  transition:
+    background 0.12s,
+    border-color 0.12s,
+    color 0.12s;
+}
+
+.tl-chip {
+  border-radius: var(--r-1);
+}
+
+.tl-chip:hover,
+.tl-tool:hover,
+.tl-tool.menu-open {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.tl-chip.on {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+  color: var(--accent-strong);
+  font-weight: 600;
+}
+
+.tl-chip .pj-count {
+  font-weight: 600;
+}
+
+.tl-chip-split {
+  padding: 0;
+  gap: 0;
+}
+
+.tl-chip-split > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  padding: 0 11px;
+  border-radius: var(--r-2);
+  color: inherit;
+  font: inherit;
+}
+
+.tl-chip-split > .tl-chip-more {
+  padding: 0 9px 0 4px;
+  margin-left: -6px;
+  opacity: 0.75;
+}
+
+.tl-chip-split > .tl-chip-more:hover {
+  opacity: 1;
+}
+
+.pj-avatar.tiny {
+  width: 17px;
+  height: 17px;
+  font-size: var(--fs-caption);
+}
+
+.tl-tool .tl-faint {
+  font-size: var(--fs-caption);
+}
+
+.tl-zoom {
+  display: inline-flex;
+  padding: 2px;
+  gap: 2px;
+  border-radius: var(--r-3);
+  background: var(--bg-hover);
+}
+
+.tl-zoom button {
+  height: 26px;
+  padding: 0 11px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.tl-zoom button:hover {
+  color: var(--text);
+}
+
+.tl-zoom button.on {
+  background: var(--bg-raised);
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: var(--shadow-card);
+}
+
+.tl-faint {
+  color: var(--text-faint);
+}
+
+/* ── What needs a look ───────────────────────────────────────────────────────────────────────────────────────────── */
+
+.tl-needs {
+  margin: 0 28px 10px;
+  border: 1px solid color-mix(in srgb, var(--tone-bad) 22%, var(--border));
+  border-radius: var(--r-4);
+  background: color-mix(in srgb, var(--tone-bad) 4%, var(--bg-raised));
+}
+
+.tl-needs-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+  text-align: left;
+  border-radius: var(--r-4);
+}
+
+.tl-needs-head > svg:first-child {
+  color: var(--tone-bad);
+  flex: none;
+}
+
+.tl-needs-head .tl-faint {
+  font-weight: 400;
+  font-size: var(--fs-small);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.tl-needs-head > svg:last-child {
+  color: var(--text-faint);
+  transition: transform 0.15s;
+}
+
+.tl-needs.open .tl-needs-head > svg:last-child {
+  transform: rotate(180deg);
+}
+
+.tl-needs-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 6px 6px;
+  max-height: 210px;
+  overflow: auto;
+  border-top: 1px solid color-mix(in srgb, var(--tone-bad) 14%, var(--border));
+}
+
+.tl-need {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) minmax(0, 1.25fr);
+  gap: 12px;
+  align-items: baseline;
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-small);
+  text-align: left;
+  color: var(--text);
+}
+
+.tl-need:hover {
+  background: var(--bg-hover);
+}
+
+.tl-need-when {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.tl-need-what {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.tl-need-what strong {
+  font-weight: 600;
+}
+
+.tl-need-why {
+  color: var(--tone-bad);
+}
+
+.tl-need.p-late .tl-need-why {
+  color: var(--tone-warn);
+}
+
+/* ── The board ───────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.tl-board {
+  --tl-name: 220px;
+  --tl-scale-h: 48px;
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  margin: 0 28px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  outline: none;
+}
+
+.tl-board:focus-visible {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.tl-canvas {
+  position: relative;
+  width: calc(var(--tl-name) + var(--days) * var(--ppd) * 1px);
+  /* Zoomed out (Quarters) the dates may not fill the board: the rows still run to its edge, no ragged end. */
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.tl-canvas.is-dragging,
+.tl-canvas.is-dragging * {
+  cursor: grabbing !important;
+}
+
+.tl-scale {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  display: flex;
+  height: var(--tl-scale-h);
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border);
+}
+
+.tl-corner {
+  position: sticky;
+  left: 0;
+  z-index: 7;
+  flex: none;
+  width: var(--tl-name);
+  display: flex;
+  align-items: flex-end;
+  padding: 0 14px 8px;
+  background: var(--bg-raised);
+  border-right: 1px solid var(--border);
+  font-size: var(--fs-caption);
+  font-weight: 650;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+.tl-scale-days {
+  position: relative;
+  flex: none;
+  width: calc(var(--days) * var(--ppd) * 1px);
+  overflow: clip;
+}
+
+/* Months (or years) side by side, each as wide as it is; its name stays in sight while any of it is on screen. */
+.tl-major {
+  display: flex;
+  height: 27px;
+}
+
+.tl-major span {
+  flex: none;
+  width: calc(var(--w) * var(--ppd) * 1px);
+  height: 100%;
+  border-left: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.tl-major b {
+  position: sticky;
+  left: var(--tl-name);
+  display: inline-block;
+  padding: 7px 8px 0;
+  font-size: var(--fs-caption);
+  font-weight: 650;
+  color: var(--text);
+}
+
+.tl-minor span {
+  position: absolute;
+  left: calc(var(--d) * var(--ppd) * 1px);
+  white-space: nowrap;
+  border-left: 1px solid var(--tl-line);
+  top: 27px;
+  height: 21px;
+  padding: 2px 0 0 6px;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.tl-today-pill {
+  position: absolute;
+  left: calc((var(--d) + 0.5) * var(--ppd) * 1px);
+  top: 5px;
+  z-index: 2;
+  transform: translateX(-50%);
+  padding: 1px 7px;
+  border-radius: var(--r-2);
+  background: var(--accent);
+  color: var(--on-primary);
+  font-size: var(--fs-caption);
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  line-height: 15px;
+  box-shadow: 0 0 0 2px var(--bg-raised);
+}
+
+/* Months show one row of full month heads (the mock-up's October, November…), not years over abbrevs. */
+.tl-canvas.z-months {
+  --tl-scale-h: 37px;
+}
+
+.tl-canvas.z-months .tl-major {
+  display: none;
+}
+
+.tl-canvas.z-months .tl-minor span {
+  top: 0;
+  height: 37px;
+  line-height: 37px;
+  padding-top: 0;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+}
+
+.tl-back {
+  position: absolute;
+  top: var(--tl-scale-h);
+  bottom: 0;
+  left: var(--tl-name);
+  width: calc(var(--days) * var(--ppd) * 1px);
+  pointer-events: none;
+}
+
+/* Weekends, shaded softly when the days are wide enough to see. */
+.z-weeks .tl-back {
+  background-image: repeating-linear-gradient(90deg, transparent 0 calc(var(--ppd) * 5px), var(--tl-weekend) calc(var(--ppd) * 5px) calc(var(--ppd) * 7px));
+  background-position-x: calc(var(--wk) * var(--ppd) * 1px);
+}
+
+.tl-gridline {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--d) * var(--ppd) * 1px);
+  width: 1px;
+  background: var(--tl-line);
+}
+
+.tl-quarter {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--d1) * var(--ppd) * 1px);
+  width: calc((var(--d2) - var(--d1)) * var(--ppd) * 1px);
+  background: var(--accent-softer);
+}
+
+.tl-today {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 3;
+  left: calc((var(--d) + 0.5) * var(--ppd) * 1px - 1px);
+  width: 2px;
+  border-radius: var(--r-1);
+  background: var(--coral);
+}
+
+.tl-group {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: flex-end;
+  height: 34px;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+}
+
+.tl-group-label {
+  position: sticky;
+  left: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 14px 7px;
+  font-size: var(--fs-caption);
+  font-weight: 650;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.tl-group-label .pj-count {
+  letter-spacing: 0;
+}
+
+.tl-row {
+  position: relative;
+  display: flex;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+}
+
+.tl-row:hover,
+.tl-row.is-selected {
+  background: color-mix(in srgb, var(--text) 2.2%, transparent);
+}
+
+.tl-row.is-selected {
+  background: var(--sel);
+}
+
+.tl-row.is-done .tl-lane {
+  opacity: 0.55;
+}
+
+.tl-name {
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  flex: none;
+  width: var(--tl-name);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 7px 10px 7px 12px;
+  background: var(--bg-raised);
+  border-right: 1px solid var(--border);
+}
+
+/* The words of a mark (or a month) scrolled under the names fade out at their edge rather than peek out cut ("…re su"). */
+.tl-corner::after,
+.tl-name::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(100% + 1px);
+  width: 28px;
+  background: linear-gradient(90deg, var(--bg-raised), transparent);
+  pointer-events: none;
+}
+
+.tl-row:hover .tl-name,
+.tl-row.is-selected .tl-name {
+  background: color-mix(in srgb, var(--text) 2.2%, var(--bg-raised));
+}
+
+.tl-name-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 1px 2px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+  text-align: left;
+}
+
+.tl-name-button:hover .tl-name-words {
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+}
+
+/* Two lines before an ellipsis: names that start the same ("Lantern Festival 2027: …") differ at the end. */
+.tl-name-words {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  line-height: 17px;
+  overflow-wrap: anywhere;
+}
+
+.tl-name-sub {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding-left: 4px;
+  font-size: var(--fs-caption);
+  white-space: nowrap;
+}
+
+.tl-name-sub .tl-faint {
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.tl-blane {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: calc(var(--days) * var(--ppd) * 1px);
+  height: 60px;
+}
+
+.tl-none {
+  position: sticky;
+  left: 0;
+  max-width: 560px;
+  padding: 56px 28px;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+}
+
+.tl-none p {
+  margin: 0 0 8px;
+}
+
+/* ── A project's bar and its marks (8.7 wave 2 round 2: one coloured bar with its dates on it) ─────────────────── */
+
+.tl-bbar {
+  position: absolute;
+  top: 10px;
+  left: calc((var(--d1) + 0.5) * var(--ppd) * 1px);
+  width: max(8px, calc((var(--d2) - var(--d1)) * var(--ppd) * 1px));
+  height: 28px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  touch-action: none;
+  user-select: none;
+}
+
+.tl-bbar-words {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.tl-bbar.movable {
+  cursor: grab;
+}
+
+.tl-bbar.is-dragging {
+  cursor: grabbing;
+}
+
+.tl-bbar.is-saving {
+  opacity: 0.7;
+}
+
+/* The start and the due date: the bar's end caps, dragged to stretch it. */
+.tl-blane .tl-mark.k-start .tl-glyph,
+.tl-blane .tl-mark.k-due .tl-glyph {
+  width: 5px;
+  height: 28px;
+  border-radius: var(--r-1);
+}
+
+.tl-mark {
+  position: absolute;
+  left: calc((var(--d) + 0.5) * var(--ppd) * 1px);
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-1);
+  background: none;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.tl-mark.movable {
+  cursor: grab;
+}
+
+.tl-mark:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.tl-mark.is-dragging {
+  z-index: 8;
+}
+
+.tl-mark.is-saving {
+  opacity: 0.7;
+}
+
+.tl-glyph {
+  display: block;
+  box-sizing: border-box;
+  transition:
+    transform 0.12s ease-out,
+    box-shadow 0.12s;
+}
+
+/* A key date: a diamond. */
+.tl-mark.k-date .tl-glyph {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--r-1);
+  transform: rotate(45deg);
+  background: var(--bg-raised);
+  border: 2px solid var(--tl-date);
+}
+
+.tl-mark.k-date.s-done .tl-glyph {
+  background: var(--tone-ok);
+  border-color: var(--tone-ok);
+}
+
+.tl-mark.k-date.s-past .tl-glyph {
+  border-color: var(--tone-warn);
+}
+
+/* A next step's "by" date: a ring (filled when ticked off). */
+.tl-mark.k-next .tl-glyph {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--bg-raised);
+  border: 2px solid var(--text-muted);
+}
+
+.tl-mark.k-next.s-done .tl-glyph {
+  background: var(--text-faint);
+  border-color: var(--text-faint);
+  opacity: 0.7;
+}
+
+/* The start and the due date: the bar's ends. */
+.tl-mark.k-start .tl-glyph,
+.tl-mark.k-due .tl-glyph {
+  width: 4px;
+  height: 18px;
+  border-radius: var(--r-1);
+  background: var(--text-faint);
+}
+
+.tl-mark.k-due .tl-glyph {
+  width: 5px;
+  background: var(--text);
+}
+
+/* Decisions and updates: small marks along the foot. */
+.tl-mark.k-decision,
+.tl-mark.k-update {
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+}
+
+.tl-mark.k-decision .tl-glyph {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--r-1);
+  background: color-mix(in srgb, var(--text-muted) 75%, transparent);
+}
+
+.tl-mark.k-update .tl-glyph {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--text-faint) 70%, transparent);
+}
+
+/* What needs a look. */
+.tl-mark.p-clash .tl-glyph,
+.tl-mark.p-overdue .tl-glyph {
+  border-color: var(--tone-bad);
+}
+
+.tl-mark.p-clash .tl-glyph {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tone-bad) 24%, transparent);
+}
+
+.tl-mark.k-next.p-overdue .tl-glyph {
+  background: color-mix(in srgb, var(--tone-bad) 16%, var(--bg-raised));
+}
+
+.tl-mark.p-late .tl-glyph {
+  border-color: var(--tone-warn);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tone-warn) 22%, transparent);
+}
+
+.tl-mark.p-slipped .tl-glyph {
+  border-color: var(--tone-bad);
+  background: color-mix(in srgb, var(--tone-bad) 20%, var(--bg-raised));
+}
+
+.tl-mark.k-due.p-overdue .tl-glyph,
+.tl-mark.k-due.p-clash .tl-glyph {
+  background: var(--tone-bad);
+}
+
+.tl-mark:hover .tl-glyph,
+.tl-mark.is-selected .tl-glyph,
+.tl-mark.is-dragging .tl-glyph {
+  transform: scale(1.3);
+}
+
+.tl-mark.k-date:hover .tl-glyph,
+.tl-mark.k-date.is-selected .tl-glyph,
+.tl-mark.k-date.is-dragging .tl-glyph {
+  transform: rotate(45deg) scale(1.3);
+}
+
+.tl-mark.is-selected::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: var(--r-2);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.tl-more {
+  position: absolute;
+  left: 11px;
+  top: -8px;
+  padding: 0 3px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-2);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  font-weight: 700;
+  line-height: 12px;
+  pointer-events: none;
+}
+
+.tl-drag-day {
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px 8px;
+  border-radius: var(--r-2);
+  background: var(--ink);
+  color: var(--on-ink);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: var(--shadow-small);
+  pointer-events: none;
+}
+
+/* ── The card over a mark ────────────────────────────────────────────────────────────────────────────────────────── */
+
+.tl-card {
+  position: fixed;
+  z-index: 90;
+  width: max-content;
+  max-width: 320px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-small);
+  color: var(--text);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(3px);
+  transition:
+    opacity 0.12s,
+    transform 0.12s;
+}
+
+.tl-card.below {
+  transform: translateY(-3px);
+}
+
+.tl-card.is-shown {
+  opacity: 1;
+  transform: none;
+}
+
+.tl-card p {
+  margin: 0;
+}
+
+.tl-card-item + .tl-card-item {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.tl-card-top {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: var(--fs-caption);
+}
+
+.tl-card-kind {
+  font-size: var(--fs-caption);
+  font-weight: 650;
+  color: var(--text-muted);
+}
+
+.tl-card-kind.k-date {
+  color: var(--tl-date);
+}
+
+.tl-card-when {
+  font-weight: 550;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.tl-card-words {
+  margin-top: 4px !important;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.tl-card-project {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+  margin-top: 4px !important;
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+.tl-card-problem {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 6px !important;
+  font-size: var(--fs-caption);
+  line-height: 1.35;
+  color: var(--tone-bad);
+}
+
+.tl-card-problem svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+.tl-card-problem.p-late {
+  color: var(--tone-warn);
+}
+
+.tl-card-problem.p-slipped {
+  color: var(--text-muted);
+}
+
+.tl-card-more,
+.tl-card-hint {
+  margin-top: 8px !important;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+/* ── The foot: what the marks mean ───────────────────────────────────────────────────────────────────────────────── */
+
+/* The mock-up's line under the board: clashes and slips show here first. */
+.tl-clash-note {
+  margin: 0;
+  padding: 10px 28px 0;
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+}
+
+.tl-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  padding: 9px 28px 12px;
+  font-size: var(--fs-caption);
+}
+
+.tl-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  color: var(--text-muted);
+}
+
+.tl-key-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tl-mark.static {
+  position: relative;
+  left: auto;
+  top: auto;
+  margin: 0;
+  cursor: default;
+  width: 14px;
+  height: 14px;
+}
+
+.tl-mark.static:hover .tl-glyph {
+  transform: none;
+}
+
+.tl-mark.k-date.static:hover .tl-glyph {
+  transform: rotate(45deg);
+}
+
+.tl-empty {
+  padding: 0 24px;
+}
+
+.tl-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* A line opened from the timeline, marked for a moment on the project's page. */
+.tl-revealed {
+  animation: tl-revealed 2.2s ease-out;
+  border-radius: var(--r-3);
+}
+
+@keyframes tl-revealed {
+  0%,
+  35% {
+    background-color: var(--accent-soft);
+    box-shadow: 0 0 0 2px var(--accent-line);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: 0 0 0 2px transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tl-glyph,
+  .tl-card {
+    transition: none;
+  }
+}
+
+/* ── At every size (the middle's own width) ─────────────────────────────────────────────────────────────────────── */
+
+@container tl (max-width: 980px) {
+  .tl-head {
+    padding: 16px 20px 12px;
+  }
+
+  .tl-board,
+  .tl-needs {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+  .tl-foot {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .tl-clash-note {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .tl-board {
+    --tl-name: 208px;
+  }
+
+  .tl-tools {
+    justify-content: flex-start;
+  }
+}
+
+@container tl (max-width: 680px) {
+  .tl-head h1 {
+    font-size: var(--fs-section);
+  }
+
+  .tl-board {
+    --tl-name: 156px;
+  }
+
+  .tl-tool .tl-faint {
+    display: none;
+  }
+
+  .tl-need {
+    grid-template-columns: 52px minmax(0, 1fr);
+  }
+
+  .tl-need-why {
+    grid-column: 2;
+  }
+}
+
+@container tl (max-width: 480px) {
+  .tl-head {
+    padding: 12px 12px 10px;
+  }
+
+  .tl-board,
+  .tl-needs {
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+
+  .tl-foot {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .tl-clash-note {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .tl-board {
+    --tl-name: 136px;
+  }
+
+  .tl-key {
+    display: none;
+  }
+
+  .tl-zoom button {
+    padding: 0 8px;
+  }
+}

@@ -1,0 +1,26 @@
+/* What the Vault can do and Start from a template (8.8): the abilities page and the starter picker, on the kit's
+   tokens (light and dark follow the theme; the light page is white and cool, never cream). */
+
+.ab-page { max-width: 880px; margin: 0 auto; padding: 24px 32px 64px; }
+.ab-search { margin: 14px 0 4px; }
+.ab-group { margin-top: 20px; }
+.ab-group .glabel { margin-bottom: 8px; }
+.card.ab-card { padding: 6px 20px; }
+.ab-row .ab-open { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.ab-row .ab-open .t { font-weight: 600; }
+.btn.ab-show { flex: none; }
+.ab-row .tag { flex: none; }
+
+/* The starter picker: the ten starters as picked rows, then the folder name. */
+.dlg.st-picker { max-height: min(84vh, 760px); display: flex; flex-direction: column; }
+.st-list { overflow-y: auto; min-height: 0; border: 1px solid var(--border); border-radius: var(--r-3); background: var(--bg-raised); padding: 4px 16px; margin: 12px 0; }
+.st-row { width: 100%; text-align: left; background: none; border: none; border-radius: var(--r-3); cursor: pointer; color: inherit; font: inherit; }
+.st-row + .st-row { border-top: 1px solid var(--border); }
+.st-row.is-picked { background: var(--bg-active); }
+.st-row .ab-open { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.st-folder { display: flex; align-items: center; gap: 12px; }
+.st-folder span { font-size: var(--fs-body); font-weight: 600; color: var(--text); }
+.st-folder input { flex: 1; height: 36px; border: 1px solid var(--border-strong); border-radius: var(--r-4); background: var(--bg-raised); color: var(--text); padding: 0 12px; font-size: var(--fs-body); }
+
+/* The ten starters are fixed content: at a tall window the dialog fits all ten instead of scrolling the list (small windows still scroll; 84vh binds there). */
+.dlg.st-picker { max-height: min(84vh, 920px); }

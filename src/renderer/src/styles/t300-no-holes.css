@@ -1,0 +1,121 @@
+/* No holes from pairing (t300, 18 Nov 2026, at 3456x1408). t254 paired sections two-across; pairing by
+   itself makes holes wherever two paired sections differ in height or one is empty. The pairing gate
+   (lib/pairing.ts) simulates the grid's own placement and stacks the container when sharing a row
+   would stand a blank wider than a quarter of the content and taller than three tenths of it; stacked
+   is each container's own narrow layout (full width, same order, same rhythm), so reading order never
+   moves. Rooms that pair cleanly keep pairing exactly as today: these rules only answer the gate's
+   attributes, and the t254 rules stand untouched above them. The meeting always reads main plus prep
+   side at wide windows (round 2: "always that shape from about 1600px"); t301 owns
+   MeetingMinutes.tsx's insides and what the prep list picks, the grid is here. Plain attribute
+   selectors throughout, nothing else; layout only, so light and dark read the same. */
+
+/* Stacked: each container's own narrow layout, answering the gate. */
+.p87-body[data-pair="stack"] {
+  display: block;
+}
+.w3b-page[data-pair="stack"] {
+  display: block;
+}
+div[aria-label='Waiting to be filed'][data-pair="stack"] {
+  display: block;
+}
+.td-else-groups[data-pair="stack"] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--td-gap);
+  align-items: stretch;
+}
+.nv-page .w2b-meeting[data-pair="stack"] {
+  display: block;
+}
+.pj-ov[data-pair="stack"] {
+  grid-template-columns: minmax(0, 1fr);
+}
+.pp-ov[data-pair="stack"] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* The meeting always reads main plus prep side at wide windows (round 2, 18 Nov 2026:
+   "make the meeting page always that shape at wide windows (from about 1600px)", main with agenda,
+   Recording, minutes and the rest, prep a 400px side that "never pushes Record off the first screen").
+   The title, the facts and banners span; agenda, recording and minutes read the main column in
+   definite rows, prep the side beside them, so the side never drags the main after it. 400px stays
+   under a quarter of the rooms' column at any width, so whatever stands beside the main never reads
+   as a hole. Below 1600px the page stacks in its own order (agenda, Recording, minutes, then prep).
+   Without prep the simulation pairs or stacks on its own merits. */
+@media (min-width: 1600px) {
+  .nv-page .w2b-meeting[data-layout="meeting-main"] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 400px;
+    gap: 0 32px;
+    align-items: start;
+  }
+  .nv-page .w2b-meeting[data-layout="meeting-main"] > :not(section) {
+    grid-column: 1 / -1;
+  }
+  .nv-page .w2b-meeting[data-layout="meeting-main"] > section {
+    grid-column: 1;
+    min-width: 0;
+  }
+  .nv-page .w2b-meeting[data-layout="meeting-main"] > section[aria-label="Agenda"] {
+    grid-column: 1;
+    grid-row: 3;
+  }
+  .nv-page .w2b-meeting[data-layout="meeting-main"] > section[aria-label="Recording"] {
+    grid-column: 1;
+    grid-row: 4;
+  }
+  .nv-page .w2b-meeting[data-layout="meeting-main"] > section.mm {
+    grid-column: 1;
+    grid-row: 5;
+  }
+  .nv-page .w2b-meeting[data-layout="meeting-main"] > section[aria-label="Prep, from your notes"] {
+    grid-column: 2;
+    grid-row: 3 / span 4;
+    min-width: 0;
+  }
+}
+
+/* Prep folds whole items behind Show all until it fits the side (round 2: "capped by
+   count, not cut", "whole items fold behind Show all"). The gate hides whole person blocks and whole
+   source rows from the bottom with data-hide; the Show all door and the action buttons always stay. */
+.w2b-prep-person[data-hide="1"] {
+  display: none;
+}
+.w2b-prep > .srcrow[data-hide="1"] {
+  display: none;
+}
+.w2b-prep > .glabel[data-hide="1"] {
+  display: none;
+}
+
+/* An empty section folds to one quiet line (20 Nov 2026: pairing.ts marked data-quiet since t300 and nothing
+   read it, so "Key dates: No key dates." held a card's height in the overview). The line keeps its title, its
+   words and its add action on one row and holds no height of its own; it stays in reading order, so the gate's
+   simulation (which reads the grid in its own order) still decides whether its row pairs or stacks. */
+.pj-ov > [data-quiet="1"],
+.pp-ov > [data-quiet="1"],
+.p87-body > [data-quiet="1"],
+.w3b-page > [data-quiet="1"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  min-height: 0;
+  padding: 4px 0;
+}
+.pj-ov > [data-quiet="1"] > *,
+.pp-ov > [data-quiet="1"] > *,
+.p87-body > [data-quiet="1"] > *,
+.w3b-page > [data-quiet="1"] > * {
+  margin: 0;
+}
+.pj-ov > [data-quiet="1"] .card,
+.pp-ov > [data-quiet="1"] .card,
+.p87-body > [data-quiet="1"] .card,
+.w3b-page > [data-quiet="1"] .card {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}

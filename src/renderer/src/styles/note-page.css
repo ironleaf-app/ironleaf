@@ -1,0 +1,807 @@
+/* The note page (wave D of Ironleaf Calm, 20 Oct 2026, approved the plan): what sits inside a note above its words, in
+   the editor and in Reading. An optional cover (a short calm band or a vault picture, always the same height so
+   nothing moves when it loads), an optional icon, the type chip, the title, then the fields as quiet rows (name
+   left, value right, no box or heading), and on a person's or meeting's page a few light connections. What is
+   offered but not used (Add cover, Add a field) stays in place, seen only while the pointer rests on the top, so the
+   page never jumps. Light first; the tokens carry dark. The page header bar above belongs to the shell, not here. */
+
+:root {
+  --cover-sand: #efe5d0;
+  --cover-clay: #edd6c7;
+  --cover-sage: #dbe5d3;
+  --cover-sea: #d2e4e1;
+  --cover-sky: #d8e3ef;
+  --cover-dusk: #e2daec;
+  --cover-stone: #e5e2da;
+  --cover-height: 140px;
+  /* Polish round 2 (ITEMS 4): one label column wide enough for its words ("Description", "Also mentioned"
+     whole, never cut or wrapped mid-word), so every value starts at the same place. */
+  --field-label: 180px;
+}
+
+:root[data-theme='dark'] {
+  --cover-sand: #3b3529;
+  --cover-clay: #3f312a;
+  --cover-sage: #2f3a2e;
+  --cover-sea: #2a3a38;
+  --cover-sky: #2b3442;
+  --cover-dusk: #352f41;
+  --cover-stone: #35342f;
+}
+
+/* ── The top: tools on hover, cover, icon, type ─────────────────────────────────────────────────────────────────── */
+
+.page-top {
+  position: relative;
+}
+
+.page-tools {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 28px;
+  margin: -8px 0 6px -8px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.note-head:hover .page-tools,
+.page-tools:focus-within,
+.page-tools:has(.menu-open) {
+  opacity: 1;
+}
+
+.page-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: var(--r-2);
+  font: 500 var(--fs-small) / 1 var(--font-ui);
+  color: var(--text-faint);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.page-tool:hover,
+.page-tool.menu-open {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.page-cover {
+  --cover: var(--bg-hover);
+  position: relative;
+  height: var(--cover-height);
+  margin: 0 0 16px;
+  border-radius: var(--r-3);
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--cover) 0%, color-mix(in srgb, var(--cover) 72%, var(--bg)) 100%);
+}
+
+.page-cover.is-sand { --cover: var(--cover-sand); }
+.page-cover.is-clay { --cover: var(--cover-clay); }
+.page-cover.is-sage { --cover: var(--cover-sage); }
+.page-cover.is-sea { --cover: var(--cover-sea); }
+.page-cover.is-sky { --cover: var(--cover-sky); }
+.page-cover.is-dusk { --cover: var(--cover-dusk); }
+.page-cover.is-stone { --cover: var(--cover-stone); }
+
+.page-cover.is-picture {
+  background: var(--bg-hover);
+}
+
+.page-cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  user-select: none;
+}
+
+.page-cover img.is-loaded {
+  opacity: 1;
+}
+
+.page-cover-change {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 11px;
+  border-radius: var(--r-1);
+  background: color-mix(in srgb, var(--bg-raised) 90%, transparent);
+  box-shadow: var(--shadow-small);
+  font: 500 var(--fs-caption) / 1 var(--font-ui);
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.page-cover:hover .page-cover-change,
+.page-cover-change:focus-visible,
+.page-cover-change.menu-open {
+  opacity: 1;
+}
+
+.page-cover-change:hover {
+  color: var(--text);
+}
+
+.page-icon-row {
+  position: relative;
+  margin: 0 0 8px;
+}
+
+/* With a cover, the icon sits over its lower edge. */
+.page-top.has-cover .page-icon-row {
+  margin-top: calc(-16px - 34px);
+  padding-left: 14px;
+}
+
+.page-icon {
+  display: inline-grid;
+  place-items: center;
+  padding: 3px;
+  border-radius: var(--r-3);
+  transition: background 0.15s ease;
+}
+
+button.page-icon:hover {
+  background: color-mix(in srgb, var(--bg-hover) 80%, transparent);
+}
+
+.page-icon-emoji {
+  display: inline-block;
+  line-height: 1;
+  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', var(--font-ui);
+}
+
+.page-icon-line {
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+  color: var(--text-muted);
+}
+
+.page-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  margin: 0 0 10px;
+  padding: 0 11px 0 9px;
+  border-radius: var(--r-1);
+  background: var(--bg-hover);
+  font: 500 var(--fs-caption) / 1 var(--font-ui);
+  color: var(--text-muted);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.page-type svg {
+  color: var(--text-faint);
+}
+
+button.page-type:hover,
+button.page-type.menu-open {
+  background: var(--bg-active);
+  color: var(--text);
+}
+
+/* The type in its own colour (5.2.0), as in the side bar: a soft tint, its icon and name in the colour. */
+.page-type[class*='nt-'] {
+  background: var(--type-soft);
+  color: color-mix(in srgb, var(--type) 78%, var(--text));
+}
+.page-type[class*='nt-'] svg {
+  color: var(--type);
+}
+button.page-type[class*='nt-']:hover,
+button.page-type[class*='nt-'].menu-open {
+  background: color-mix(in srgb, var(--type) 20%, transparent);
+  color: var(--text);
+}
+
+/* The icon picker */
+
+.page-icon-picker {
+  position: fixed;
+  z-index: 60;
+  width: 304px;
+  padding: 10px;
+  border-radius: var(--r-3);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow);
+  font: var(--fs-small) / 1.4 var(--font-ui);
+  color: var(--text);
+}
+
+.page-picker-label {
+  margin: 2px 4px 6px;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-faint);
+}
+
+.page-picker-label + .page-picker-grid {
+  margin-bottom: 10px;
+}
+
+.page-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 2px;
+}
+
+.page-picker-cell {
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-2);
+  color: var(--text-muted);
+  font-size: var(--fs-section);
+}
+
+.page-picker-cell:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.page-picker-cell.is-current {
+  background: var(--sel);
+  color: var(--text-strong);
+}
+
+.page-picker-foot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.page-picker-input {
+  flex: 1;
+  min-width: 0;
+  height: 28px;
+  padding: 3px 8px;
+  font-size: var(--fs-small);
+}
+
+.page-picker-use,
+.page-picker-remove {
+  height: 28px;
+  padding: 0 10px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.page-picker-use:hover,
+.page-picker-remove:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+/* ── Fields: quiet rows ─────────────────────────────────────────────────────────────────────────────────────────── */
+
+/* Pulled left by the kind icon's room, so the names line up with the title above. */
+.note-fields {
+  display: grid;
+  gap: 1px;
+  margin: 0 0 18px -25px;
+  font: var(--fs-small) / 1.4 var(--font-ui);
+}
+
+.note-fields.is-empty {
+  margin-bottom: 10px;
+}
+
+/* The fold line (t7-note-window, 8 Nov 2026: properties fold to one quiet line, opening in place): the
+   count in faint words with a chevron, the rows' own left edge, never a chip. */
+.note-fields-fold {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  margin: 0 0 2px;
+  padding: 0 6px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+}
+
+.note-fields-fold:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: var(--field-label) minmax(0, 1fr);
+  align-items: start;
+  gap: 8px;
+  min-height: 30px;
+}
+
+.field-row.is-new {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Inline "Key:: value" fields (V12, 28 Oct 2026): read from the note's words, shown under its fields, never edited here. */
+.field-inline-value {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 28px;
+  padding: 0 6px;
+  color: var(--text);
+}
+
+.field-where {
+  margin-left: auto;
+  color: var(--text-faint);
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+.field-key {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  height: 28px;
+  margin-top: 1px;
+  padding: 0 6px;
+  border-radius: var(--r-2);
+  text-align: left;
+  color: var(--text-faint);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.field-key > span {
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.field-key > span::first-letter {
+  text-transform: uppercase;
+}
+
+.field-key .field-kind {
+  flex: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.field-row:hover .field-kind,
+.field-key.menu-open .field-kind {
+  opacity: 0.85;
+}
+
+button.field-key:hover:not(:disabled),
+.field-key.menu-open {
+  background: var(--bg-hover);
+  color: var(--text-muted);
+}
+
+.field-key:disabled {
+  opacity: 1;
+  cursor: default;
+}
+
+.field-key-input {
+  height: 28px;
+  margin-top: 1px;
+  padding: 3px 6px;
+  min-width: 0;
+  width: 100%;
+}
+
+.field-value {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 30px;
+  color: var(--text);
+}
+
+.field-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.field-text > .prop-text {
+  width: 100%;
+  flex: 1;
+  min-width: 0;
+}
+
+/* A designed fact (p14): the shared pill or chip, starting where a text value's words do. A button to
+   change it where it sits; read-only shows the same pill as plain words. An empty date offers itself. */
+.field-fact,
+.field-factbtn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 3px 0 3px 6px;
+  border-radius: var(--r-2);
+}
+.field-factbtn {
+  cursor: pointer;
+}
+.field-factbtn:hover .plan-pill,
+.field-factbtn:hover .plan-chip {
+  background: var(--border);
+  color: var(--text);
+}
+.field-factbtn:hover .pj-progress-track {
+  background: var(--border);
+}
+/* A long fact pill in a narrowed note (p18, 4 Nov 2026, the 1219 walk with the chat open: a long status ran
+   past its column's edge): the fact button shrinks with its column and the pill wraps inside it, as the
+   Overview tiles' pills do. */
+.field-fact, .field-factbtn { min-width: 0; max-width: 100%; }
+.field-value .plan-pill, .field-value .plan-chip { flex: 0 1 auto; min-width: 0; white-space: normal; overflow-wrap: break-word; text-align: left; }
+.field-fact-empty {
+  color: var(--text-faint);
+  font-size: var(--fs-small);
+}
+.field-factbtn.is-empty:hover .field-fact-empty {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+}
+
+/* "Add <field>": the note type's own fields, faint, while the fields are in use. */
+.field-offer {
+  width: 100%;
+  text-align: left;
+  animation: field-offer-in 0.16s ease-out;
+}
+
+.field-offer .field-key {
+  opacity: 0.8;
+}
+
+.field-offer:hover .field-key {
+  opacity: 1;
+  background: var(--bg-hover);
+  color: var(--text-muted);
+}
+
+.field-add {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 7px;
+  height: 28px;
+  padding: 0 6px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.note-head:hover .field-add,
+.note-fields.is-active .field-add,
+.field-add:focus-visible {
+  opacity: 1;
+}
+
+.field-add:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+/* Links to notes in a field: chips with the note's type. */
+
+.field-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  min-height: 30px;
+  padding: 3px 0;
+  cursor: text;
+}
+
+.field-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  height: 22px;
+  padding: 0 9px 0 7px;
+  border-radius: var(--r-1);
+  background: var(--bg-hover);
+  font-size: var(--fs-small);
+  color: var(--text);
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.field-link > span {
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.field-link svg {
+  flex: none;
+  color: var(--text-faint);
+}
+
+.field-link:hover {
+  background: var(--bg-hover);
+  color: var(--text-strong);
+}
+
+.field-link:hover svg {
+  color: inherit;
+}
+
+.field-link.is-missing {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+  color: var(--text-muted);
+}
+
+/* What a linked note is to this one: quiet words after the chip (a faint + until kinded), on its own menu. */
+.field-link-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  max-width: 100%;
+}
+
+.field-kind {
+  flex: none;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  height: 22px;
+  padding: 0 5px;
+  border-radius: var(--r-1);
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+}
+
+button.field-kind:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.field-kind.is-empty {
+  opacity: 0.45;
+}
+
+.field-link-wrap:hover .field-kind.is-empty,
+.field-kind.is-empty:focus-visible {
+  opacity: 1;
+}
+
+/* A field's quiet footnote: a link to another type of note than the field wants, named, never blocked. */
+.field-note {
+  padding: 2px 6px 4px;
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+}
+
+.field-links-edit {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-2);
+  color: var(--text-faint);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.field-links:hover .field-links-edit,
+.field-links-edit:focus-visible {
+  opacity: 1;
+}
+
+.field-links-edit:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+/* A field's link picker: a quiet Link beside its value, opening the kind-filtered picker. */
+.field-list-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.field-list-wrap > .prop-list {
+  flex: 1;
+  min-width: 0;
+}
+
+.field-link-pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-2);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  white-space: nowrap;
+}
+
+.field-link-pick:hover {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.field-text {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.field-text > .prop-text {
+  flex: 1;
+}
+
+/* Lists and chips start where a text value's words do. */
+.note-fields .prop-list,
+.field-links {
+  padding-left: 6px;
+}
+
+/* A link inside a list keeps the list's remove button beside its chip. */
+.note-fields .prop-item:has(> .field-link) {
+  background: transparent;
+  gap: 1px;
+}
+
+/* ── A person's meetings and projects, a meeting's people ───────────────────────────────────────────────────────── */
+
+.page-connections {
+  display: grid;
+  gap: 14px;
+  margin: 0 0 20px -8px;
+  font: var(--fs-small) / 1.4 var(--font-ui);
+}
+
+.page-links-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 4px;
+  padding: 0 8px;
+  font: 600 var(--fs-small) / 1.4 var(--font-ui);
+  color: var(--text-muted);
+}
+
+.page-links-count {
+  font-weight: 500;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.page-links-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1px;
+}
+
+.page-links-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  height: 30px;
+  padding: 0 8px;
+  border-radius: var(--r-2);
+  text-align: left;
+  color: var(--text);
+  transition: background 0.15s ease;
+}
+
+.page-links-row svg {
+  flex: none;
+  color: var(--text-faint);
+}
+
+.page-links-row:hover {
+  background: var(--bg-hover);
+}
+
+.page-links-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.page-links-when {
+  flex: none;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.page-links-more {
+  margin: 2px 0 0 8px;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+.page-links-more:hover {
+  color: var(--text);
+}
+
+.page-people {
+  margin-left: -17px;
+  display: grid;
+  grid-template-columns: var(--field-label) minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+}
+
+.page-people-label {
+  padding: 6px 6px 0 25px;
+  color: var(--text-faint);
+  /* "Also mentioned" stays whole on its line (ITEMS 3 and 4). */
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+.page-people-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+@keyframes field-offer-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-tools,
+  .page-cover img,
+  .page-cover-change,
+  .field-add,
+  .field-key .field-kind,
+  .field-links-edit {
+    transition: none;
+  }
+  .field-offer {
+    animation: none;
+  }
+}

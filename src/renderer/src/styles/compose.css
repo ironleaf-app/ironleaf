@@ -1,0 +1,788 @@
+/* Composition, not centring (layout round 2, 20 Nov 2026). after a day on a real vault with round 1. Round 1 centred
+   every page in a width system and passed its own gate, but the gate measured holes between paired sections on a
+   five-note sample; on real content a page stood one tall column beside a near-empty one, filter chips ran two full
+   rows, and short form fields stretched 500 px apart. The rules here, loaded last:
+1. Composed, not centred: every frame starts at one left edge (the side bar plus --page-pad-side) and takes the
+      room; inside it the blocks share edges in a grid that fills the width. Short content tightens (fewer columns),
+      it never spreads.
+   2. Columns balance by content: components/Balance.tsx places each movable section in the shorter column.
+   3. Controls sized to content: a text field is at most --w-field unless it holds long text; short fields share a
+      row; buttons never stretch.
+   4. One row of filter chips at most; the rest are dropdowns (components/FilterMenus).
+   5. Density: the smaller steps of the spacing scale between related things; quiet section heads. */
+
+:root {
+  --w-field: 420px;
+  /* Every frame's width is the room's: the frame no longer centres a fixed column. */
+  --page-max: 100%;
+  --page-wide: 100%;
+}
+
+/* ---------- 1. One left edge, the room's width ---------- */
+.nv-page,
+.tk-inner,
+.pj-inner,
+.pj-inner.wide,
+.tp-inner,
+.pv-inner,
+.au-inner:not(.with-panel),
+.td-inner,
+.td-inner.td-inner,
+.nv-page-frame,
+.nv-page.has-split.has-split,
+.vscroll > .vpage.wide,
+.vscroll > .vpage.wide.has-split,
+.settings-scroll .settings.settings-page.settings-page {
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+}
+.nv-page.read {
+  max-width: var(--page-read);
+}
+
+/* ---------- 2. Balanced columns (components/Balance.tsx) ---------- */
+.nv-bal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.nv-bal.is-two {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(340px, 1fr);
+  gap: var(--space-5);
+  align-items: start;
+}
+.nv-bal-col,
+.nv-bal-pin,
+.td-work,
+.td-day {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.nv-bal-pin:empty {
+  display: none;
+}
+.nv-bal-item {
+  min-width: 0;
+}
+
+/* ---------- Today: the work at the left, the day at the right ---------- */
+@container today (min-width: 1800px) {
+  .td-inner.tklist.tklist {
+    display: block;
+  }
+}
+.td-inner.tklist > .nv-bal {
+  margin-bottom: var(--space-6);
+}
+.td-compose .td-section {
+  margin: 0;
+  padding: var(--space-3) var(--space-2) var(--space-2);
+}
+.td-compose .td-section-head {
+  padding: 0 var(--space-2) var(--space-2);
+  align-items: center;
+}
+.td-compose .td-section-head h2 {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.01em;
+}
+/* Rows a tight tool's height: one line of words and its source under it, never a 68 px card per task. */
+.td-compose .td-row.tkrow {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  min-height: 0;
+}
+.td-compose .td-row.tkrow .td-row-what {
+  font-size: var(--fs-small);
+  line-height: 1.35;
+}
+.td-compose .tkrow-sub,
+.td-compose .td-row-sub {
+  font-size: var(--fs-caption);
+  line-height: 16px;
+}
+.td-compose .td-group + .td-group {
+  margin-top: var(--space-2);
+}
+/* The rest of the work reads under Next as one list in the same card. */
+.td-compose .td-rest {
+  padding-top: var(--space-1);
+}
+/* The undated work, one count row (never 108 rows). */
+.td-count-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  margin-top: var(--space-2);
+  padding: var(--space-2) var(--space-2);
+  border: 0;
+  border-top: 1px solid var(--border);
+  background: none;
+  font: inherit;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  text-align: left;
+  cursor: pointer;
+}
+.td-count-row b {
+  color: var(--text);
+  font-weight: 600;
+}
+.td-count-row:hover {
+  background: var(--bg-hover);
+}
+.td-count-row-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+  color: var(--text);
+  font-weight: 500;
+}
+.td-add-row {
+  cursor: pointer;
+  margin-top: var(--space-1);
+}
+/* Meetings: a timeline down the day, New and Record small at its foot line. */
+.td-compose .th-meetings .th-agenda {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: 0 var(--space-2);
+}
+.td-compose .th-meetings .th-meeting {
+  width: 100%;
+  max-width: none;
+  justify-content: flex-start;
+}
+.td-compose .th-meetings .th-new-meeting {
+  align-self: flex-start;
+  display: inline-flex;
+  font-size: var(--fs-small);
+}
+.td-compose .th-meetings .th-agenda {
+  flex-flow: row wrap;
+}
+.td-compose .th-meetings .th-meeting {
+  flex: 1 1 100%;
+}
+.td-compose .th-meetings .td-none {
+  margin: 0;
+  padding: 0 var(--space-2) var(--space-1);
+}
+.td-compose .th-meetings .th-agenda.is-empty {
+  justify-content: flex-start;
+  order: 2;
+  padding-top: 0;
+  min-height: 0;
+}
+.td-compose .th-meetings.is-none .th-new-meeting {
+  margin-top: var(--space-1);
+}
+.td-compose .th-meetings.is-none {
+  display: flex;
+  flex-direction: column;
+}
+/* What needs you: rows, quiet. */
+.td-needs.is-empty {
+  display: none;
+}
+.td-needs .td-look-items {
+  display: flex;
+  flex-direction: column;
+}
+.td-needs .td-live:empty {
+  display: none;
+}
+/* More for today, shut: one quiet line naming what it holds. */
+.td-compose .td-else.is-shut {
+  padding: var(--space-2) var(--space-3);
+}
+.td-compose .td-else > .td-section-head {
+  padding: 0;
+  gap: var(--space-3);
+}
+.td-else-words {
+  min-width: 0;
+  flex: 1;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+/* The vault's line at the foot of the day. */
+.td-foot:empty {
+  display: none;
+}
+.td-foot > * {
+  margin: 0;
+}
+
+/* ---------- 3. Controls sized to content ---------- */
+.as-brand-name,
+.as-brand-form .as-brand-name {
+  max-width: var(--w-field);
+}
+.nv-page input[type='text']:not(.cm-content *),
+.nv-page input[type='search'],
+.nv-page select {
+  max-width: max(var(--w-field), 100%);
+}
+.nv-page .button,
+.nv-page .btn {
+  flex-grow: 0;
+}
+
+/* ---------- 4. Filters: one row of chips, the rest dropdowns (components/FilterMenu.tsx) ---------- */
+.w4b-fstrip {
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+}
+.w4b-fstrip-chips {
+  flex: 0 1 auto;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+.w4b-fstrip-menus {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: none;
+}
+.w4b-fstrip-menus::before {
+  content: '';
+  width: 1px;
+  height: 20px;
+  margin-right: var(--space-1);
+  background: var(--border);
+}
+.w4b-fstrip-sum {
+  margin-left: auto;
+  padding-top: 0;
+}
+.nv-filter-menu {
+  gap: 6px;
+}
+.nv-filter-menu > svg:last-child {
+  opacity: 0.6;
+}
+/* The assets page's frame starts at the one left edge (was centred on --w-wide). */
+.as-main > .nv-page-head.nv-page-head,
+.as-main > .w4b-fstrip,
+.as-main > .as-toolbar,
+.as-main > .as-scroll > .as-scroll-inner {
+  padding-left: var(--page-pad-side);
+  padding-right: var(--page-pad-side);
+}
+
+/* ---------- Files and assets › Brand kit: three zones ---------- */
+.as-brand-head p {
+  max-width: 760px;
+}
+.as-brand-head + .as-kits {
+  margin-top: var(--space-3);
+}
+.as-brand-zones.as-brand-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: start;
+  margin-top: var(--space-4);
+}
+.as-brand-zones .as-brand-section h3,
+.as-brand-zones .as-brand-preview > h3,
+.as-brand-zones .as-brand-form > .as-brand-section:first-child > h3 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.as-brand-zones .as-brand-form,
+.as-brand-zones .as-brand-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+.as-brand-zones .as-brand-form > * {
+  grid-column: auto;
+}
+/* Name and footer share a row, each sized to its words. */
+.as-brand-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, var(--w-field)));
+  gap: var(--space-3) var(--space-4);
+}
+.as-brand-fields .as-brand-name {
+  max-width: none;
+}
+/* Colours as compact rows: a swatch, its name, hex and use. */
+.as-brand-zones .as-colours {
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-2);
+}
+.as-brand-zones .as-colour {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  align-items: center;
+}
+.as-brand-zones .as-colour-chip {
+  height: 100%;
+  min-height: 72px;
+  padding: 0;
+}
+.as-brand-zones .as-colour-chip > span {
+  display: none;
+}
+.as-brand-zones .as-colour-words {
+  padding: var(--space-2) var(--space-2);
+  gap: 0;
+}
+.as-brand-zones .as-colour-remove {
+  position: static;
+  margin-right: var(--space-2);
+}
+.as-brand-zones .as-colour.add .as-colour-words {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.as-brand-zones .as-colour.add .as-field-input {
+  width: 110px;
+  border-color: var(--border);
+}
+.as-brand-zones .as-fonts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-2);
+}
+.as-brand-zones .as-font {
+  max-width: none;
+}
+.as-brand-zones .as-add-row {
+  justify-self: start;
+}
+/* Logos: three across the side zone, shorter art. */
+.as-brand-zones .as-logo-slots {
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--space-2);
+}
+.as-brand-zones .as-logo-art {
+  height: 104px;
+}
+.as-brand-zones .as-logo-words {
+  padding: var(--space-2) var(--space-3) 0;
+}
+.as-brand-zones .as-logo-actions {
+  padding: var(--space-1) var(--space-3) var(--space-2);
+}
+/* Where it's used: compact two-column rows. */
+.as-brand-zones .as-use-rows {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-1) var(--space-4);
+}
+.as-brand-zones .as-use-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-width: 0;
+}
+@container as-main (min-width: 900px) {
+  .as-brand-zones.as-brand-grid {
+    grid-template-columns: minmax(300px, 400px) minmax(0, 1fr);
+  }
+  .as-brand-zones .as-brand-preview {
+    position: sticky;
+    top: var(--space-4);
+    grid-row: span 2;
+  }
+  .as-brand-zones .as-brand-preview > h3 {
+    margin-top: 0;
+  }
+}
+@container as-main (min-width: 1500px) {
+  .as-brand-zones.as-brand-grid {
+    grid-template-columns: minmax(320px, 420px) minmax(0, 1.25fr) minmax(360px, 1fr);
+  }
+  .as-brand-zones .as-brand-preview {
+    grid-row: auto;
+  }
+}
+
+/* ---------- Today, second look on the heavy vault ---------- */
+/* One line a task where the window has the room: its words, then its project, faint, on the same line. */
+.td-compose .td-row-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--space-3);
+  row-gap: 0;
+  min-width: 0;
+}
+.td-compose .td-row-main > .td-row-sub {
+  margin-top: 0;
+  min-width: 0;
+}
+.td-compose .td-row.tkrow {
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+/* Both columns start on one line. */
+.td-compose.nv-bal.is-two > .nv-bal-col {
+  margin-top: 0;
+}
+.td-compose .nv-bal-pin > .td-work > :first-child,
+.td-compose .nv-bal-pin > .td-day > :first-child {
+  margin-top: 0;
+}
+/* The day's meetings as a timeline: one line each (time, title, who), no box per meeting. */
+.td-compose .th-meetings .th-agenda {
+  gap: 0;
+}
+.td-compose .th-meetings .th-meeting {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: baseline;
+  min-height: 0;
+  padding: 6px var(--space-2);
+  border: 0;
+  border-left: 2px solid var(--accent-line, var(--border));
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+.td-compose .th-meetings .th-meeting + .th-meeting {
+  margin-top: 2px;
+}
+.td-compose .th-meetings .th-meeting:hover {
+  background: var(--bg-hover);
+}
+.td-compose .th-meetings .th-meeting-words {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-2);
+  align-items: baseline;
+  min-width: 0;
+}
+.td-compose .th-meetings .th-meeting-words small {
+  color: var(--text-faint);
+}
+.td-compose .th-meetings .th-new-meeting {
+  margin-top: var(--space-2);
+  margin-right: var(--space-3);
+}
+/* What needs you: the packs' own blocks start under the head, not a blank line below it. */
+.td-needs .td-look-items > :first-child {
+  margin-top: 0;
+}
+.td-needs .td-look-items > * {
+  margin-left: 0;
+  margin-right: 0;
+}
+.td-compose .td-else h2 {
+  white-space: nowrap;
+}
+
+/* Brand kit, second look: name and footer side by side; the kit pickers never cut their words. */
+.as-brand-fields {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  max-width: calc(2 * var(--w-field) + var(--space-4));
+}
+.as-brand-zones .as-use-rows {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+.as-brand-zones .as-use-pick {
+  max-width: 200px;
+  min-width: 0;
+}
+.as-brand-zones .as-use-pick > span {
+  overflow-wrap: anywhere;
+}
+.td-compose .td-row-main > .td-row-what {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+/* ---------- 6. Inner padding everywhere (20 Nov 2026, Settings › Look: rows started at the card's very edge, the
+   toggle hugged the right, chips ran to the panel's edge).
+   One rule for every container, from the spacing scale: a card or panel holds --pad-card inside; a row holds
+   --pad-row-y by --pad-row-x; a chip group keeps --space-2 between chips and sits inside its row's inset. A row
+   inside a card adds its own inset to the card's (never zero inside zero). ---------- */
+:root {
+  --pad-card: var(--space-5);
+  --pad-row-x: var(--space-4);
+  --pad-row-y: var(--space-3);
+}
+.card,
+.settings-card.card {
+  padding: var(--pad-card);
+}
+/* Settings: every row inset from the card, hover filling the inset; group heads on the rows' text edge. */
+.settings-card.card {
+  padding: var(--space-4) var(--space-3);
+}
+.settings-card .setting-row,
+:root[data-density='compact'] .settings-card .setting-row {
+  padding: var(--pad-row-y) var(--pad-row-x);
+  border-radius: var(--r-3);
+}
+.settings-card > h3,
+.settings-card h3 {
+  padding: 0 var(--pad-row-x);
+}
+.settings-card > p,
+.settings-card > .set-hint {
+  padding-left: var(--pad-row-x);
+  padding-right: var(--pad-row-x);
+}
+.show-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+}
+.setting-row .setting-control {
+  min-width: 0;
+}
+/* Dialogs, menus, pickers. */
+.menu {
+  padding: var(--space-1);
+}
+.menu-row {
+  padding: 6px var(--space-3);
+}
+/* Today's cards. */
+.td-compose .td-section {
+  padding: var(--space-3) var(--space-3) var(--space-2);
+}
+.td-compose .td-section-head {
+  padding: 0 var(--space-2) var(--space-2);
+}
+.td-compose .td-row.tkrow .td-row-main {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--space-3);
+}
+
+/* ---------- 7. One left edge on every page: the scrollers keep their bar's gutter on one side only (both edges
+   put Today, Inbox, Bin and Import 10 px right of Templates, Bookmarks and Files and assets). ---------- */
+.vscroll,
+.nv-page-scroll,
+.td-view {
+  scrollbar-gutter: stable;
+}
+.w4b-bm-page.w4b-bm-page {
+  max-width: none;
+  margin: 0;
+  padding-left: var(--page-pad-side);
+  padding-right: var(--page-pad-side);
+}
+/* The project page starts at the edge every page starts at, and takes the room (was a 1,280 px folio, centred). */
+.vscroll > .vpage.wide.pj-folio,
+.vpage.wide.pj-folio {
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* ---------- 8. List pages whose rows are short: the rows flow into columns that fill the frame (a row's words
+   and its buttons stay near each other, never 1,000 px apart), and a short list tightens to fewer columns. ---------- */
+/* Inbox: the captures waiting, in balanced columns (each card whole; a tall card never leaves a hole beside it). */
+div[aria-label='Waiting to be filed'],
+div[aria-label='Waiting to be filed'][data-pair] {
+  display: block;
+  columns: 3 600px;
+  column-gap: var(--space-3);
+}
+div[aria-label='Waiting to be filed'] > * {
+  break-inside: avoid;
+  margin: 0 0 var(--space-3);
+  min-width: 0;
+}
+/* Templates: each group's templates in columns. */
+.tp-group > .glabel + div {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 480px), 1fr));
+  column-gap: var(--space-5);
+}
+.tp-group .w4b-tp-row {
+  min-width: 0;
+}
+/* Bin: rows in columns. */
+.bin-list-87 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 560px), 1fr));
+  border: 0;
+  background: none;
+  gap: var(--space-2);
+  overflow: visible;
+}
+.bin-list-87 > li {
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+}
+.bin-list-87 > li + li {
+  border-top: 1px solid var(--border);
+}
+/* Bookmarks: the kept list in columns. */
+.w4b-bm-page .glabel + div {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 480px), 1fr));
+  column-gap: var(--space-5);
+}
+/* Import: the drop zone beside how each kind arrives, both top-aligned. */
+@media (min-width: 1500px) {
+  .nv-page.im-page {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.7fr) minmax(0, 1.5fr);
+    grid-auto-flow: row dense;
+    column-gap: var(--space-6);
+    align-items: start;
+  }
+  .nv-page.im-page > * {
+    grid-column: 2;
+  }
+  .nv-page.im-page > h1,
+  .nv-page.im-page > .vsub {
+    grid-column: 1 / -1;
+  }
+  .nv-page.im-page > .im-drop {
+    grid-column: 1;
+    grid-row: span 20;
+    margin-top: var(--space-4);
+    position: sticky;
+    top: var(--space-4);
+  }
+}
+
+/* One row of chips at a narrow window too: the chips drop their icons before they would scroll or wrap. */
+.w4b-fstrip-chips {
+  scrollbar-width: none;
+}
+@container as-main (max-width: 1240px) {
+  .w4b-fstrip-chips .chip > svg {
+    display: none;
+  }
+  .w4b-fstrip-chips .chip {
+    padding-left: var(--space-2);
+    padding-right: var(--space-2);
+  }
+}
+
+/* Settings at a very wide window: plain groups read in as many columns as keep each a form's width (two at 1920,
+   three past about 2,400), never two columns 1,400 px wide. */
+@container settings (min-width: 1300px) {
+  .settings-card:is([data-section="general"], [data-section="look"], [data-section="home"], [data-section="quick-add"], [data-section="backups"], [data-section="privacy"]) {
+    columns: 3 600px;
+  }
+}
+/* A placed section never replays its arrival fade (it remounts when it changes column). */
+.nv-bal-item > * {
+  animation: none;
+}
+/* A logo slot's words wrap in the narrower side zone, never cut. */
+.as-brand-zones .as-logo-name {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+/* A pack's block on Today with nothing to say takes no room (its card would stand empty). */
+.td-needs-part:not(:has(.td-look-items > *)) {
+  display: none;
+}
+/* Every block in either column shares the column's edges and starts its words under its own top inset. */
+.td-compose .nv-bal-item > .td-section,
+.td-compose .nv-bal-pin .td-section,
+.td-compose .nv-bal-item > * {
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 0;
+}
+.td-needs-part .td-look-items > :first-child,
+.td-needs-part .td-look-items > :first-child > :first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+/* 2.0.1: the day's column shares the work column's edges and top (an old .td-day rule padded it 8 px: its first card
+   stood narrower and lower than the cards under it). */
+.td-compose .nv-bal-pin > .td-day,
+.td-compose .nv-bal-pin > .td-work {
+  padding: 0;
+  margin: 0;
+}
+/* One Meetings card: New and Record small in its head; the meetings finished with open actions under the day. */
+.td-compose .th-meetings > .td-section-head {
+  display: flex;
+  align-items: center;
+}
+.th-meetings-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-left: auto;
+}
+.th-meetings-actions .th-new-meeting,
+.td-compose .th-meetings .th-meetings-actions .th-new-meeting {
+  margin: 0;
+  padding: 2px var(--space-1);
+  font-size: var(--fs-caption);
+}
+.th-meetings-after:empty {
+  display: none;
+}
+.th-meetings-after {
+  margin-top: var(--space-2);
+  padding: var(--space-2) var(--space-2) 0;
+  border-top: 1px solid var(--border);
+}
+.th-meetings-after .rm-today-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  list-style: none;
+}
+.th-meetings-after .rm-today-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+/* Settings › AI and Connect an AI (2.0.1: half the card stood empty at 2560): two columns where the card has the room
+   — connections and their form, or the switches, at the left; the model, transcription and the assistant, or each
+   app's set-up, at the right. One column below. */
+@container settings (min-width: 1300px) {
+  .ai-settings.ai-two {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0 var(--space-6);
+    align-items: start;
+  }
+}
+.ai-col-main,
+.ai-col-side {
+  min-width: 0;
+}
+.ai-col-side > h3:first-child,
+.ai-col-side > :first-child {
+  margin-top: 0;
+}
+.ai-col-side:empty {
+  display: none;
+}
+.ai-settings:not(.ai-two) .ag-lead {
+  max-width: var(--w-reading);
+}

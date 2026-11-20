@@ -1,0 +1,4 @@
+# Every file in Ironleaf is owned by the maintainers team. With branch protection on `main` ("Require review from
+# Code Owners", set by tools/github-setup.sh), no outside change merges without a maintainer's approving review.
+# See docs/MAINTAINING.md.
+*   @ironleaf-app/maintainers

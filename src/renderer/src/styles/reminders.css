@@ -1,0 +1,274 @@
+/* Reminders (19 Oct 2026, approved them): the ⏰ chip in the editor and its picker, Today's Reminders card, and a reminder's
+   Done and Snooze in the bell. Tokens only (light first; dark through the same tokens). Only circles (dots and avatars,
+   50%) carry corner-shape: round; nothing is a pill. */
+
+/* ── The chip in Live Preview ───────────────────────────────────────────────────────────────────────────────────── */
+
+.cm-nv-remind {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 1px;
+  padding: 0 8px 0 6px;
+  border-radius: var(--r-1);
+  background: var(--accent-softer);
+  box-shadow: inset 0 0 0 1px var(--accent-line);
+  color: var(--accent-strong);
+  font: 550 0.8em/1.75 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  vertical-align: 0.06em;
+  cursor: pointer;
+  transition: background 0.12s ease, box-shadow 0.12s ease;
+}
+
+.cm-nv-remind svg {
+  flex: none;
+}
+
+.cm-nv-remind:hover {
+  background: var(--accent-soft);
+}
+
+/* Passed and not ticked: a soft danger tint, never a shout. */
+.cm-nv-remind.is-passed {
+  background: color-mix(in srgb, var(--danger) 9%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--danger) 32%, transparent);
+  color: var(--danger);
+}
+
+.cm-nv-remind.is-passed:hover {
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+}
+
+/* Ticked: quiet, as the ticked task's words are. */
+.cm-nv-remind.is-done {
+  background: var(--bg-hover);
+  box-shadow: none;
+  color: var(--text-faint);
+}
+
+.cm-nv-remind-repeat {
+  display: inline-flex;
+  opacity: 0.75;
+}
+
+/* ── The picker ─────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.rm-picker {
+  position: fixed;
+  z-index: 1100;
+  width: 280px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  color: var(--text);
+  box-shadow: var(--shadow-small);
+  font-family: var(--font-ui);
+}
+
+.rm-picker-head {
+  margin-bottom: 10px;
+  font-size: var(--fs-small);
+  font-weight: 650;
+}
+
+.rm-picker-fields {
+  display: grid;
+  grid-template-columns: 1fr 104px;
+  gap: 8px;
+}
+
+.rm-picker-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.rm-picker-fields input {
+  height: 32px;
+  min-width: 0;
+  padding: 0 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-3);
+  background: var(--bg);
+  color: var(--text);
+  font: var(--fs-small) var(--font-ui);
+  color-scheme: light dark;
+}
+
+.rm-picker-fields input:focus {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+  border-color: var(--border-strong);
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.rm-picker-note {
+  margin: 8px 0 0;
+  font-size: var(--fs-caption);
+  line-height: 1.4;
+  color: var(--text-faint);
+}
+
+.rm-picker-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.rm-picker-actions > span {
+  flex: 1;
+}
+
+.rm-picker-actions .button {
+  height: 30px;
+  padding: 0 11px;
+  font-size: var(--fs-small);
+}
+
+.rm-picker-remove {
+  padding: 4px 2px;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+}
+
+.rm-picker-remove:hover {
+  color: var(--danger);
+  text-decoration: underline;
+}
+
+/* ── Today's card ───────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.rm-card {
+  margin-bottom: var(--td-gap, 18px);
+}
+
+.rm-head-icon {
+  color: var(--accent-text);
+}
+
+.rm-card.is-empty {
+  padding-bottom: 12px;
+}
+
+.rm-empty {
+  margin: 0 10px;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.due-mark {
+  display: inline-block;
+  padding: 0 5px;
+  border-radius: var(--r-2);
+  background: var(--bg-hover);
+  font-size: var(--fs-caption);
+}
+
+.rm-group.overdue h3 {
+  color: var(--tone-bad);
+}
+
+.rm-group.today h3 {
+  color: var(--accent-text);
+}
+
+.rm-row + .rm-row {
+  margin-top: 1px;
+}
+
+.rm-when {
+  flex: none;
+  padding: 2px 9px;
+  border-radius: var(--r-1);
+  background: var(--bg-hover);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.rm-when.is-today {
+  background: var(--accent-softer);
+  color: var(--accent-strong);
+}
+
+.rm-when.is-overdue {
+  background: color-mix(in srgb, var(--tone-bad) 11%, transparent);
+  color: var(--tone-bad);
+}
+
+.td-row:hover .rm-when.is-upcoming {
+  background: var(--bg-active);
+}
+
+.rm-repeat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-faint);
+}
+
+/* ── The bell: a reminder's Done and Snooze ─────────────────────────────────────────────────────────────────────── */
+
+.notice.is-reminder .notice-icon {
+  background: var(--slate-bg);
+  color: var(--slate-tx);
+}
+
+.notices-list li.has-actions {
+  padding-bottom: 6px;
+}
+
+.notice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin: -4px 10px 2px 48px;
+}
+
+.notice-actions-label {
+  margin: 0 2px 0 8px;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-faint);
+}
+
+.notice-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 9px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-2);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font: 550 var(--fs-caption) var(--font-ui);
+  white-space: nowrap;
+}
+
+.notice-action:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.notice-action:first-child {
+  border-color: var(--border-strong);
+  color: var(--text-strong);
+}
+
+.notice-action:disabled {
+  opacity: 0.5;
+}

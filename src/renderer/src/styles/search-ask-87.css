@@ -1,0 +1,223 @@
+/* The 8.7 search and Ask (w2c, 30 Oct 2026): the search window and panel (components/SearchView.tsx), the helper's
+   answer cards (panels/ChatPanel.tsx) and the notebook's rails (views/NotebookView.tsx). The kit (styles/kit.css)
+   carries the shapes; this only fits them to these screens. Colours only from the theme tokens. (4 Nov 2026,
+   p9-one-ask: the floating bar and its answer card are gone; the right chat panel is the one place to ask.) */
+
+.sas-modal { width: 680px; max-height: calc(100vh - 120px); display: flex; flex-direction: column; }
+.sas-modal .sas-results { overflow-y: auto; min-height: 0; }
+.sas-modal .sas-askfoot { padding: 6px 22px 12px; }
+.sas-modal .sas-askfoot .ask { margin: 0; }
+
+/* The filter strip: dropdowns, then the case, help, bookmark and fold tools. */
+.sas-f {
+  border: 0; background: none; font: inherit; font-size: var(--fs-small); color: var(--text-muted);
+  padding: 5px 10px; border-radius: var(--r-3); cursor: pointer; display: inline-flex; gap: 5px; align-items: center;
+  max-width: 170px; white-space: nowrap;
+}
+.sas-f:hover { background: var(--bg-side); color: var(--text); }
+.sas-f.on { background: var(--bg-side); color: var(--text); font-weight: 600; }
+.sas-fsp { flex: 1; }
+.sas-aa {
+  border: 0; background: none; font: inherit; font-size: var(--fs-small); font-weight: 600; color: var(--text-faint);
+  padding: 5px 8px; border-radius: var(--r-3); cursor: pointer;
+}
+.sas-aa:hover { color: var(--text); }
+.sas-aa.on { background: var(--bg-side); color: var(--text); }
+.smodal .filters .sas-tool { width: 28px; height: 28px; flex: none; }
+.smodal .filters .sas-tool.on { background: var(--bg-side); color: var(--text); }
+
+/* Result rows: title, path and a two-line preview, the match bolded navy. */
+.sas-rowbody { flex: 1; min-width: 0; }
+/* A flex row so a long title clips with … instead of running over the folder and the match count (sweep-vault-b
+   F-B1: as a block the nowrap children overflowed, and the modal grew a horizontal scrollbar). File and scan hits
+   keep their two lines (name over path) via the :has rule. */
+.sas-rowhead {
+  display: flex; align-items: baseline; gap: 8px; width: 100%; min-width: 0; border: 0; background: none;
+  padding: 0; font: inherit; color: var(--text); text-align: left; cursor: pointer;
+}
+.sas-rowhead:has(> .t) { flex-direction: column; align-items: stretch; gap: 0; }
+.sas-rowhead .t, .sas-rowhead .p { display: block; }
+.sas-rowhead > .clip { min-width: 0; }
+.sas-rowhead:not(:has(> .t)) > .clip:first-child { flex: 1 1 auto; }
+.sas-rowhead > .tag, .sas-rowhead > .n { flex: none; }
+.sas-rowhead > .n { max-width: 45%; }
+/* Similar meaning (2 Nov 2026, 10.0): the paraphrase label beside a result's title, in the kit's quiet tag. */
+.sas-meaning { margin-left: 0; vertical-align: 1px; }
+.sas-snippet {
+  display: block; width: 100%; border: 0; background: none; padding: 0; font: inherit; text-align: left; cursor: pointer;
+}
+button.sas-snippet:hover { text-decoration: underline; text-underline-offset: 2px; }
+.sas-count { margin-left: auto; font-size: var(--fs-caption); color: var(--text-faint); font-weight: 500; flex: none; padding-top: 3px; }
+.sas-fold {
+  display: none; border: 0; background: none; padding: 4px; border-radius: var(--r-2); cursor: pointer;
+  color: var(--text-faint); flex: none;
+}
+.srow2:hover .sas-fold, .sas-fold:focus-visible { display: inline-grid; place-items: center; }
+.sas-fold:hover { background: var(--bg-side); color: var(--text); }
+.sas-cmd { border: 0; background: none; width: 100%; font-family: inherit; color: var(--text); text-align: left; }
+.sas-groupbtn { border: 0; background: none; font-family: inherit; cursor: pointer; }
+.sas-more { margin: 2px 10px 6px; }
+.sas-areas { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 0 22px 10px; }
+.sas-areas .chip { max-width: 100%; }
+/* Plain-words narrowers above the results (10.0 papercuts): what narrows the search, each clearing itself. */
+.chips.sas-narrowers { padding: 0 22px 10px; }
+.sas-narrowers .chip svg { flex: none; }
+.sas-mix { padding: 0 22px 4px; margin: 0; font-size: var(--fs-small); }
+.sas-help { padding: 0 22px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 16px; }
+.sas-help-row {
+  display: flex; gap: 10px; align-items: baseline; border: 0; background: none; font: inherit; text-align: left;
+  padding: 4px 8px; border-radius: var(--r-3); cursor: pointer; color: var(--text-muted); font-size: var(--fs-small);
+}
+.sas-help-row:hover { background: var(--bg-side); color: var(--text); }
+.sas-help-row code { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--text); white-space: nowrap; }
+.sas-intro { padding: 26px 24px 30px; color: var(--text-muted); font-size: var(--fs-body); }
+.sas-intro p { margin: 0 0 6px; }
+.sas-intro .hint { font-size: var(--fs-small); color: var(--text-faint); }
+
+/* The answer at the top: words, numbered chips on its links, then its sources. */
+.sas-answer { font-size: var(--fs-body); line-height: 1.55; }
+.sas-answer > :first-child { margin-top: 0; }
+.sas-answer > :last-child { margin-bottom: 0; }
+.sas-answer .cite { margin-left: 4px; }
+button.sas-src {
+  border: 0; background: none; width: 100%; font-family: inherit; color: var(--text); text-align: left;
+  cursor: pointer; border-radius: var(--r-3); padding-left: 6px; padding-right: 6px;
+}
+button.sas-src:hover { background: var(--bg-side); }
+.sas-answering { min-height: 96px; }
+
+/* The panel's narrow shape: tighter head, wrapping filters, results filling the room. */
+.sas-host-panel { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+/* The panel input is one row like the window's (sweep-vault-b F-B2: without flex the icon sat above the input). */
+.sas-host-panel .sin { display: flex; align-items: center; padding: 12px 14px; font-size: var(--fs-reading); gap: 8px; }
+.sas-host-panel .sin svg, .sas-host-panel .sin .iconbtn { flex: none; }
+.sas-host-panel .sin input { border: 0; outline: 0; font: inherit; width: 100%; min-width: 0; color: var(--text); background: none; }
+.sas-host-panel .sin input::placeholder { color: var(--text-faint); }
+.sas-host-panel .filters { flex-wrap: wrap; padding: 0 14px 10px; row-gap: 4px; }
+.sas-host-panel .filters .sas-fsp { display: none; }
+.sas-host-panel .sas-areas { padding: 0 14px 8px; }
+.sas-host-panel .sas-help { grid-template-columns: 1fr; padding: 0 14px 10px; }
+.sas-host-panel .aians { margin: 4px 10px 10px; padding: 12px 14px; }
+.sas-host-panel .sres { padding: 4px 8px 10px; }
+.sas-host-panel .sas-results { flex: 1; overflow-y: auto; min-height: 0; }
+.sas-host-panel .sas-intro { padding: 18px 16px; }
+
+/* The helper's answer cards: the question in grey, the answer in a card with its From rows. */
+.chat .chat-turn.assistant {
+  background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--r-3); padding: 16px 18px;
+}
+.chat .chat-turn.user { align-items: stretch; }
+.chat .chat-turn.user > p {
+  max-width: none; background: var(--bg-side); border-radius: var(--r-3); padding: 10px 14px;
+  font-size: var(--fs-body); font-weight: 500;
+}
+.chat .chat-answer { font-size: var(--fs-body); line-height: 1.55; }
+.chat .chat-sources { display: block; margin-top: 12px; }
+.chat .chat-sources .glabel { display: block; margin-bottom: 4px; }
+.chat .chat-source-row {
+  border: 0; background: none; width: 100%; font-family: inherit; color: var(--text); text-align: left;
+  cursor: pointer; border-radius: var(--r-3); padding-left: 6px; padding-right: 6px; margin: 0 -6px;
+}
+.chat .chat-source-row:hover { background: var(--bg-side); }
+/* (5 Nov 2026, v8-vault-assistant: the single-line share rules and the 35% path cap lived here. The rows read on
+   two lines now — the title whole above its folder — so there is nothing to split and no cap; see the rule at
+   the end of this sheet.) */
+/* The answer's buttons wrap instead of running past the card (4 Nov 2026, p15-chat-panel: Copy, Into the note,
+   Save as note and Ask again need 376px in a 305px card at the usual 380 panel, and the row had no wrap). */
+.chat .chat-actions-row { gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.chat .chat-actions-row .btn, .chat .chat-changes .btn { height: 30px; font-size: var(--fs-caption); }
+/* The folded steps stay one line (4 Nov 2026, p15-chat-panel: the 22px toggle centers its text, so a long folded
+   line overflowed up over the head and down over the answer; every step still shows on a click). */
+.chat .chat-steps-toggle { max-width: 100%; min-width: 0; }
+.chat .chat-steps-toggle > svg { flex: none; }
+.chat .chat-steps-folded { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: clip; white-space: nowrap; text-align: left; }
+.chat .nb-chip { margin-left: 4px; }
+/* The split scope line (one product step 5 part 3): while split, the focused side reads here in one place —
+   About this note or All notes — instead of the scope buttons, since the focused side is the control. It
+   stretches the one top row beside New chat, in the bar's own words, wrapping whole instead of ever cutting off. */
+.chat .chat-scope-line { flex: 1; min-width: 0; padding: 3px 8px; color: var(--text); font-size: var(--fs-caption); font-weight: 500; line-height: 1.45; overflow-wrap: anywhere; }
+
+/* A chat the panel cannot read (one product step 5 part 4): one plain line under the one top row, in the
+   hint's own tone, wrapping whole instead of ever cutting off. */
+.chat .chat-cantread { margin: 0 8px 6px; color: var(--text-muted); font-size: var(--fs-caption); line-height: 1.45; overflow-wrap: anywhere; }
+
+/* The notebook's three rails: ticked sources, the cited thread, what the Studio makes. */
+.nb-view .nb-cols { display: flex; gap: 20px; padding: 4px 32px 32px; }
+.nb-view .nb-pane { border: 0; background: none; box-shadow: none; border-radius: 0; padding: 0; overflow: visible; }
+.nb-view .nb-sources { width: 250px; flex: none; overflow-y: auto; padding-bottom: 16px; }
+.nb-view .nb-ask { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+.nb-view .nb-studio { width: 220px; flex: none; overflow-y: auto; padding-bottom: 16px; }
+.nb-pane-head .nb-add { height: 26px; font-size: var(--fs-caption); margin-left: auto; }
+.nb-view .nb-src-actions { margin: 6px 0 0; }
+.nb-view .nb-src-actions .nb-quiet { font-size: var(--fs-caption); }
+.nb-view .nb-group { margin: 14px 2px 6px; }
+.nb-view ul.nb-src-list.card { padding: 8px 12px; margin: 8px 0 0; }
+.nb-view .nb-src { padding: 7px 0; gap: 10px; }
+.nb-view .nb-src:hover { background: none; }
+.nb-view .nb-src .check { width: 20px; height: 20px; font-size: var(--fs-caption); }
+.nb-view .nb-src-name { font-size: var(--fs-small); }
+.nb-view .nb-src.is-off .nb-src-name span { color: var(--text-faint); }
+.nb-strict { margin: 8px 2px 0; font-size: var(--fs-caption); line-height: 1.5; color: var(--text-muted); }
+.nb-view .nb-find { margin: 8px 0 0; }
+.nb-view .nb-find input { font: inherit; font-size: var(--fs-small); color: var(--text); background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--r-4); height: 34px; padding: 0 12px; }
+.nb-view .nb-thread { flex: 1; overflow-y: auto; min-height: 0; padding: 2px; }
+.nb-view .nb-ask-empty { margin: 8% auto 0; }
+.nb-view .nb-ask-empty h2 { font-size: var(--fs-section); font-weight: 700; }
+.nb-view .nb-turn {
+  background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--r-3); padding: 14px 18px;
+  margin: 0 0 12px;
+}
+.nb-view .nb-q {
+  width: auto; max-width: none; margin: 0; padding: 10px 14px; border-radius: var(--r-3); background: var(--bg-side);
+  font-size: var(--fs-body); font-weight: 500; white-space: pre-wrap;
+}
+.nb-view .nb-a { font-size: var(--fs-body); line-height: 1.55; margin-top: 10px; }
+.nb-view .nb-error { margin-top: 10px; }
+.nb-view .nb-a.is-busy { margin-top: 10px; }
+.nb-view ol.nb-cites { display: block; margin: 4px 0 0; }
+.nb-view .nb-cite.srcrow {
+  border: 0; background: none; width: 100%; font-family: inherit; color: var(--text); text-align: left;
+  cursor: pointer; border-radius: var(--r-3); padding: 7px 6px; margin: 0 -6px; max-width: none; font-size: var(--fs-body);
+}
+.nb-view .nb-cite.srcrow:hover { background: var(--bg-side); }
+.nb-view .nb-cite-name { font-weight: 500; }
+.nb-view .nb-a-tools { gap: 8px; margin-top: 12px; }
+.nb-view .nb-a-tools .nb-a-from { margin-right: auto; font-size: var(--fs-caption); color: var(--text-faint); }
+.nb-view .nb-a-tools .btn { height: 30px; font-size: var(--fs-caption); }
+.nb-view form.nb-compose { margin: 12px 0 0; align-items: center; }
+.nb-view form.nb-compose textarea { min-height: 0; font-size: var(--fs-body); }
+.nb-view .nb-compose .tag { flex: none; }
+.nb-view .nb-make.card { display: block; padding: 8px 12px; margin-top: 8px; }
+.nb-view .nb-make-item {
+  display: flex; flex-direction: row; align-items: center; gap: 10px; width: 100%;
+  border: 0; background: none; padding: 7px 0; border-radius: var(--r-3); font-family: inherit; cursor: pointer;
+  text-align: left;
+}
+.nb-view .nb-make-item:not(:disabled):hover { background: var(--bg-side); }
+.nb-view .nb-make-item.is-making { background: var(--bg-side); }
+.nb-view .nb-outs { display: flex; flex-direction: column; gap: 8px; }
+.nb-view li.nb-out.card { padding: 10px 12px; }
+.nb-view li.nb-out.card:hover { background: var(--bg-raised); }
+.nb-view .nb-out-name { padding: 0; font-size: var(--fs-small); font-weight: 500; }
+.nb-view .nb-out-name small { font-size: var(--fs-caption); }
+.nb-view .nb-out-act { margin-top: 8px; }
+.nb-view .nb-head { padding: 20px 32px 16px; }
+.nb-view .nb-head h1 { font-size: var(--fs-section); font-weight: 700; letter-spacing: -0.01em; }
+.nb-view .nb-mark { background: var(--slate-bg); color: var(--slate-tx); }
+
+/* Narrow panes: the notebook's rails stack instead of squeezing. */
+@container (max-width: 860px) {
+  .nb-view .nb-cols { flex-direction: column; }
+  .nb-view .nb-sources, .nb-view .nb-studio { width: auto; overflow-y: visible; }
+}
+
+/* v8-vault-assistant (5 Nov 2026): From rows read on two lines — the title whole on the first, the folder and
+   section smaller on the second — so long titles never clip mid-word beside their path. The icon sits with the
+   title line; rows stay compact, and the folded steps stay their quiet one line now the per-answer scope head is
+   gone (scope lives in the bar alone). */
+.chat .chat-source-row { align-items: flex-start; padding-top: 5px; padding-bottom: 5px; }
+.chat .chat-source-row > .gtile { margin-top: 2px; flex: none; }
+.chat .chat-source-text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.chat .chat-source-title { min-width: 0; }
+.chat .chat-source-text > .n { min-width: 0; }
+.chat .chat-steps { margin-top: 0; }

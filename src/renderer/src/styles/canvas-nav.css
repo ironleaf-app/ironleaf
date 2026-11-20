@@ -1,0 +1,458 @@
+/* Canvas: moving around and seeing from far out (views/CanvasView.tsx, views/canvas/navigation.ts, Overview.tsx).
+   The canvas world carries the zoom as --k (exact far out, in 5% steps nearer in: navigation.ts styleZoom); each group
+   carries its name's enlargement as --ls, and each card its inner size as --cw / --ch. Colours are the app's
+   tokens; nothing here is another product's. */
+
+/* ── The pointer says what a drag will do ────────────────────────────────────────────────────────────────────── */
+
+.canvas-surface {
+  cursor: grab;
+  /* Fingers on a touch screen move and zoom the canvas, not the window. */
+  touch-action: none;
+}
+.canvas-surface.is-shift {
+  cursor: crosshair;
+}
+.canvas-surface.is-space,
+.canvas-surface.is-space * {
+  cursor: grab !important;
+}
+.canvas-surface.is-panning,
+.canvas-surface.is-panning * {
+  cursor: grabbing !important;
+}
+.canvas-surface :is(.cv-toolbar, .cv-zoom, .cv-bar, .cv-search, .cv-board-bar, .cv-nav-hint, .canvas-empty, .cv-drop) {
+  cursor: default;
+}
+
+/* ── Selection and lines stay visible at any zoom ────────────────────────────────────────────────────────────── */
+
+.canvas-world .canvas-card.selected {
+  box-shadow:
+    0 0 0 max(2px, calc(1.5px / var(--k, 1))) var(--accent),
+    var(--shadow-small);
+}
+.canvas-world .canvas-card.type-group.selected {
+  box-shadow: 0 0 0 max(2px, calc(1.5px / var(--k, 1))) var(--accent);
+}
+.canvas-world .canvas-edge-line {
+  stroke-width: max(2.2px, calc(1.1px / var(--k, 1)));
+}
+.canvas-world .canvas-edge.selected .canvas-edge-line {
+  stroke-width: max(3px, calc(1.7px / var(--k, 1)));
+}
+
+/* ── Group names: readable at every zoom, never on top of each other ─────────────────────────────────────────── */
+
+.canvas-card.type-group > .cv-group-label {
+  top: auto;
+  bottom: calc(100% + 8px * var(--ls, 1));
+  left: 0;
+  max-width: calc(var(--lmax, 100000) * 1px);
+  min-width: 0;
+  transform: scale(var(--ls, 1));
+  transform-origin: 0 100%;
+}
+.cv-group-label .cv-group-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+.cv-group-label :is(.cv-count, .cv-group-add) {
+  flex: none;
+}
+/* No room above (far out, a group close under another): inside its top-left corner, on its own backing. */
+.canvas-card.type-group > .cv-group-label.lbl-inside {
+  top: calc(6px * var(--ls, 1));
+  bottom: auto;
+  left: calc(6px * var(--ls, 1));
+  padding: 1px 8px;
+  border-radius: var(--r-3);
+  background: color-mix(in srgb, var(--bg-raised) 94%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, currentColor 22%, transparent),
+    var(--shadow-small);
+  transform-origin: 0 0;
+}
+.canvas-card.type-group > .cv-group-label.lbl-none {
+  visibility: hidden;
+}
+.canvas-world.is-overview .cv-group-add {
+  display: none;
+}
+
+/* ── From far out: each card its overview ────────────────────────────────────────────────────────────────────── */
+
+.canvas-card.is-overview,
+.canvas-card.is-overview:hover:not(.type-group):not(.selected) {
+  box-shadow: none;
+}
+.canvas-card.is-overview.selected {
+  box-shadow: 0 0 0 max(2px, calc(1.5px / var(--k, 1))) var(--accent);
+}
+/* Handing over between the whole cards and their overviews: what comes in fades in. */
+.canvas-world.is-switching .canvas-card:not(.type-group) > :is(.canvas-card-title, .canvas-card-body, .cv-ov) {
+  animation: cv-level-in 0.22s ease-out both;
+}
+@keyframes cv-level-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Each card's own colour for its quiet lines: a section's colour on a project's canvas, else the card's. */
+.canvas-card.has-color {
+  --ov-tint: var(--card-color);
+}
+.canvas-card.sec-next {
+  --ov-tint: var(--canvas-5);
+}
+.canvas-card.sec-dates {
+  --ov-tint: var(--canvas-6);
+}
+.canvas-card.sec-risks {
+  --ov-tint: var(--canvas-2);
+}
+.canvas-card.sec-people {
+  --ov-tint: var(--canvas-4);
+}
+.canvas-card.part-notes {
+  --ov-tint: var(--canvas-3);
+}
+.canvas-card:is(.part-project, .part-portfolio-project) {
+  --ov-tint: var(--accent);
+}
+
+/* Laid out at the size it shows on screen, then scaled back into the card: words stay a readable size and inside it. */
+.cv-ov {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--cw, 100) * var(--k, 1) * 1px);
+  height: calc(var(--ch, 60) * var(--k, 1) * 1px);
+  transform: scale(calc(1 / var(--k, 1)));
+  transform-origin: 0 0;
+  container-type: size;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 8px;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.cv-ov-head {
+  flex: none;
+  min-width: 0;
+  height: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cv-ov-mark {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+}
+.cv-ov-title {
+  min-width: 0;
+  font: 600 var(--fs-caption)/13px var(--font-ui);
+  letter-spacing: -0.005em;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+}
+.canvas-card:is(.part-project, .part-portfolio-project) .cv-ov-title {
+  font-size: var(--fs-small);
+  font-weight: 700;
+}
+.cv-ov-lines {
+  flex: none;
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+}
+.cv-ov-lines i {
+  display: block;
+  height: 4px;
+  border-radius: var(--r-1);
+  background: color-mix(in srgb, var(--ov-tint, var(--text)) 17%, transparent);
+}
+.cv-ov-lines i:nth-child(1) {
+  width: 90%;
+}
+.cv-ov-lines i:nth-child(2) {
+  width: 72%;
+}
+.cv-ov-lines i:nth-child(3) {
+  width: 48%;
+}
+/* Too small for words: one quiet bar stands for the title. */
+.cv-ov-ghost {
+  flex: none;
+  display: none;
+  width: 72%;
+  height: 3px;
+  border-radius: var(--r-1);
+  background: color-mix(in srgb, var(--text) 24%, transparent);
+}
+@container (min-height: 33px) {
+  .cv-ov-lines {
+    display: flex;
+  }
+  .cv-ov-lines i:nth-child(n + 2) {
+    display: none;
+  }
+}
+@container (min-height: 45px) {
+  .cv-ov-lines i:nth-child(2) {
+    display: block;
+  }
+}
+@container (min-height: 58px) {
+  .cv-ov-lines i:nth-child(3) {
+    display: block;
+  }
+}
+/* Narrow: the words matter more than the mark. */
+@container (max-width: 100px) {
+  .cv-ov-mark {
+    display: none;
+  }
+}
+/* Words with room for two lines take them (whole words; the second line ends in an ellipsis if it must). */
+@container (min-height: 26px) and (min-width: 60px) {
+  .cv-ov.is-words .cv-ov-head {
+    height: auto;
+    align-items: flex-start;
+  }
+  .cv-ov.is-words .cv-ov-mark {
+    margin-top: 2.5px;
+  }
+  .cv-ov.is-words .cv-ov-title {
+    font-size: var(--fs-caption);
+    line-height: 12.5px;
+    white-space: normal;
+    overflow-wrap: normal;
+  }
+  .cv-ov.is-words .cv-ov-lines {
+    display: none;
+  }
+}
+@container (min-height: 48px) and (min-width: 60px) {
+  .cv-ov.is-words .cv-ov-lines {
+    display: flex;
+  }
+  .cv-ov.is-words .cv-ov-lines i:nth-child(n + 2) {
+    display: none;
+  }
+}
+@container (min-height: 60px) and (min-width: 60px) {
+  .cv-ov.is-words .cv-ov-lines i:nth-child(2) {
+    display: block;
+  }
+}
+@container (min-height: 72px) and (min-width: 60px) {
+  .cv-ov.is-words .cv-ov-lines i:nth-child(3) {
+    display: block;
+  }
+}
+@container (max-height: 13px) or (max-width: 46px) {
+  .cv-ov-head,
+  .cv-ov-lines {
+    display: none !important;
+  }
+  .cv-ov-ghost {
+    display: block;
+  }
+}
+@container (max-height: 6px) or (max-width: 16px) {
+  .cv-ov-ghost {
+    display: none;
+  }
+}
+/* A person or a file: the name is the whole of it. */
+.cv-ov.is-bare .cv-ov-lines {
+  display: none !important;
+}
+.cv-ov.is-untitled .cv-ov-lines {
+  display: flex !important;
+}
+.cv-ov.is-untitled .cv-ov-ghost {
+  display: none !important;
+}
+.cv-ov.is-picture {
+  padding: 0;
+}
+.cv-ov.is-picture img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The small marks of a card's kind. */
+.cv-ov-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--tone, var(--text-faint));
+}
+.cv-ov-tick {
+  width: 10px;
+  height: 10px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  corner-shape: round;
+  border: 1.5px solid color-mix(in srgb, var(--canvas-5) 70%, var(--border-strong));
+}
+.cv-ov-tick.done {
+  background: var(--cv-tone-ok);
+  border-color: var(--cv-tone-ok);
+}
+.cv-ov-cal {
+  width: 10px;
+  height: 10px;
+  box-sizing: border-box;
+  border-radius: var(--r-1);
+  border: 1.5px solid var(--canvas-6);
+  border-top-width: 3px;
+}
+.cv-ov-avatar {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  corner-shape: round;
+  display: grid;
+  place-items: center;
+  font: 700 var(--fs-caption)/1 var(--font-ui);
+  letter-spacing: 0;
+  color: hsl(var(--hue, 210) 45% 30%);
+  background: hsl(var(--hue, 210) 55% 88%);
+}
+:root[data-theme='dark'] .cv-ov-avatar {
+  color: hsl(var(--hue, 210) 60% 84%);
+  background: hsl(var(--hue, 210) 30% 28%);
+}
+.cv-ov-kind {
+  height: 12px;
+  padding: 0 3px;
+  border-radius: var(--r-1);
+  font: 750 var(--fs-caption)/12px var(--font-ui);
+  letter-spacing: 0.04em;
+  color: var(--kind, var(--text-muted));
+  background: color-mix(in srgb, var(--kind, var(--text-faint)) 14%, transparent);
+}
+.cv-ov-kind.kind-sheet {
+  --kind: #2e7d5b;
+}
+.cv-ov-kind.kind-doc {
+  --kind: #2f5f8a;
+}
+.cv-ov-kind.kind-slides {
+  --kind: #b5552c;
+}
+.cv-ov-kind.kind-pdf {
+  --kind: #b4432f;
+}
+.cv-ov-kind.kind-image {
+  --kind: #7a4a7e;
+}
+.cv-ov-kind.kind-mail {
+  --kind: #a86b12;
+}
+:root[data-theme='dark'] .cv-ov-kind {
+  filter: brightness(1.5);
+}
+.cv-ov-icon {
+  color: var(--text-muted);
+}
+
+/* ── The first time: how to move around ──────────────────────────────────────────────────────────────────────── */
+
+.cv-nav-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 84px;
+  transform: translateX(-50%);
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 6px 6px 14px;
+  border-radius: var(--r-1);
+  background: color-mix(in srgb, var(--bg-raised) 94%, transparent);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-small);
+  backdrop-filter: blur(6px);
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  white-space: nowrap;
+  animation: cv-hint-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.cv-nav-words {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: 10px;
+  row-gap: 2px;
+  min-width: 0;
+}
+.cv-nav-hint b {
+  font-weight: 600;
+  color: var(--text);
+}
+.cv-nav-dot {
+  width: 3px;
+  height: 3px;
+  flex: none;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--text-faint);
+}
+.cv-nav-hint button {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  corner-shape: round;
+  color: var(--text-faint);
+}
+.cv-nav-hint button:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+@keyframes cv-hint-in {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+}
+@container canvas (max-width: 1040px) {
+  .cv-nav-hint {
+    left: 16px;
+    bottom: 74px;
+    transform: none;
+  }
+}
+@container canvas (max-width: 700px) {
+  .cv-nav-hint {
+    left: auto;
+    right: 12px;
+    bottom: 66px;
+    max-width: calc(100% - 84px);
+    border-radius: var(--r-3);
+  }
+  .cv-nav-words {
+    column-gap: 14px;
+  }
+  .cv-nav-dot {
+    display: none;
+  }
+}

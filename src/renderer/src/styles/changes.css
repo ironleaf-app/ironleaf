@@ -1,0 +1,238 @@
+/* Changes waiting (10.0 Endless Tech, v2changes): proposed change sets reviewed once as a set (views/ChangesView.tsx,
+   components/ChangesWaiting.tsx). The sets down the left, the open one with each file's before and after on the right;
+   the diff rows are the earlier versions' own (styles/suggestions.css). Square-ish throughout: no pills. */
+
+.cs-page {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 24px 24px;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.cs-head {
+  flex: none;
+}
+
+.cs-title {
+  margin: 0;
+  font-size: var(--fs-section);
+  line-height: 26px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.cs-sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.cs-failed {
+  margin: 12px 0;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.cs-body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 264px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.cs-list {
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 2px;
+}
+
+.cs-set {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: stretch;
+  text-align: left;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+}
+
+.cs-set.is-open {
+  background: var(--bg-side);
+  border-color: var(--border-strong);
+}
+
+.cs-set-ask {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.cs-set-meta {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+.cs-dot {
+  position: absolute;
+  top: 12px;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.cs-detail {
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 2px;
+}
+
+.cs-detail-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.cs-ask {
+  margin: 0;
+  font-size: var(--fs-card);
+  line-height: 24px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.cs-meta {
+  margin: 2px 0 0;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.cs-actions {
+  margin-left: auto;
+  flex: none;
+  display: flex;
+  gap: 8px;
+}
+
+.cs-file {
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cs-file-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cs-file-name {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.cs-file-name:hover {
+  text-decoration: underline;
+}
+
+.cs-state {
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.cs-state.is-waiting {
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+.cs-state.is-accepted {
+  color: var(--ok);
+}
+
+.cs-state.is-stale {
+  color: var(--danger);
+}
+
+.cs-file-space {
+  flex: 1;
+}
+
+.cs-stale {
+  margin: 0;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.cs-changes {
+  margin: 0;
+  padding-left: 18px;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+/* Today: the sets waiting, beside the agents' own (components/ChangesWaiting.tsx). */
+
+.cw-requests {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cw-card {
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cw-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.cw-ask {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.cw-meta {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}

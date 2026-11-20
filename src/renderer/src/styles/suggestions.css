@@ -1,0 +1,372 @@
+/* The assistant's suggested changes in a note, and earlier versions that say who made each change (19 Oct 2026, 5.0.0;
+   editor/suggestions.ts, views/SuggestionBar.tsx, components/Extras.tsx). Words going: a soft red tint, struck through;
+   words coming: a soft green tint. Both from the theme's own danger and ok colours, so Dark follows. */
+
+.suggestion-bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 2px 14px 4px;
+  padding: 5px 6px 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+  font-size: var(--fs-small);
+  color: var(--text);
+  animation: suggestion-in 0.18s ease-out;
+}
+
+.suggestion-bar > svg {
+  flex: none;
+  color: var(--accent-text);
+}
+
+/* The words wrap with the buttons under (10.0 third round F3: one-line ellipsis clipped to a letter at 900 px);
+   short lines still sit on one row. Shared with the editor bar, where wrapping is safe too. */
+.suggestion-bar-words {
+  flex: 1 1 240px;
+  min-width: min(240px, 100%);
+}
+
+.suggestion-bar-stale {
+  color: var(--text-faint);
+}
+
+.suggestion-bar-button {
+  flex: none;
+  height: 26px;
+  padding: 0 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-2);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  white-space: nowrap;
+}
+
+.suggestion-bar-button:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.suggestion-bar-button.primary {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.suggestion-bar-button.primary:hover {
+  background: color-mix(in srgb, var(--primary) 86%, var(--bg));
+  color: var(--on-primary);
+}
+
+@keyframes suggestion-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+}
+
+/* In the note: words going and coming. */
+.cm-nv-sg-del {
+  background: color-mix(in srgb, var(--danger) 13%, transparent);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--danger) 65%, transparent);
+  border-radius: var(--r-1);
+}
+
+.cm-nv-sg-add {
+  background: color-mix(in srgb, var(--ok) 18%, transparent);
+  border-radius: var(--r-1);
+  padding: 0 1px;
+  white-space: pre-wrap;
+}
+
+.cm-nv-sg-add.is-stale {
+  background: var(--bg-hover);
+  color: var(--text-faint);
+}
+
+.cm-nv-sg-del.is-current {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--danger) 30%, transparent);
+}
+
+/* Whole lines going: the line tinted, its words struck through. */
+.cm-line.cm-nv-sg-line-del {
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
+}
+
+.cm-nv-sg-line-del .cm-nv-sg-del {
+  background: none;
+  box-shadow: none;
+}
+
+/* Lines coming, as a block below. */
+.cm-nv-sg-block {
+  margin: 2px 0 8px;
+  padding: 4px 0 4px;
+  border-radius: var(--r-3);
+  background: color-mix(in srgb, var(--ok) 10%, transparent);
+  font-family: var(--font-text);
+  line-height: 1.6;
+}
+
+.cm-nv-sg-block.is-current {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ok) 35%, transparent);
+}
+
+.cm-nv-sg-block.is-stale {
+  background: var(--bg-hover);
+  color: var(--text-faint);
+}
+
+.cm-nv-sg-block-head {
+  padding: 0 10px 2px;
+  font-family: var(--font-ui);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.cm-nv-sg-line-add,
+.cm-nv-sg-line-gone {
+  padding: 0 10px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.cm-nv-sg-line-gone {
+  background: color-mix(in srgb, var(--danger) 9%, transparent);
+  color: var(--text-muted);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--danger) 55%, transparent);
+}
+
+.cm-nv-sg-block-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 2px 6px 0 10px;
+}
+
+.cm-nv-sg-block-said {
+  margin-right: auto;
+  font-family: var(--font-ui);
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+/* Keep and Discard: small pills at the end of each change. */
+.cm-nv-sg-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 6px;
+  vertical-align: 1px;
+  font-family: var(--font-ui);
+  font-size: var(--fs-caption);
+  line-height: 1;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.cm-nv-sg-block-bar .cm-nv-sg-actions {
+  margin-left: 0;
+}
+
+.cm-nv-sg-actions button {
+  height: 20px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-2);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.cm-nv-sg-actions.is-current button {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.cm-nv-sg-actions .cm-nv-sg-keep:hover {
+  border-color: color-mix(in srgb, var(--ok) 50%, transparent);
+  background: color-mix(in srgb, var(--ok) 12%, var(--bg-raised));
+  color: var(--text);
+}
+
+.cm-nv-sg-actions .cm-nv-sg-discard:hover {
+  border-color: color-mix(in srgb, var(--danger) 45%, transparent);
+  background: color-mix(in srgb, var(--danger) 10%, var(--bg-raised));
+  color: var(--text);
+}
+
+.cm-nv-sg-stale {
+  padding: 0 4px;
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+/* The chat's card: Suggested 3 changes in a note · Review. */
+.chat-suggested-note {
+  font-size: inherit;
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 2px;
+}
+
+.chat-suggested-note:hover {
+  color: var(--text-strong);
+  text-decoration-color: currentColor;
+}
+
+.chat-suggested .chat-suggested-review {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.chat-suggested.is-done .chat-changes-head {
+  color: var(--text-muted);
+}
+
+.chat-suggested.is-done .chat-changes-head > svg {
+  color: var(--text-faint);
+}
+
+.chat-suggested-done {
+  color: var(--text-faint);
+}
+
+/* Earlier versions: who made each one, and what changed from the one before. */
+.recovery {
+  grid-template-columns: 260px 210px 1fr;
+}
+
+.recovery-times button {
+  display: grid;
+  gap: 1px;
+}
+
+.recovery-by {
+  font-size: var(--fs-caption);
+  font-weight: 400;
+  color: var(--text-faint);
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.recovery-by.is-unknown {
+  font-style: italic;
+}
+
+.recovery-preview-head {
+  flex-wrap: wrap;
+  row-gap: 8px;
+}
+
+.recovery-preview-title {
+  flex: 1;
+  min-width: 180px;
+  display: grid;
+  gap: 1px;
+}
+
+.recovery-preview-title > span:first-child {
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.recovery-preview-by {
+  font-size: var(--fs-caption);
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.recovery-count.is-add {
+  color: var(--ok);
+}
+
+.recovery-count.is-del {
+  color: var(--danger);
+}
+
+.recovery-actions {
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.recovery-changes {
+  padding-left: 18px;
+  padding-right: 18px;
+}
+
+.recovery-diff {
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  line-height: 1.55;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  overflow: hidden;
+}
+
+.recovery-diff-line {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+}
+
+.recovery-diff-line.is-add {
+  background: color-mix(in srgb, var(--ok) 13%, transparent);
+}
+
+.recovery-diff-line.is-del {
+  background: color-mix(in srgb, var(--danger) 11%, transparent);
+}
+
+.recovery-diff-line.is-del .recovery-diff-text {
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--danger) 55%, transparent);
+  color: var(--text-muted);
+}
+
+.recovery-diff-line.is-same .recovery-diff-text {
+  color: var(--text-muted);
+}
+
+.recovery-diff-sign {
+  text-align: center;
+  color: var(--text-faint);
+  user-select: none;
+}
+
+.recovery-diff-text {
+  padding-right: 10px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.recovery-diff-gap {
+  padding: 3px 10px 3px 22px;
+  background: var(--bg-side);
+  color: var(--text-faint);
+  font-family: var(--font-ui);
+  font-size: var(--fs-caption);
+}
+
+.recovery-same {
+  margin-top: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .suggestion-bar {
+    animation: none;
+  }
+}

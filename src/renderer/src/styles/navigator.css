@@ -1,0 +1,565 @@
+/* The file list in sections (panels/Navigator.tsx) and the switch between sections and folders (panels/FileExplorer.tsx).
+   Calm: quiet section headers with their counts, one line per thing, a health dot for each project, hover affordances
+   only where they help. Uses the app's own colours (styles.css) so light and dark both follow. */
+
+/* ── The top: the switch, the buttons, the find box ──────────────────────────────────────────────────────────────────── */
+
+.nav-toolbar {
+  gap: 2px;
+  padding: 2px 8px 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.nav-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--r-3);
+  background: color-mix(in srgb, var(--bg-active) 70%, transparent);
+  flex: none;
+}
+
+.nav-mode-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  color: var(--text-faint);
+  transition: background 0.12s, color 0.12s, box-shadow 0.12s;
+}
+
+.nav-mode-option > svg {
+  display: none;
+}
+
+.nav-mode-option:hover {
+  color: var(--text);
+}
+
+.nav-mode-option.on {
+  background: var(--bg-raised);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(20, 26, 46, 0.08), 0 0 0 1px color-mix(in srgb, var(--border) 70%, transparent);
+}
+
+.nav-find {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin: 0 10px 6px;
+  flex: none;
+}
+
+.nav-find input {
+  width: 100%;
+  height: 28px;
+  padding: 0 26px 0 27px;
+  border-radius: var(--r-3);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text);
+  font-size: var(--fs-small);
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+
+.nav-find input::placeholder {
+  color: var(--text-faint);
+}
+
+.nav-find input:focus {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+  border-color: var(--accent-line);
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.nav-find-icon {
+  position: absolute;
+  left: 9px;
+  color: var(--text-faint);
+  pointer-events: none;
+}
+
+.nav-find-clear {
+  position: absolute;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-2);
+  color: var(--text-faint);
+}
+
+.nav-find-clear:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+/* ── The list ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.nav-body {
+  padding: 0 8px 28px;
+  position: relative;
+}
+
+.nav-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 8px;
+  border-radius: var(--r-2);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 28px;
+}
+
+.nav-row:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.nav-row.selected {
+  background: var(--bg-active);
+  color: var(--text);
+}
+
+.nav-body.by-keys:focus .nav-row.focused {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+.nav-row.active {
+  background: var(--accent-soft);
+  color: var(--text);
+  font-weight: 500;
+}
+
+.nav-row.is-drop {
+  background: var(--accent-softer);
+  box-shadow: inset 0 0 0 1px var(--accent-line);
+}
+
+.nav-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+/* The slot before a name: a chevron for rows that open, a file's kind, or nothing (notes), so names line up. */
+.nav-lead {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  display: inline-grid;
+  place-items: center;
+  color: var(--text-faint);
+}
+
+.nav-lead-hit {
+  width: 20px;
+  height: 22px;
+  margin: 0 -3px;
+  border-radius: var(--r-2);
+}
+
+.nav-lead-hit:hover {
+  background: color-mix(in srgb, var(--bg-active) 80%, transparent);
+  color: var(--text);
+}
+
+.nav-lead-accent {
+  color: var(--accent-text);
+}
+
+.nav-chevron {
+  color: var(--text-faint);
+  transition: transform 0.14s ease;
+}
+
+.nav-chevron.open {
+  transform: rotate(90deg);
+}
+
+.nav-guide {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: color-mix(in srgb, var(--border) 85%, transparent);
+  pointer-events: none;
+}
+
+.nav-count {
+  flex: none;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+}
+
+.nav-hint {
+  flex: none;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  font-weight: 400;
+}
+
+.nav-rename {
+  height: 22px;
+  margin-left: -6px;
+}
+
+/* ── Section headers ───────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.nav-section {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  gap: 5px;
+  min-height: 30px;
+  margin-top: 8px;
+  padding: 0 4px 0 6px;
+  background: var(--bg-side);
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  content-visibility: visible;
+}
+
+.nav-section:first-child {
+  margin-top: 0;
+}
+
+/* A soft line under a header while the list scrolls beneath it. */
+.nav-section::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 0;
+  height: 1px;
+  background: transparent;
+}
+
+.nav-section:hover {
+  background: var(--bg-side);
+  color: var(--text-muted);
+}
+
+.nav-section.selected {
+  background: var(--bg-side);
+  color: var(--text);
+}
+
+.nav-section .nav-chevron {
+  opacity: 0.75;
+}
+
+.nav-section-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.nav-section-count {
+  flex: none;
+  font-weight: 500;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+}
+
+.nav-section-space {
+  flex: 1;
+}
+
+.nav-section-add,
+.nav-row-add,
+.nav-row-more {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-2);
+  color: var(--text-faint);
+  opacity: 0;
+  transition: opacity 0.12s, background 0.12s, color 0.12s;
+}
+
+.nav-section:hover .nav-section-add,
+.nav-section.focused .nav-section-add,
+.nav-section-add:focus-visible,
+.nav-row:hover .nav-row-add,
+.nav-row.focused .nav-row-add,
+.nav-row-add:focus-visible,
+.nav-row-add.menu-open,
+.nav-row:hover .nav-row-more,
+.nav-row.focused .nav-row-more,
+.nav-row-more:focus-visible {
+  opacity: 1;
+}
+
+.nav-section-add:hover,
+.nav-row-add:hover,
+.nav-row-add.menu-open,
+.nav-row-more:hover {
+  background: var(--bg-active);
+  color: var(--text);
+}
+
+.nav-section.is-finding {
+  cursor: default;
+  padding-left: 8px;
+}
+
+/* ── Projects ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.nav-project {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.nav-project.holds-active .nav-name {
+  color: var(--text);
+}
+
+.nav-project.is-done {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.nav-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--tone, var(--accent));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--tone, var(--accent)) 16%, transparent);
+}
+
+.nav-dot.tone-none {
+  background: color-mix(in srgb, var(--text-faint) 60%, transparent);
+  box-shadow: none;
+}
+
+.nav-project.is-done .nav-dot {
+  opacity: 0.55;
+}
+
+.nav-part {
+  font-size: var(--fs-small);
+}
+
+.nav-part-icon {
+  flex: none;
+  color: var(--text-faint);
+}
+
+.nav-part.active .nav-part-icon {
+  color: var(--accent-text);
+}
+
+.nav-part.is-quiet .nav-name {
+  color: var(--text-faint);
+}
+
+.nav-part.is-quiet .nav-hint {
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+.nav-part.is-quiet:hover .nav-hint {
+  opacity: 1;
+}
+
+/* An activity note's status: a small dot (done, failed, working). */
+.nav-status {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--tone);
+  margin-right: 2px;
+}
+
+.nav-group {
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+}
+
+.nav-folder {
+  color: var(--text);
+}
+
+.nav-today.is-quiet .nav-name {
+  color: var(--text-muted);
+}
+
+.nav-today .nav-name {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.nav-pc .nav-name {
+  color: var(--text-muted);
+}
+
+.nav-pc.nav-folder .nav-name {
+  color: var(--text);
+}
+
+.nav-row .tree-ext {
+  margin-left: 2px;
+}
+
+.nav-kind {
+  font-size: var(--fs-small);
+}
+
+/* ── Docs: how things are set up and run, in a calm slate ──────────────────────────────────────────────────────────── */
+
+.nav-doc {
+  color: var(--text);
+}
+
+.nav-doc-icon {
+  flex: none;
+  color: var(--doc);
+  opacity: 0.9;
+}
+
+.nav-doc.active .nav-doc-icon,
+.nav-doc.holds-active .nav-doc-icon {
+  opacity: 1;
+}
+
+/* ── Quiet words: empty sections, reading a folder, "Show all" ─────────────────────────────────────────────────────── */
+
+.nav-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 26px;
+  padding-right: 8px;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.nav-note.has-hint {
+  flex-wrap: wrap;
+  row-gap: 2px;
+  padding-top: 4px;
+  padding-bottom: 6px;
+}
+
+.nav-note-hint {
+  flex-basis: 100%;
+  white-space: normal;
+  line-height: 1.4;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  padding-right: 6px;
+}
+
+.nav-note-action {
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  color: var(--accent-text);
+  padding: 2px 4px;
+  border-radius: var(--r-2);
+}
+
+.nav-note-action:hover {
+  background: var(--accent-softer);
+}
+
+/* One quiet Show everything, as the folder tree's (t200, 10 Nov 2026, judged on real long content: the files
+   panel's read in the accent, beside the tree's calm faint row — the same control twice, two signals). */
+.nav-more {
+  min-height: 26px;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+.nav-more:hover {
+  color: var(--text-muted);
+}
+
+/* ── Finding ───────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.nav-hit-row .nav-name {
+  flex: 0 1 auto;
+}
+
+.nav-where {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: clip;
+  text-align: right;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  font-weight: 400;
+}
+
+.nav-hit {
+  background: color-mix(in srgb, var(--mark) 75%, transparent);
+  color: inherit;
+  border-radius: var(--r-1);
+  padding: 0 1px;
+  margin: 0 -1px;
+}
+
+.nav-nothing {
+  margin: 16px 10px;
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+}
+
+/* ── Narrow sides ──────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+@container side (max-width: 250px) {
+  .nav-mode-words {
+    display: none;
+  }
+
+  .nav-mode-option > svg {
+    display: block;
+  }
+
+  .nav-mode-option {
+    padding: 0 7px;
+  }
+
+  .nav-where,
+  .nav-row .tree-ext {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-chevron,
+  .nav-section-add,
+  .nav-row-add {
+    transition: none;
+  }
+}

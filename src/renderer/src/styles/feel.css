@@ -1,0 +1,426 @@
+/* ── The feel (5.0.0, 19 Oct 2026) ─────────────────────────────────────────────────────────────────────────────────────
+   Ironleaf's half of what the former host app's look.css does from "the feel (5.0.0". Imported after the pages
+   (main.tsx), so it settles what the files before it left uneven (the kit and the late polish sheets load after it and
+   keep the last word on ties), and kept in this one file so the other 5.0.0 work merges around it.
+
+   Measured in the styles before this: of the 246 kinds of control that change on hover, 199 changed in one frame (no
+   transition anywhere); menus arrived in one frame; and the keyboard's focus ring came in two colours (the accent, and
+   the accent at 38%) and two shapes (an outline, or a ring drawn as a shadow on nine kinds of row and card). Now every
+   control eases its hover and press (zero specificity, so any control's own timing still decides), small buttons give a
+   little when pressed, menus and the notices tray settle in, dialogs rise, and the focus ring is one colour everywhere:
+   Focus, the former host app's fixed ring (shell parity, 4 Nov 2026: never the person's accent, which would read a
+   different software per person). Menus are placed by their own left and top (components/Menu.tsx), the tray by left and
+   bottom, the toast by a translateX(-50%): the settle moves only the separate `scale` and `translate` properties, so it
+   can never move any of them from its place (the old rise-in animated `transform`, and the toast jumped sideways as it
+   came). */
+
+/* One timing language, shared with the former host app's theme.css (5 Nov 2026 feel-motion: three easings competed and no
+   two working loops shared a period): three durations, two easings, and one period each for pulses, shimmers and spins.
+   Every feedback, entrance and loop in the app rides these; one-shot attention (the found glow) keeps its own. */
+:root {
+  --focus-ring: var(--focus);
+  --nv-motion-fast: 120ms;
+  --nv-motion-base: 160ms;
+  --nv-motion-slow: 200ms;
+  --nv-ease-enter: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --nv-ease-fade: ease-out;
+  --nv-pulse: 1.6s;
+  --nv-shimmer: 1.4s;
+  --nv-spin: 0.8s;
+}
+
+:where(button, a[href], summary, select, input, textarea, [role='button'], [role='tab'], [role='menuitem'], [role='menuitemradio'], [role='menuitemcheckbox'], [role='option'], [role='switch'], [role='checkbox'], [role='treeitem'], [tabindex='0']) {
+  transition:
+    background-color var(--nv-motion-base) ease,
+    color var(--nv-motion-base) ease,
+    border-color var(--nv-motion-base) ease,
+    box-shadow var(--nv-motion-base) ease,
+    opacity var(--nv-motion-base) ease,
+    scale var(--nv-motion-fast) ease;
+}
+
+/* A small button gives a little when pressed; rows, cards, list items and menu items stay still (a whole row shrinking
+   reads as a fault, not a press). */
+:where(button, [role='button']):where(:not(:disabled, [aria-disabled='true'], [role='menuitem'], [role='menuitemradio'], [role='menuitemcheckbox'], [role='option'], [role='tab'], [role='treeitem'], [class*='row'], [class*='card'], [class*='tile'], [class*='item'], [class*='hit'], [class*='place'], li > *, nav *)):active {
+  scale: 0.97;
+}
+
+/* One focus ring colour. Outlines take it here; the rings drawn as shadows take it below, each in its own shape. */
+html :focus-visible {
+  outline-color: var(--focus-ring) !important;
+}
+.fh-row:focus-visible,
+.td-row:focus-visible,
+.pf-group-row:focus-visible,
+.pf-row:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--focus-ring);
+}
+.pj-ed:focus-visible,
+.pj-progress-edit:focus-visible,
+.pf-tile:focus-visible,
+.tl-board:focus-visible {
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+.tp-card:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus-ring) 70%, transparent);
+}
+
+@keyframes nv-settle {
+  from {
+    opacity: 0;
+    scale: 0.97;
+    translate: 0 -3px;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+  }
+}
+@keyframes nv-settle-up {
+  from {
+    opacity: 0;
+    scale: 0.98;
+    translate: 0 4px;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+  }
+}
+/* The dialogs' rise (pickers, Settings, dialogs, the toast): the same name, now on `translate` and `scale`. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    scale: 0.99;
+    translate: 0 6px;
+  }
+}
+
+.menu {
+  transform-origin: top left;
+  animation: nv-settle var(--nv-motion-base) var(--nv-ease-enter) both;
+}
+.notices {
+  transform-origin: bottom left;
+  animation: nv-settle-up var(--nv-motion-base) var(--nv-ease-enter) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu,
+  .notices {
+    animation: fade-in 0.1s ease-out both;
+  }
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+    }
+  }
+  :where(button, [role='button']):active {
+    scale: none;
+  }
+}
+
+/* ── A designed empty place, and soft loading rows (components/EmptyState.tsx) ─────────────────────────────────────── */
+/* Two classes deep, so a page's own ".x p" or ".x h2" never restyles the title and line of an empty place inside it. */
+
+.nv-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: 0 auto;
+  padding: 36px 22px 32px;
+  max-width: 340px;
+  text-align: center;
+}
+.nv-empty.is-panel {
+  padding: 26px 16px 22px;
+  max-width: 280px;
+}
+.nv-empty .nv-empty-tile {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-side);
+  color: var(--text-muted);
+  box-shadow: var(--shadow-card);
+}
+.nv-empty.is-panel .nv-empty-tile {
+  width: 44px;
+  height: 44px;
+  margin-bottom: 8px;
+  border-radius: var(--r-3);
+}
+.nv-empty .nv-empty-title {
+  margin: 0;
+  color: var(--text-ink);
+  font: 600 var(--fs-md)/20px var(--font-ui);
+}
+.nv-empty.is-panel .nv-empty-title {
+  font-size: var(--fs-small);
+}
+.nv-empty .nv-empty-line {
+  margin: 0;
+  color: var(--text-muted);
+  font: 400 var(--fs-small)/1.5 var(--font-ui);
+  text-wrap: balance;
+}
+.nv-empty.is-panel .nv-empty-line {
+  font-size: var(--fs-small);
+}
+.nv-empty .nv-empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 14px;
+  margin-top: 14px;
+}
+.nv-empty.is-panel .nv-empty-actions {
+  margin-top: 10px;
+}
+.nv-empty-actions .button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.nv-empty-also {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-muted);
+}
+.nv-empty-also:hover:not(:disabled) {
+  color: var(--text);
+}
+
+.nv-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 14px;
+}
+.nv-skeleton-row {
+  display: block;
+  height: 11px;
+  border-radius: var(--r-2);
+  background: linear-gradient(100deg, var(--bg-hover) 30%, var(--bg-side) 50%, var(--bg-hover) 70%) 0 0 / 220% 100%;
+  animation: nv-shimmer var(--nv-shimmer) ease-in-out infinite;
+}
+.nv-skeleton.is-page {
+  gap: 16px;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 36px 28px;
+}
+.nv-skeleton.is-page .nv-skeleton-row {
+  height: 14px;
+}
+@keyframes nv-shimmer {
+  to {
+    background-position: -120% 0;
+  }
+}
+/* The one pulse and the one spin (5 Nov 2026 feel-motion: six pulses and seven spinners across the pages, no two
+   alike): a plain opacity dip for anything working, a plain turn for anything busy. Shaped loops (rings, the thinking
+   dots) keep their shapes and run at the same pulse period. */
+@keyframes nv-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+@keyframes nv-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nv-skeleton-row {
+    animation: none;
+  }
+}
+
+/* ── Settings search (components/Settings.tsx, lib/settingsSearch.ts) ─────────────────────────────────────────────── */
+
+.set-search {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 32px;
+  margin: 0 0 10px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  color: var(--text-faint);
+  cursor: text;
+}
+.set-search:focus-within {
+  border-color: var(--accent);
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+.settings-nav .set-search input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  outline: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--text);
+  font-size: var(--fs-small);
+}
+.set-search input::placeholder {
+  color: var(--text-faint);
+}
+.settings-body.is-searching > :not(.set-results-page, .settings-close) {
+  display: none;
+}
+.set-results-page {
+  animation: fade-in var(--nv-motion-fast) var(--nv-ease-fade);
+}
+.set-results {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 12px;
+}
+.set-hit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: var(--r-3);
+  text-align: left;
+  color: var(--text);
+}
+.set-hit[aria-selected='true'] {
+  background: var(--bg-hover);
+}
+.set-hit-words {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.set-hit-title {
+  font-weight: 500;
+}
+.set-hit-hint {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  text-overflow: clip;
+  white-space: nowrap;
+}
+.set-hit-where {
+  flex: none;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+}
+/* A setting found by search glows the kit's cool selection tint (8.9 round 2: the warm
+   accent mix read peach behind the row). */
+@keyframes nv-found {
+  0%,
+  45% {
+    box-shadow:
+      0 0 0 2px var(--border-strong),
+      0 0 0 7px var(--sel);
+    background: var(--sel);
+  }
+  100% {
+    box-shadow:
+      0 0 0 2px transparent,
+      0 0 0 7px transparent;
+    background: transparent;
+  }
+}
+.setting-found {
+  border-radius: var(--r-4);
+  animation: nv-found 2.2s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .setting-found {
+    animation-duration: 0.01s;
+    box-shadow: 0 0 0 2px var(--border-strong);
+  }
+}
+
+/* ── Density: Compact (Settings › Appearance; App.tsx sets data-density) ──────────────────────────────────────────────
+   About a fifth closer: the side bar's rows, the file list, tabs, menus and pickers, Settings' rows. Comfortable is the
+   sizes as written in each file; only Compact is spelt out here. */
+
+:root[data-density='compact'] {
+  --row: 22px;
+  --row-tab: 27px;
+  --row-band: 26px;
+  --row-pad: 1px;
+}
+:root[data-density='compact'] .nav-row {
+  min-height: var(--row);
+  contain-intrinsic-size: auto var(--row);
+}
+:root[data-density='compact'] .nav-section {
+  min-height: var(--row-band);
+}
+:root[data-density='compact'] .nav-note {
+  min-height: calc(var(--row) - 1px);
+}
+:root[data-density='compact'] .tree-row {
+  min-height: var(--row);
+  padding-top: var(--row-pad);
+  padding-bottom: var(--row-pad);
+}
+:root[data-density='compact'] .place {
+  height: calc(var(--row) + 2px);
+}
+:root[data-density='compact'] .ribbon-button {
+  height: var(--row-band);
+}
+:root[data-density='compact'] .tab-item {
+  height: var(--row-tab);
+}
+:root[data-density='compact'] .menu-row {
+  min-height: calc(var(--row) + 2px);
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+:root[data-density='compact'] .picker-row {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+:root[data-density='compact'] .setting-row {
+  padding: 9px 0;
+}
+:root[data-density='compact'] .keys-row {
+  min-height: 30px;
+}
+
+/* One page title on every page (26 Oct 2026 uplift; the audit found seven sizes and two fonts across Projects, Tasks,
+   Timeline, Health, Family, Assets, the modules, Templates and Automations): one size, Today's greeting alone a little
+   larger. Loaded last, so it wins over each page's own. Geist 600 with tight tracking, not the serif (8.1; styles/page-frame.css). */
+:is(.sv-head, .nt-head, .tk-head, .tl-head, .au-head, .nb-head, .tp-head, .fy-head, .hl-head, .rm-head, .rm-title, .pb-title, .as-rail-title, .ar-page .nt-head) h1:not(.nv-page-title) {
+  font: 600 var(--fs-section)/1.15 var(--font-ui);
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+/* Settings search hits show their whole hint (5 Nov 2026: a longer hint read "…straight awa…"): wrapped, never cut
+   with an ellipsis. Scoped to the hint alone, so rows with short hints sit exactly as before. */
+.set-hit-hint {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+

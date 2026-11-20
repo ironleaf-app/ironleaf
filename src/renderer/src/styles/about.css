@@ -1,0 +1,332 @@
+/* Settings › About and updates (components/about/AboutPage.tsx, 20 Nov 2026; the version and the update dot sit in the
+   account menu at the side bar's foot, components/account/AccountMenu.tsx). On the page frame's scale (styles/page-frame.css: --space-*, --w-*); one
+   column in a narrow room, two (the app and its updates beside the history) once the settings body is wide. */
+
+.about-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: start;
+}
+@container settings (min-width: 880px) {
+  .about-page {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: var(--space-6);
+  }
+}
+.about-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+/* The app: mark, name, version line. */
+.about-hero {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--space-4);
+  align-items: center;
+}
+.about-mark {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--r-4);
+  display: block;
+}
+.about-name {
+  font-size: var(--fs-section);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-strong);
+  line-height: 1.2;
+}
+.about-ver {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-2);
+  font-size: var(--fs-md);
+  color: var(--text);
+  margin-top: 2px;
+}
+.about-ver > span + span::before {
+  content: '·';
+  margin-right: var(--space-2);
+  color: var(--text-faint);
+}
+.about-sub {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.about-links .link-button,
+.about-history-head .link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+/* The update card: the one place an update is at. */
+.about-update {
+  container: about-card / inline-size;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-raised);
+  padding: var(--space-4);
+  min-height: 72px;
+}
+.about-update[data-tone='news'],
+.about-update[data-tone='ready'] {
+  border-color: var(--accent-line);
+  background: linear-gradient(var(--accent-softer), var(--accent-softer)), var(--bg-raised);
+}
+.about-update[data-tone='error'] {
+  border-color: color-mix(in srgb, var(--danger) 40%, transparent);
+}
+.about-update-main {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: center;
+}
+.about-update-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--bg-soft);
+  color: var(--text-muted);
+}
+.about-update[data-tone='ok'] .about-update-icon {
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+.about-update[data-tone='news'] .about-update-icon,
+.about-update[data-tone='ready'] .about-update-icon,
+.about-update[data-tone='busy'] .about-update-icon {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.about-update[data-tone='error'] .about-update-icon {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.about-update[data-stage='checking'] .about-update-icon svg,
+.about-update[data-stage='installing'] .about-update-icon svg {
+  animation: nv-spin var(--nv-spin) linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-update .about-update-icon svg {
+    animation: none !important;
+  }
+}
+.about-update-title {
+  font-size: var(--fs-card);
+  font-weight: 650;
+  color: var(--text-strong);
+  line-height: 1.3;
+}
+.about-update-detail {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.about-update[data-tone='error'] .about-update-detail {
+  color: var(--text);
+}
+.about-update-actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.about-update-actions .button {
+  white-space: nowrap;
+}
+/* A narrow card, or two buttons in a card of middle width: the buttons go under the words, so the words keep
+   their line length. */
+@container about-card (max-width: 420px) {
+  .about-update-main {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .about-update-actions {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
+}
+@container about-card (max-width: 720px) {
+  .about-update-main:has(.about-update-actions > .button + .button) {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .about-update-main:has(.about-update-actions > .button + .button) .about-update-actions {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
+}
+.about-progress {
+  height: 6px;
+  border-radius: var(--r-1);
+  background: var(--bg-sunken);
+  overflow: hidden;
+  margin: var(--space-3) 0 0 calc(34px + var(--space-3));
+}
+.about-progress > div {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.2s;
+}
+.about-update-notes {
+  margin: var(--space-3) 0 0 calc(34px + var(--space-3));
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+}
+.about-update-foot {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  margin: var(--space-2) 0 0 calc(34px + var(--space-3));
+}
+.about-switches {
+  margin-top: var(--space-3);
+  padding-top: var(--space-1);
+  border-top: 1px solid var(--border);
+}
+.about-switches .setting-row:last-child {
+  padding-bottom: 0;
+}
+.about-eyebrow {
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+  margin-bottom: var(--space-1);
+}
+
+/* Notes: one change a line. */
+.about-notes {
+  margin: 0;
+  padding: 0 0 0 18px;
+  font-size: var(--fs-md);
+  line-height: 1.5;
+  color: var(--text);
+}
+.about-notes li + li {
+  margin-top: 4px;
+}
+.about-notes li::marker {
+  color: var(--accent);
+}
+.about-notes .about-notes-head {
+  list-style: none;
+  margin-left: -18px;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+.about-section h3 {
+  margin: 0 0 var(--space-2);
+}
+.about-quiet {
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+  margin: 0;
+}
+
+/* The history: one row a release, opening to its notes. */
+.about-history-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+.about-history-head h3 {
+  margin: 0;
+}
+.about-hist-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+.about-hist {
+  border-bottom: 1px solid var(--border);
+}
+.about-hist-head {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  grid-template-areas: 'ver chip date icon' 'first first first first';
+  align-items: center;
+  gap: 2px var(--space-2);
+  width: 100%;
+  padding: var(--space-2) var(--space-1);
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-radius: var(--r-1);
+}
+.about-hist-head:disabled {
+  cursor: default;
+}
+.about-hist-head:not(:disabled):hover {
+  background: var(--bg-hover);
+}
+.about-hist-ver {
+  grid-area: ver;
+  font-weight: 650;
+  color: var(--text-strong);
+  font-variant-numeric: tabular-nums;
+}
+.about-chip {
+  grid-area: chip;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: var(--r-2);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.about-hist-date {
+  grid-area: date;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+.about-hist-head > svg {
+  grid-area: icon;
+  color: var(--text-faint);
+}
+.about-hist-first {
+  grid-area: first;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.about-hist-first:empty {
+  display: none;
+}
+.about-hist-notes {
+  padding: 0 var(--space-1) var(--space-3) 22px;
+  font-size: var(--fs-small);
+}
+.about-history-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: var(--space-2);
+}
+
+/* The first start after an update: the banner's link to the whole history. */
+.update-banner-links {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-1);
+}

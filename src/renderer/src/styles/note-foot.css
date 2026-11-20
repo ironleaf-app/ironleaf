@@ -1,0 +1,306 @@
+/* The foot of a note (components/NoteFoot.tsx): one Linked list in three sections (Linked here, Mentioned,
+   Related), after the last line in the editor and in Reading. Quiet until looked at: a hairline above, the title
+   as words with a soft count while folded, section heads as kit words with soft counts while open, each note a
+   row with its folder and the line that connects it, the link or name marked. Light first; the tokens carry dark.
+   (19 Oct 2026, 5.0.0. One list, not three tabs, 5 Nov 2026, rest-quieten and v6.)
+   Calmer to match the note page's quiet rows (20 Oct 2026, Ironleaf Calm): counts as plain faint numbers, each
+   note's name in the page's weight. */
+
+.note-foot-wrap {
+  padding: 56px 0 8px;
+  white-space: normal;
+  font: var(--fs-small) / 1.5 var(--font-ui);
+  color: var(--text-muted);
+  cursor: default;
+}
+
+.note-foot {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+
+.foot-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 34px;
+  user-select: none;
+}
+
+.foot-fold {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border-radius: var(--r-2);
+  color: var(--text-faint);
+}
+
+.foot-fold:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+/* Folded, the bar says what it holds; open, the sections say it, so the title shows folded only. */
+.foot-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  padding: 0 11px;
+  border-radius: var(--r-1);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.foot-title:hover {
+  background: var(--bg-hover);
+}
+
+.foot-section + .foot-section {
+  margin-top: 14px;
+}
+
+.foot-section-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 2px;
+  padding: 0 6px;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.foot-count {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: var(--r-1);
+  background: transparent;
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-faint);
+}
+
+/* The Filter wraps under the bar when narrow (10.0 rooms critique, 2 Nov 2026: Related was pushed out while
+   the 168px box never shrank; 10.0 second round N12: shrinking to 96px still hid content in an invisible
+   scroller, so the Filter wraps instead of shrinking). */
+.foot-search {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: var(--r-1);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text-faint);
+  flex: 1 0 168px;
+  min-width: min(168px, 100%);
+}
+
+.foot-search:focus-within {
+  border-color: var(--border-strong);
+ outline: 2px solid var(--focus); outline-offset: 2px;}
+
+.foot-search input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none !important;
+  font: inherit;
+  font-size: var(--fs-small);
+  color: var(--text);
+}
+
+.foot-body {
+  padding: 8px 0 4px;
+  animation: foot-open 0.18s ease-out;
+}
+
+.foot-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.foot-item {
+  padding: 6px 4px 8px;
+}
+
+.foot-item + .foot-item {
+  border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+}
+
+.foot-item-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  max-width: 100%;
+  padding: 2px 6px;
+  border-radius: var(--r-2);
+  text-align: left;
+}
+
+.foot-item-head:hover .foot-item-name {
+  color: var(--text-strong);
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+}
+
+.foot-item-name {
+  font-weight: 500;
+  font-size: var(--fs-small);
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+.foot-item-folder {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+/* How the row is linked (t7-note-window, 8 Nov 2026: one Linked list, each row saying how): quiet words
+   after the folder, never a chip. */
+.foot-item-why {
+  margin-left: auto;
+  flex: none;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+.foot-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.foot-snippet {
+  flex: 1;
+  min-width: 0;
+  padding: 3px 6px;
+  border-radius: var(--r-2);
+  text-align: left;
+  font-size: var(--fs-small);
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.foot-snippet:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.foot-snippet mark {
+  padding: 0 2px;
+  border-radius: var(--r-1);
+  background: var(--mark);
+  color: var(--text-strong);
+}
+
+.foot-snippet.is-shared {
+  color: var(--text-faint);
+}
+
+.foot-snippet.is-shared mark {
+  background: var(--bg-hover);
+  color: var(--text-muted);
+}
+
+.foot-link-it {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  height: 24px;
+  margin-top: 1px;
+  padding: 0 10px;
+  border-radius: var(--r-1);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.foot-link-it:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  color: var(--text-strong);
+}
+
+.foot-link-it:disabled {
+  opacity: 0.55;
+}
+
+.foot-more {
+  margin: 2px 0 0 6px;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+.foot-more:hover {
+  color: var(--text);
+}
+
+.foot-empty {
+  margin: 4px 0;
+  padding: 6px;
+  color: var(--text-faint);
+}
+
+@keyframes foot-open {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .foot-body {
+    animation: none;
+  }
+  .foot-title,
+  .foot-item-name {
+    transition: none;
+  }
+}
+
+/* One list's three sections (5 Nov 2026, v6): a long section shows six notes, then one Show-all. The heads
+   live above, next to the bar; sections part with one margin, not padding too. */
+.foot-showall {
+  margin: 4px 0 0 6px;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+.foot-showall:hover {
+  color: var(--text);
+}

@@ -1,0 +1,2599 @@
+/* Views over notes (views/SavedView.tsx, views/saved/*; release 5.0.0): a table, cards, a list, a board or a month
+   calendar of notes by their properties. Light first; every colour is a token, so dark follows. Calm: no coloured edge bars, soft lifts,
+   circles and pills with corner-shape round beside their radius, and motion only where it helps (none when the person
+   asks for less). */
+
+.sv-page {
+  height: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  container: sv / inline-size;
+}
+
+/* ── The head: name, what it shows, New note and Display ─────────────────────────────────────────────────────────── */
+
+.sv-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding: 14px 28px 14px;
+}
+
+.sv-head-words {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.sv-head h1 {
+  margin: 0 0 4px;
+  font: 650 var(--fs-section)/1.15 var(--font-ui);
+  letter-spacing: -0.015em;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.sv-sub {
+  margin: 0;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.sv-faint {
+  color: var(--text-faint);
+}
+
+.sv-grow {
+  flex: 1;
+}
+
+.sv-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sv-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  white-space: nowrap;
+  transition:
+    background 0.12s,
+    border-color 0.12s,
+    color 0.12s;
+}
+
+.sv-tool:hover,
+.sv-tool.menu-open {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.sv-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.sv-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  border: 1px solid var(--border);
+  background: var(--bg-hover);
+  border-radius: var(--r-1);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+}
+
+.sv-chip-words {
+  height: 100%;
+  padding: 0 4px 0 10px;
+  border-radius: var(--r-1);
+  color: inherit;
+}
+
+.sv-chip-x {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-right: 2px;
+  border-radius: var(--r-1);
+  color: inherit;
+  opacity: 0.7;
+}
+
+.sv-chip-x:hover {
+  opacity: 1;
+  background: var(--sel);
+}
+
+.sv-problem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 28px 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+}
+
+.sv-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Display ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.sv-display-anchor {
+  position: relative;
+}
+
+.sv-display {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 40;
+  width: min(372px, calc(100cqw - 32px));
+  max-height: min(72vh, 640px);
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  box-shadow: var(--shadow-small);
+  font-size: var(--fs-small);
+  animation: sv-rise 0.14s ease-out;
+}
+
+@keyframes sv-rise {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.sv-layouts {
+  display: grid;
+  /* Five layouts in one row (21 Oct 2026: Cards and List joined Table, Board and Calendar). */
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.sv-layouts button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 9px 2px 7px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  transition:
+    background 0.12s,
+    border-color 0.12s,
+    color 0.12s;
+}
+
+.sv-layouts button:hover {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.sv-layouts button.on {
+  background: var(--bg-raised);
+  border-color: var(--border-strong);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.sv-row {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.sv-row-name {
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+}
+
+.sv-row select,
+.sv-filter select,
+.sv-filter input {
+  padding: 5px 8px;
+  font-size: var(--fs-small);
+  min-width: 0;
+}
+
+.sv-dir {
+  height: 28px;
+  padding: 0 9px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-2);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+}
+
+.sv-dir:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.sv-section {
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.sv-section h3 {
+  margin: 0 0 6px;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.sv-hint {
+  margin: 0 0 8px;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  line-height: 1.45;
+}
+
+.sv-filter {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr) minmax(0, 1fr) auto;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.sv-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: var(--r-2);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+}
+
+.sv-add:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.sv-checks {
+  display: flex;
+  flex-direction: column;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.sv-check-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px;
+  border-radius: var(--r-2);
+  cursor: pointer;
+}
+
+.sv-check-row:hover {
+  background: var(--bg-hover);
+}
+
+.sv-check-row input {
+  accent-color: var(--accent);
+  margin: 0;
+}
+
+.sv-check-row span:nth-of-type(1) {
+  flex: 1;
+}
+
+/* ── Values ───────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.sv-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.sv-blank {
+  display: inline-block;
+  width: 100%;
+  min-height: 1em;
+}
+
+.sv-pills {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  white-space: normal;
+}
+
+.sv-pill {
+  display: inline-block;
+  max-width: 100%;
+  padding: 1px 8px;
+  border-radius: var(--r-1);
+  background: var(--bg-hover);
+  color: var(--text);
+  font-size: var(--fs-caption);
+  line-height: 18px;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.sv-tick {
+  color: var(--text-faint);
+}
+
+.sv-tick.on {
+  color: var(--ok);
+  font-weight: 600;
+}
+
+.sv-date {
+  font-variant-numeric: tabular-nums;
+}
+
+.sv-number {
+  display: block;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Table ────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.sv-table-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 0 28px 24px;
+  /* The room the columns share (the cells' widest below), whatever the pane's width. */
+  container-type: inline-size;
+}
+
+.sv-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  /* As wide as the pane, its columns giving way down to their least (.sv-th, .sv-cell); only a view with many columns
+     is wider than that, and scrolls. */
+  width: 100%;
+  min-width: 100%;
+  font-size: var(--fs-small);
+  background: var(--bg-raised);
+  /* A quiet frame (21 Oct 2026): the full border colour read as a heavy box round the table. */
+  border: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
+  border-radius: var(--r-3);
+}
+
+.sv-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 0;
+}
+
+.sv-table thead th:first-child {
+  border-top-left-radius: var(--r-3);
+}
+
+.sv-table thead th:last-child {
+  border-top-right-radius: var(--r-3);
+}
+
+.sv-table thead th.sv-col-title {
+  z-index: 3;
+}
+
+.sv-th {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 4px 0 2px;
+  /* The same share of the room as the column's cells (.sv-cell), up to 120 px; a long heading ends in an ellipsis. */
+  min-width: clamp(72px, calc((100cqw - 16px) / var(--sv-cols, 3)), 120px);
+}
+
+.sv-th .sv-th-sort {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.sv-th .sv-th-sort > span {
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  /* A heading never widens its column past its share (an ellipsis alone does not narrow a table column): its words
+     are capped at the share less the button's room, so they show whole when they fit and end in an ellipsis if not. */
+  max-width: calc(clamp(72px, calc((100cqw - 16px) / var(--sv-cols, 3)), 320px) - 30px);
+}
+
+.sv-th .sv-th-sort {
+  flex: 0 1 auto;
+}
+
+/* A heading's ⋯ sits over its end when shown (on hover or focus), so the heading has the whole column for its words. */
+.sv-th {
+  position: relative;
+}
+
+.sv-th .sv-th-more {
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--bg-raised);
+}
+
+.sv-th-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 34px;
+  padding: 0 8px;
+  border-radius: var(--r-2);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+}
+
+.sv-th-sort:hover,
+.sv-th-sort.on {
+  color: var(--text);
+}
+
+.sv-th-sort.on {
+  font-weight: 600;
+}
+
+.sv-up {
+  transform: rotate(180deg);
+}
+
+.sv-th-more,
+.sv-th-add {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--r-2);
+  color: var(--text-faint);
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+.sv-th:hover .sv-th-more,
+.sv-th-more:focus-visible,
+.sv-th-more.menu-open,
+.sv-th-add {
+  opacity: 1;
+}
+
+.sv-th-more:hover,
+.sv-th-add:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.sv-col-add {
+  width: 36px;
+  text-align: center;
+}
+
+.sv-table tbody tr > * {
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  padding: 0;
+  vertical-align: middle;
+}
+
+.sv-table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+/* The last row rounds with the frame (21 Oct 2026, the screenshot: its square first cell, painted over the frame's corner,
+   left a gap in the border at the bottom left). */
+.sv-table tbody tr:last-child > :first-child {
+  border-bottom-left-radius: var(--r-4);
+}
+
+.sv-table tbody tr:last-child > :last-child {
+  border-bottom-right-radius: var(--r-4);
+}
+
+.sv-table tbody tr:hover > * {
+  background: color-mix(in srgb, var(--bg-hover) 45%, var(--bg-raised));
+}
+
+.sv-col-title {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--bg-raised);
+  /* The name keeps the most room, but gives way on a narrow pane so every column still shows (20 Oct 2026). */
+  min-width: clamp(120px, 30cqw, 220px);
+  max-width: 360px;
+  text-align: left;
+  font-weight: 500;
+}
+
+.sv-open {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 36px;
+  padding: 0 12px;
+  color: var(--text);
+  text-align: left;
+}
+
+.sv-open svg {
+  flex: none;
+  color: var(--text-faint);
+}
+
+.sv-open span {
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.sv-open:hover span {
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+}
+
+.sv-cell {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 36px;
+  /* At most an even share of the room (20 Oct 2026: the table ran past a narrow pane, its last column cut off), never
+     less than a readable column, never more than 320 px; a wider share only on a wide pane. */
+  max-width: clamp(72px, calc((100cqw - 16px) / var(--sv-cols, 3)), 320px);
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 12px;
+  text-align: left;
+  color: var(--text);
+  cursor: default;
+}
+
+.sv-cell.editable {
+  cursor: text;
+}
+
+.sv-cell.editable:hover {
+  background: color-mix(in srgb, var(--bg-hover) 70%, transparent);
+  border-radius: var(--r-2);
+}
+
+/* An empty cell says what a click does, only while the pointer is on it. */
+.sv-cell.editable:hover .sv-blank::after {
+  content: 'Add…';
+  color: var(--text-faint);
+  font-size: var(--fs-small);
+}
+
+.sv-cell:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+  border-radius: var(--r-2);
+}
+
+.sv-check {
+  justify-content: center;
+  cursor: pointer;
+}
+
+.sv-check input {
+  accent-color: var(--accent);
+  margin: 0;
+}
+
+.sv-cell-input {
+  /* The editor sits exactly where the cell was (20 Oct 2026, the screenshot: a box wider than its column, cut off and empty):
+     the cell's own size, a clear ring in the accent, the words where they were. */
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 36px;
+  margin: 0;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--r-2);
+  background: var(--bg-raised);
+  box-shadow: inset 0 0 0 1.5px var(--accent);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-small);
+  outline: none;
+}
+.sv-cell-input::placeholder {
+  color: var(--text-faint);
+}
+.sv-cell-input[type='date'] {
+  min-width: 140px;
+}
+
+.sv-table-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 2px 0;
+  color: var(--text-faint);
+  font-size: var(--fs-small);
+}
+
+/* ── Groups (table, cards, list split by a property; 21 Oct 2026) ──────────────────────────────────────────────────── */
+
+.sv-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font: 600 var(--fs-small)/1.3 var(--font-ui);
+  color: var(--text);
+}
+
+.sv-section-group + .sv-section-group {
+  margin-top: 22px;
+}
+
+.sv-section-group > .sv-section-head {
+  margin: 0 2px 10px;
+}
+
+.sv-table tbody tr.sv-section-row > th {
+  padding: 14px 12px 6px;
+  background: var(--bg-raised);
+  text-align: left;
+  font-weight: 600;
+}
+
+.sv-table tbody tr.sv-section-row:hover > * {
+  background: var(--bg-raised);
+}
+
+/* ── Cards ────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.sv-cards-wrap,
+.sv-list-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 2px 28px 24px;
+}
+
+.sv-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sv-cards > li {
+  display: flex;
+  min-width: 0;
+}
+
+.sv-tile {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-align: left;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  box-shadow: var(--shadow-card);
+  color: var(--text);
+  transition:
+    border-color 0.12s,
+    box-shadow 0.12s,
+    transform 0.12s;
+}
+
+.sv-tile:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-small);
+}
+
+.sv-tile:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.sv-tile-cover {
+  --cover: var(--bg-hover);
+  display: block;
+  flex: none;
+  height: 108px;
+  background: linear-gradient(135deg, var(--cover) 0%, color-mix(in srgb, var(--cover) 72%, var(--bg)) 100%);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+}
+
+.sv-tile-cover.is-blank {
+  background: color-mix(in srgb, var(--bg-hover) 55%, var(--bg-raised));
+}
+.sv-tile-cover.is-sand { --cover: var(--cover-sand); }
+.sv-tile-cover.is-clay { --cover: var(--cover-clay); }
+.sv-tile-cover.is-sage { --cover: var(--cover-sage); }
+.sv-tile-cover.is-sea { --cover: var(--cover-sea); }
+.sv-tile-cover.is-sky { --cover: var(--cover-sky); }
+.sv-tile-cover.is-dusk { --cover: var(--cover-dusk); }
+.sv-tile-cover.is-stone { --cover: var(--cover-stone); }
+
+.sv-tile-cover.is-picture {
+  background: var(--bg-hover);
+}
+
+.sv-tile-cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+}
+
+.sv-tile-words {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 11px 13px 13px;
+  min-width: 0;
+}
+
+.sv-tile-title {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  overflow: hidden;
+}
+
+.sv-tile-props {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+.sv-tile-prop {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.sv-tile-prop-name {
+  color: var(--text-faint);
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.sv-tile-prop .sv-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.sv-tile-prop .sv-pills {
+  flex-wrap: nowrap;
+}
+
+/* On a card every value starts at the same edge, numbers too. */
+.sv-tile-prop .sv-number {
+  text-align: left;
+}
+
+.sv-more-wide {
+  display: block;
+  margin: 12px auto 0;
+}
+
+/* ── List ─────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.sv-list {
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+}
+
+.sv-list > li + li {
+  border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+}
+
+.sv-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 10px;
+  width: 100%;
+  min-width: 0;
+  min-height: 36px;
+  padding: 4px 10px;
+  border-radius: var(--r-3);
+  text-align: left;
+  color: var(--text);
+  font-size: var(--fs-small);
+}
+
+.sv-line:hover {
+  background: color-mix(in srgb, var(--bg-hover) 55%, transparent);
+}
+
+.sv-line:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+.sv-line > svg {
+  flex: none;
+  color: var(--text-faint);
+}
+
+.sv-line-title {
+  flex: 0 1 auto;
+  min-width: 80px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+/* A narrow pane wraps the properties onto the next line rather than squeezing each to a letter. */
+.sv-line-prop {
+  flex: 0 0 auto;
+  min-width: 0;
+  max-width: 100%;
+  display: inline-flex;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+}
+
+.sv-line-prop .sv-value {
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+/* A quiet dot between the name and each property, as a sentence reads. */
+.sv-line-prop::before {
+  content: '·';
+  margin-right: 10px;
+  color: var(--text-faint);
+}
+
+/* ── Board ────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.sv-board {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  overflow: auto;
+  padding: 2px 28px 24px;
+}
+
+.sv-column {
+  flex: none;
+  width: 284px;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-side);
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  transition:
+    background 0.12s,
+    border-color 0.12s;
+}
+
+.sv-column.is-over {
+  background: var(--accent-softer);
+  border-color: var(--accent-line);
+}
+
+.sv-column-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 8px 6px 6px;
+}
+
+.sv-column-fold,
+.sv-column-more {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--r-2);
+  color: var(--text-faint);
+}
+
+.sv-column-fold:hover,
+.sv-column-more:hover,
+.sv-column-more.menu-open {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.sv-column-name {
+  font-weight: 600;
+  font-size: var(--fs-small);
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.sv-column.no-value .sv-column-name {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.sv-count {
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: var(--r-1);
+  background: var(--bg-hover);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  line-height: 18px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.sv-column-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 48px;
+  padding: 2px 8px 8px;
+  overflow-y: auto;
+}
+
+.sv-column-empty {
+  margin: 0;
+  padding: 14px 8px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--r-3);
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  text-align: center;
+}
+
+.sv-column-new {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 8px 8px;
+  padding: 6px 8px;
+  border-radius: var(--r-3);
+  color: var(--text-faint);
+  font-size: var(--fs-small);
+}
+
+.sv-column-new:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.sv-column.folded {
+  width: 44px;
+}
+
+.sv-fold {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 0 12px;
+  border-radius: var(--r-3);
+  color: var(--text-muted);
+}
+
+.sv-fold:hover {
+  color: var(--text);
+  background: var(--bg-hover);
+}
+
+.sv-fold-label {
+  writing-mode: vertical-rl;
+  font-weight: 600;
+  font-size: var(--fs-small);
+  max-height: 240px;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.sv-hidden-columns {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 11px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--r-3);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  white-space: nowrap;
+}
+
+.sv-hidden-columns:hover {
+  color: var(--text);
+}
+
+.sv-more,
+.sv-day-more {
+  padding: 4px 6px;
+  border-radius: var(--r-2);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  text-align: left;
+}
+
+.sv-more:hover,
+.sv-day-more:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+/* A note's card (board, calendar, tray). */
+
+.sv-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  padding: 9px 11px;
+  text-align: left;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  box-shadow: var(--shadow-card);
+  color: var(--text);
+  cursor: grab;
+  transition:
+    border-color 0.12s,
+    box-shadow 0.12s,
+    opacity 0.12s;
+}
+
+.sv-card:hover {
+  border-color: var(--border-strong);
+}
+
+.sv-card:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.sv-card:active {
+  cursor: grabbing;
+}
+
+.sv-card.is-lifted {
+  opacity: 0.45;
+}
+
+.sv-card-title {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.sv-card-props {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+}
+
+.sv-card-prop {
+  min-width: 0;
+  max-width: 100%;
+  display: inline-flex;
+}
+
+.sv-card.compact {
+  gap: 2px;
+  padding: 4px 7px;
+  border-radius: var(--r-2);
+  box-shadow: none;
+}
+
+/* A day's card wraps its name onto a second line before it stops (19 Oct 2026, the real app with the chat beside it: a
+   narrow month showed "Q3 re…" and "Brand…"). */
+.sv-card.compact .sv-card-title {
+  font-size: var(--fs-caption);
+  line-height: 15px;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.sv-card.compact .sv-card-props {
+  font-size: var(--fs-caption);
+}
+
+/* ── Calendar ─────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.sv-calendar {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  gap: 16px;
+  padding: 0 28px 24px;
+  overflow: auto;
+}
+
+.sv-month {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sv-month-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.sv-month-name {
+  margin: 0;
+  font: 600 var(--fs-card)/1.2 var(--font-ui);
+  color: var(--text);
+}
+
+.sv-month-head .sv-faint {
+  font-size: var(--fs-small);
+}
+
+.sv-month-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sv-grid {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  overflow: hidden;
+}
+
+.sv-weekdays,
+.sv-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.sv-weekdays span {
+  padding: 8px 10px 6px;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  border-bottom: 1px solid var(--border);
+}
+
+.sv-day {
+  position: relative;
+  min-height: 108px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+  border-right: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  transition: background 0.12s;
+}
+
+.sv-week > .sv-day:last-child {
+  border-right: 0;
+}
+
+.sv-week:last-child > .sv-day {
+  border-bottom: 0;
+}
+
+.sv-day.weekend {
+  background: color-mix(in srgb, var(--text) 1.8%, transparent);
+}
+
+.sv-day.outside .sv-day-number {
+  color: var(--text-faint);
+  opacity: 0.7;
+}
+
+.sv-day.is-over {
+  background: var(--accent-softer);
+  box-shadow: inset 0 0 0 2px var(--accent-line);
+}
+
+.sv-day-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 22px;
+}
+
+.sv-day-number {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  border-radius: var(--r-1);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+}
+
+.sv-day.today .sv-day-number {
+  background: var(--accent);
+  color: var(--on-primary);
+  font-weight: 600;
+}
+
+.sv-day-add {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--r-1);
+  color: var(--text-faint);
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+.sv-day:hover .sv-day-add,
+.sv-day-add:focus-visible {
+  opacity: 1;
+}
+
+.sv-day-add:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.sv-day.is-open {
+  z-index: 2;
+}
+
+.sv-tray {
+  align-self: start;
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  margin-top: 42px;
+  padding: 10px;
+  background: var(--bg-side);
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  transition:
+    background 0.12s,
+    border-color 0.12s;
+}
+
+.sv-tray.is-over {
+  background: var(--accent-softer);
+  border-color: var(--accent-line);
+}
+
+.sv-tray-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: var(--fs-small);
+}
+
+.sv-tray-hint {
+  margin: 4px 0 8px;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  line-height: 1.4;
+}
+
+.sv-tray-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+}
+
+/* ── Designed empty states ────────────────────────────────────────────────────────────────────────────────────────── */
+
+.sv-empty {
+  margin: 8vh auto 0;
+  max-width: 480px;
+  padding: 0 24px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.sv-empty > svg {
+  box-sizing: content-box;
+  padding: 14px;
+  border-radius: var(--r-1);
+  background: var(--accent-softer);
+  color: var(--accent-text);
+}
+
+.sv-empty h2 {
+  margin: 14px 0 6px;
+  font: 600 var(--fs-section)/1.3 var(--font-ui);
+  color: var(--text);
+}
+
+.sv-empty p {
+  margin: 0 0 16px;
+  font-size: var(--fs-small);
+  line-height: 1.55;
+}
+
+.sv-empty-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ── Narrow tabs: the tray goes under the month, the gutters tighten ─────────────────────────────────────────────── */
+
+@container sv (max-width: 760px) {
+  .sv-head,
+  .sv-table-wrap,
+  .sv-cards-wrap,
+  .sv-list-wrap,
+  .sv-board,
+  .sv-calendar {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .sv-calendar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sv-tray {
+    position: static;
+    margin-top: 0;
+  }
+
+  .sv-day {
+    min-height: 84px;
+    padding: 4px;
+  }
+
+  .sv-card.compact .sv-card-props {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sv-display {
+    animation: none;
+  }
+
+  .sv-page *,
+  .sv-display * {
+    transition: none !important;
+  }
+}
+
+.sv-day .sv-card.compact {
+  width: 100%;
+}
+
+/* A row's tools at its end (5.2.0, "easy delete"): More and the bin, shown on hover or when the keys are in the row, laid
+   over the row's end so the columns keep their room. */
+.sv-row-end {
+  position: relative;
+  overflow: visible;
+}
+.sv-row-tools {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 2px;
+  padding: 2px 2px 2px 14px;
+  background: linear-gradient(90deg, transparent, var(--sv-row-bg, var(--bg-raised)) 12px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+.sv-table tbody tr:hover .sv-row-tools,
+.sv-table tbody tr:focus-within .sv-row-tools {
+  opacity: 1;
+  pointer-events: auto;
+}
+.sv-table tbody tr:hover {
+  --sv-row-bg: color-mix(in srgb, var(--bg-hover) 45%, var(--bg-raised));
+}
+.sv-row-tool {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--r-2);
+  color: var(--text-faint);
+}
+.sv-row-tool:hover {
+  background: var(--bg-active);
+  color: var(--text);
+}
+.sv-row-delete:hover {
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+  color: var(--danger);
+}
+
+/* Pills in a table cap at two rows (8.6: they stacked down the row). */
+.sv-table .sv-pills {
+  /* Two rows of 20 px pills with their 4 px gap. */
+  max-height: 44px;
+  overflow: hidden;
+}
+
+/* Words in a table's cells wrap onto a second line before they're cut short (5.2.0): "Coastline Joinery" or an email
+   reads whole in its share of the room; only a longer one ends in an ellipsis on its second line. */
+.sv-table .sv-cell .sv-value:not(.sv-blank, .sv-pills, .sv-tick) {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+  /* Margin, not padding (21 Oct 2026, the Docs table): padding sits inside the clamped box, so half of a third line
+     showed through under the second. Two lines exactly, never a sliver of a third. */
+  padding: 0;
+  margin: 7px 0;
+  max-height: calc(1.35em * 2);
+}
+
+/* ── Formulas (21 Oct 2026) ───────────────────────────────────────────────────────────────────────────────────────── */
+
+/* A formula that couldn't be worked out: a quiet dash; the reason is on hover. */
+.sv-fault {
+  color: var(--text-faint);
+  cursor: help;
+}
+
+.sv-th-formula {
+  flex: none;
+  color: var(--text-faint);
+}
+
+.sv-th-sort.on .sv-th-formula {
+  color: inherit;
+}
+
+.sv-mono,
+.sv-formula-row-expr,
+.sv-formula-dialog textarea,
+.sv-formula-chip.is-code {
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+}
+
+.sv-filter.is-formula {
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.1fr) auto;
+}
+
+.sv-formula-list {
+  margin: 0 0 4px;
+  padding: 0;
+  list-style: none;
+}
+
+.sv-formula-row {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 5px 6px;
+  border-radius: var(--r-2);
+  text-align: left;
+  color: var(--text);
+}
+
+.sv-formula-row:hover {
+  background: var(--bg-hover);
+}
+
+.sv-formula-row > svg {
+  color: var(--text-faint);
+}
+
+.sv-formula-row-name {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.sv-formula-row-expr {
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  color: var(--text-muted);
+}
+
+.dialog.sv-formula-dialog {
+  width: min(560px, calc(100vw - 32px));
+}
+
+.sv-formula-dialog .hint {
+  margin: 0 0 12px;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+
+.sv-formula-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 12px;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.sv-formula-field input {
+  margin-top: 0;
+}
+
+.sv-formula-dialog textarea {
+  width: 100%;
+  min-height: 72px;
+  padding: 8px 10px;
+  resize: vertical;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.sv-formula-dialog textarea[aria-invalid='true'] {
+  border-color: color-mix(in srgb, var(--danger) 55%, var(--border));
+}
+
+.sv-formula-result {
+  min-height: 34px;
+  margin: -4px 0 10px;
+  font-size: var(--fs-small);
+}
+
+.sv-formula-result ul {
+  margin: 0;
+  padding: 6px 10px;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: color-mix(in srgb, var(--bg-hover) 35%, var(--bg-raised));
+}
+
+.sv-formula-result li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 12px;
+  padding: 2px 0;
+}
+
+.sv-formula-note {
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.sv-formula-value {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.sv-fault-words,
+.sv-formula-problem {
+  color: var(--text-muted);
+}
+
+.sv-formula-problem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+.sv-formula-problem svg {
+  flex: none;
+  color: var(--danger);
+}
+
+.sv-formula-help {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  font-size: var(--fs-small);
+}
+
+.sv-formula-help summary {
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.sv-formula-help summary:hover {
+  color: var(--text);
+}
+
+.sv-formula-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.sv-formula-group-name {
+  flex: 0 0 84px;
+  color: var(--text-faint);
+}
+
+.sv-formula-chip {
+  height: 24px;
+  padding: 0 9px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+}
+
+.sv-formula-chip:hover,
+.sv-formula-chip:focus-visible {
+  border-color: var(--border-strong);
+  color: var(--text-strong);
+ outline: 2px solid var(--focus); outline-offset: 2px;}
+
+.sv-formula-help .sv-hint {
+  margin-top: 10px;
+}
+
+.sv-formula-remove {
+  margin-right: auto;
+}
+
+/* ── The summary row under a table (21 Oct 2026) ──────────────────────────────────────────────────────────────────── */
+
+.sv-table tfoot th,
+.sv-table tfoot td {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  padding: 0;
+  background: var(--bg-raised);
+  border-top: 1px solid var(--border);
+  font-weight: 400;
+}
+
+.sv-table tfoot .sv-col-title {
+  z-index: 3;
+}
+
+.sv-table tfoot tr > :first-child {
+  border-bottom-left-radius: var(--r-3);
+}
+
+.sv-table tfoot tr > :last-child {
+  border-bottom-right-radius: var(--r-3);
+}
+
+.sv-summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 6px;
+  width: 100%;
+  min-height: 32px;
+  max-width: clamp(72px, calc((100cqw - 16px) / var(--sv-cols, 3)), 320px);
+  padding: 0 12px;
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sv-col-title .sv-summary {
+  max-width: none;
+}
+
+.sv-summary:hover {
+  background: color-mix(in srgb, var(--bg-hover) 60%, transparent);
+}
+
+.sv-summary:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+  border-radius: var(--r-2);
+}
+
+.sv-summary-label {
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+}
+
+.sv-summary-value {
+  color: var(--text);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.sv-summary .sv-value {
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* "Summary" waits, unseen, until the pointer or the keys reach the row. */
+.sv-summary-add {
+  color: var(--text-faint);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.sv-summary-row:hover .sv-summary-add,
+.sv-summary:focus-visible .sv-summary-add {
+  opacity: 1;
+}
+
+/* An icon-only tool (the view's ⋯), as tall as the others. */
+.sv-tool-icon {
+  width: 30px;
+  padding: 0;
+  justify-content: center;
+}
+
+/* ── A view inside a note (21 Oct 2026; views/saved/ViewEmbed.tsx) ────────────────────────────────────────────────── */
+
+.nv-embed-view {
+  display: block;
+  margin: 0.8em 0;
+}
+
+.nv-view-embed {
+  /* The note's own words around it don't reach in: the view reads as the view does in its tab. */
+  container-type: inline-size;
+  font: var(--fs-small)/1.4 var(--font-ui);
+  color: var(--text);
+  white-space: normal;
+  cursor: default;
+}
+
+.nv-view-embed-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  color: var(--text-faint);
+  font-size: var(--fs-small);
+}
+
+.nv-view-embed-name {
+  color: var(--text);
+  font-weight: 600;
+  font-size: var(--fs-small);
+  text-align: left;
+}
+
+.nv-view-embed-name:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--accent-line);
+  text-underline-offset: 3px;
+}
+
+.nv-view-embed-open,
+.nv-view-embed-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-2);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+}
+
+.nv-view-embed-open:hover,
+.nv-view-embed-more:hover {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.nv-view-embed-more {
+  margin-top: 8px;
+}
+
+.nv-view-embed-empty {
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--r-4);
+  color: var(--text-faint);
+  font-size: var(--fs-small);
+}
+
+.nv-view-embed-table {
+  overflow-x: auto;
+  container-type: inline-size;
+}
+
+/* An embedded table keeps each value on one line (it scrolls sideways in a narrow note rather than breaking words). */
+.nv-view-embed .sv-table .sv-cell {
+  max-width: 260px;
+}
+
+.nv-view-embed .sv-table .sv-cell .sv-value:not(.sv-blank, .sv-pills, .sv-tick) {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  padding: 0;
+}
+
+.nv-view-embed .sv-col-title {
+  min-width: 160px;
+}
+
+/* Reading's table look (borders on every cell, a margin) stays out of an embedded view's table. */
+.nv-view-embed table.sv-table {
+  margin: 0;
+  min-width: 100%;
+  border-collapse: separate;
+  font-size: var(--fs-small);
+}
+
+.nv-view-embed .sv-table th,
+.nv-view-embed .sv-table td {
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  background: var(--bg-raised);
+}
+
+.nv-view-embed .sv-table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.nv-view-embed .sv-table thead th {
+  position: static;
+  border-bottom: 1px solid var(--border);
+}
+
+.nv-view-embed .sv-table tfoot td,
+.nv-view-embed .sv-table tfoot th {
+  position: static;
+  border-top: 1px solid var(--border);
+  border-bottom: 0;
+}
+
+.sv-th-static {
+  display: block;
+  padding: 8px 12px;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.nv-view-embed .sv-cards,
+.nv-view-embed .sv-list {
+  padding-left: 0;
+  margin: 0;
+}
+
+.nv-view-embed .sv-list {
+  padding: 4px;
+}
+
+.nv-view-embed li {
+  margin: 0;
+}
+
+.nv-view-embed li::marker {
+  content: none;
+}
+
+/* ── A .base file opened as a view (21 Oct 2026) ──────────────────────────────────────────────────────────────────── */
+
+.sv-part {
+  display: inline-block;
+  width: auto;
+  max-width: 260px;
+  margin-right: 8px;
+  padding: 2px 24px 2px 8px;
+  font-size: var(--fs-small);
+  vertical-align: baseline;
+}
+
+.sv-file-notes {
+  margin: 0 28px 10px;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+}
+
+.sv-file-notes summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.sv-file-notes summary::-webkit-details-marker {
+  display: none;
+}
+
+.sv-file-notes summary:hover {
+  color: var(--text-muted);
+}
+
+.sv-file-notes ul {
+  margin: 6px 0 0;
+  padding-left: 26px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ── Gallery (10.0 Endless Tech, v10records2) ─────────────────────────────────────────────────────────────── */
+
+.sv-gallery-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 2px 28px 24px;
+}
+
+.sv-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sv-gallery > li {
+  display: flex;
+  min-width: 0;
+}
+
+.sv-gtile {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-align: left;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  box-shadow: var(--shadow-card);
+  color: var(--text);
+  transition:
+    border-color 0.12s,
+    box-shadow 0.12s;
+}
+
+.sv-gtile:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-small);
+}
+
+.sv-gtile:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.sv-gtile-cover {
+  --cover: var(--bg-hover);
+  display: block;
+  flex: none;
+  height: 148px;
+  background: linear-gradient(135deg, var(--cover) 0%, color-mix(in srgb, var(--cover) 72%, var(--bg)) 100%);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+}
+
+.sv-gtile-cover.is-blank {
+  background: color-mix(in srgb, var(--bg-hover) 55%, var(--bg-raised));
+}
+.sv-gtile-cover.is-sand { --cover: var(--cover-sand); }
+.sv-gtile-cover.is-clay { --cover: var(--cover-clay); }
+.sv-gtile-cover.is-sage { --cover: var(--cover-sage); }
+.sv-gtile-cover.is-sea { --cover: var(--cover-sea); }
+.sv-gtile-cover.is-sky { --cover: var(--cover-sky); }
+.sv-gtile-cover.is-dusk { --cover: var(--cover-dusk); }
+.sv-gtile-cover.is-stone { --cover: var(--cover-stone); }
+
+.sv-gtile-cover.is-picture {
+  background: var(--bg-hover);
+}
+
+.sv-gtile-cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+}
+
+.sv-gtile-words {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 11px 13px 13px;
+  min-width: 0;
+}
+
+.sv-gtile-title {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  overflow: hidden;
+}
+
+.sv-gtile-props {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+.sv-gtile-prop {
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr);
+  gap: 8px;
+  min-width: 0;
+}
+
+.sv-gtile-prop-name {
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  color: var(--text-faint);
+}
+
+/* ── Timeline (10.0 Endless Tech, v10records2) ────────────────────────────────────────────────────────────── */
+
+.sv-timeline {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 10px 0 12px;
+}
+
+.sv-timeline-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 44px 28px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+}
+
+.sv-tl-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 28px 10px;
+}
+
+.sv-tl-seg {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  overflow: hidden;
+}
+
+.sv-tl-seg button {
+  padding: 5px 12px;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.sv-tl-seg button.is-on {
+  background: var(--bg-active);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.sv-tl-scroll {
+  overflow-x: auto;
+  padding: 0 0 6px;
+}
+
+.sv-tl-canvas {
+  position: relative;
+  min-height: 80px;
+  padding: 30px 0 8px;
+}
+
+.sv-tl-ticks {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 100%;
+  pointer-events: none;
+}
+
+.sv-tl-tick {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  padding: 4px 0 0 6px;
+  border-left: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+.sv-tl-tick.is-major {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.sv-tl-today {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 1.5px solid var(--accent);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.sv-tl-today span {
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  padding: 0 6px;
+  border-radius: var(--r-1);
+  font-size: var(--fs-caption);
+  font-weight: 650;
+  color: var(--on-primary);
+  background: var(--accent);
+}
+
+.sv-tl-lane {
+  position: relative;
+  padding: 4px 0 6px;
+}
+
+.sv-tl-lane + .sv-tl-lane {
+  border-top: 1px dashed var(--border);
+}
+
+.sv-tl-lane-name {
+  position: sticky;
+  left: 0;
+  display: inline-block;
+  margin: 2px 0 2px 10px;
+  padding: 1px 8px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-caption);
+  font-weight: 650;
+  color: var(--text-muted);
+  background: color-mix(in srgb, var(--bg-raised) 85%, transparent);
+  z-index: 2;
+}
+
+.sv-tl-row {
+  position: relative;
+  height: 28px;
+}
+
+.sv-tl-mark {
+  position: absolute;
+  top: 3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 22px;
+  max-width: 420px;
+  padding: 0 9px 0 0;
+  margin-left: -6px;
+  border-radius: var(--r-1);
+  font-size: var(--fs-small);
+  color: var(--text);
+  white-space: nowrap;
+  touch-action: none;
+  z-index: 1;
+}
+
+.sv-tl-mark:hover {
+  background: color-mix(in srgb, var(--bg-hover) 70%, transparent);
+}
+
+.sv-tl-mark.is-moving {
+  z-index: 3;
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-small);
+}
+
+.sv-tl-mark.is-range {
+  background: color-mix(in srgb, var(--bg-active) 70%, transparent);
+  border: 1px solid var(--border-strong);
+  padding-left: 8px;
+}
+
+.sv-tl-dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  margin-left: 1px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.sv-tl-mark.is-range .sv-tl-dot {
+  display: none;
+}
+
+.sv-tl-words {
+  overflow: hidden;
+  text-overflow: clip;
+  font-weight: 500;
+}
+
+.sv-tl-day {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+.sv-tl-tray {
+  margin: 8px 28px 0;
+  padding: 10px 14px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+}
+
+.sv-tl-undated {
+  display: block;
+  width: 100%;
+  padding: 3px 6px;
+  border-radius: var(--r-2);
+  text-align: left;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.sv-tl-undated:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+/* ── Chart (10.0 Endless Tech, v10records2) ───────────────────────────────────────────────────────────────── */
+
+.sv-chart {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 14px 28px 18px;
+}
+
+.sv-chart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 44px 28px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+}
+
+.sv-chart-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.sv-chart-caption {
+  font-size: var(--fs-body);
+  font-weight: 650;
+  color: var(--text);
+}
+
+.sv-chart-total {
+  font-size: var(--fs-small);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.sv-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sv-bar {
+  display: grid;
+  grid-template-columns: minmax(90px, 200px) minmax(0, 1fr) 70px;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 6px;
+  border-radius: var(--r-3);
+  font-size: var(--fs-small);
+  text-align: left;
+}
+
+.sv-bar:hover,
+.sv-bar.is-picked {
+  background: var(--bg-hover);
+}
+
+.sv-bar-label {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: clip;
+  color: var(--text-muted);
+}
+
+.sv-bar-track {
+  position: relative;
+  height: 20px;
+  border-radius: var(--r-2);
+  background: color-mix(in srgb, var(--bg-hover) 60%, transparent);
+  overflow: hidden;
+}
+
+.sv-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--r-2);
+  transition: width 0.35s ease;
+}
+
+.sv-bar-target {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--text);
+}
+
+.sv-bar-value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  text-align: right;
+  color: var(--text);
+}
+
+.sv-bar-of {
+  font-weight: 400;
+  color: var(--text-faint);
+}
+
+.sv-bar.is-over .sv-bar-value {
+  color: var(--danger);
+}
+
+.sv-donut {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px 34px;
+}
+
+.sv-donut-n {
+  font-size: var(--fs-section);
+  font-weight: 650;
+  fill: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.sv-donut-n.is-long {
+  font-size: var(--fs-card);
+}
+
+.sv-donut-unit {
+  font-size: var(--fs-caption);
+  fill: var(--text-muted);
+}
+
+.sv-legend {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 200px;
+}
+
+.sv-legend button {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 4px 8px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-small);
+  text-align: left;
+}
+
+.sv-legend button:hover,
+.sv-legend button.is-picked {
+  background: var(--bg-hover);
+}
+
+.sv-legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--r-1);
+}
+
+.sv-legend-label {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: clip;
+  color: var(--text);
+}
+
+.sv-legend-value {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.sv-legend-pct {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-faint);
+}
+
+.sv-line-chart {
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+}
+
+.sv-line-chart .sv-grid {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.sv-line-chart .sv-axis {
+  font-size: var(--fs-caption);
+  fill: var(--text-faint);
+}
+
+.sv-chart-pick {
+  margin-top: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  padding: 10px 14px 12px;
+}
+
+.sv-chart-pick-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+  font-size: var(--fs-small);
+}
+
+.sv-chart-pick-head strong {
+  color: var(--text);
+}
+
+.sv-chart-pick-head span {
+  color: var(--text-muted);
+}
+
+.sv-chart-pick ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sv-chart-pick li button {
+  padding: 3px 6px;
+  border-radius: var(--r-2);
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  text-align: left;
+}
+
+.sv-chart-pick li button:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+/* ── Display chart rows ─────────────────────────────────────────────────────────────────────────────────── */
+
+.sv-chart-seg {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: var(--r-2);
+  background: var(--bg-raised);
+  overflow: hidden;
+}
+
+.sv-chart-seg button {
+  padding: 4px 12px;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.sv-chart-seg button.is-on {
+  background: var(--bg-active);
+  color: var(--text);
+  font-weight: 600;
+}

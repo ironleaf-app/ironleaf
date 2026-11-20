@@ -1,0 +1,321 @@
+/* Publish as a website (9.0 w122publish): the dialog, the Published line in a page's head, and Settings' sites. */
+
+.dialog.publish-dialog {
+  width: min(860px, calc(100vw - 32px));
+  display: flex;
+  flex-direction: column;
+  padding: 20px 24px 16px;
+}
+
+.publish-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.publish-head h2 {
+  margin: 0;
+  font-size: var(--fs-section);
+}
+
+.publish-steps {
+  display: flex;
+  gap: 4px;
+  margin: 12px 0 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.publish-step {
+  background: none;
+  border: 0;
+  padding: 8px 12px;
+  font: inherit;
+  font-size: var(--fs-body);
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.publish-step.is-on {
+  color: var(--text);
+  font-weight: 600;
+  border-bottom-color: var(--text-strong);
+}
+
+.publish-body {
+  padding: 14px 2px 4px;
+  overflow-y: auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.publish-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.publish-label {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.publish-field input[type='text'],
+.publish-field input[type='password'],
+.publish-field input:not([type]),
+.publish-field select {
+  font: inherit;
+  font-size: var(--fs-body);
+  padding: 8px 11px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-3);
+  background: var(--bg);
+  color: var(--text);
+  max-width: 560px;
+}
+
+.publish-choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.publish-choice-words {
+  font-size: var(--fs-body);
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.publish-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 560px;
+}
+
+.publish-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: var(--fs-body);
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg);
+}
+
+.publish-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 8px;
+  margin-top: 2px;
+  border-top: 1px solid var(--border);
+  font-size: var(--fs-body);
+  color: var(--text-muted);
+}
+
+.publish-foot-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.publish-body.is-preview {
+  min-height: 0;
+}
+
+.publish-leftout {
+  font-size: var(--fs-body);
+}
+
+.publish-leftout ul {
+  margin: 6px 0 0;
+  padding-left: 20px;
+  color: var(--text-muted);
+}
+
+.publish-warn {
+  font-size: var(--fs-body);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.publish-frame-wrap {
+  min-height: 360px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  overflow: hidden;
+  background: var(--bg);
+  display: flex;
+}
+
+.publish-frame-wrap .hint {
+  margin: auto;
+}
+
+/* The preview fills the step (round 2: the first page with the side navigation, at its natural size). */
+.publish-frame {
+  width: 100%;
+  height: min(56vh, 560px);
+  border: 0;
+  background: #ffffff;
+}
+
+.publish-hosts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.publish-host {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  cursor: pointer;
+  font-size: var(--fs-body);
+}
+
+.publish-host.is-on {
+  border-color: var(--border-strong);
+  background: var(--sel);
+}
+
+.publish-host input {
+  margin-top: 3px;
+  accent-color: var(--accent);
+}
+
+.publish-host span {
+  display: flex;
+  flex-direction: column;
+}
+
+.publish-host i {
+  font-style: normal;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+}
+
+.publish-connect,
+.publish-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: var(--bg);
+}
+
+.publish-ask p,
+.publish-done p {
+  font-size: var(--fs-body);
+  margin: 0 0 8px;
+}
+
+/* The Published line in a page's head. */
+.published-mark {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 56px;
+  padding: 6px 0;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.published-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ok);
+  flex: none;
+}
+
+.text-button.subtle {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+/* Settings' sites (round 2, 31 Oct 2026, the reviewer: the sites sat in a side-by-side row whose control never
+   wraps, so the description ran one letter wide and the card's buttons were cut off: the row is stacked now, each
+   site a full-width card whose actions wrap). */
+.site-list {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.site-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg);
+}
+
+.site-words {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.site-name {
+  font-weight: 650;
+  font-size: var(--fs-body);
+}
+
+.site-detail {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  max-width: 520px;
+}
+
+.site-actions {
+  display: flex;
+  gap: 6px;
+  flex: none;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Quiet destructive actions (the app's own quiet buttons): the danger colour shows on hover only (the confirm in
+   the dialog stays a solid danger button, never blocks beside every site). */
+.site-actions .button.quiet:hover:not(:disabled) {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+@media (max-width: 900px) {
+  .published-mark {
+    margin: 0 24px;
+  }
+}

@@ -1,0 +1,337 @@
+/* This PC's sync (components/VaultSync.tsx): the line in Settings › Files and links with its fixes, where settings are
+   kept, Today's small status and the conflict copies window. Calm like Your vaults (vault-home.css, whose colours it
+   shares): up to date is a quiet green tick, something to look at a gentle amber, OneDrive stopped the one red. */
+
+.vs-card {
+  container-type: inline-size;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.vs-line {
+  --vs-tone: var(--vp-ok);
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 14px;
+}
+
+.vs-line.is-loading {
+  display: block;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  font-size: var(--fs-small);
+  color: var(--text-faint);
+}
+
+.vs-line + .vs-line {
+  border-top: 1px solid var(--border);
+}
+
+.vs-line.small {
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  padding: 10px 14px;
+}
+
+:is(.vs-line, .vs-today, .vs-today-card).tone-info {
+  --vs-tone: var(--text-muted);
+}
+
+:is(.vs-line, .vs-today, .vs-today-card).tone-warn {
+  --vs-tone: var(--amber-tx);
+}
+
+:is(.vs-line, .vs-today, .vs-today-card).tone-bad {
+  --vs-tone: var(--danger);
+}
+
+.vs-line.tone-bad:first-child {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--danger) 8%, transparent), transparent 90%);
+}
+
+.vs-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-4);
+  color: var(--vs-tone);
+  background: color-mix(in srgb, var(--vs-tone) 12%, transparent);
+}
+
+.vs-line.small .vs-icon {
+  width: 26px;
+  height: 26px;
+  margin-left: 4px;
+  border-radius: var(--r-3);
+}
+
+.vs-words {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.vs-words strong {
+  font-size: var(--fs-body);
+  font-weight: 620;
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.vs-line.small .vs-words strong {
+  font-size: var(--fs-small);
+}
+
+.vs-words > span {
+  max-width: 72ch;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.vs-acts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@container (max-width: 560px) {
+  .vs-line,
+  .vs-line.small {
+    grid-template-columns: 34px minmax(0, 1fr);
+  }
+
+  .vs-line > .vs-acts {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
+}
+
+/* ── Where settings are kept ───────────────────────────────────────────────────────────────────────────────────── */
+
+.vs-homes {
+  container-type: inline-size;
+  margin: 12px 0 6px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+}
+
+.vs-home {
+  display: grid;
+  grid-template-columns: 26px 116px minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+  padding: 11px 14px;
+}
+
+.vs-home + .vs-home {
+  border-top: 1px solid var(--border);
+}
+
+.vs-home-icon {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--r-3);
+  color: var(--accent-text);
+  background: var(--accent-soft);
+}
+
+.vs-home strong {
+  padding-top: 4px;
+  font-size: var(--fs-small);
+  font-weight: 620;
+  color: var(--text);
+}
+
+.vs-home > span:last-child {
+  padding-top: 4px;
+  max-width: 72ch;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+@container (max-width: 520px) {
+  .vs-home {
+    grid-template-columns: 26px minmax(0, 1fr);
+    gap: 4px 12px;
+  }
+
+  .vs-home > span:last-child {
+    grid-column: 2;
+    padding-top: 0;
+  }
+}
+
+/* ── Today ─────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+.vs-today.quiet {
+  --vs-tone: var(--vp-ok);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 0 var(--td-gap, 14px);
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.vs-today.quiet > svg {
+  flex: none;
+  color: var(--vs-tone);
+}
+
+.vs-today-title {
+  font-weight: 550;
+  color: var(--text);
+}
+
+.vs-today-more {
+  padding: 0;
+  border: 0;
+  font: inherit;
+  color: var(--text-muted);
+  background: none;
+  cursor: pointer;
+}
+
+.vs-today-more:hover {
+  color: var(--accent-text);
+  text-decoration: underline;
+}
+
+.vs-today-card {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 12px;
+  margin: 10px 0 var(--td-gap, 18px);
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.vs-today-card.tone-bad {
+  border-color: color-mix(in srgb, var(--danger) 35%, var(--border));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--danger) 7%, var(--bg-raised)), var(--bg-raised) 85%);
+}
+
+.vs-today-card h2 {
+  margin: 1px 0 4px;
+  font-size: var(--fs-body);
+  font-weight: 650;
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.vs-today-card p {
+  max-width: 72ch;
+  margin: 0;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.vs-today-card .vs-acts {
+  justify-content: flex-start;
+  margin-top: 12px;
+}
+
+/* ── Conflict copies ───────────────────────────────────────────────────────────────────────────────────────────── */
+
+.vs-done {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0 0 12px;
+  padding: 9px 11px;
+  border-radius: var(--r-4);
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--text);
+  background: color-mix(in srgb, var(--vp-ok) 10%, transparent);
+}
+
+.vs-done > svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--vp-ok);
+}
+
+.vs-copies {
+  container-type: inline-size;
+  max-height: 46vh;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+}
+
+.vs-copy {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+}
+
+.vs-copy + .vs-copy {
+  border-top: 1px solid var(--border);
+}
+
+.vs-copy-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-3);
+  color: var(--amber-tx);
+  background: color-mix(in srgb, var(--amber-tx) 12%, transparent);
+}
+
+.vs-copy-words {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.vs-copy-words strong {
+  overflow-wrap: anywhere;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.vs-copy-words span {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+.vs-copy-words em {
+  font-style: normal;
+  font-weight: 550;
+  color: var(--text);
+}
+
+@container (max-width: 460px) {
+  .vs-copy {
+    grid-template-columns: 28px minmax(0, 1fr);
+  }
+
+  .vs-copy > .vs-acts {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
+}

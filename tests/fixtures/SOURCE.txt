@@ -1,0 +1,5 @@
+Outlook .msg sample for tests/email-file.test.mjs, made by Microsoft Outlook: from Apache POI's public test data
+(https://github.com/apache/poi, test-data/hsmf, trunk; 9 Oct 2026).
+Apache POI is licensed under the Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0).
+Test files only: never shipped.
+  example_received_unicode.msg  received email, Unicode strings, six recipients, an inline picture

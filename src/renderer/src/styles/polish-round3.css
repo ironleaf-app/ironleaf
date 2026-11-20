@@ -1,0 +1,25 @@
+/* Polish round 3 (29 Oct 2026, the plan items 2 and 5): the Projects page's filter tabs scroll sideways
+   in a narrow pane instead of wrapping to two lines, and its summary line keeps the spacing its parts are
+   joined with. Theme tokens only; light first, dark follows the same tokens. */
+
+/* The tabs' own strip: one line, sideways scroll when the pane is too narrow for them all. */
+.pj-filter-tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  min-width: 0;
+  scrollbar-width: thin;
+}
+
+.pj-filter-tabs .pj-filter {
+  flex: none;
+}
+
+/* The summary line: its parts are joined with " · " in the page; nothing here squeezes that space away. */
+.pj-home-stats {
+  white-space: normal;
+  overflow-wrap: break-word;
+}

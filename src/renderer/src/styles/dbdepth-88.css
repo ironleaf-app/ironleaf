@@ -1,0 +1,414 @@
+/* Database depth (8.8): rollups, synced blocks, page columns, view forms and the relation picker. Light first;
+   every colour a token, so dark follows. */
+
+/* ── Rollups: the three choices side by side ─────────────────────────────────────────────────────────────── */
+
+.sv-rollup-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.sv-rollup-grid .sv-formula-field {
+  margin-bottom: 4px;
+}
+
+@media (max-width: 520px) {
+  .sv-rollup-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Relation cells: linked records as chips ───────────────────────────────────────────────────────────────── */
+
+.sv-relation {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+}
+
+.sv-pill.is-link {
+  display: inline-flex;
+  align-items: center;
+  max-width: 180px;
+  padding: 0 2px 0 0;
+}
+
+.sv-pill-open {
+  min-width: 0;
+  padding: 1px 2px 1px 8px;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  color: inherit;
+  font: inherit;
+}
+
+.sv-pill-open:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--accent-line);
+  text-underline-offset: 2px;
+}
+
+.sv-pill-x {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--r-1);
+  color: var(--text-faint);
+}
+
+.sv-pill-x:hover {
+  background: color-mix(in srgb, var(--bg-hover) 70%, transparent);
+  color: var(--text);
+}
+
+.sv-pill.is-missing {
+  border: 1px dashed var(--border-strong);
+  background: transparent;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* What a linked record is to this one: quiet words in the chip (a faint + until kinded), on its own menu. */
+.sv-kind {
+  flex: none;
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  padding: 1px 4px;
+  border-radius: var(--r-1);
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+}
+
+button.sv-kind:hover {
+  background: color-mix(in srgb, var(--bg-hover) 70%, transparent);
+  color: var(--text);
+}
+
+.sv-kind.is-empty {
+  opacity: 0.45;
+}
+
+.sv-pill:hover .sv-kind.is-empty,
+.sv-kind.is-empty:focus-visible {
+  opacity: 1;
+}
+
+.sv-relation-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--r-1);
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  line-height: 18px;
+}
+
+button.sv-relation-add:hover {
+  background: color-mix(in srgb, var(--bg-hover) 70%, transparent);
+  color: var(--text);
+}
+
+/* ── View forms ────────────────────────────────────────────────────────────────────────────────────────────── */
+
+/* The height is the shared dialog rule's (kit.css); the middle scrolls, the title and actions stay. */
+.dialog.sv-form-dialog {
+  width: min(520px, calc(100vw - 32px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dialog.sv-form-dialog .hint {
+  margin: 0 0 12px;
+  flex: none;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+
+/* Round 2: the list scrolls, the buttons stay in view. */
+.sv-form-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 2px 2px 4px;
+}
+
+.dialog.sv-form-dialog .dialog-actions {
+  flex: none;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-raised);
+}
+
+.sv-form-date-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sv-form-date-wrap input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.sv-form-today {
+  flex: none;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: var(--r-1);
+  background: var(--bg-hover);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  font-weight: 500;
+}
+
+.sv-form-today:hover {
+  color: var(--text);
+}
+
+.sv-form-switch {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 8px;
+  height: 34px;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+}
+
+.sv-form-switch .sv-form-knob {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: var(--r-1);
+  background: var(--border-strong);
+}
+
+.sv-form-switch .sv-form-knob::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--r-1);
+  background: var(--bg-raised);
+}
+
+.sv-form-switch.is-on .sv-form-knob {
+  background: var(--primary);
+}
+
+.sv-form-switch.is-on .sv-form-knob::after {
+  transform: translateX(20px);
+}
+
+.sv-form-switch.is-on {
+  color: var(--text);
+}
+
+.sv-form-switch-words {
+  min-width: 24px;
+  text-align: left;
+}
+
+.sv-form-relation {
+  padding: 2px 0;
+}
+
+.sv-form-relation .sv-pill-open:hover {
+  text-decoration: none;
+}
+
+.sv-form-required {
+  color: var(--text-faint);
+  font-weight: 400;
+}
+
+.sv-form-problem {
+  margin: 0 0 10px;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.sv-form-problem p {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 0;
+}
+
+.sv-form-problem svg {
+  flex: none;
+  color: var(--danger);
+}
+
+.sv-form-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+  border-top: 1px solid var(--border);
+  font-size: var(--fs-small);
+}
+
+.sv-form-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  color: var(--text);
+}
+
+.sv-form-row label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.sv-form-row input[type='checkbox'] {
+  accent-color: var(--accent);
+  margin: 0;
+}
+
+/* ── Synced blocks: the live block with its two quiet actions ───────────────────────────────────────────────── */
+
+.cm-nv-embed.is-synced {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: color-mix(in srgb, var(--bg-hover) 30%, transparent);
+}
+
+.cm-nv-embed.is-synced .nv-embed-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.nv-sync-label {
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.nv-sync-actions {
+  display: inline-flex;
+  gap: 12px;
+  font-size: var(--fs-small);
+}
+
+.nv-sync-actions a {
+  color: var(--text-muted) !important;
+  font-weight: 500 !important;
+}
+
+.nv-sync-unsync {
+  padding: 0;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--fs-small);
+}
+
+.nv-sync-actions a:hover,
+.nv-sync-unsync:hover {
+  color: var(--text) !important;
+  text-decoration: underline;
+  text-decoration-color: var(--accent-line);
+  text-underline-offset: 2px;
+}
+
+/* ── Page columns ──────────────────────────────────────────────────────────────────────────────────────────── */
+
+.nv-columns {
+  display: grid;
+  grid-template-columns: repeat(var(--nv-cols, 2), minmax(0, 1fr));
+  gap: 8px 28px;
+  margin: 12px 0;
+}
+
+.nv-column {
+  min-width: 0;
+}
+
+.nv-column > :first-child {
+  margin-top: 0;
+}
+
+.nv-column > :last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 720px) {
+  .nv-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Page columns' markers in the editor (round 2): each finished marker hidden behind a slim labelled divider, the
+   file keeping its markers. An unfinished block's markers stay as quiet words while they are typed. */
+.cm-nv-column-mark {
+  color: var(--text-faint);
+  font-size: 0.85em;
+}
+
+.cm-nv-column-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 26px;
+  margin: 10px 0 2px;
+  padding: 6px 2px 2px;
+  border-top: 1px solid var(--border);
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.cm-nv-column-label {
+  flex: none;
+}
+
+.cm-nv-column-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.cm-nv-column-tool {
+  padding: 2px 8px;
+  border-radius: var(--r-2);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--fs-caption);
+  font-weight: 500;
+}
+
+.cm-nv-column-tool:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.cm-nv-column-tool:disabled {
+  cursor: default;
+  opacity: 0.45;
+}

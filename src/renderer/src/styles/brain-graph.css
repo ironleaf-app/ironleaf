@@ -1,0 +1,96 @@
+/* The brain graph (components/BrainGraphView.tsx, 9 Nov 2026, rings the default 10 Nov 2026): one dark
+   canvas - deep, slightly blue-black - while the app around it stays in the person's light theme.
+   Everything floating on the dark is dark glass in light text; the area colours are the living graph's own.
+   Fixed colours throughout this sheet: the canvas is dark whatever the theme. */
+
+.bg { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; background: #0a0e17; }
+.bg-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+.bg-canvas:focus { outline: none; }
+.bg-canvas:focus-visible { outline: none; }
+.bg-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.bg-empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; margin: 0; padding: 20px; color: #9aa5b8; font-size: var(--fs-small); line-height: 19px; text-align: center; pointer-events: none; }
+.bg-note { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 20px; }
+
+/* The lobes: a row zooms into its lobe, again steps back out. It never scrolls. */
+.bg-legend { position: absolute; top: 12px; left: 12px; z-index: 2; width: 196px; padding: 10px 8px 8px; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: var(--r-3); background: rgba(10, 14, 23, 0.84); backdrop-filter: blur(8px); }
+.bg-head { margin: 0 4px 6px; font-size: var(--fs-caption); font-weight: 600; color: #9aa5b8; }
+.bg-row { display: flex; align-items: center; gap: 8px; width: 100%; padding: 4px 6px; border: 0; border-radius: var(--r-2); background: transparent; color: #e6ebf4; font: inherit; font-size: var(--fs-small); cursor: pointer; }
+.bg-row:hover { background: rgba(255, 255, 255, 0.07); }
+.bg-row:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+.bg-row.is-on { background: rgba(255, 255, 255, 0.1); }
+.bg-dot { flex: none; width: 9px; height: 9px; border-radius: 50%; }
+.bg-dot.is-hollow { border: 1.5px solid #8b94a7; background: transparent; width: 7px; height: 7px; }
+.bg-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: clip; white-space: nowrap; text-align: left; }
+.bg-count { flex: none; font-variant-numeric: tabular-nums; color: #9aa5b8; }
+.bg-more { padding: 3px 6px 0; font-size: var(--fs-caption); color: #6b7488; }
+.bg-loose { margin-top: 4px; border-top: 1px solid rgba(255, 255, 255, 0.1); border-radius: 0; padding-top: 8px; }
+.bg-whole { display: block; width: 100%; margin-top: 6px; padding: 6px; border: 1px solid rgba(255, 255, 255, 0.16); border-radius: var(--r-2); background: transparent; color: #e6ebf4; font: inherit; font-size: var(--fs-small); font-weight: 600; cursor: pointer; }
+.bg-whole:hover { background: rgba(255, 255, 255, 0.07); }
+.bg-whole:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+.bg-rest { display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 6px 6px 2px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: #c3ccde; font-size: var(--fs-small); cursor: pointer; }
+.bg-legend input[type='checkbox'].switch { width: 34px; height: 20px; }
+.bg-legend input[type='checkbox'].switch::after { top: 3px; left: 3px; width: 14px; height: 14px; }
+.bg-legend input[type='checkbox'].switch:checked { background: var(--accent-base, #357553); }
+.bg-legend input[type='checkbox'].switch:checked::after { transform: translateX(14px); }
+
+/* Find: a search box on the graph, its matches under it. */
+.bg-find { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 2; width: min(320px, 40%); }
+.bg-find input { box-sizing: border-box; width: 100%; padding: 8px 12px; border: 1px solid rgba(255, 255, 255, 0.16); border-radius: var(--r-3); background: rgba(10, 14, 23, 0.84); backdrop-filter: blur(8px); color: #edf1f9; font: inherit; font-size: var(--fs-small); }
+.bg-find input::placeholder { color: #6b7488; }
+.bg-find input:focus { outline: none; border-color: rgba(255, 255, 255, 0.4); }
+.bg-hits { margin-top: 6px; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: var(--r-3); background: rgba(10, 14, 23, 0.94); backdrop-filter: blur(8px); overflow: hidden; }
+.bg-hit { display: flex; align-items: baseline; gap: 8px; width: 100%; padding: 7px 12px; border: 0; background: transparent; color: #e6ebf4; font: inherit; font-size: var(--fs-small); cursor: pointer; text-align: left; }
+.bg-hit:hover { background: rgba(255, 255, 255, 0.07); }
+.bg-hit:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+.bg-hit-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: clip; white-space: nowrap; }
+.bg-hit-area { flex: none; color: #6b7488; font-size: var(--fs-caption); }
+.bg-nohit { padding: 8px 12px; color: #9aa5b8; font-size: var(--fs-small); }
+
+/* Lenses: one row of plain choices on the dark, the app's segmented control restyled for it. */
+.bg-lenses { position: absolute; top: 12px; right: 12px; z-index: 2; background: rgba(10, 14, 23, 0.84); border: 1px solid rgba(255, 255, 255, 0.14); backdrop-filter: blur(8px); }
+.bg-lenses button { color: #c3ccde; }
+.bg-lenses button:hover { color: #fff; }
+.bg-lenses button.on { background: rgba(255, 255, 255, 0.14); color: #fff; box-shadow: none; }
+
+/* The dev-only design switcher: the whole view is query-gated, so this never shows unasked. */
+.bg-design { position: absolute; left: 12px; bottom: 12px; z-index: 2; display: flex; align-items: center; gap: 8px; padding: 6px 8px; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: var(--r-3); background: rgba(10, 14, 23, 0.84); backdrop-filter: blur(8px); }
+.bg-design-word { color: #6b7488; font-size: var(--fs-caption); }
+.bg-design .seg { background: transparent; padding: 0; }
+.bg-design .seg button { color: #c3ccde; font-size: var(--fs-caption); padding: 4px 8px; }
+.bg-design .seg button.on { background: rgba(255, 255, 255, 0.14); color: #fff; box-shadow: none; }
+.bg-compare { color: #9aa5b8; font-size: var(--fs-caption); }
+.bg-compare:hover { color: #fff; }
+
+/* The walk card: the picked note, its neighbours by name, the breadcrumb back, and its Open. */
+.bg-card { position: absolute; z-index: 3; width: 240px; padding: 10px 12px; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: var(--r-3); background: rgba(10, 14, 23, 0.92); backdrop-filter: blur(8px); }
+.bg-card-title { color: #edf1f9; font-size: var(--fs-reading); font-weight: 600; line-height: 1.35; overflow-wrap: break-word; }
+.bg-card-sub { margin-top: 2px; color: #9aa5b8; font-size: var(--fs-caption); }
+.bg-trail { display: flex; align-items: baseline; gap: 8px; margin-top: 8px; }
+.bg-back { flex: none; padding: 3px 10px; border: 1px solid rgba(255, 255, 255, 0.16); border-radius: var(--r-2); background: transparent; color: #c3ccde; font: inherit; font-size: var(--fs-caption); cursor: pointer; }
+.bg-back:hover { background: rgba(255, 255, 255, 0.07); color: #fff; }
+.bg-trail-words { flex: 1; min-width: 0; color: #6b7488; font-size: var(--fs-caption); line-height: 1.45; overflow-wrap: break-word; }
+.bg-neighbours { margin-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 6px; }
+.bg-neighbour { display: flex; align-items: center; gap: 8px; width: 100%; padding: 3px 4px; border: 0; border-radius: var(--r-2); background: transparent; color: #e6ebf4; font: inherit; font-size: var(--fs-small); cursor: pointer; }
+.bg-neighbour:hover { background: rgba(255, 255, 255, 0.07); }
+.bg-neighbour:focus-visible, .bg-back:focus-visible, .bg-card-open:focus-visible, .bg-card-centre:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+.bg-card-actions { display: flex; gap: 8px; margin-top: 8px; }
+.bg-card-open { flex: none; padding: 5px 12px; border: 0; border-radius: var(--r-2); background: var(--accent-base, #357553); color: #fff; font: inherit; font-size: var(--fs-small); font-weight: 600; cursor: pointer; }
+.bg-card-open:hover { filter: brightness(1.1); }
+.bg-card-centre { flex: none; padding: 5px 12px; border: 0; border-radius: var(--r-2); background: transparent; color: #c3ccde; font: inherit; font-size: var(--fs-small); font-weight: 500; cursor: pointer; }
+.bg-card-centre:hover { background: rgba(255, 255, 255, 0.07); color: #fff; }
+.bg.compact .bg-legend, .bg.compact .bg-find, .bg.compact .bg-lenses { display: none; }
+
+/* The compare page: light, three brains side by side under the recommendation. */
+.bgc { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+.bgc-panels { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; padding: 0 32px 24px; }
+.bgc-panels.is-two { grid-template-columns: 1fr 1fr; }
+.bgc-panel { display: flex; flex-direction: column; min-height: 0; min-width: 0; border: 1px solid var(--border); border-radius: var(--r-3); overflow: hidden; background: #0a0e17; }
+.bgc-cap { padding: 10px 14px; background: var(--bg-raised); border-bottom: 1px solid var(--border); }
+.bgc-cap h2 { margin: 0; font-size: var(--fs-reading); font-weight: 650; }
+.bgc-cap p { margin: 2px 0 0; color: var(--text-muted); font-size: var(--fs-small); line-height: 1.45; }
+.bgc-body { position: relative; flex: 1; min-height: 420px; display: flex; }
+@media (max-width: 1400px) { .bgc-panels { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .bg-row, .bg-neighbour, .bg-whole, .bg-back, .bg-card-open, .bg-hit { transition: none; } }
+@media (min-width: 1700px) {
+  .bg-legend { width: 196px; }
+}

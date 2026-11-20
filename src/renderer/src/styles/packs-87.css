@@ -1,0 +1,428 @@
+/* The w3a packs' own bits (8.7 wave 3a, the Vault redesign, work half: Finance, Documents and ID, Business,
+   Vendors, Systems, Sites, Publications, Career, Meetings). The kit (styles/kit.css) carries every shared shape; this
+   file only settles the pack pages onto the mock-ups: the 40px tinted glyph tile in the page head, the head's words
+   starting at the title's left edge (50px: the tile plus the frame's 10px gap, as rendered), one-line clipping on
+   rows, and the few shapes the kit has no name for (budget bars, the look-ahead bars, the machine week strip, the
+   order timeline, the quote compare grid). Colours only from the theme tokens. No cream anywhere. */
+
+.p87 .nv-page-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-4);
+  background: none;
+  font-size: var(--fs-card);
+}
+
+.p87 .nv-page-icon .gtile {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-4);
+  font-size: var(--fs-card);
+}
+
+/* The head's words, the facts and the content start at the column edge with the title's tile, as every other
+   page (p25 one column: the icon sits inside the column; was: 50 px in, off the title's words, so a pack's body
+   started right of every other room's). */
+.p87-body {
+  padding-bottom: 40px;
+}
+
+.p87-body > .glabel:first-child {
+  margin-top: 18px;
+}
+
+.p87-body .glabel {
+  margin: 20px 0 8px;
+}
+
+.p87-body .card {
+  padding: 6px 20px;
+}
+
+.p87-body .card.pad {
+  padding: 14px 20px;
+}
+
+/* A pack page's title wraps to two lines at word edges first (8.7 round 2: never cut mid-word); past two lines the
+   shared frame's ellipsis ends it. */
+.p87 .nv-page-name {
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+/* One-line clip everywhere: ellipsis at the end, never mid-word cuts. */
+.p87 .trow .t {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.p87 .trow .meta {
+  white-space: nowrap;
+  flex: none;
+}
+
+/* A coming meeting's day (Today, Tue 9:00): bold, fixed, then the title. */
+.p87 .trow .day {
+  font-size: var(--fs-small);
+  font-weight: 700;
+  width: 64px;
+  flex: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.p87 .trow .end {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.p87 .ask.float {
+  margin-top: 20px;
+}
+
+.p87 .ask.float input.ask-text {
+  border: 0;
+  outline: 0;
+  font: inherit;
+  font-size: var(--fs-body);
+  width: 100%;
+  color: var(--text);
+  background: none;
+  padding: 0;
+}
+
+.p87 .ask.float input.ask-text::placeholder {
+  color: var(--text-faint);
+}
+
+/* Budget bars (the Money page's budgets): label, bar, amount. */
+.p87-meter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 0;
+}
+
+.p87-meter .nm {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  width: 150px;
+  flex: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.p87-meter .bar {
+  flex: 1;
+  height: 8px;
+  border-radius: var(--r-2);
+  background: var(--slate-bg);
+  min-width: 0;
+}
+
+.p87-meter .bar > span {
+  display: block;
+  height: 8px;
+  border-radius: var(--r-2);
+  background: var(--green-tx);
+}
+
+.p87-meter.over .bar > span {
+  background: var(--coral);
+}
+
+.p87-meter.near .bar > span {
+  background: var(--amber-tx);
+}
+
+.p87-meter .amt {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex: none;
+}
+
+/* The look-ahead's balance-by-week bars. */
+.p87-bars {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  height: 96px;
+}
+
+.p87-bars .b {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.p87-bars .fill {
+  width: 100%;
+  border-radius: var(--r-2) var(--r-2) var(--r-1) var(--r-1);
+  background: var(--green-tx);
+  min-height: 6px;
+}
+
+.p87-bars .b.tight .fill {
+  background: var(--amber-tx);
+}
+
+.p87-bars span {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* A machine's last-7-days strip. */
+.p87-strip {
+  display: flex;
+  gap: 8px;
+}
+
+.p87-strip div {
+  flex: 1;
+  text-align: center;
+  min-width: 0;
+}
+
+.p87-strip i {
+  display: block;
+  height: 34px;
+  border-radius: var(--r-3);
+  font-style: normal;
+  background: var(--green-bg);
+}
+
+.p87-strip .warn i {
+  background: var(--amber-bg);
+}
+
+.p87-strip .bad i {
+  background: var(--red-bg);
+}
+
+.p87-strip .none i {
+  background: var(--slate-bg);
+}
+
+.p87-strip span {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* An order's raised-to-paid timeline. */
+.p87-tl {
+  display: flex;
+  align-items: flex-start;
+}
+
+.p87-tl .st {
+  text-align: center;
+  flex: none;
+  width: 88px;
+}
+
+.p87-tl .st i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  font-style: normal;
+  display: block;
+  margin: 0 auto;
+  background: var(--border-strong);
+}
+
+.p87-tl .st.done i {
+  background: var(--green-tx);
+}
+
+.p87-tl .st.now i {
+  background: var(--amber-tx);
+}
+
+.p87-tl .st b {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+  display: block;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.p87-tl em {
+  flex: 1;
+  height: 2px;
+  background: var(--border);
+  font-style: normal;
+  margin-top: 5px;
+  min-width: 8px;
+}
+
+/* The suppliers' compare-quotes grid. */
+.p87-cmp {
+  display: flex;
+  gap: 10px;
+}
+
+.p87-cmp > button {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  padding: 12px 14px;
+  background: var(--bg-raised);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  color: var(--text);
+}
+
+.p87-cmp > button:hover {
+  background: var(--bg-hover);
+}
+
+.p87-cmp b {
+  font-size: var(--fs-body);
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.p87-cmp span {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+  display: block;
+  margin-top: 4px;
+}
+
+.p87-cmp .tag {
+  margin-top: 6px;
+}
+
+/* Two cards side by side (the Business page's customers and support). */
+.p87-cols {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.p87-cols > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.p87-cols .glabel {
+  margin-top: 0;
+}
+
+@media (max-width: 720px) {
+  .p87-cols {
+    flex-direction: column;
+  }
+
+  .p87-cmp {
+    flex-direction: column;
+  }
+}
+
+/* A paragraph changed where it shows (the career prep sheet). */
+.pm-inline.is-long {
+  white-space: normal;
+  text-align: left;
+}
+
+textarea.pm-inline-edit.is-long {
+  width: 100%;
+  font: inherit;
+  font-size: var(--fs-body);
+  resize: vertical;
+}
+
+/* One left edge where a tick stands beside status tiles (p15, Systems' machines and runbooks): the tick fills the
+   same 26px slot as the pack rows' xs tile, so every row's words start together. */
+.p87 .trow > .check {
+  width: 26px;
+  height: 26px;
+}
+
+/* p15-packs-work (Nov 2026): one left edge, and quiet empty lines, for Sites and Suppliers. Scoped under each page's
+   own module class (sibling jobs scope theirs the same way; the reviewer merges). The sub, the facts and the body
+   start at the column edge with the title's tile, like every other page; a section card holding only its muted line
+   drops its box chrome and reads as one small quiet line. Any card with a row, table, list, timeline or compare
+   grid keeps its box. */
+.wm-sites .p87 .nv-page-lead,
+.wm-sites .p87 .page-props,
+.wm-vendors .p87 .nv-page-lead,
+.wm-vendors .p87 .page-props {
+  margin-left: 0;
+}
+
+.wm-sites .p87-body,
+.wm-vendors .p87-body {
+  margin-left: 0;
+}
+
+.wm-sites .p87-body .card:has(> .vsub:only-child),
+.wm-vendors .p87-body .card:has(> .vsub:only-child) {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  padding: 2px 0;
+}
+
+/* One left edge (p25 one column): the lead starts at the column edge with the title's tile, as every other
+   page. (p15 packs-life's doubled class held the old 50 px indent whatever order the bundle landed in; the indent
+   itself is gone now.) */
+
+/* A pack section is one element now (packs uplift item 3): the first section's label keeps its 18 px. */
+.p87-body > .p87-sec:first-child > .glabel {
+  margin-top: 18px;
+}
+
+/* Pack overviews keep the one column at every window (p25 one column, reconciled 5 Nov 2026: packs uplift item 3
+   widened them to 2000 px past 1600 px viewports with two-across sections, which sat every pack page off the rooms'
+   column at a real window. One column everywhere wins; a pack section stays one element so Business keeps its
+   Customers-beside-Support pair inside the column). */
+
+/* A section holding only its quiet line reads as one, never a card (t254, 13 Nov 2026 in a full-width box is the
+   empty space; the p15 quiet line, globalised — the page passes bare when there is nothing but the line, so no
+   :has is needed). */
+.p87-bare {
+  padding: 4px 0 8px;
+}
+
+/* Sections pair on very wide windows (t254, 13 Nov 2026). The body that stood one section a row pairs its
+   sections two across, so short cards stand beside each other instead of one short line in a wide box, and a
+   lone section takes the width. The odd count's first section spans (Money: Bills due spans, Looking ahead
+   beside Budgets): first-of-type that is also odd-from-last is the first of an odd count, with no :has.
+   Anything that is not a section (the Ask box, Business's own Customers-beside-Support pair) spans; dense
+   packing fills behind a spanning box, so a pair slot never stands empty. Row gaps stay nil — the labels keep
+   their own margins, the rhythm never changes — and below 2400 px nothing changes. */
+@media (min-width: 2400px) {
+  .p87-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0 32px;
+    grid-auto-flow: dense;
+    align-items: start;
+  }
+  .p87-body > :not(.p87-sec) {
+    grid-column: 1 / -1;
+  }
+  .p87-body > section.p87-sec:first-of-type:nth-last-of-type(odd) {
+    grid-column: 1 / -1;
+  }
+}

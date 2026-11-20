@@ -1,0 +1,39 @@
+/* The work modules (Wave 6 part b): what the four pages share beyond Finance's page blocks (record-modules.css): a
+   record's own page with the way back, cards' tools. Existing tokens only; light first, dark follows from the tokens. */
+.ms-module:has(.ms-meetings) { --mod: var(--type-ochre); }
+.ms-module:has(.ms-weekly) { --mod: var(--type-sky); }
+.ms-module:has(.ms-sites) { --mod: var(--type-teal); }
+.ms-module:has(.ms-vendors) { --mod: var(--type-clay); }
+.mp-meetings .icon, .mp-meetings svg { color: var(--type-ochre); }
+.mp-weekly .icon, .mp-weekly svg { color: var(--type-sky); }
+.mp-sites .icon, .mp-sites svg { color: var(--type-teal); }
+.mp-vendors .icon, .mp-vendors svg { color: var(--type-clay); }
+.rm-page.wm-meetings { --mod: var(--type-ochre); }
+.rm-page.wm-weekly { --mod: var(--type-sky); }
+.rm-page.wm-sites { --mod: var(--type-teal); }
+.rm-page.wm-vendors { --mod: var(--type-clay); }
+
+.wm-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 2px;
+  padding: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+}
+.wm-back:hover { color: var(--text); }
+.wm-detail-title { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.wm-card-tools { display: inline-flex; align-items: center; gap: 8px; }
+.wm-count { margin-left: 6px; font-weight: 500; }
+
+/* A project's Overview: the work modules' tiles (views/modules/work/ProjectWorkTiles.tsx), in the hub's own look. */
+.pw-attention { margin-bottom: 6px; }
+.pw-alert { gap: 8px; }
+.pw-alert svg { flex: none; margin-top: 2px; }
+.pw-alert.tone-bad svg { color: var(--tone-bad); }
+.pw-alert.tone-warn svg { color: var(--tone-warn); }
+.pw-dot { flex: none; width: 8px; height: 8px; margin-top: 6px; border-radius: 50%; corner-shape: round; background: var(--text-faint); }
+.pw-dot.tone-ok { background: var(--tone-ok); }
+.pw-dot.tone-warn { background: var(--tone-warn); }
+.pw-dot.tone-bad { background: var(--tone-bad); }

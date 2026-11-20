@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Ironleaf Clipper",
+  "version": "1.0.0",
+  "description": "Clip articles, selections, bookmarks and screenshots into your Ironleaf notes. Only talks to your own PC.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Clip to Ironleaf"
+  },
+  "permissions": ["storage", "activeTab", "scripting", "alarms"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "minimum_chrome_version": "109"
+}
