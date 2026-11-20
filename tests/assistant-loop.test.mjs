@@ -45,8 +45,8 @@ before(async () => {
 after(() => rmSync(work, { recursive: true, force: true }));
 
 const sha = (buf) => createHash('sha256').update(buf).digest('hex');
-const Launch = 'Projects/07 Wexley St Ashford (Launch)/07 Wexley St Ashford (Launch).md';
-const NAME = '07 Wexley St Ashford (Launch)';
+const Launch = 'Projects/Wexley St Bakery (Launch)/Wexley St Bakery (Launch).md';
+const NAME = 'Wexley St Bakery (Launch)';
 const RID = '0b6a9d2e-1c1f-4c8e-9a51-6f5c2d7e8a90';
 const MASTER = 'Project files/checklist/Cafe_Opening_Checklist_MASTER.xlsx';
 const WEXLEY = 'Project files/checklist/Cafe_Opening_Checklist_WexleySt.xlsx';
@@ -224,7 +224,7 @@ test('make_template: one call from the project’s own copy — copied, back to 
     assert.ok(!made.isError, made.text);
     const tpl = path.join(folder, 'Project files', 'checklist', 'Launch template – Cafe Opening Checklist.xlsx');
     assert.ok(existsSync(tpl));
-    assert.match(made.text, /^Made a blank template: Project files\/checklist\/Launch template – Cafe Opening Checklist\.xlsx, in 07 Wexley St Ashford \(Launch\)’s folder \(.+\), from Project files\/checklist\/Cafe_Opening_Checklist_WexleySt\.xlsx\./);
+    assert.match(made.text, /^Made a blank template: Project files\/checklist\/Launch template – Cafe Opening Checklist\.xlsx, in Wexley St Bakery \(Launch\)’s folder \(.+\), from Project files\/checklist\/Cafe_Opening_Checklist_WexleySt\.xlsx\./);
     assert.match(made.text, /Cleared \d+ filled-in cells back to blank — “Overview”: B3 beside “Venue”, B4 beside “Opening date”, B5 beside “Cafe manager”, B6 beside “Prepared by”; “Before opening”: C Owner \(\d+\), D Due \(\d+\), E Status \(\d+\), F Notes \(\d+\)/);
     assert.match(made.text, /Kept: the headings and titles, .*“Kitchen”: A Ref, B Task, G Days before opening, H Days to go \(formulas\)/);
     assert.match(made.text, /The original, Project files\/checklist\/Cafe_Opening_Checklist_WexleySt\.xlsx, is exactly as it was\./);
@@ -348,7 +348,7 @@ test('a looping model, scripted: repeats refused, nudged early, stopped, and the
     const model = lookingModel((messages, onText) => {
       const asked = messages.at(-1).text;
       assert.match(asked, /<what_you_did>\nSteps:\n- Looked at how your notes are organised/);
-      assert.match(asked, /Looked at the cells of Cafe_Opening_Checklist_MASTER\.xlsx in 07 Wexley St Ashford \(Launch\) · \d+ times/);
+      assert.match(asked, /Looked at the cells of Cafe_Opening_Checklist_MASTER\.xlsx in Wexley St Bakery \(Launch\) · \d+ times/);
       assert.match(asked, /I got stuck going over the same things, and you can't use tools now\./);
       assert.ok(!messages.some((m) => m.role === 'tool' || m.toolCalls), 'the last turn is plain words: any model takes it');
       const text = 'I found the launch checklist: Cafe_Opening_Checklist_WexleySt.xlsx (this cafe’s copy) and Cafe_Opening_Checklist_MASTER.xlsx, in Project files/checklist. I looked through them but didn’t make the template yet. Next: say “make a blank Launch template from Cafe_Opening_Checklist_WexleySt.xlsx” and I’ll do it in one step.';
@@ -397,7 +397,7 @@ test('the same failure when the last turn brings nothing: plain words written by
     const model = lookingModel(() => ({ text: '', stopReason: 'stop' }));
     const run = await M.runAgent({ messages: [{ role: 'user', text: 'wheres the launch checklist? keep it as a template' }], tools, signal: new AbortController().signal, onText: (d) => (shown += d), onStep: () => {}, stream: model.stream });
     assert.equal(run.stopped, 'stuck');
-    assert.match(run.text, /^I got stuck going over the same things — here's where it got to\.\n\nWhat I did: .*Looked at the cells of Cafe_Opening_Checklist_(MASTER|WexleySt)\.xlsx in 07 Wexley St Ashford \(Launch\) · \d+ times/);
+    assert.match(run.text, /^I got stuck going over the same things — here's where it got to\.\n\nWhat I did: .*Looked at the cells of Cafe_Opening_Checklist_(MASTER|WexleySt)\.xlsx in Wexley St Bakery \(Launch\) · \d+ times/);
     assert.match(run.text, /Nothing was changed\.\n\nWhat’s left: the rest of what you asked\.\n\nNext step: tell me exactly what to do with Cafe_Opening_Checklist_(MASTER|WexleySt)\.xlsx \(for example “make a blank template from Cafe_Opening_Checklist_(MASTER|WexleySt)\.xlsx”\) and I’ll do it in one go\.$/);
     assert.equal(shown, run.text, 'the words reach the window');
     assert.ok(!modelWords(run.text.replace(/“make a blank template[^”]*”/, '')), 'plain words for the person');
