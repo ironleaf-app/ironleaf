@@ -142,8 +142,8 @@ test('HTML comments stay out of the document', () => {
 });
 
 test('a comment over several lines, and one never closed, stay out too', () => {
-  const html = doc('Roster', 'Cover the late shift.\n\n<!-- do not send this:\nthe till floats are wrong -->\n\nPriya takes Friday.\n\n<!-- a draft never finished', PLAIN_KIT);
-  assert.ok(!html.includes('till floats are wrong'), 'no multi-line comment words');
+  const html = doc('Roster', 'Cover the late shift.\n\n<!-- do not send this:\nthe oven timers are wrong -->\n\nPriya takes Friday.\n\n<!-- a draft never finished', PLAIN_KIT);
+  assert.ok(!html.includes('oven timers are wrong'), 'no multi-line comment words');
   assert.ok(!html.includes('a draft never finished'), 'no unclosed comment words');
   assert.ok(html.includes('Priya takes Friday'), 'the rest reads');
 });
@@ -227,9 +227,9 @@ test('javascript: links keep their words, never their address', () => {
 });
 
 test('a data picture stays (it fetches nothing); a file picture from the vault stays', () => {
-  const html = doc('Photos', '![Made-up pixels](data:image/png;base64,iVBORw0KGgo=)\n\n![The till](Photos/till.png)\n', PLAIN_KIT);
+  const html = doc('Photos', '![Made-up pixels](data:image/png;base64,iVBORw0KGgo=)\n\n![The oven](Photos/oven.png)\n', PLAIN_KIT);
   assert.ok(html.includes('data:image/png;base64'), 'a data picture needs no fetch, so it prints');
-  assert.ok(html.includes('Photos/till.png'), 'a vault picture prints');
+  assert.ok(html.includes('Photos/oven.png'), 'a vault picture prints');
 });
 
 // ── 7. The kit: colours, fonts, logos, and the heading across every door ──
@@ -371,16 +371,16 @@ test('a table with 200 columns holds the page width, every cell escaped', () => 
 });
 
 test('a 500-page note builds in seconds, pure', () => {
-  const para = 'The fortnightly now runs from the shared tracker to cut status chasing. Thursday’s till trial at the Quay decides the install schedule. ';
+  const para = 'The fortnightly now runs from the shared tracker to cut status chasing. Thursday’s oven trial at the Quay decides the install schedule. ';
   const text = `## Notes\n\n${`${para.repeat(8)}\n\n`.repeat(500)}`;
   const started = Date.now();
   const html = doc('Long season', text, PLAIN_KIT);
   assert.ok(Date.now() - started < 15_000, 'built well inside the layout budget');
-  assert.ok(html.includes('till trial'), 'its words read');
+  assert.ok(html.includes('oven trial'), 'its words read');
 });
 
 test('pictures cannot run past the page: figures scale and inline art is capped', () => {
-  const html = doc('Photos', '![The till](Photos/till.png)\n', PLAIN_KIT);
+  const html = doc('Photos', '![The oven](Photos/oven.png)\n', PLAIN_KIT);
   assert.ok(html.includes('max-width:100%'), 'pictures hold the width');
   assert.ok(html.includes('max-height'), 'and a tall picture is capped');
 });
@@ -491,7 +491,7 @@ test(
     const vaultDir = path.join(dir, 'vault');
     mkdirSync(path.join(vaultDir, 'Photos'), { recursive: true });
     // A tiny invented picture (1x1 PNG).
-    writeFileSync(path.join(vaultDir, 'Photos', 'till.png'), Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64'));
+    writeFileSync(path.join(vaultDir, 'Photos', 'oven.png'), Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64'));
     let trackHits = 0;
     const server = createServer((req, res) => {
       const p = new URL(req.url ?? '/', 'http://x').pathname;
@@ -529,7 +529,7 @@ test(
     try {
       const html = B.brandDocument({
         title: 'Harbour site meeting',
-        text: `## Summary\n\nThe till trial is on.\n\n![The till](Photos/till.png)\n\n![Tracker](http://127.0.0.1:${port}/track/pixel.png)\n\nSee [[Files/quote.pdf]] and [the guide](https://example.com/guide).\n`,
+        text: `## Summary\n\nThe oven trial is on.\n\n![The oven](Photos/oven.png)\n\n![Tracker](http://127.0.0.1:${port}/track/pixel.png)\n\nSee [[Files/quote.pdf]] and [the guide](https://example.com/guide).\n`,
         path: 'Meetings/Harbour site meeting.md',
         kit: PLAIN_KIT,
         url: (rel) => (rel ? `file://${path.join(vaultDir, rel)}` : ''),
@@ -559,7 +559,7 @@ test(
       assert.ok(!raw.includes(vaultDir) && !raw.includes(`${port}/track`), 'no local path or tracker in the bytes');
       assert.ok(!raw.includes('Ironleaf'), 'neither app named in the bytes');
       const words = pdfText(file);
-      assert.ok(words.includes('till trial'), 'its words read');
+      assert.ok(words.includes('oven trial'), 'its words read');
       assert.ok(words.includes('Tracker'), 'the remote picture’s words read');
       assert.ok(words.includes('quote'), 'the file reads by name');
     } finally {

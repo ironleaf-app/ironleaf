@@ -45,7 +45,7 @@ before(async () => {
   mkdirSync(shots, { recursive: true });
   mkdirSync(path.join(filesDir, 'Logos'), { recursive: true });
   mkdirSync(path.join(filesDir, 'Photos'), { recursive: true });
-  // Invented logo marks (white for dark bands, dark for light ones) and an invented till sketch.
+  // Invented logo marks (white for dark bands, dark for light ones) and an invented oven sketch.
   const mark = (fill, words) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 86"><g fill="${fill}"><path d="M75 4 106 46H90l14 18H46l14-18H44z"/><text x="75" y="83" font-family="Helvetica,Arial,sans-serif" font-size="17" font-weight="700" text-anchor="middle">${words}</text></g></svg>`;
   writeFileSync(path.join(filesDir, 'Logos/harbour-white.svg'), mark('#ffffff', 'harbour pine'));
   writeFileSync(path.join(filesDir, 'Logos/harbour-dark.svg'), mark('#123f36', 'harbour pine'));
@@ -56,7 +56,7 @@ before(async () => {
   writeFileSync(path.join(filesDir, 'Logos/wattle-white.svg'), mark('#ffffff', 'wattle and co'));
   writeFileSync(path.join(filesDir, 'Logos/ghost-dark.svg'), mark('#1a1a1a', 'ghost gums'));
   writeFileSync(
-    path.join(filesDir, 'Photos/till.svg'),
+    path.join(filesDir, 'Photos/oven.svg'),
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180"><rect width="320" height="180" fill="#eef1f3"/><rect x="90" y="40" width="140" height="90" rx="6" fill="#101820"/><rect x="102" y="54" width="116" height="44" fill="#0f6b5c"/><rect x="102" y="106" width="116" height="10" fill="#d6d9dc"/><rect x="60" y="140" width="200" height="12" rx="4" fill="#5a6067"/></svg>`,
   );
   server = createServer((req, res) => {
@@ -193,7 +193,7 @@ const MEETING_TEXT = `---
 date: 2026-03-03
 time: 9:00 am
 duration: 40 minutes
-project: Riverside flagship and the Quay pop-up
+project: Riverside cafe and the Quay pop-up
 attendees: [Ana Reyes, Sam Okafor, Jo Tran]
 absent: Lee Park
 also: Marco, Dana (GM)
@@ -201,21 +201,21 @@ confidential: true
 figures:
   - { value: 20 Mar, label: Fit-out finishes }
   - { value: 2 Apr, label: Doors open }
-  - { value: "Thu 5 Mar, 2 pm", label: Till trial at the Quay }
-  - { value: 45 min, label: Estimate for one till install }
+  - { value: "Thu 5 Mar, 2 pm", label: Oven trial at the Quay }
+  - { value: 45 min, label: Estimate for one oven install }
 ---
 
 # Riverside Cafe Opening
 
 ## Summary
 
-The fortnightly now runs from the shared tracker to cut status chasing. The main issue is getting the new tills into both sites before fit-out finishes on 20 March. On Thursday Jo will run one live till trial at the Quay to show how long an install really takes, and the schedule gets revised from that. What happens if the supplier is late was left open. Staff training is pencilled in for the last week of March.
+The fortnightly now runs from the shared tracker to cut status chasing. The main issue is getting the new ovens into both sites before fit-out finishes on 20 March. On Thursday Jo will run one live oven trial at the Quay to show how long an install really takes, and the schedule gets revised from that. What happens if the supplier is late was left open. Staff training is pencilled in for the last week of March.
 
 ## Action items
 
 - [ ] Confirm with Marco and Dana that Jo can be on site next week — Jo · by Wed 4 Mar
-- [ ] Live trial of one till at the Quay, including the serial numbers and the payments portal — Jo, Priya · by Thu 5 Mar, 2 pm
-- [ ] Revise the install schedule from what the trial shows, so everyone can see it. It has to allow for the store's trading hours and the delivery windows — Jo · after the trial
+- [ ] Live trial of one oven at the Quay, including the serial numbers and the warranty portal — Jo, Priya · by Thu 5 Mar, 2 pm
+- [ ] Revise the install schedule from what the trial shows, so everyone can see it. It has to allow for the cafe’s opening hours and the delivery windows — Jo · after the trial
 - [ ] Add a tracker task for the trial and set its date — Ana ⏰ 2026-03-06 09:00
 - [ ] Check how the fire inspection was booked last year — Sam · before opening
 - [ ] Agree the next step if the supplier misses 20 March. See "Still open" on the next page — Ana, Sam · after the trial
@@ -223,7 +223,7 @@ The fortnightly now runs from the shared tracker to cut status chasing. The main
 ## Decisions and agreements
 
 - **The tracker is the record.** Agenda changes and new tasks go in it, and the fortnightly walks through it.
-- **Test first.** One live till trial at the Quay on Thursday, then revise the schedule.
+- **Test first.** One live oven trial at the Quay on Thursday, then revise the schedule.
 - **Inspection date is an indication.** It is fine as long as it is done before doors open.
 
 ## Still open
@@ -236,11 +236,11 @@ The fortnightly now runs from the shared tracker to cut status chasing. The main
 
 Sam said it is typically booked by facilities. Jo has not booked one before and believes Marco did last year's. It may be as simple as repeating last year's request.
 
-### Tills and the fit-out
+### Ovens and the fit-out
 
-The tills have arrived and both installers are confirmed. Each site needs a visit, with serial numbers recorded and the swap made in the payments portal.
+The ovens have arrived and both installers are confirmed. Each site needs a visit, with serial numbers recorded and the swap made in the warranty portal.
 
-![The new till](Photos/till.svg)
+![The new oven](Photos/oven.svg)
 
 > [!note] About this record
 > Prepared from the meeting recording. Please send any corrections to Jo.
@@ -248,7 +248,7 @@ The tills have arrived and both installers are confirmed. Each site needs a visi
 ## Transcript
 
 > [!quote]- Transcript · 40 minutes
-> **09:01** *Ana:* Let's start with the tills.
+> **09:01** *Ana:* Let's start with the ovens.
 `;
 
 const REPORT_TEXT = `---
@@ -289,7 +289,7 @@ const SHORT_TEXT = `Rain on the windows, and the roster done by lunch. Priya tak
 const para = (seed) => {
   const bits = [
     'The fortnightly now runs from the shared tracker to cut status chasing across both sites.',
-    'Each visit records the serial numbers and makes the swap in the payments portal before leaving.',
+    'Each visit records the serial numbers and makes the swap in the warranty portal before leaving.',
     'Staff training is pencilled in for the last week of March, once the trial dates are confirmed.',
     'The supplier confirmed the delivery windows in writing, with the late-install exception left open.',
     'Both installers are booked for the fit-out week, and the cafe manager has the run sheet.',
@@ -306,9 +306,9 @@ date: 2026-05-01
 # Season Review
 
 ${Array.from({ length: 64 }, (_, s) => `## Week ${s + 1}\n\n${para(s)}\n\n${para(s + 2)}\n\n${para(s + 4)}\n\n${para(s + 1)}\n`).join('\n')}
-## Till log
+## Oven log
 
-| Week | Store | Installs | Notes |
+| Week | Site | Installs | Notes |
 | --- | --- | --- | --- |
 ${Array.from({ length: 120 }, (_, i) => `| ${1 + (i % 12)} | ${i % 2 ? 'Quay' : 'Riverside'} | ${1 + (i % 4)} | ${i % 2 ? 'Evening visit after close' : 'Morning visit before open'} |`).join('\n')}
 `;
@@ -352,7 +352,7 @@ const GAP_TEXT = `---
 date: 2026-03-03
 time: 9:00 am
 duration: 40 minutes
-project: Riverside flagship and the Quay pop-up
+project: Riverside cafe and the Quay pop-up
 attendees: [Ana Reyes, Sam Okafor, Jo Tran]
 absent: Lee Park
 also: Marco, Dana (GM)
@@ -360,30 +360,30 @@ confidential: true
 figures:
   - { value: 20 Mar, label: Fit-out finishes }
   - { value: 2 Apr, label: Doors open }
-  - { value: "Thu 5 Mar, 2 pm", label: Till trial at the Quay }
-  - { value: 45 min, label: Estimate for one till install }
+  - { value: "Thu 5 Mar, 2 pm", label: Oven trial at the Quay }
+  - { value: 45 min, label: Estimate for one oven install }
 ---
 
 # Riverside Cafe Opening
 
 ## Summary
 
-The fortnightly now runs from the shared tracker to cut status chasing. The main issue is getting the new tills into both sites before fit-out finishes on 20 March. On Thursday Jo will run one live till trial at the Quay to show how long an install really takes, and the schedule gets revised from that.
+The fortnightly now runs from the shared tracker to cut status chasing. The main issue is getting the new ovens into both sites before fit-out finishes on 20 March. On Thursday Jo will run one live oven trial at the Quay to show how long an install really takes, and the schedule gets revised from that.
 
-What happens if the supplier is late was left open. Staff training is pencilled in for the last week of March, once the trial dates are confirmed. Both installers are booked for the fit-out week, and the cafe manager has the run sheet. Each visit records the serial numbers and makes the swap in the payments portal before leaving.
+What happens if the supplier is late was left open. Staff training is pencilled in for the last week of March, once the trial dates are confirmed. Both installers are booked for the fit-out week, and the cafe manager has the run sheet. Each visit records the serial numbers and makes the swap in the warranty portal before leaving.
 
 ## Action items
 
 - [ ] Confirm with Marco and Dana that Jo can be on site next week — Jo · by Wed 4 Mar
-- [ ] Live trial of one till at the Quay, including the serial numbers and the payments portal — Jo, Priya · by Thu 5 Mar, 2 pm
+- [ ] Live trial of one oven at the Quay, including the serial numbers and the warranty portal — Jo, Priya · by Thu 5 Mar, 2 pm
 - [ ] Revise the install schedule from what the trial shows, so everyone can see it — Jo · after the trial
 - [ ] Add a tracker task for the trial and set its date — Ana · by Fri 6 Mar
 - [ ] Check how the fire inspection was booked last year — Sam · before opening
 - [ ] Agree the next step if the supplier misses 20 March — Ana, Sam · after the trial
 - [ ] Book the training room for the last week of March — Ana · by Fri 13 Mar
-- [ ] Order the spare receipt rolls for both sites — Sam · by Fri 13 Mar
+- [ ] Order the spare baking trays for both sites — Sam · by Fri 13 Mar
 - [ ] Confirm the late-install exception with the supplier — Jo · by Fri 13 Mar
-- [ ] Send the revised schedule to both stores — Ana · after the trial
+- [ ] Send the revised schedule to both sites — Ana · after the trial
 - [ ] Check the training roster covers the trial days — Sam · before opening
 - [ ] Agree who opens the Quay on trial day — Jo, Ana · by Thu 12 Mar
 - [ ] Walk the Quay floor with the installer before trial day — Jo · by Wed 11 Mar
@@ -392,10 +392,10 @@ What happens if the supplier is late was left open. Staff training is pencilled 
 ## Decisions and agreements
 
 - **The tracker is the record.** Agenda changes and new tasks go in it, and the fortnightly walks through it.
-- **Test first.** One live till trial at the Quay on Thursday, then revise the schedule.
+- **Test first.** One live oven trial at the Quay on Thursday, then revise the schedule.
 `;
 
-const FOOT_FILL = 'The fortnightly now runs from the shared tracker to cut status chasing across both sites and the pop-up store.';
+const FOOT_FILL = 'The fortnightly now runs from the shared tracker to cut status chasing across both sites and the pop-up stall.';
 const FOOT_LIST = ['Stalls on the lawn, food north and crafts south.', 'Gates open at nine with tickets at the door.', 'The marquee hire includes power boards and lighting.', 'First aid tent beside the main gate.', 'Pack down starts at five with all hands.', 'Lost property to the council office on Monday.'];
 const FOOT_TEXT = `---
 type: Report
@@ -421,7 +421,7 @@ const NOTES = {
   meeting: { title: 'Riverside Cafe Opening', text: MEETING_TEXT, path: 'Meetings/Riverside Cafe Opening.md', words: ['Riverside Cafe Opening', 'Confirm with Marco', 'Ana Reyes', 'Page 1 of'] },
   report: { title: 'Kiln Output Review', text: REPORT_TEXT, path: 'Notes/Kiln Output Review.md', words: ['Kiln Output Review', 'Pinholes on two trays', 'First-pass yield'] },
   short: { title: 'A thought', text: SHORT_TEXT, path: 'Notes/A thought.md', words: ['Rain on the windows'] },
-  long: { title: 'Season Review', text: LONG_TEXT, path: 'Notes/Season Review.md', words: ['Season Review', 'Week 40', 'Till log'] },
+  long: { title: 'Season Review', text: LONG_TEXT, path: 'Notes/Season Review.md', words: ['Season Review', 'Week 40', 'Oven log'] },
   names: { title: 'Harbour Fete Planning', text: NAMES_TEXT, path: 'Meetings/Harbour Fete Planning.md', words: ['Harbour Fete Planning', 'Müller', 'Seán'] },
   odd: { title: ODD_TITLE, text: ODD_TEXT, path: 'Notes/Q3 review.md', words: ['Review', 'Quotes'] },
   gap: { title: 'Riverside Cafe Opening', text: GAP_TEXT, path: 'Meetings/Riverside Cafe Opening.md', words: ['Riverside Cafe Opening', 'Confirm with Marco', 'spare receipt rolls'] },
