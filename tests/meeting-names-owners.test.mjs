@@ -3,7 +3,7 @@
 // owners fell to 0 of 12, and the Discussion gave work to the wrong people from voice labels alone). Naming a voice
 // relabels every door a person reads without touching the stored lines; owners come from how the meeting talked
 // (the asks say so, the readers only keep the meeting's own people); a merge never drops an owner a later part
-// found. The made-up Fitzroy meeting from the take only.
+// found. The made-up Brookfield meeting from the take only.
 import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -30,7 +30,7 @@ after(() => rmSync(work, { recursive: true, force: true }));
 const PEOPLE = ['Alex Rivera', 'Mia Chen', 'Kate Sullivan', 'Noah Patel', 'David Kim'];
 const NOTE = `---
 type: meeting
-title: "2026-11-06 Fitzroy cafe opening: weekly"
+title: "2026-11-06 Brookfield bakery opening: weekly"
 date: 2026-11-06
 people:
   - "[[Alex Rivera]]"
@@ -158,7 +158,7 @@ test('the asks teach owners from how people talk, and never trust a voice label 
 });
 
 test('the notes ask carries the meeting’s own people', () => {
-  const q = N.meetingNotesPrompt({ title: 'Fitzroy', date: '2026-11-06', people: PEOPLE, attendees: PEOPLE.slice(0, 4), transcript: '[0:00] Speaker 1: hi.' });
+  const q = N.meetingNotesPrompt({ title: 'Brookfield', date: '2026-11-06', people: PEOPLE, attendees: PEOPLE.slice(0, 4), transcript: '[0:00] Speaker 1: hi.' });
   assert.match(q, /People at the meeting: Alex Rivera, Mia Chen, Kate Sullivan, Noah Patel/);
 });
 
@@ -171,7 +171,7 @@ test('the notes ask carries the meeting’s own people', () => {
 // own owner edit is never overwritten. Blank still beats wrong: an invented voice and a job nobody took stay
 // blank.
 const SCRIPT = [
-  ['Alex', "Right, door's shut. Opening date first, then joinery, tills and stock, and the milk last."],
+  ['Alex', "Right, door's shut. Opening date first, then joinery, ovens and stock, and the milk last."],
   ['Kate', "Good. Mind the wall, the paint's still wet."],
   ['Alex', "Noted. How's the counter joinery looking?"],
   ['Kate', 'The revised drawing is locked. The joiners can install on Thursday the nineteenth of November, as long as the stone top lands that morning.'],
@@ -181,8 +181,8 @@ const SCRIPT = [
   ['Kate', 'They can do the final inspection in the week of the sixteenth. Can you book it for Tuesday the seventeenth at ten?'],
   ['Alex', "Yep. I'll book it, and I'll confirm the booking by Monday the ninth. Then we could open the following week: Friday the twenty-seventh of November, soft open for locals Thursday afternoon the twenty-sixth. Right with that?"],
   ['Kate', 'The twenty-seventh works for me.'],
-  ['Alex', "That's the date then. Tills: two new tills for the Fitzroy counters arrive Monday the twenty-third."],
-  ['Kate', "Can you sign off the till quote by Tuesday the tenth, so the order isn't held up?"],
+  ['Alex', "That's the date then. Ovens: two new ovens for the Brookfield kitchen arrive Monday the twenty-third."],
+  ['Kate', "Can you sign off the oven quote by Tuesday the tenth, so the order isn't held up?"],
   ['Alex', "Yep, I'll sign it Tuesday. Four thousand eight hundred dollars, all up."],
   ['Kate', 'Right.'],
   ['Alex', 'Stock. Did the totals on the opening stock order come through?'],
@@ -191,12 +191,12 @@ const SCRIPT = [
   ['Kate', "Yep, I'll check them by Friday and send the order on the thirteenth. Green beans from David Kim arrive on the twentieth, by the way."],
   ['Alex', 'Good. And the menu boards?'],
   ['Kate', "They still need printing before opening week. We haven't agreed who owns that. Leave it open?"],
-  ['Alex', 'Leave it open. Last one, the milk. We agreed last week to move from Fresh Dairy Co to Merricks Creek Dairy for both stores. What did they say?'],
-  ['Kate', 'They can start Monday the twenty-third, same day as the tills, with a six a.m. drop at Fitzroy.'],
+  ['Alex', 'Leave it open. Last one, the milk. We agreed last week to move from Fresh Dairy Co to Merricks Creek Dairy for the bakery and the stall. What did they say?'],
+  ['Kate', 'They can start Monday the twenty-third, same day as the ovens, with a six a.m. drop at Brookfield.'],
   ['Alex', 'Can you ring Merricks Creek today and confirm the first delivery in writing?'],
   ['Kate', "Yep, I'll ring them today."],
   ['Alex', 'Right. Can you also have the roster for opening week done by Friday the twentieth?'],
-  ['Kate', "Yep, I'll have it done by the twentieth. Can you run till training on Wednesday the twenty-fifth?"],
+  ['Kate', "Yep, I'll have it done by the twentieth. Can you run oven training on Wednesday the twenty-fifth?"],
   ['Alex', "Yep, two sessions on the Wednesday. And I'll check the first day totals on opening morning, and send the soft open invites by Monday the twenty-third."],
   ['Kate', 'Good. So soft open Thursday the twenty-sixth, doors open Friday.'],
   ['Alex', "That's it. Anything else?"],
@@ -212,12 +212,12 @@ const TAKE_ACTIONS = [
   { what: 'Chase the stone top for Thursday morning', who: 'Speaker 2', when: 'Thursday morning' },
   { what: 'Book the council final inspection', who: 'Speaker 1', when: 'Tuesday the seventeenth' },
   { what: 'Confirm the council booking', who: 'Speaker 1', when: 'Monday the ninth' },
-  { what: 'Sign off the till quote', who: 'Speaker 1', when: 'Tuesday the tenth' },
+  { what: 'Sign off the oven quote', who: 'Speaker 1', when: 'Tuesday the tenth' },
   { what: 'Check the opening stock order totals', who: 'Kate Sullivan', when: 'Friday' },
   { what: 'Send the full opening stock order', who: 'Kate Sullivan', when: 'Friday the thirteenth' },
   { what: 'Ring Merricks Creek today', who: 'Speaker 2', when: 'today' },
   { what: 'Have the roster for opening week done', who: 'Speaker 2', when: 'Friday the twentieth' },
-  { what: 'Run till training', who: 'Speaker 1', when: 'Wednesday the twenty-fifth' },
+  { what: 'Run oven training', who: 'Speaker 1', when: 'Wednesday the twenty-fifth' },
   { what: 'Check the first day totals', who: 'Speaker 1', when: 'opening morning' },
   { what: 'Send the soft open invites', who: 'Speaker 1', when: 'Monday the twenty-third' },
   { what: 'Print the menu boards', who: '', when: '' },
@@ -229,19 +229,19 @@ const TRUTH_OWNERS = {
   'Chase the stone top for Thursday morning': 'Kate Sullivan',
   'Book the council final inspection': 'Alex Rivera',
   'Confirm the council booking': 'Alex Rivera',
-  'Sign off the till quote': 'Alex Rivera',
+  'Sign off the oven quote': 'Alex Rivera',
   'Check the opening stock order totals': 'Kate Sullivan',
   'Send the full opening stock order': 'Kate Sullivan',
   'Ring Merricks Creek today': 'Kate Sullivan',
   'Have the roster for opening week done': 'Kate Sullivan',
-  'Run till training': 'Alex Rivera',
+  'Run oven training': 'Alex Rivera',
   'Check the first day totals': 'Alex Rivera',
   'Send the soft open invites': 'Alex Rivera',
 };
 const NAMES = { spk1: 'Alex Rivera', spk2: 'Kate Sullivan' };
 const atStop = () =>
   N.readMeetingReply(
-    { summary: 'The Fitzroy opening date was settled for Friday the twenty-seventh of November.', decisions: [{ text: 'Open on Friday the 27th of November', at: '0:48' }], actions: TAKE_ACTIONS, people: [], named: ['David Kim'] },
+    { summary: 'The Brookfield opening date was settled for Friday the twenty-seventh of November.', decisions: [{ text: 'Open on Friday the 27th of November', at: '0:48' }], actions: TAKE_ACTIONS, people: [], named: ['David Kim'] },
     { transcript: TAKE, date: '2026-11-06', attendees: ['Alex Rivera', 'Kate Sullivan'], speakerNames: {} },
   );
 const ownersOf = (text) => Object.fromEntries(Mt.findActions(text, { people: PEOPLE }).map((a) => [a.what, a.who]));
@@ -260,7 +260,7 @@ test('at Stop, before any naming, a self-taken job keeps which voice took it and
 });
 
 test('the note written at Stop shows blank owners (never a voice label as a person), and naming the voices fills all 12', () => {
-  const note = N.applyMeetingNotes('# 2026-11-06 Fitzroy cafe opening: weekly\n', atStop(), { transcript: TAKE, length: '3 minutes', people: PEOPLE, date: '2026-11-06' }).text;
+  const note = N.applyMeetingNotes('# 2026-11-06 Brookfield bakery opening: weekly\n', atStop(), { transcript: TAKE, length: '3 minutes', people: PEOPLE, date: '2026-11-06' }).text;
   assert.ok(!/^- \[[ x]\] .*— (?:\[\[)?Speaker \d/m.test(note), note);
   const before = ownersOf(note);
   assert.equal(Object.keys(TRUTH_OWNERS).filter((w) => before[w] === TRUTH_OWNERS[w]).length, 3, 'only the asked-by-name jobs own before naming (the g1 shape)');
@@ -285,7 +285,7 @@ test('a name set before the write-up is used at once', () => {
 });
 
 test('a person’s own edit to an owner is never overwritten by a naming', () => {
-  const note = N.applyMeetingNotes('# Fitzroy\n', atStop(), { transcript: TAKE, length: '3 minutes', people: PEOPLE, date: '2026-11-06' }).text;
+  const note = N.applyMeetingNotes('# Brookfield\n', atStop(), { transcript: TAKE, length: '3 minutes', people: PEOPLE, date: '2026-11-06' }).text;
   const edited = note.replace(/^(- \[[ x]\] Ring Merricks Creek today)(.*)$/m, '$1 — Mia Chen$2');
   assert.ok(edited !== note, note);
   const named = N.fillVoiceOwners(S.writeSpeakerNames(edited, '', NAMES));
@@ -299,11 +299,11 @@ test('the minutes keep the voice the same way, and minutes made after naming rea
     { transcript: TAKE, date: '2026-11-06', attendees: ['Alex Rivera', 'Kate Sullivan'], speakerNames: {} },
   );
   const byWhat = Object.fromEntries(r.actions.map((a) => [a.what, a]));
-  assert.equal(byWhat['Run till training'].voice, 'spk1');
-  const line = M.minutesActionLine(byWhat['Run till training'], PEOPLE);
+  assert.equal(byWhat['Run oven training'].voice, 'spk1');
+  const line = M.minutesActionLine(byWhat['Run oven training'], PEOPLE);
   assert.match(line, /not assigned/, line);
   assert.ok(!/— Speaker \d(?!>)/.test(line.replace(/<!--[^>]*-->/g, '')), line);
-  const note = N.applyMeetingNotes('# Fitzroy\n', atStop(), { transcript: TAKE, length: '3 minutes', people: PEOPLE, date: '2026-11-06' }).text;
+  const note = N.applyMeetingNotes('# Brookfield\n', atStop(), { transcript: TAKE, length: '3 minutes', people: PEOPLE, date: '2026-11-06' }).text;
   const named = N.fillVoiceOwners(S.writeSpeakerNames(note, '', NAMES));
   const existing = Object.fromEntries((M.readMinutesExisting(named).actions ?? []).map((a) => [a.what, a.who]));
   assert.equal(existing['Book the council final inspection'], 'Alex Rivera');

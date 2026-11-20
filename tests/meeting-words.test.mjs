@@ -59,7 +59,7 @@ test('unsure words found: spelt two ways, close to known, or rare; each with con
   assert.equal(adm.reason, 'spelt-two-ways');
   assert.deepEqual(adm.spellings, ['ADM', 'ADN']);
   // Tessaly is said once with nothing near: quiet (n4 reason change — a real take's said-once Green, David,
-  // Kim and Brunswick were all noise, and noise is worse than a miss; a clipped tail of a steady word still
+  // Kim and Kingsley were all noise, and noise is worse than a miss; a clipped tail of a steady word still
   // flags, covered below).
   assert.ok(!byDisplay.get('Tessaly'), 'said once with nothing near stays quiet');
   // Read right, never flagged: Priya, Alex, Harbourline (said three ways alike), Fridays, the prose.
@@ -94,15 +94,15 @@ test('a line’s first word is a sentence, not a rare name; later words still co
   const mid = [{ at: 0, text: 'We will ask Tessaly about the printer.' }];
   assert.deepEqual(W.findUncertain(mid, KNOWN), [], 'said once with nothing near stays quiet, past the start too');
   const clip = [
-    { at: 0, text: 'Fitzroy opens in March.' },
-    { at: 30, text: 'Fitzroy opens in March.' },
-    { at: 60, text: 'Fitzroy opens in March.' },
-    { at: 90, text: 'We will ask Roy about the printer.' },
+    { at: 0, text: 'Brookfield opens in March.' },
+    { at: 30, text: 'Brookfield opens in March.' },
+    { at: 60, text: 'Brookfield opens in March.' },
+    { at: 90, text: 'We will ask Field about the printer.' },
   ];
-  const roy = W.findUncertain(clip, KNOWN);
-  assert.equal(roy.length, 1);
-  assert.equal(roy[0].display, 'Roy');
-  assert.equal(roy[0].reason, 'rare', 'a clipped tail of a steady word still flags');
+  const field = W.findUncertain(clip, KNOWN);
+  assert.equal(field.length, 1);
+  assert.equal(field[0].display, 'Field');
+  assert.equal(field[0].reason, 'rare', 'a clipped tail of a steady word still flags');
   const startMiss = [{ at: 0, text: 'Nayer chased the mill today.' }];
   assert.equal(W.findUncertain(startMiss, KNOWN)[0].reason, 'close-to-known', 'a near miss flags wherever it stands');
   const generic = [{ at: 0, text: 'Then the retry shipped.' }];
@@ -209,16 +209,16 @@ test('p9: a steady word said twice is consistent, not unsure; said once needs a 
   assert.deepEqual(once, [], 'said once with nothing near: no row');
   // Said once as a clipped tail of a word said steadily: still worth a row.
   const clip = [
-    { at: 0, text: 'Fitzroy opens in March.' },
-    { at: 30, text: 'Fitzroy opens in March.' },
-    { at: 60, text: 'Fitzroy opens in March.' },
-    { at: 90, text: 'We will ask Roy about the printer.' },
+    { at: 0, text: 'Brookfield opens in March.' },
+    { at: 30, text: 'Brookfield opens in March.' },
+    { at: 60, text: 'Brookfield opens in March.' },
+    { at: 90, text: 'We will ask Field about the printer.' },
   ];
-  const roy = W.findUncertain(clip, ['Priya Nair', 'Alex Chen']);
-  assert.equal(roy.length, 1);
-  assert.equal(roy[0].display, 'Roy');
-  assert.equal(roy[0].reason, 'rare');
-  assert.equal(roy[0].count, 1);
+  const field = W.findUncertain(clip, ['Priya Nair', 'Alex Chen']);
+  assert.equal(field.length, 1);
+  assert.equal(field[0].display, 'Field');
+  assert.equal(field[0].reason, 'rare');
+  assert.equal(field[0].count, 1);
   // Said three times alike: consistent too.
   const thrice = [
     { at: 0, text: 'We will ask Tessaly about the printer.' },
@@ -289,7 +289,7 @@ test('speakers: labels are never flagged, and a lone product word stays quiet', 
   assert.ok(!found.some((f) => f.display === 'Blackwood'), 'a lone product word stays quiet');
 });
 
-// m4-minutes-clean fault 5 (6 Nov 2026, the Fitzroy run flagged 19th, 27th, Alex's and Green as noise and
+// m4-minutes-clean fault 5 (6 Nov 2026, the Brookfield run flagged 19th, 27th, Alex's and Green as noise and
 // missed "books counsel" for "books council"): dates, possessives of a known name and ordinary words never flag;
 // a wrong word that makes no sense in its sentence is offered once. Invented meeting words, safe to keep.
 test('m4: dates, possessives and ordinary words stay quiet; a wrong word is offered once', () => {
@@ -316,8 +316,8 @@ test('m4: dates, possessives and ordinary words stay quiet; a wrong word is offe
   assert.equal(found.length, 1, 'one row');
 });
 
-// m7-minutes-last fault 5 (6 Nov 2026, the Fitzroy run flagged "stock" as noise and missed "Pittsroy"
-// for "Fitzroy" and "tils" for "tills", both said steadily): a near-spelling of a word the meeting says many
+// m7-minutes-last fault 5 (6 Nov 2026, the Brookfield run flagged "stock" as noise and missed "Brookfeld"
+// for "Brookfield" and "flor" for "flour", both said steadily): a near-spelling of a word the meeting says many
 // times, said once, is offered ask-first; two ordinary words merely alike stay quiet. Invented meeting words.
 test('m7: a near-spelling of a steady word is offered; ordinary lookalikes stay quiet', () => {
   const lines = [
@@ -344,14 +344,14 @@ test('m7: a near-spelling of a steady word is offered; ordinary lookalikes stay 
 });
 
 // n4-minutes-pdf fault 2 (6 Nov 2026, a real take raised 11 with 8 noise — said-once Green, David, Kim
-// and Brunswick, Fit/Fix, stock/stone/store, joiners/joinery, delivery/deliveries — while Noah/NOAA,
+// and Kingsley, Fit/Fix, stock/stone/stove, joiners/joinery, delivery/deliveries — while Noah/NOAA,
 // Merrick's and Marix were useful): barely-said words with nothing near stay quiet, in every shape the take
 // showed, and the useful shapes stay. Invented meeting words, safe to keep.
 test('n4: said-once strays stay quiet; nearness still flags', () => {
   const lines = [
-    { at: 0, text: 'Morning all, Fitzroy opens in March with the usual crew.', who: 'Others' },
-    { at: 30, text: 'Fitzroy opens in March with the usual crew.', who: 'You' },
-    { at: 60, text: 'Fitzroy opens in March with the usual crew.', who: 'Others' },
+    { at: 0, text: 'Morning all, Brookfield opens in March with the usual crew.', who: 'Others' },
+    { at: 30, text: 'Brookfield opens in March with the usual crew.', who: 'You' },
+    { at: 60, text: 'Brookfield opens in March with the usual crew.', who: 'Others' },
     { at: 90, text: 'Spare Green crates from David Okafor hold the Marix valves, said Wren.', who: 'You' },
   ];
   const known = ['Priya Nair', 'Alex Chen'];
@@ -365,8 +365,8 @@ test('n4: said-once strays stay quiet; nearness still flags', () => {
   assert.equal(marix[0].display, 'Marix');
   assert.equal(marix[0].reason, 'close-to-known');
   assert.equal(marix[0].known, 'Mark');
-  // A prefix of a known word is its own word, not a clip ("Fit" starting "Fitzroy").
-  const fit = W.findUncertain([{ at: 0, text: 'The Fit crew is tracking well.' }], [...known, 'Fitzroy Hall']);
+  // A prefix of a known word is its own word, not a clip ("Brook" starting "Brookfield").
+  const fit = W.findUncertain([{ at: 0, text: 'The Brook crew is tracking well.' }], [...known, 'Brookfield Hall']);
   assert.deepEqual(fit, [], 'a prefix stays quiet');
 });
 
@@ -381,10 +381,10 @@ test('n4: steady means three times; forms and plurals stay quiet; each spelling 
     { at: 30, text: 'Noah books counsel by Monday.', who: 'You' },
     { at: 40, text: 'The stone bench lands Friday.', who: 'You' },
     { at: 50, text: 'The stone bench lands Friday.', who: 'Others' },
-    { at: 60, text: 'The Fitzroy store opens soon.', who: 'You' },
-    { at: 70, text: 'Till training starts Monday.', who: 'You' },
-    { at: 80, text: 'Till training starts Monday.', who: 'Others' },
-    { at: 90, text: 'Till training starts Monday.', who: 'You' },
+    { at: 60, text: 'The Brookfield bakery opens soon.', who: 'You' },
+    { at: 70, text: 'Oven training starts Monday.', who: 'You' },
+    { at: 80, text: 'Oven training starts Monday.', who: 'Others' },
+    { at: 90, text: 'Oven training starts Monday.', who: 'You' },
     { at: 100, text: 'We will train the crew on Monday.', who: 'You' },
     { at: 110, text: 'Confirm the delivery date soon.', who: 'You' },
     { at: 120, text: 'Confirm the delivery date soon.', who: 'Others' },
@@ -418,7 +418,7 @@ test('n4: the best 5 show, likeliest first', () => {
   assert.deepEqual(found.map((f) => f.display), ['Nayer', 'Ballman', 'Quil', 'Bril', 'Stil'], 'two ways first, fewer sayings first, the sixth cut');
 });
 
-// n4-minutes-pdf fault 4 (6 Nov 2026, the Fitzroy run's "Fixed 9 copies and remembered" toast had no
+// n4-minutes-pdf fault 4 (6 Nov 2026, the Brookfield run's "Fixed 9 copies and remembered" toast had no
 // Undo): a fix taken back forgets what it remembered, from the project and the people list — and never a
 // newer correction of the same word. Invented spellings, safe to keep.
 test('n4: Undo forgets the remembered word, never a newer correction', async () => {
@@ -463,7 +463,7 @@ test('remembered fixes ride next time: stored per project and people, applied as
   }
 });
 
-// e2-meeting-faults fault 1 (6 Nov 2026, the Fitzroy take on 10.1.4: "Noted: close to Notes" and
+// e2-meeting-faults fault 1 (6 Nov 2026, the Brookfield take on 10.1.4: "Noted: close to Notes" and
 // "Leave: close to Lease" were noise, and "Marix" got "Mark" while the same meeting said
 // "Merrick's Creek"): a common word whose capital is only its sentence's is no doubt from nearness
 // alone, and two spellings in the same name's slot in this meeting are one word to check, its
@@ -472,10 +472,10 @@ test('e2: sentence words stay quiet; one name in two spellings is one row with t
   const lines = [
     { at: 0, text: "Right. Doors shut. Mind the wall. The paint's still wet. Noted.", who: 'You' },
     { at: 60, text: "And the menu boards? They still need printing before opening week. We haven't agreed who owns that. Leave it open?", who: 'You' },
-    { at: 120, text: 'Leave it open. Last one, the milk. We agreed last week to move to Marix Creek Dairy for both stores.', who: 'Others' },
+    { at: 120, text: 'Leave it open. Last one, the milk. We agreed last week to move to Marix Creek Dairy for the bakery and the stall.', who: 'Others' },
     { at: 180, text: "Can you ring Merrick's Creek today and confirm the first delivery in writing?", who: 'You' },
   ];
-  const known = ['Alex Rivera', 'Kate Sullivan', 'Mark Doyle', 'Notes', 'Brunswick Site Lease Renewal', 'Merricks Creek Dairy'];
+  const known = ['Alex Rivera', 'Kate Sullivan', 'Mark Doyle', 'Notes', 'Kingsley Site Lease Renewal', 'Merricks Creek Dairy'];
   const found = W.findUncertain(lines, known);
   const spellings = found.flatMap((f) => f.spellings);
   for (const quiet of ['Noted', 'Leave']) assert.ok(!spellings.includes(quiet), `${quiet} stays quiet: ${JSON.stringify(spellings)}`);

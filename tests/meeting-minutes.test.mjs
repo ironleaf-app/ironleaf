@@ -88,7 +88,7 @@ test('actions say who and by when; nobody named stays "not assigned"', () => {
 });
 
 test('the minutes in the note: people, summary, decisions, actions, questions, figures, folded discussion', () => {
-  const note = '# Cart fix\n\n## Notes\n\nThe till queue was long.\n\n## Actions\n\n- [ ] \n';
+  const note = '# Cart fix\n\n## Notes\n\nThe coffee queue was long.\n\n## Actions\n\n- [ ] \n';
   const m = M.readMinutesReply(REPLY);
   const out = M.applyMeetingMinutes(note, m, { people: PEOPLE, date: '2026-11-05' });
   const t = out.text;
@@ -101,7 +101,7 @@ test('the minutes in the note: people, summary, decisions, actions, questions, f
   assert.ok(!/^- \[ \] *$/m.test(t), 'no empty box left');
   assert.match(t, /## Questions\n\n- \? Whether the receipt printer arrives before opening\.\n/, 'the Questions kind’s own line');
   assert.match(t, /## Discussion\n\n> \[!quote\]- Cart retry\n> The retry fails on Fridays\.\n>\n> Priya will chase the failed payments\.\n/, 'folded, linked once in the Summary, plain after');
-  assert.ok(t.includes('The till queue was long.'), 'the person’s own notes kept');
+  assert.ok(t.includes('The coffee queue was long.'), 'the person’s own notes kept');
   // The calm order: Summary, Decisions, Actions, Questions, Key figures, then the folded Discussion.
   const order = ['## Summary', '## Decisions', '## Actions', '## Questions', '## Key figures', '## Discussion'].map((h) => t.indexOf(h));
   assert.ok(order.every((at, i) => i === 0 || at > order[i - 1]), 'sections in order');
@@ -238,7 +238,7 @@ test('the writer takes a partial answer without crashing (a list missing reads a
 });
 
 test('an "Update <document>" names its document as a link when the vault knows it once', () => {
-  const DOCS = ['lighting plan', 'Till rollout'];
+  const DOCS = ['lighting plan', 'Oven install'];
   assert.equal(M.minutesActionLine({ what: 'Update the lighting plan: the second lane changes the speaker layout', who: 'Mia' }, PEOPLE, undefined, DOCS), '- [ ] Update [[lighting plan|the lighting plan]]: the second lane changes the speaker layout — Mia');
   assert.equal(M.minutesActionLine({ what: 'Update lighting plan: the second lane changes the speaker layout', who: 'Mia' }, PEOPLE, undefined, DOCS), '- [ ] Update [[lighting plan]]: the second lane changes the speaker layout — Mia');
   assert.equal(M.minutesActionLine({ what: 'Update the lighting plan: the second lane changes the speaker layout', who: 'Mia' }, PEOPLE), '- [ ] Update the lighting plan: the second lane changes the speaker layout — Mia', 'no docs known, plain words');
@@ -287,7 +287,7 @@ test('p9: the question says what an action is: a request with no owner, an owned
   assert.match(M.MINUTES_SYSTEM, /never "own" or "responsible"/);
   assert.match(M.MINUTES_SYSTEM, /For example/);
   assert.match(M.MINUTES_SYSTEM, /Ask the mill whether Tuesday delivery is possible/);
-  assert.match(M.MINUTES_SYSTEM, /Finish the till count before stocktake/);
+  assert.match(M.MINUTES_SYSTEM, /Finish the flour count before stocktake/);
 });
 
 test('chunked asks back as one: figures capped, each decision and action once, topics merged', () => {
@@ -325,7 +325,7 @@ test('speakers with existing: one ask carries the voices and the note\u2019s min
   assert.match(q, /Ship the retry first/);
 });
 
-// n4-minutes-pdf fault 6 (6 Nov 2026, the Fitzroy run firmed "by Friday", said on a Friday, to next Friday):
+// n4-minutes-pdf fault 6 (6 Nov 2026, the Brookfield run firmed "by Friday", said on a Friday, to next Friday):
 // the minutes keep the same promise as the notes — the model says the words, exact days resolve here, loose
 // words stay words — and what the note already holds rides the same way. Invented jobs, safe to keep.
 test('n4: the minutes keep loose due words as words, exact days as dates', () => {
@@ -389,12 +389,12 @@ test('m4: an unclear owner stays empty, never guessed', () => {
   assert.match(M.MINUTES_SYSTEM, /empty whenever the owner isn't clear/i);
 });
 
-// m4-minutes-clean fault 1 (6 Nov 2026, the Fitzroy run doubled: two summaries, five decisions for three, thirteen
+// m4-minutes-clean fault 1 (6 Nov 2026, the Brookfield run doubled: two summaries, five decisions for three, thirteen
 // actions with near-duplicates): Make the minutes never doubles. One summary, one decisions list, one actions list;
 // the same point or job in different words lands once. Invented meeting words, safe to keep.
 test('m4: make the minutes never doubles the notes already there', () => {
-  const note = '# Fitzroy\n\n## Summary\n\nThe weekly meeting covered the Fitzroy opening. They set dates for the till rollout and stock orders.\n\n## Decisions\n\n- Fitzroy store opens on Friday the 27th of November.\n- Cafe soft opens for locals Thursday afternoon, 26 November.\n- Merricks Creek Dairy starts the milk run on Monday the 23rd of November.\n\n## Actions\n\n- [ ] Have the roster for opening week done — [[Mia Chen]] · by 20 Nov 2026\n- [ ] Book the council final inspection for Tuesday the 17th — [[Noah Patel]] · by 17 Nov 2026\n';
-  const m = M.readMinutesReply({ present: [], absent: [], named: [], summary: 'The meeting covered Fitzroy opening plans. Till training and milk supply dates were agreed.', figures: [], decisions: [{ text: 'Fitzroy opens Friday 27 November with a soft open for locals on Thursday afternoon 26 November.', at: '0:20' }, { text: 'Merricks Creek Dairy starts milk deliveries Monday 23 November.', at: '2:30' }], actions: [{ what: 'Complete roster for opening week', who: 'Mia Chen', due: '2026-11-20', time: '' }, { what: 'Book council final inspection for Tuesday 17th and confirm booking', who: 'Noah Patel', due: '2026-11-09', time: '' }], open: [], topics: [] });
+  const note = '# Brookfield\n\n## Summary\n\nThe weekly meeting covered the Brookfield opening. They set dates for the oven install and stock orders.\n\n## Decisions\n\n- Brookfield bakery opens on Friday the 27th of November.\n- Cafe soft opens for locals Thursday afternoon, 26 November.\n- Merricks Creek Dairy starts the milk run on Monday the 23rd of November.\n\n## Actions\n\n- [ ] Have the roster for opening week done — [[Mia Chen]] · by 20 Nov 2026\n- [ ] Book the council final inspection for Tuesday the 17th — [[Noah Patel]] · by 17 Nov 2026\n';
+  const m = M.readMinutesReply({ present: [], absent: [], named: [], summary: 'The meeting covered Brookfield opening plans. Oven training and milk supply dates were agreed.', figures: [], decisions: [{ text: 'Brookfield opens Friday 27 November with a soft open for locals on Thursday afternoon 26 November.', at: '0:20' }, { text: 'Merricks Creek Dairy starts milk deliveries Monday 23 November.', at: '2:30' }], actions: [{ what: 'Complete roster for opening week', who: 'Mia Chen', due: '2026-11-20', time: '' }, { what: 'Book council final inspection for Tuesday 17th and confirm booking', who: 'Noah Patel', due: '2026-11-09', time: '' }], open: [], topics: [] });
   const out = M.applyMeetingMinutes(note, m, { people: ['Alex Rivera', 'Mia Chen', 'Kate Sullivan', 'Noah Patel'] });
   const summaries = out.text.split('## Summary')[1].split('## ')[0].split('\n').filter((l) => l.trim() && !l.startsWith('#'));
   assert.equal(summaries.length, 1, `one summary, not two: ${JSON.stringify(summaries)}`);
@@ -405,7 +405,7 @@ test('m4: make the minutes never doubles the notes already there', () => {
   assert.equal(out.added, 0);
 });
 
-// m4-minutes-clean fault 4 (6 Nov 2026, the Fitzroy run's council action inferred a 10:00 time that was never
+// m4-minutes-clean fault 4 (6 Nov 2026, the Brookfield run's council action inferred a 10:00 time that was never
 // said for its day): nothing in the minutes may state a time, date or figure the transcript doesn't support. A
 // time stays only with the day it was said for; a day or figure stays only when its words were said. Invented
 // meeting words, safe to keep.
@@ -413,16 +413,16 @@ test('m4: a time stays only with its day, a day or figure only when said', () =>
   const lines = [
     { at: 0, text: 'Council can do the final inspection in the week of the 16th.', who: 'Others' },
     { at: 20, text: 'I will book it for Tuesday the 17th at 10, and confirm the booking by Monday the 9th.', who: 'You' },
-    { at: 40, text: 'Two new tills arrive for the counter.', who: 'Others' },
+    { at: 40, text: 'Two new ovens arrive for the kitchen.', who: 'Others' },
   ];
-  const r = M.readMinutesReply({ present: [], absent: [], named: [], summary: 'They set the inspection.', figures: [{ value: '2', label: 'New tills' }, { value: '3', label: 'Extra tills' }], decisions: [], actions: [{ what: 'Book council inspection and confirm booking', who: 'Noah Patel', due: '2026-11-09', time: '10:00' }, { what: 'Book inspection for Tuesday', who: 'Noah Patel', due: '2026-11-17', time: '10:00' }, { what: 'Chase an invented day', who: '', due: '2026-11-12', time: '' }], open: [], topics: [] }, { transcript: lines });
+  const r = M.readMinutesReply({ present: [], absent: [], named: [], summary: 'They set the inspection.', figures: [{ value: '2', label: 'New ovens' }, { value: '3', label: 'Extra ovens' }], decisions: [], actions: [{ what: 'Book council inspection and confirm booking', who: 'Noah Patel', due: '2026-11-09', time: '10:00' }, { what: 'Book inspection for Tuesday', who: 'Noah Patel', due: '2026-11-17', time: '10:00' }, { what: 'Chase an invented day', who: '', due: '2026-11-12', time: '' }], open: [], topics: [] }, { transcript: lines });
   assert.deepEqual(r.actions[0], { what: 'Book council inspection and confirm booking', who: 'Noah Patel', due: '2026-11-09' }, '10:00 was for the 17th, not the 9th');
   assert.deepEqual(r.actions[1], { what: 'Book inspection for Tuesday', who: 'Noah Patel', due: '2026-11-17', time: '10:00' }, '10:00 stays with the 17th');
   assert.deepEqual(r.actions[2], { what: 'Chase an invented day' }, 'the 12th was never said');
-  assert.deepEqual(r.figures, [{ value: '2', label: 'New tills' }], 'two tills were said, three were not');
+  assert.deepEqual(r.figures, [{ value: '2', label: 'New ovens' }], 'two ovens were said, three were not');
 });
 
-// m7-minutes-last fault 1 (6 Nov 2026, the Fitzroy minutes restated two decisions in new words: word overlap
+// m7-minutes-last fault 1 (6 Nov 2026, the Brookfield minutes restated two decisions in new words: word overlap
 // cannot tell the same point said differently): the note's own minutes ride along with the ask, the answer comes
 // back as the merged whole, and replaces only the recorder's own lines — each kept verbatim where it still
 // stands, a restating line gone, the person's ticked boxes kept whatever the answer says, and an empty answer
@@ -566,7 +566,7 @@ Priya and Alex went over the cart retry.
 
 The retry fails on Fridays.
 
-The lunch queue stretched past the till counter.
+The lunch queue stretched past the coffee counter.
 
 ## Transcript
 
@@ -599,7 +599,7 @@ test('m9: a line the merged whole leaves out stays verbatim where it is', () => 
   assert.ok(questions.includes('- ? Whether the front window sign arrives before Saturday.'), 'the person-added open item survives, folded into a question');
   assert.ok(!/^## Open$/m.test(out.text), 'the old Open section gone');
   const discussion = out.text.split('## Discussion')[1].split('## Transcript')[0];
-  assert.ok(discussion.includes('The lunch queue stretched past the till counter.'), 'the person-added discussion word survives verbatim');
+  assert.ok(discussion.includes('The lunch queue stretched past the coffee counter.'), 'the person-added discussion word survives verbatim');
   assert.ok(discussion.indexOf('The retry fails on Fridays.') < discussion.indexOf('The lunch queue'), 'exactly where it was');
   assert.equal(out.tidied, 0, 'nothing restated, nothing tidied');
   assert.equal(M.tidiedWords(out.tidied), '', 'no tidying, no words');
@@ -608,10 +608,10 @@ test('m9: a line the merged whole leaves out stays verbatim where it is', () => 
   assert.equal(again.tidied, 0);
 });
 
-// m9-minutes-keep: the bar for "restates" is set by the real Fitzroy restated pairs (6 Nov 2026, footage
-// "2026-11-06 Fitzroy cafe opening weekly 2.md": two decisions restated in new words). The merged whole
+// m9-minutes-keep: the bar for "restates" is set by the real Brookfield restated pairs (6 Nov 2026, footage
+// "2026-11-06 Brookfield bakery opening weekly 2.md": two decisions restated in new words). The merged whole
 // keeps one wording of each pair; the other goes, and the toast count says two. Real meeting words, kept.
-const FITZROY_NOTE = `---
+const BROOKFIELD_NOTE = `---
 type: meeting
 date: 2026-11-06
 ---
@@ -619,10 +619,10 @@ date: 2026-11-06
 ## Decisions
 
 - Agreed to open the following week if council was happy on the 17th and joinery landed on the 19th.
-- Fitzroy to open Friday 27 November with a soft open for locals Thursday afternoon 26 November.
-- Merricks Creek Dairy to start Monday 23 November for Brunswick and Fitzroy.
-- Fitzroy opens the week after council approval on the 17th and joinery delivery on the 19th.
-- Both stores move from Fresh Dairy Co to Merricks Creek Dairy.
+- Brookfield to open Friday 27 November with a soft open for locals Thursday afternoon 26 November.
+- Merricks Creek Dairy to start Monday 23 November for the bakery and the stall.
+- Brookfield opens the week after council approval on the 17th and joinery delivery on the 19th.
+- The bakery and the stall move from Fresh Dairy Co to Merricks Creek Dairy.
 
 ## Transcript
 
@@ -635,18 +635,18 @@ test('m9: the real restated pairs still merge to one, and the toast says how man
     present: [], absent: [], named: [], summary: '', figures: [],
     decisions: [
       { text: 'Agreed to open the following week if council was happy on the 17th and joinery landed on the 19th.', at: '1:00' },
-      { text: 'Fitzroy to open Friday 27 November with a soft open for locals Thursday afternoon 26 November.', at: '1:19' },
-      { text: 'Merricks Creek Dairy to start Monday 23 November for Brunswick and Fitzroy.', at: '2:39' },
+      { text: 'Brookfield to open Friday 27 November with a soft open for locals Thursday afternoon 26 November.', at: '1:19' },
+      { text: 'Merricks Creek Dairy to start Monday 23 November for the bakery and the stall.', at: '2:39' },
     ],
     actions: [], open: [], topics: [],
   });
-  const out = M.applyMeetingMinutes(FITZROY_NOTE, minutes, { people: PEOPLE, merged: true });
+  const out = M.applyMeetingMinutes(BROOKFIELD_NOTE, minutes, { people: PEOPLE, merged: true });
   const decisions = out.text.split('## Decisions')[1].split('## Transcript')[0];
   assert.ok(decisions.includes('- Agreed to open the following week if council was happy on the 17th and joinery landed on the 19th.'), 'the first wording kept verbatim');
-  assert.ok(decisions.includes('- Fitzroy to open Friday 27 November with a soft open for locals Thursday afternoon 26 November.'), 'the middle decision untouched');
-  assert.ok(decisions.includes('- Merricks Creek Dairy to start Monday 23 November for Brunswick and Fitzroy.'), 'the third kept verbatim');
+  assert.ok(decisions.includes('- Brookfield to open Friday 27 November with a soft open for locals Thursday afternoon 26 November.'), 'the middle decision untouched');
+  assert.ok(decisions.includes('- Merricks Creek Dairy to start Monday 23 November for the bakery and the stall.'), 'the third kept verbatim');
   assert.ok(!decisions.includes('joinery delivery on the 19th'), 'the council restatement gone');
-  assert.ok(!decisions.includes('Both stores move from Fresh Dairy Co'), 'the dairy restatement gone');
+  assert.ok(!decisions.includes('The bakery and the stall move from Fresh Dairy Co'), 'the dairy restatement gone');
   assert.equal(out.tidied, 2, 'two restated lines tidied');
   assert.equal(M.tidiedWords(1), 'Tidied 1 restated line.');
   assert.equal(M.tidiedWords(2), 'Tidied 2 restated lines.');
