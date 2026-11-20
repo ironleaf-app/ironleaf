@@ -46,7 +46,7 @@ test('measured: quiet at rest, shown on hover and while scrolling, still usable'
   const WebSocket = require('ws');
   const dir = mkdtempSync(path.join(tmpdir(), 'nv-note-quiet-'));
   const paras = Array.from({ length: 40 }, (_, i) => `<p>Paragraph ${i + 1}: the winter menu tasting went well on Thursday afternoon. The pumpkin soup needs more pepper and a longer roast on the seeds, while the leek and potato is ready for the menu cards.</p>`).join('\n');
-  const lines = Array.from({ length: 160 }, (_, i) => `<div class="cm-line">Line ${i + 1}: chase the spare tills still on the old build before Friday</div>`).join('\n');
+  const lines = Array.from({ length: 160 }, (_, i) => `<div class="cm-line">Line ${i + 1}: chase the old microphone stands still in the cupboard before Friday</div>`).join('\n');
   const page = (css, main, cls) => `<!doctype html>
 <html lang="en-AU" data-theme="light" data-palette="bright">
 <head><meta charset="utf-8"><style>${css}</style>

@@ -54,7 +54,7 @@ const scene = (css) => {
 <ul class="rm-today-rows">
 ${prep('Harbour fit-out weekly review with the landlord and the lighting contractor', 'Today 9:00 am · 3 open items with the people coming')}
 ${prep('Winter menu tasting with Alex Lee and the bakery team', 'Today 2:30 pm · nothing open with the people coming')}
-${prep('Studio upgrade rollout wave two planning session for the Sydney cafes', 'Tomorrow 10:00 am · 5 open items with the people coming')}
+${prep('Studio upgrade soundproofing planning session for the control room and booth', 'Tomorrow 10:00 am · 5 open items with the people coming')}
 ${prep('Supplier call with Western Plains Mill about the winter flour order', 'Tomorrow 4:00 pm · 1 open item with the people coming')}
 ${prep('2026-11-03 Cart standup retrospective follow-up session', '3 open actions · carry them into their projects')}
 ${prep('Lease extension negotiation second round debrief with Priya', '1 open action · carry it into its project')}
@@ -63,7 +63,7 @@ ${prep('Lease extension negotiation second round debrief with Priya', '1 open ac
 </section>
 <section class="td-section rm-today" data-section="finance"><header class="td-section-head"><h2>Money</h2></header>
 <ul class="rm-today-rows">
-${prep('Electricity bill for the Parramatta store overdue by 6 days', '$214.50 · was due 30 Oct')}
+${prep('Electricity bill for the bakery kitchen overdue by 6 days', '$214.50 · was due 30 Oct')}
 ${prep('Council rates third instalment coming up soon after the weekend', '$486.00 · due 12 Nov')}
 </ul></section>
 <section class="td-section rm-today" data-section="health"><header class="td-section-head"><h2>Health</h2></header>
@@ -73,11 +73,11 @@ ${prep('Morning walk around the harbour ticked off for today already', '6 days i
 </div>
 <div class="home-cards">
 <section aria-label="Morning brief"><div class="glabel home-label">Morning brief</div><div class="card home-card">
-${trow('Chase the 11 spare tills still on the old build before Friday', 'Studio Upgrade · Mia Tran · by yesterday, longest waiting first')}
+${trow('Chase the 11 old microphone stands still in the cupboard before Friday', 'Studio Upgrade · Mia Tran · by yesterday, longest waiting first')}
 ${trow('Approve the Harbourline Signs quote for the new meeting rooms', 'Harbour Fit-out · $12,400 ex GST · by tomorrow')}
 </div></section>
 <section aria-label="Bills due"><div class="glabel home-label">Bills due</div><div class="card home-card">
-${trow('Electricity bill for the Parramatta store', 'Overdue by 6 days · $214.50')}
+${trow('Electricity bill for the bakery kitchen', 'Overdue by 6 days · $214.50')}
 ${trow('Council rates third instalment for the financial year', 'Due 12 Nov · $486.00 · autopay')}
 </div></section>
 <section aria-label="Habits to tick"><div class="glabel home-label">Habits to tick</div><div class="card home-card">

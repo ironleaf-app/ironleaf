@@ -25,7 +25,7 @@ after(() => rmSync(work, { recursive: true, force: true }));
 const NOW = new Date(2026, 9, 16, 16, 0);
 const at = (day, hour = 10) => new Date(2026, 9, day, hour).getTime();
 
-const STORE_BEFORE = `---
+const STUDIO_BEFORE = `---
 type: project
 status: active
 health: on track
@@ -38,15 +38,15 @@ due: 2026-10-30
 ## What’s next
 
 - [ ] Send the reconciliation to finance — Sam · by 9 Oct
-- [ ] Chase the spare tills — Shift leads · by 14 Oct
+- [ ] Chase the spare microphone stands — Studio hands · by 14 Oct
 - [ ] Export the device inventory — Sam
-- [ ] Book the second wave — Priya · by 20 Oct
+- [ ] Book the speaker fitting — Priya · by 20 Oct
 
 ## Risks and issues
 
-- **Medium** — 5 tills short of disk space
+- **Medium** — 5 speaker cables frayed
 `;
-const STORE_NOW = `---
+const STUDIO_NOW = `---
 type: project
 status: active
 health: on track
@@ -59,22 +59,22 @@ due: 2026-10-30
 ## What’s next
 
 - [ ] Send the reconciliation to finance — Sam · by 9 Oct
-- [ ] Chase the spare tills — Shift leads · by 21 Oct
+- [ ] Chase the spare microphone stands — Studio hands · by 21 Oct
 - [x] Export the device inventory — Sam
-- [ ] Book the second wave — Priya · by 20 Oct
-- [ ] Ask the vendor for spare tills — Leilani
+- [ ] Book the speaker fitting — Priya · by 20 Oct
+- [ ] Ask the vendor for spare microphone stands — Leilani
 
 ## Key dates
 
 | When | What | Status |
 | --- | --- | --- |
-| 12 Oct 2026 | Wave one finished | missed |
-| 2 Oct 2026 | Old wave | missed |
+| 12 Oct 2026 | Booth finished | missed |
+| 2 Oct 2026 | Old session | missed |
 
 ## Risks and issues
 
-- **Medium** — 5 tills short of disk space *Closed:* 14 Oct 2026
-- **High** — 11 spare tills can’t be reached remotely
+- **Medium** — 5 speaker cables frayed *Closed:* 14 Oct 2026
+- **High** — 11 old microphone stands can’t be found
 
 ## Decisions
 
@@ -83,7 +83,7 @@ due: 2026-10-30
 
 ## Updates
 
-- **15 Oct 2026** — 212 of 236 tills done. *From:* Status.xlsx
+- **15 Oct 2026** — 8 of 12 soundproofing panels up. *From:* Status.xlsx
 - **1 Oct 2026** — An older update.
 `;
 const HARBOUR = `---
@@ -107,11 +107,11 @@ const DONE = `---\ntype: project\nstatus: done\nhealth: on track\nprogress: 100\
 const sources = () => [
   {
     path: 'Projects/Studio Upgrade/Studio Upgrade.md',
-    text: STORE_NOW,
-    before: STORE_BEFORE,
+    text: STUDIO_NOW,
+    before: STUDIO_BEFORE,
     beforeTime: at(9),
-    activity: [{ path: 'Projects/Studio Upgrade/Activity/Reconcile tills.md', title: 'Reconcile tills', modified: at(14), status: 'done' }, { path: 'Projects/Studio Upgrade/Activity/Old.md', title: 'Old', modified: at(2) }],
-    notes: [{ path: 'Projects/Studio Upgrade/Wave meeting.md', title: 'Wave meeting', modified: at(13) }],
+    activity: [{ path: 'Projects/Studio Upgrade/Activity/Reconcile the gear list.md', title: 'Reconcile the gear list', modified: at(14), status: 'done' }, { path: 'Projects/Studio Upgrade/Activity/Old.md', title: 'Old', modified: at(2) }],
+    notes: [{ path: 'Projects/Studio Upgrade/Desk meeting.md', title: 'Desk meeting', modified: at(13) }],
     files: [
       { rel: 'Current/Status.xlsx', name: 'Status.xlsx', modified: at(16, 9) },
       { rel: 'Current/Reconciliation v4.docx', name: 'Reconciliation v4.docx', modified: at(15) },
@@ -138,31 +138,31 @@ test('the week, and the projects in the order that needs the person first', () =
 });
 
 test('what changed: from the file as the week began, dated lines, notes and the folder', () => {
-  const store = R.draftReview(sources(), { now: NOW }).projects.find((r) => r.name === 'Studio Upgrade');
-  assert.deepEqual(store.changed.map((i) => i.words), [
+  const studio = R.draftReview(sources(), { now: NOW }).projects.find((r) => r.name === 'Studio Upgrade');
+  assert.deepEqual(studio.changed.map((i) => i.words), [
     'Done: Export the device inventory',
-    'New next step: Ask the vendor for spare tills',
+    'New next step: Ask the vendor for spare microphone stands',
     'Progress: 80% → 90%',
-    '212 of 236 tills done.',
+    '8 of 12 soundproofing panels up.',
     'Decided: Retired devices are dropped from every list.',
-    'Risk closed: 5 tills short of disk space',
-    'New risk: 11 spare tills can’t be reached remotely',
-    'Task: Reconcile tills',
-    'Note: Wave meeting',
+    'Risk closed: 5 speaker cables frayed',
+    'New risk: 11 old microphone stands can’t be found',
+    'Task: Reconcile the gear list',
+    'Note: Desk meeting',
     '4 files changed in the folder',
   ]);
-  const files = store.changed.at(-1);
+  const files = studio.changed.at(-1);
   assert.equal(files.detail, 'Status.xlsx, Reconciliation v4.docx, Devices.csv and 1 more');
   assert.deepEqual(files.open, { file: 'Current/Status.xlsx' }, 'the newest file opens');
-  assert.deepEqual(store.changed.find((i) => i.words.startsWith('Task: ')).open, { note: 'Projects/Studio Upgrade/Activity/Reconcile tills.md' });
+  assert.deepEqual(studio.changed.find((i) => i.words.startsWith('Task: ')).open, { note: 'Projects/Studio Upgrade/Activity/Reconcile the gear list.md' });
 });
 
 test('what slipped: overdue steps, moved days, missed key dates', () => {
-  const store = R.draftReview(sources(), { now: NOW }).projects.find((r) => r.name === 'Studio Upgrade');
-  assert.deepEqual(store.slipped.map((i) => [i.words, i.detail]), [
+  const studio = R.draftReview(sources(), { now: NOW }).projects.find((r) => r.name === 'Studio Upgrade');
+  assert.deepEqual(studio.slipped.map((i) => [i.words, i.detail]), [
     ['Send the reconciliation to finance', 'Sam · was due 9 Oct (7 days ago)'],
-    ['Chase the spare tills', 'moved from 14 Oct to 21 Oct'],
-    ['Key date passed: Wave one finished', '12 Oct · missed'],
+    ['Chase the spare microphone stands', 'moved from 14 Oct to 21 Oct'],
+    ['Key date passed: Booth finished', '12 Oct · missed'],
   ]);
   const harbour = R.draftReview(sources(), { now: NOW }).projects.find((r) => r.name === 'Harbour Fit-out');
   assert.deepEqual(harbour.slipped.map((i) => i.words), ['Approve the lighting quote', 'Sign the lease', 'Order the signs', 'The project was due 5 Oct']);
@@ -171,11 +171,11 @@ test('what slipped: overdue steps, moved days, missed key dates', () => {
 
 test('what to chase: steps waiting on others, due within a week or undated', () => {
   const d = R.draftReview(sources(), { now: NOW });
-  const store = d.projects.find((r) => r.name === 'Studio Upgrade');
-  assert.deepEqual(store.chase.map((i) => [i.words, i.detail]), [
-    ['Shift leads: Chase the spare tills', 'due 21 Oct'],
-    ['Priya: Book the second wave', 'due 20 Oct'],
-    ['Leilani: Ask the vendor for spare tills', 'no day set'],
+  const studio = d.projects.find((r) => r.name === 'Studio Upgrade');
+  assert.deepEqual(studio.chase.map((i) => [i.words, i.detail]), [
+    ['Studio hands: Chase the spare microphone stands', 'due 21 Oct'],
+    ['Priya: Book the speaker fitting', 'due 20 Oct'],
+    ['Leilani: Ask the vendor for spare microphone stands', 'no day set'],
   ], 'Sam (the owner) isn’t chased; the overdue step is under slipped');
   assert.ok(R.waitsOnOthers({ who: 'Priya' }, 'Sam Taylor'));
   assert.ok(!R.waitsOnOthers({ who: 'Sam' }, 'Sam Taylor'));
@@ -185,13 +185,13 @@ test('what to chase: steps waiting on others, due within a week or undated', () 
 
 test('the changes proposed: health from what slipped, overdue steps to the coming Friday, the week’s update', () => {
   const d = R.draftReview(sources(), { now: NOW });
-  const store = d.projects.find((r) => r.name === 'Studio Upgrade');
-  assert.deepEqual(store.proposals.map((x) => [x.kind, x.words, x.value, x.accept]), [
+  const studio = d.projects.find((r) => r.name === 'Studio Upgrade');
+  assert.deepEqual(studio.proposals.map((x) => [x.kind, x.words, x.value, x.accept]), [
     ['health', 'Health: On track → At risk', 'at risk', true],
     ['move', 'Move “Send the reconciliation to finance” to 23 Oct', '23 Oct', false],
     ['update', 'Add this week’s update', 'Week to 16 Oct: done: “Export the device inventory”; 1 new step; 1 task done for you; 4 files changed; 1 step overdue.', true],
   ]);
-  assert.equal(store.proposals[0].why, '“Send the reconciliation to finance” is overdue.');
+  assert.equal(studio.proposals[0].why, '“Send the reconciliation to finance” is overdue.');
   const harbour = d.projects.find((r) => r.name === 'Harbour Fit-out');
   // p12-close-and-noise B (4 Nov 2026): a count is not an update — overdue steps alone write no Updates line.
   assert.deepEqual(harbour.proposals.map((x) => [x.kind, x.value]), [['health', 'off track'], ['move', '23 Oct'], ['move', '23 Oct'], ['move', '23 Oct']]);
@@ -215,18 +215,18 @@ test('no update line when nothing really changed: overdue alone stays in the not
 });
 
 test('proposals become edits to the project as it is when applied', () => {
-  const p = P.parseProject(STORE_NOW);
+  const p = P.parseProject(STUDIO_NOW);
   assert.deepEqual(R.proposalEdit(p, { kind: 'health', value: 'At risk' }), { kind: 'set', field: 'health', value: 'at risk' });
   assert.equal(R.proposalEdit(p, { kind: 'health', value: 'wobbly' }), null);
   assert.deepEqual(R.proposalEdit(p, { kind: 'update', value: 'Week to 16 Oct: good.' }), { kind: 'add', list: 'updates', item: { what: 'Week to 16 Oct: good.', from: 'Weekly review' } });
   assert.deepEqual(R.proposalEdit(p, { kind: 'move', value: '23 Oct', step: 'send the reconciliation to finance' }), { kind: 'change', list: 'next', index: 0, item: { when: '23 Oct' } }, 'found by its words');
   assert.equal(R.proposalEdit(p, { kind: 'move', value: '23 Oct', step: 'Export the device inventory' }), null, 'a done step isn’t moved');
-  assert.equal(R.proposalEdit(p, { kind: 'next', value: 'Book the second wave' }), null, 'a step already there isn’t added again');
+  assert.equal(R.proposalEdit(p, { kind: 'next', value: 'Book the speaker fitting' }), null, 'a step already there isn’t added again');
   // Applied: the file says what was decided.
   const d = R.draftReview(sources(), { now: NOW });
-  const store = d.projects.find((r) => r.name === 'Studio Upgrade');
-  for (const x of store.proposals.filter((x) => x.kind !== 'move')) P.applyProjectEdit(p, R.proposalEdit(p, x), '16 Oct 2026');
-  const text = P.serializeProject(p, STORE_NOW);
+  const studio = d.projects.find((r) => r.name === 'Studio Upgrade');
+  for (const x of studio.proposals.filter((x) => x.kind !== 'move')) P.applyProjectEdit(p, R.proposalEdit(p, x), '16 Oct 2026');
+  const text = P.serializeProject(p, STUDIO_NOW);
   assert.ok(text.includes('health: at risk'));
   assert.ok(text.includes('- **16 Oct 2026** — Week to 16 Oct: done: “Export the device inventory”; 1 new step; 1 task done for you; 4 files changed; 1 step overdue. *From:* Weekly review'));
 });
@@ -240,8 +240,8 @@ test('the assistant’s suggestions are proposals, off until ticked, only for pr
     { project: 'Nowhere', kind: 'next', value: 'x' },
     { project: 'Studio Upgrade', kind: 'delete', value: 'x' },
   ] }, d);
-  const store = next.projects.find((r) => r.name === 'Studio Upgrade');
-  const ai = store.proposals.filter((x) => x.by === 'assistant');
+  const studio = next.projects.find((r) => r.name === 'Studio Upgrade');
+  const ai = studio.proposals.filter((x) => x.by === 'assistant');
   assert.deepEqual(ai.map((x) => [x.kind, x.words, x.accept]), [['next', 'New next step: Ask finance when they need the reconciliation', false]], 'health is the review’s own already');
   assert.equal(next.projects.find((r) => r.name === 'Winter Menu Launch').proposals.length, 0, 'the health it has already');
   assert.equal(R.readAssistantSuggestions(null, d).projects.length, 3);
