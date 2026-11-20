@@ -61,7 +61,7 @@ export function writeHeavyVault(dir, now = Date.now()) {
   const first = ['Aria', 'Ben', 'Carla', 'Dev', 'Elena', 'Farid', 'Grace', 'Hugo', 'Isla', 'Jonah', 'Kiri', 'Leo', 'Maya', 'Nico', 'Olive', 'Pavel', 'Quinn', 'Rosa', 'Sione', 'Tara'];
   const last = ['Whitfield', 'Okoro', 'Lindqvist', 'Moreau', 'Tanaka', 'Hargreaves', 'Delacroix', 'Petrov', 'Aldana', 'Ferreira'];
   const orgs = ['Fernhill Supply', 'Northgate Logistics', 'Bluewren Hotels', 'Tallis & Co', 'Copperline AV', 'Harbourview Council', 'Kestrel Print', 'Marlow Group'];
-  const roles = ['Programme manager', 'Site lead', 'Lighting engineer', 'Procurement', 'Finance partner', 'Regional director', 'Designer', 'Vendor account manager', 'IT lead', 'Editor'];
+  const roles = ['Programme manager', 'Site lead', 'Lighting engineer', 'Procurement', 'Finance partner', 'Studio manager', 'Designer', 'Vendor account manager', 'IT lead', 'Editor'];
   const people = [];
   for (let i = 0; i < 40; i++) {
     const name = `${first[i % 20]} ${last[(i * 7 + Math.floor(i / 20)) % 10]}`;
@@ -74,9 +74,9 @@ export function writeHeavyVault(dir, now = Date.now()) {
 
   // 15 projects, each with dated and (mostly) undated steps; a few notes each with undated tasks.
   const projects = [
-    ['Work', 'Northgate warehouse lighting rollout', 'at risk'], ['Work', 'Bluewren hotel meeting rooms', 'on track'], ['Work', 'Harbourview council screens', 'on track'],
-    ['Work', 'Regional network refresh', 'at risk'], ['Work', 'Copperline vendor transition', 'on track'], ['Work', 'Board room upgrade Level 12', 'on track'],
-    ['Work', 'Device lifecycle programme FY27', 'off track'], ['Work', 'Service desk handover', 'on track'], ['Business', 'Fernhill Supply website', 'on track'],
+    ['Work', 'Northgate hall lighting', 'at risk'], ['Work', 'Bluewren hotel meeting rooms', 'on track'], ['Work', 'Harbourview council screens', 'on track'],
+    ['Work', 'Office network refresh', 'at risk'], ['Work', 'Copperline vendor transition', 'on track'], ['Work', 'Board room upgrade Level 12', 'on track'],
+    ['Work', 'Laptop replacement plan', 'off track'], ['Work', 'Service desk handover', 'on track'], ['Business', 'Fernhill Supply website', 'on track'],
     ['Business', 'Spring product launch', 'at risk'], ['Business', 'Wholesale pricing review', 'on track'], ['Home', 'Kitchen renovation', 'on track'],
     ['Home', 'Garden and fence', 'on track'], ['Health', 'Half marathon training', 'on track'], ['Publications', 'The Fernhill Quarterly, winter edition', 'on track'],
   ];
