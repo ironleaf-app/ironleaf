@@ -610,7 +610,7 @@ test('nothing the assistant may do depends on the words of the message (8.0 TR5)
 });
 
 test('a near-named project is found, not set up twice: one near refused, several listed, a new name goes ahead', async () => {
-  const lane = '---\ntype: project\nstatus: active\n---\n# Harbour Lane\n\n## Summary\n\nThe lane shop.\n';
+  const lane = '---\ntype: project\nstatus: active\n---\n# Harbour Lane\n\n## Summary\n\nThe lane bakery.\n';
   const { host, files } = fakeHost({ 'Projects/Harbour Lane/Harbour Lane.md': lane });
   const tools = new M.AgentTools(host, [], () => {});
   const one = await run(tools, 'save_project', { name: 'Harbour', summary: 'The harbour work.' });
@@ -621,26 +621,26 @@ test('a near-named project is found, not set up twice: one near refused, several
   const hotels = await run(tools, 'save_project', { name: 'Harbour Hotels', summary: 'The hotel job.' });
   assert.ok(!hotels.isError, hotels.text);
   assert.deepEqual(
-    M.nearProjects('Harbour', ['Harbour Lane', 'Harbour St Rollout', 'Depot']),
-    ['Harbour Lane', 'Harbour St Rollout'],
+    M.nearProjects('Harbour', ['Harbour Lane', 'Harbour St Garden', 'Depot']),
+    ['Harbour Lane', 'Harbour St Garden'],
     'the shared near-name rule',
   );
-  assert.match(M.nearProjectRefusal('Harbour', ['Harbour Lane', 'Harbour St Rollout']), /Several projects have names like that: Harbour Lane, Harbour St Rollout/);
+  assert.match(M.nearProjectRefusal('Harbour', ['Harbour Lane', 'Harbour St Garden']), /Several projects have names like that: Harbour Lane, Harbour St Garden/);
   assert.equal(M.nearProjectRefusal('Depot', ['Harbour Lane']), null);
 });
 
 test('“the harbour project” with two harbours says which: never the first match, silently', async () => {
-  const lane = '---\ntype: project\nstatus: active\n---\n# Harbour Lane\n\n## Summary\n\nThe lane shop.\n';
-  const rollout = '---\ntype: project\nstatus: active\n---\n# Harbour St Rollout\n\n## Summary\n\nThe rollout.\n';
-  const { host } = fakeHost({ 'Projects/Harbour Lane/Harbour Lane.md': lane, 'Projects/Harbour St Rollout/Harbour St Rollout.md': rollout });
+  const lane = '---\ntype: project\nstatus: active\n---\n# Harbour Lane\n\n## Summary\n\nThe lane bakery.\n';
+  const garden = '---\ntype: project\nstatus: active\n---\n# Harbour St Garden\n\n## Summary\n\nThe community garden.\n';
+  const { host } = fakeHost({ 'Projects/Harbour Lane/Harbour Lane.md': lane, 'Projects/Harbour St Garden/Harbour St Garden.md': garden });
   host.folders = { projects: () => [
     { path: 'Projects/Harbour Lane/Harbour Lane.md', project: { name: 'Harbour Lane', folder: '/tmp/hl' } },
-    { path: 'Projects/Harbour St Rollout/Harbour St Rollout.md', project: { name: 'Harbour St Rollout', folder: '/tmp/hs' } },
+    { path: 'Projects/Harbour St Garden/Harbour St Garden.md', project: { name: 'Harbour St Garden', folder: '/tmp/hs' } },
   ], access: { changed: async () => ({ files: [], more: 0 }) } };
   const tools = new M.AgentTools(host, [], () => {});
   const both = await run(tools, 'project_changes', { project: 'harbour' });
   assert.equal(both.isError, true);
-  assert.match(both.text, /Several projects match “harbour”: Harbour Lane, Harbour St Rollout\. Say which\./);
+  assert.match(both.text, /Several projects match “harbour”: Harbour Lane, Harbour St Garden\. Say which\./);
   const logged = await run(tools, 'log_entry', { project: 'harbour' });
   assert.equal(logged.isError, true, 'the log path refuses alike, instead of its own “no project”');
   assert.match(logged.text, /Several projects match/);
@@ -683,7 +683,7 @@ test('adding what is already there adds nothing: a retried append or prepend wri
 });
 
 test('a log entry with the log name taken is said, never a “ 2” log beside it', async () => {
-  const lane = '---\ntype: project\nstatus: active\n---\n# Harbour Lane\n\n## Summary\n\nThe lane shop.\n';
+  const lane = '---\ntype: project\nstatus: active\n---\n# Harbour Lane\n\n## Summary\n\nThe lane bakery.\n';
   const { host, files } = fakeHost({ 'Projects/Harbour Lane/Harbour Lane.md': lane, 'Projects/Harbour Lane/Harbour Lane log.md': '# Harbour Lane log\n\nNot a log, just a note of that name.\n' });
   const tools = new M.AgentTools(host, [], () => {});
   const r = await run(tools, 'log_entry', { project: 'Harbour Lane', fields: { Sales: 12 } });
