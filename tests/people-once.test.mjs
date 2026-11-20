@@ -50,7 +50,7 @@ const FILES = {
   'Work/People/Taylor Reed.md': '---\ntype: person\nrole: Owner\norg: Harbourline\nemail: taylor.reed@example.com\nphone: 0400 000 001\n---\n# Taylor Reed\n\nLeads Harbour.\n',
   'Work/People/Taylor Reed-Smith.md': '---\ntype: person\nrole: Designer\nemail: taylor.reed@example.com\n---\n# Taylor Reed-Smith\n\nDoes joinery.\n\nSee [[Quote]] for work.\n',
   'Work/People/Darcy Lin.md': '---\ntype: person\n---\n# Darcy Lin\n',
-  'Work/People/Darcy-Lam.md': '---\ntype: person\n---\n# Darcy-Lam\n',
+  'Work/People/Darcy-Lin.md': '---\ntype: person\n---\n# Darcy-Lin\n',
   'Work/People/Priya Nair.md': '---\ntype: person\nrole: Design\n---\n# Priya Nair\n',
   'Work/People/Priya.md': '---\ntype: person\n---\n# Priya\n',
   'Work/People/Bettina Maddox.md': '---\ntype: person\nknown as: Barb\n---\n# Bettina Maddox\n',
@@ -199,7 +199,7 @@ test('duplicates are found, each with its reason and what a merge moves', async 
   const email = same.find((s) => pairHas(s, 'Taylor Reed', 'Taylor Reed-Smith'));
   assert.ok(email, 'the same email is found');
   assert.match(email.why, /Both give taylor\.reed@example\.com/, `same email reason (got ${JSON.stringify(email.why)})`);
-  const spelling = same.find((s) => pairHas(s, 'Darcy Lin', 'Darcy-Lam'));
+  const spelling = same.find((s) => pairHas(s, 'Darcy Lin', 'Darcy-Lin'));
   assert.ok(spelling, 'the same name in different punctuation is found');
   assert.equal(spelling.why, 'Same name, different spelling');
   const first = same.find((s) => pairHas(s, 'Priya', 'Priya Nair'));
