@@ -123,8 +123,8 @@ h1.nv-page-title.nv-page-title.nv-page-title {
   color: var(--text-strong);
 }
 
-/* A long title takes a second line rather than losing its end to the head's buttons (30 Oct 2026: "POS last cafe …");
-   past two lines it ends in an ellipsis. */
+/* A long title takes a second line rather than losing its end to the head's buttons; past two lines it ends in an
+   ellipsis. */
 .nv-page-name {
   min-width: 0;
   overflow: hidden;
