@@ -104,5 +104,5 @@ test('the installer keeps its id and the old folder, and both schemes and the ol
   assert.match(nsh, /CreateHardLinkW\(w "\$INSTDIR\\NeuralVault\.exe"/, 'NeuralVault.exe kept as a link to Ironleaf.exe');
   assert.match(nsh, /\$INSTDIR == "\$2\\\$\{APP_FILENAME\}"/, 'no Ironleaf folder nested in the old one');
   assert.match(nsh, /Delete "\$oldStartMenuLink"/, 'the old shortcut goes');
-  assert.match(read('tools/release.mjs'), /NV_DOWNLOAD_DIR \?\? ''\)\.split\(':'\)/, 'published to every folder NV_DOWNLOAD_DIR names (both sites), none hard-coded');
+  assert.match(read('tools/release.mjs'), /NV_DOWNLOAD_DIR \?\? ''\)\.split\(path\.delimiter\)/, 'published to every folder NV_DOWNLOAD_DIR names (both sites), none hard-coded');
 });
