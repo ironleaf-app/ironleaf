@@ -6,6 +6,13 @@ the website. `tools/release.mjs` takes a release's notes from here when `--notes
 
 Format: one `## <version> — <YYYY-MM-DD>` heading a release, then one `- ` line a change.
 
+## 2.0.10 — 2026-11-21
+
+- Project pages: Notes and files (and every other long tab) scrolls again on a big window; opening a big project and switching its tabs no longer freezes for a second or two.
+- Lists stay quick while they change: Today, Tasks and Notes do their style work in milliseconds instead of seconds as rows come and go.
+- Choosing a template at a 1600 px window shows its preview again.
+- A person's page fills a small window again instead of a narrow column.
+
 ## 2.0.9 — 2026-11-21
 
 - PDFs open about four times faster, and zooming and scrolling a big PDF no longer freeze the window: the page you're looking at is drawn first, and the selectable words are laid in one go.
