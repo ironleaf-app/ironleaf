@@ -36,7 +36,7 @@ function fixture(dir) {
   put(path.join(dir, 'Projects', 'Riverside Pop-up', 'Supplier list.md'), '# Supplier list\n\n- [ ] Ask the mill about flour · by 2026-11-06\n');
   put(path.join(dir, 'Projects', 'Harbour Fit-out', 'Harbour Fit-out.md'), '---\ntype: project\nstatus: planning\nowner: Tom Nguyen\n---\n# Harbour Fit-out\n\n## Summary\n\nThe new office.\n');
   put(path.join(dir, 'Meetings', 'Supplier call.md'), '---\ntype: meeting\ndate: 2026-10-30\ntime: "14:00"\nattendees: [Mia Tran]\n---\n# Supplier call\n\nPrices for flour.\n');
-  put(path.join(dir, 'People', 'Priya Shah.md'), '---\ntype: person\nrole: Area coordinator\norg: Cafe Group\nemail: priya@example.com\n---\n# Priya Shah\n\nRuns the stores.\n');
+  put(path.join(dir, 'People', 'Priya Shah.md'), '---\ntype: person\nrole: Head baker\norg: Saltwater Bakehouse\nemail: priya@example.com\n---\n# Priya Shah\n\nRuns the bakery’s kitchen.\n');
   put(path.join(dir, 'Me', 'Finance', 'Bills', 'Power bill.md'), '---\ntype: bill\namount: 182.4\ncycle: Monthly\ndue: "2026-11-12"\naccount: Everyday\n---\n# Power bill\n');
   put(path.join(dir, 'Attachments', 'bench.png'), Buffer.from([0x89, 0x50, 0x4e, 0x47, 1, 2, 3, 4, 5, 6, 7, 8]));
   put(path.join(dir, 'Assets', 'logo.svg'), '<svg xmlns="http://www.w3.org/2000/svg"/>');
@@ -52,7 +52,7 @@ const notesOf = () => [
   { path: 'Projects/Riverside Pop-up/Supplier list.md', title: 'Supplier list', props: {}, mtime: T },
   { path: 'Projects/Harbour Fit-out/Harbour Fit-out.md', title: 'Harbour Fit-out', props: { type: 'project', status: 'planning', owner: 'Tom Nguyen' }, mtime: T },
   { path: 'Meetings/Supplier call.md', title: 'Supplier call', props: { type: 'meeting', date: '2026-10-30', time: '14:00', attendees: ['Mia Tran'] }, mtime: T },
-  { path: 'People/Priya Shah.md', title: 'Priya Shah', props: { type: 'person', role: 'Area coordinator', org: 'Cafe Group', email: 'priya@example.com' }, mtime: T },
+  { path: 'People/Priya Shah.md', title: 'Priya Shah', props: { type: 'person', role: 'Head baker', org: 'Saltwater Bakehouse', email: 'priya@example.com' }, mtime: T },
   { path: 'Me/Finance/Bills/Power bill.md', title: 'Power bill', props: { type: 'bill', amount: 182.4, cycle: 'Monthly', due: '2026-11-12', account: 'Everyday' }, mtime: T },
 ];
 const projectsOf = () => [
