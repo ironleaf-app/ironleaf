@@ -120,30 +120,74 @@ export interface DocChain {
   all: DocNode[];
 }
 
+// The lookups a chain needs, worked out once per list of documents (21 Nov 2026). A project page asks for the chain of
+// every row it lists, and each ask rebuilt the path map over every note in the vault and searched every document's
+// `replaces` again. On a project with 450 notes and files in a 3,000-note vault that was 1.2-2.2 s of script on each
+// tab change and 4.3 s to open the page; kept per list (a WeakMap on the array the caller passes), 0.05-0.07 s and 0.3 s.
+interface ChainIndex {
+  size: number;
+  byNorm: Map<string, DocNode>;
+  /** The documents replacing each path (by the resolved document's own path), in the list's order. */
+  replacedBy: Map<string, DocNode[]>;
+  resolved: Map<string, DocNode | null>;
+}
+const chainIndexes = new WeakMap<DocNode[], ChainIndex>();
+function chainIndex(docs: DocNode[]): ChainIndex {
+  const had = chainIndexes.get(docs);
+  if (had && had.size === docs.length) return had;
+  const resolved = new Map<string, DocNode | null>();
+  const replacedBy = new Map<string, DocNode[]>();
+  for (const d of docs) {
+    if (!d.facts.replaces) continue;
+    let to = resolved.get(d.facts.replaces);
+    if (to === undefined) {
+      to = resolveReplaces(docs, d.facts.replaces);
+      resolved.set(d.facts.replaces, to);
+    }
+    if (!to) continue;
+    const list = replacedBy.get(to.path);
+    if (list) list.push(d);
+    else replacedBy.set(to.path, [d]);
+  }
+  const ix: ChainIndex = { size: docs.length, byNorm: new Map(docs.map((d) => [norm(d.path), d] as const)), replacedBy, resolved };
+  chainIndexes.set(docs, ix);
+  return ix;
+}
+
 /** One document's place in its chain, from every document that could link it. */
 export function docChain(docs: DocNode[], start: string): DocChain {
-  const byNorm = new Map(docs.map((d) => [norm(d.path), d] as const));
-  const self = byNorm.get(norm(start));
+  const ix = chainIndex(docs);
+  const resolve = (replaces: string): DocNode | null => {
+    let to = ix.resolved.get(replaces);
+    if (to === undefined) {
+      to = resolveReplaces(docs, replaces);
+      ix.resolved.set(replaces, to);
+    }
+    return to;
+  };
+  // The first document in the list replacing `path` that the walk has not met yet.
+  const replacerOf = (path: string, seen: Set<string>): DocNode | null => ix.replacedBy.get(path)?.find((d) => !seen.has(norm(d.path))) ?? null;
+  const self = ix.byNorm.get(norm(start));
   const facts = self?.facts ?? { ...NO_FACTS };
   // Back: what this replaces, and what that replaces (a loop stops where it started).
   const earlier: DocNode[] = [];
   const seen = new Set([norm(start)]);
   let at: DocNode | null | undefined = self;
   for (;;) {
-    const prev: DocNode | null = at?.facts.replaces ? resolveReplaces(docs, at.facts.replaces) : null;
+    const prev: DocNode | null = at?.facts.replaces ? resolve(at.facts.replaces) : null;
     if (!prev || seen.has(norm(prev.path))) break;
     seen.add(norm(prev.path));
     earlier.push(prev);
     at = prev;
   }
   // Forward: what replaces this (nearest only; a loop stops where it started; nothing when the start isn't listed).
-  const newer = self ? (docs.find((d) => !seen.has(norm(d.path)) && !!d.facts.replaces && resolveReplaces(docs, d.facts.replaces)?.path === self.path) ?? null) : null;
+  const newer = self ? replacerOf(self.path, seen) : null;
   if (newer) seen.add(norm(newer.path));
   // The rest of the chain past the newer one, for the count.
   const after: DocNode[] = [];
   let head: DocNode | null | undefined = newer;
   for (;;) {
-    const next: DocNode | null = head ? (docs.find((d) => !seen.has(norm(d.path)) && d.facts.replaces && resolveReplaces(docs, d.facts.replaces)?.path === head!.path) ?? null) : null;
+    const next: DocNode | null = head ? replacerOf(head.path, seen) : null;
     if (!next) break;
     seen.add(norm(next.path));
     after.push(next);
