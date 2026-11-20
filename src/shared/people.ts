@@ -489,7 +489,7 @@ const cleanEmail = (v: string | undefined): string | undefined => {
   return e || undefined;
 };
 
-/** A name's words for first-name work ("Darcy-Lam" reads two): accents off, case and punctuation folded. */
+/** A name's words for first-name work ("Darcy-Lin" reads two): accents off, case and punctuation folded. */
 const cleanWords = (s: string): string[] => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().split(/\s+/).filter(Boolean);
 
 /** Every address a card gives (a work and a personal address each count): split, then cleaned. */
