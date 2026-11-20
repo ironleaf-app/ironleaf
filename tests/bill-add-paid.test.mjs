@@ -378,7 +378,7 @@ test('credit card end to end: added with every field in one call, then paid on 2
   const { written, rm } = moneyVault({ ...AREAS });
   const added = await rm.callTool('finance_bill_add', { name: 'Harbour Credit Card', amount: 150, cycle: 'Monthly', due: '2026-11-08', category: 'Loans and cards', autopay: true }, null);
   assert.match(added.text, /Added the bill Harbour Credit Card/);
-  assert.match(added.text, /\[Me\/Finance\/Bills\.md#latitude-credit-card\]/, 'new bills are rows in the one list');
+  assert.match(added.text, /\[Me\/Finance\/Bills\.md#harbour-credit-card\]/, 'new bills are rows in the one list');
   const rel = 'Me/Finance/Bills.md';
   assert.ok(written.has(rel), 'the list is made');
   const row = written.get(rel).split('\n').find((l) => l.includes('Harbour Credit Card'));
