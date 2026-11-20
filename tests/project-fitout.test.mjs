@@ -208,7 +208,8 @@ test('the gallery fit-out live: one page, every change read back from the files'
     assert.ok(risks.startsWith('Northside power shutdown slips past 14 Nov'), `a High first (saw ${risks.split('|')[0]})`);
     // Waiting heads count, never repeating the row beneath.
     await openTab('waiting');
-    const lisaLate = late('2026-11-06', '2026-11-11');
+    // Every dated open one of hers: the two in the project file and the HDMI cables from the 27 Oct review (late since 13 Nov).
+    const lisaLate = late('2026-11-06', '2026-11-11', '2026-11-13');
     const lisa = await h.browser.ev(`[...document.querySelectorAll('[data-section="waiting"] .card .trow:first-child .t')].map((el) => el.innerText.trim()).find((s) => s.startsWith('Lisa Wang')) ?? ''`);
     assert.equal(lisa, `Lisa Wang · 4 open${lisaLate ? ` · ${lisaLate} late` : ''}`, 'Lisa’s head counts');
     const heads = await h.browser.ev(`[...document.querySelectorAll('[data-section="waiting"] .card')].map((c) => { const rows = [...c.querySelectorAll('.tkrow .tkrow-title')].map((r) => r.innerText.trim()); return { head: c.querySelector('.trow:first-child .t').innerText.trim(), first: rows[0] ?? '' }; })`);
