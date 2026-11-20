@@ -89,7 +89,7 @@ test('no :has(), no new !important in the shared board styles', () => {
 
 // ── Live: one boot, the board at three sizes ─────────────────────────────────
 
-const PROJECTS = ['Harbourline Cart Fix', 'Museum Late Shift', 'ShadeCo Awning Rollout', 'Till Roll Reorder', 'Night Roster Fill', 'Receipts Version Two', 'Front Counter Paint', 'Delivery Van Service', 'Winter Menu Print', 'Staff Training Nights', 'Back Room Shelves', 'Garden Bed Mulch'];
+const PROJECTS = ['Harbourline Cart Fix', 'Museum Late Shift', 'ShadeCo Awning Install', 'Paper Bag Reorder', 'Night Roster Fill', 'Receipts Version Two', 'Front Counter Paint', 'Delivery Van Service', 'Winter Menu Print', 'Staff Training Nights', 'Back Room Shelves', 'Garden Bed Mulch'];
 const OWNERS = ['Alex Chen', 'Priya Nair', 'Sam Ortega', 'Jess Wu'];
 const SIZES = [[3456, 1408], [1920, 1117], [1219, 709]];
 
@@ -307,9 +307,9 @@ async function openWorkstreamBoard(h) {
   const rel = 'Projects/Harbourline Cart Fix/Harbourline Cart Fix.md';
   const p = path.join(h.vaultDir, ...rel.split('/'));
   const before = readFileSync(p, 'utf8');
-  if (!before.includes('| Tills |')) {
+  if (!before.includes('| Ovens |')) {
     writeFileSync(p, before.replace('| Receipts | Priya Nair | ready to send | Send v2 (reviewer PASS) |', `| Receipts | Priya Nair | ready to send | Send v2 (reviewer PASS) |
-| Tills | Sam Ortega | in progress | Cover the Saturday gap |
+| Ovens | Sam Ortega | in progress | Cover the Saturday gap |
 | Labels | Jess Wu | ready to send | Print the shelf run |
 | Doors | Alex Chen | in progress | Fix the front sensor |
 | Signs | Priya Nair | in progress | Hang the December set |`));
