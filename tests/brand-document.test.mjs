@@ -31,12 +31,12 @@ after(() => rmSync(work, { recursive: true, force: true }));
 const url = (rel) => (rel ? `https://files.example.com/${encodeURI(rel)}` : '');
 const doc = (title, text, kit, extra = {}) => B.brandDocument({ title, text, path: 'Meetings/Riverside.md', kit, url, ...extra });
 
-// The flagship meeting (invented): figures, rows, actions in both forms, decisions, a transcript, callouts.
+// The cafe meeting (invented): figures, rows, actions in both forms, decisions, a transcript, callouts.
 const MEETING = `---
 date: 2026-03-03
 time: 9:00 am
 duration: 40 minutes
-project: Riverside flagship
+project: Riverside cafe
 attendees: [Ana Reyes, Sam Okafor]
 absent: Lee Park
 also: Marco
@@ -55,12 +55,12 @@ The fortnightly now runs from the shared tracker to cut status chasing.
 ## Action items
 
 - [ ] Confirm with Marco and Dana that Jo can be on site next week — Jo · by 4 Mar 2026
-- [ ] Live trial of one till at the Quay — Jo ⏰ 2026-03-05 14:00
+- [ ] Live trial of one oven at the Quay — Jo ⏰ 2026-03-05 14:00
 - [ ] Check the fire inspection — Sam · by 6 Mar 2026
 
 ## Decisions
 
-- **Test first.** One live till trial at the Quay on Thursday.
+- **Test first.** One live oven trial at the Quay on Thursday.
 
 > [!note] About this record
 > Prepared from the meeting recording. Please send any corrections to Jo.
@@ -68,9 +68,9 @@ The fortnightly now runs from the shared tracker to cut status chasing.
 > [!quote]- Transcript · 40 minutes
 > **12:03** *Ana:* Nothing for the PDF.
 
-![The till](Photos/till.png)
+![The oven](Photos/oven.png)
 
-See [the payments portal](https://example.com/portal) and [[Roster]] for the rest.
+See [the warranty portal](https://example.com/portal) and [[Roster]] for the rest.
 
 ## Transcript
 
@@ -92,7 +92,7 @@ test('page one carries the kit, the title, the subtitle, the figures and the mee
   assert.ok(!html.includes('harbour-dark.svg'), 'not the primary on a dark band');
   assert.ok(html.includes('Meeting minutes'), 'the small label names the kind');
   assert.ok(html.includes('<h1 class="blk" dir="auto">Riverside Cafe Opening</h1>'), 'the title once');
-  assert.ok(html.includes('Riverside flagship'), 'the subtitle names the project');
+  assert.ok(html.includes('Riverside cafe'), 'the subtitle names the project');
   assert.ok(html.includes('Tuesday 3 March 2026, 9:00 am, 40 minutes'), 'then the day, time and length as written');
   assert.ok(html.includes('<b dir="auto">20 Mar</b><span dir="auto">Fit-out finishes</span>'), 'the figures band');
   assert.ok(html.includes('<dt>Present</dt><dd dir="auto"><bdi>Ana Reyes</bdi>, <bdi>Sam Okafor</bdi></dd>'), 'who came, each name isolated');
@@ -106,7 +106,7 @@ test('open tasks become the numbered Action, Owner, Due table, in both written f
   const html = doc('Riverside Cafe Opening', MEETING, GREEN_KIT, { now: new Date(2026, 10, 5, 12, 0, 0) });
   assert.ok(html.includes('<table class="blk actions"><thead><tr><th>#</th><th>Action</th><th>Owner</th><th>Due</th></tr></thead>'), 'the table headed # Action Owner Due');
   assert.ok(html.includes('<td dir="auto">Confirm with Marco and Dana that Jo can be on site next week</td><td class="o" dir="auto">Jo</td><td class="d" dir="auto">Wed 4 Mar</td>'), 'the by-form read one way');
-  assert.ok(html.includes('<td dir="auto">Live trial of one till at the Quay</td><td class="o" dir="auto">Jo</td><td class="d" dir="auto">Thu 5 Mar, 2 pm</td>'), 'the reminder form as a day and time');
+  assert.ok(html.includes('<td dir="auto">Live trial of one oven at the Quay</td><td class="o" dir="auto">Jo</td><td class="d" dir="auto">Thu 5 Mar, 2 pm</td>'), 'the reminder form as a day and time');
   assert.ok(!html.includes('⏰'), 'no reminder mark prints raw');
   assert.ok(!html.includes('- [ ]'), 'no task box prints raw');
 });
@@ -156,8 +156,8 @@ test('open callouts read as the note box; pictures and links keep working', () =
   const html = doc('Riverside Cafe Opening', MEETING, GREEN_KIT);
   assert.ok(html.includes('<aside class="blk note"'), 'the open callout reads as the note box');
   assert.ok(html.includes('Please send any corrections to Jo.'), 'its words read');
-  assert.ok(html.includes('<figure class="blk"><img src="https://files.example.com/Photos/till.png"'), 'the picture prints');
-  assert.ok(html.includes('<a href="https://example.com/portal">the payments portal</a>'), 'the web link keeps working');
+  assert.ok(html.includes('<figure class="blk"><img src="https://files.example.com/Photos/oven.png"'), 'the picture prints');
+  assert.ok(html.includes('<a href="https://example.com/portal">the warranty portal</a>'), 'the web link keeps working');
   assert.ok(html.includes('Roster') && !html.includes('[['), 'the note link reads as words, no brackets print');
 });
 
@@ -247,7 +247,7 @@ test('key figures read from a section when the properties have none, and the sec
 });
 
 test('owners read as written, never reworded', () => {
-  const html = doc('M', '## Actions\n\n- [ ] Trial the till — Jo, Priya · by Thu 5 Mar, 2 pm\n- [ ] Revise the schedule — [[Jo Tran|Jo]] ⏰ 2026-03-06 09:00\n- [ ] Book the inspection — Sam · before opening\n- [ ] Revise again — Jo · after the trial\n', GREEN_KIT);
+  const html = doc('M', '## Actions\n\n- [ ] Trial the oven — Jo, Priya · by Thu 5 Mar, 2 pm\n- [ ] Revise the schedule — [[Jo Tran|Jo]] ⏰ 2026-03-06 09:00\n- [ ] Book the inspection — Sam · before opening\n- [ ] Revise again — Jo · after the trial\n', GREEN_KIT);
   assert.ok(html.includes('<td class="o" dir="auto">Jo, Priya</td>'), 'joint owners keep their comma');
   assert.ok(!html.includes('Jo and Priya'), 'never joined with and');
   assert.ok(html.includes('<td class="o" dir="auto">Jo</td>'), 'a linked owner reads as said');
@@ -463,7 +463,7 @@ date: 2026-03-03
 attendees:
   - "[[People/Ana Reyes]]"
   - "[[Sam Okafor]]"
-project: "[[Riverside flagship]]"
+project: "[[Riverside cafe]]"
 absent: "[[People/Lee Park|Lee]]"
 also:
   - "[[David Kim]]"
@@ -476,18 +476,18 @@ figures:
 
 Met with [[Ana Reyes]], [[Sam Okafor|Sam]] and [[Minutes#Next steps|the plan]]; see [[#Decisions]] below.
 
-### [[Till trial]] recap
+### [[Oven trial]] recap
 
-The [[Quay store]] trial held.
+The [[Quay stall]] trial held.
 
 ## Actions
 
 - [ ] Confirm the trial — [[Jo Lindqvist]] · by 4 Mar 2026
-- [ ] Chase the [[Till receipt|receipt]] — [[People/Sam Okafor]] · by [[6 Mar 2026]]
+- [ ] Chase the [[Oven receipt|receipt]] — [[People/Sam Okafor]] · by [[6 Mar 2026]]
 
 ## Decisions
 
-- One live trial at the [[Quay store]] on Thursday.
+- One live trial at the [[Quay stall]] on Thursday.
 `;
   const html = doc('Riverside Cafe Opening', note, GREEN_KIT, { now: new Date(2026, 10, 5, 12, 0, 0) });
   assert.ok(!html.includes('[[') && !html.includes(']]'), 'no link marks anywhere in the bytes');
@@ -498,8 +498,8 @@ The [[Quay store]] trial held.
   assert.ok(html.includes('<td class="o" dir="auto">Jo Lindqvist</td>'), 'an action owner reads plain');
   assert.ok(html.includes('<td dir="auto">Chase the receipt</td><td class="o" dir="auto">Sam Okafor</td><td class="d" dir="auto">Fri 6 Mar</td>'), 'an action with links reads plain, its due read');
   assert.ok(html.includes('Met with Ana Reyes, Sam and the plan; see Decisions below.'), 'prose reads plain');
-  assert.ok(html.includes('<h3 class="blk" dir="auto">Till trial recap</h3>'), 'a heading reads plain');
-  assert.ok(html.includes('One live trial at the Quay store on Thursday.'), 'a decision reads plain');
+  assert.ok(html.includes('<h3 class="blk" dir="auto">Oven trial recap</h3>'), 'a heading reads plain');
+  assert.ok(html.includes('One live trial at the Quay stall on Thursday.'), 'a decision reads plain');
 });
 
 // n4-minutes-pdf fault 6 (6 Nov 2026, the Fitzroy run's PDF printed "by Friday", said on a Friday, as
