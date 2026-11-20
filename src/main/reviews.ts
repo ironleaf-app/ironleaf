@@ -72,7 +72,7 @@ const linkTo = (path: string, name: string) => {
   return base.toLowerCase() === name.toLowerCase() ? `[[${name}]]` : `[[${path.replace(/\.md$/i, '')}|${name}]]`;
 };
 
-const FIND_SYSTEM = `You read a meeting's notes and list the actions in it that a simple reading missed: jobs someone agreed to do, said in passing ("we should probably get the oven serviced", "Sam mentioned he'd look at the till"). Leave out decisions, things already done, and talk that isn't a job. Never invent an action the words don't say.
+const FIND_SYSTEM = `You read a meeting's notes and list the actions in it that a simple reading missed: jobs someone agreed to do, said in passing ("we should probably get the oven serviced", "Sam mentioned he'd look at the coffee machine"). Leave out decisions, things already done, and talk that isn't a job. Never invent an action the words don't say.
 
 Reply with JSON only, no other text, in exactly this shape:
 {"actions":[{"what":"<the job, short, starting with a verb>","who":"<the person's name as written, or empty>","when":"<the day as written, or empty>","quote":"<words copied exactly from one line of the note that say it>"}]}

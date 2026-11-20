@@ -38,14 +38,14 @@ const DATE = '2026-11-06'; // a Friday: "by Friday" said today stays words, neve
 
 // The meeting itself: decisions, jobs, questions, figures and all sixteen mentions in the first stretch.
 const BASE = [
-  [0, 'Speaker 1', 'Morning, let us start with the agenda. Three things today: the second till lane, the shelf labels and the stocktake.'],
+  [0, 'Speaker 1', 'Morning, let us start with the agenda. Three things today: the second coffee counter, the shelf labels and the stocktake.'],
   [25, 'Speaker 2', 'Morning. Before we start, Liam Walker rang about the delivery dock, and Ava Nguyen sent the dock roster.'],
-  [50, 'Speaker 1', 'Good. First, the second till lane. The fit-out quote came in at forty-eight hundred dollars.'],
-  [80, 'Speaker 2', 'Forty-eight hundred for the second lane fit-out. Oliver Smith thought it would be dearer, and Isla Brown agrees.'],
-  [110, 'Speaker 1', 'We decided to open the second till lane before the Saturday rush. I will ring the contractor about the lane proofs by Friday.'],
-  [140, 'Speaker 2', 'And I will confirm the electrician for the second lane by Monday the 9th. Jack Davis needs the dock clear that morning.'],
-  [170, 'Speaker 1', 'Ruby Wilson asked about the new scanners. Six new scanners arrive with the lane.'],
-  [200, 'Speaker 2', 'Six new scanners, good. Henry Taylor can set them up, and Grace Moore will show the team.'],
+  [50, 'Speaker 1', 'Good. First, the second coffee counter. The fit-out quote came in at forty-eight hundred dollars.'],
+  [80, 'Speaker 2', 'Forty-eight hundred for the second counter fit-out. Oliver Smith thought it would be dearer, and Isla Brown agrees.'],
+  [110, 'Speaker 1', 'We decided to open the second coffee counter before the Saturday rush. I will ring the contractor about the counter proofs by Friday.'],
+  [140, 'Speaker 2', 'And I will confirm the electrician for the second counter by Monday the 9th. Jack Davis needs the dock clear that morning.'],
+  [170, 'Speaker 1', 'Ruby Wilson asked about the new grinders. Six new grinders arrive with the counter.'],
+  [200, 'Speaker 2', 'Six new grinders, good. Henry Taylor can set them up, and Grace Moore will show the team.'],
   [230, 'Speaker 1', 'Second, the shelf labels. We agreed to keep Harbour Print Co for the shelf labels.'],
   [260, 'Speaker 2', 'Harbour Print Co it is. Leo Martin sent their new samples, and Zoe Clark liked the green ones.'],
   [290, 'Speaker 1', 'I will send the October label proofs to Harbour Print Co today. Max Hall wants a copy too.'],
@@ -54,9 +54,9 @@ const BASE = [
   [380, 'Speaker 2', 'The new paper shows it. Tell Archie the tax line prints on the new paper. Lily Wright checked it yesterday.'],
   [410, 'Speaker 1', 'Third, the stocktake. We settled to move the stocktake to Monday the 9th of November.'],
   [440, 'Speaker 2', 'Monday the 9th of November for the stocktake. Hugo Baker will bring the two count sheets, and Sophie Adams opens up.'],
-  [470, 'Speaker 1', 'Who signs off the till logs? Nobody has said.'],
-  [500, 'Speaker 2', 'Nobody has said who signs off the till logs. Leave that question with me.'],
-  [530, 'Speaker 1', 'I will update the lighting plan: the second lane changes the speaker layout. The lighting plan lives in the project folder.'],
+  [470, 'Speaker 1', 'Who signs off the oven logs? Nobody has said.'],
+  [500, 'Speaker 2', 'Nobody has said who signs off the oven logs. Leave that question with me.'],
+  [530, 'Speaker 1', 'I will update the lighting plan: the second counter changes the speaker layout. The lighting plan lives in the project folder.'],
   [560, 'Speaker 2', 'Good. I will chase the failed card payments by Friday, and I will book the window cleaner for next week.'],
   [590, 'Speaker 1', 'I will check the cold room seals by Friday as well. That is everything on my list.'],
   [620, 'Speaker 2', 'And I will order more receipt paper today. We are down to the last box.'],
@@ -67,9 +67,9 @@ const FILLER = [
   'The Saturday rush was steady and the queue moved well.',
   'The new roster is up in the back room for everyone to see.',
   'The window display held up fine through the windy week.',
-  'Regulars keep asking when the second lane opens.',
+  'Regulars keep asking when the second counter opens.',
   'The back room is tidy again after the delivery.',
-  'The morning till count matched to the dollar.',
+  'The morning cash count matched to the dollar.',
   'The afternoon shift swapped without any fuss.',
   'The loyalty cards are running low at the front counter.',
   'The front door bell finally got its new battery.',
@@ -96,26 +96,26 @@ const REPLY = {
   present: ['Mia Tran', 'Jordan Lee'],
   absent: [],
   named: MENTIONED,
-  summary: 'Mia and Jordan went over the second till lane, the shelf labels and the stocktake. The lane opens before Saturday and the stocktake moves to Monday.',
+  summary: 'Mia and Jordan went over the second coffee counter, the shelf labels and the stocktake. The counter opens before Saturday and the stocktake moves to Monday.',
   figures: [
-    { value: '6', label: 'New scanners' },
+    { value: '6', label: 'New grinders' },
     { value: '9 November', label: 'Stocktake day' },
     { value: '2', label: 'Count sheets' },
-    { value: '$4,800', label: 'Second lane fit-out' },
+    { value: '$4,800', label: 'Second counter fit-out' },
     { value: '6', label: 'Moon budget' },
   ],
   decisions: [
-    { text: 'Open the second till lane before the Saturday rush', at: '1:50' },
+    { text: 'Open the second coffee counter before the Saturday rush', at: '1:50' },
     { text: 'Keep Harbour Print Co for the shelf labels', at: '3:50' },
     { text: 'Move the stocktake to Monday the 9th', at: '6:50' },
     { text: 'None', at: '7:00' },
   ],
   actions: [
-    { what: 'Ring the contractor about the lane proofs', who: 'Mia', when: 'Friday' },
-    { what: 'Confirm the electrician for the second lane', who: 'Jordan Lee', when: 'Monday the 9th' },
+    { what: 'Ring the contractor about the counter proofs', who: 'Mia', when: 'Friday' },
+    { what: 'Confirm the electrician for the second counter', who: 'Jordan Lee', when: 'Monday the 9th' },
     { what: 'Send the October label proofs to Harbour Print Co', who: 'Mia Tran', when: 'today' },
     { what: 'Ask Harbour Print Co whether Tuesday delivery is possible', who: '' },
-    { what: 'Update the lighting plan: the second lane changes the speaker layout', who: 'Mia Tran' },
+    { what: 'Update the lighting plan: the second counter changes the speaker layout', who: 'Mia Tran' },
     { what: 'Chase the failed card payments', who: 'Jordan Lee', when: 'Friday' },
     { what: 'Book the window cleaner', who: 'Jordan Lee', when: 'next week' },
     { what: 'Check the cold room seals', who: 'Mia Tran', when: 'Friday' },
@@ -125,12 +125,12 @@ const REPLY = {
   ],
   questions: [
     { what: 'Does the receipt show the tax line?', askedBy: 'Mia Tran', owner: 'Jordan Lee', answer: 'The new paper shows it.' },
-    { what: 'Who signs off the till logs?', askedBy: 'Jordan Lee', owner: '' },
+    { what: 'Who signs off the oven logs?', askedBy: 'Jordan Lee', owner: '' },
   ],
   topics: [
-    { heading: 'Till lanes', words: ['The second lane opens before the Saturday rush.', 'Six new scanners arrive with the lane, and Liam Walker rang about the delivery dock.'] },
+    { heading: 'Coffee counters', words: ['The second counter opens before the Saturday rush.', 'Six new grinders arrive with the counter, and Liam Walker rang about the back door.'] },
     { heading: 'Shelf labels', words: ['Harbour Print Co keeps the shelf labels.', 'The October proofs go out today, and Ava Nguyen sent the dock roster.'] },
-    { heading: 'Stocktake', words: ['The stocktake moves to Monday the 9th of November.', 'The count sheets come with Hugo Baker, and Ruby Wilson asked about the new scanners.'] },
+    { heading: 'Stocktake', words: ['The stocktake moves to Monday the 9th of November.', 'The count sheets come with Hugo Baker, and Ruby Wilson asked about the new grinders.'] },
   ],
 };
 
@@ -143,10 +143,10 @@ function minutes() {
 const NOTE = `---
 type: meeting
 date: ${DATE}
-project: "[[Harbour Till Rollout]]"
+project: "[[Harbour Counter Refit]]"
 ---
 
-# ${DATE} Harbour till 1-2-1
+# ${DATE} Harbour counter 1-2-1
 
 ## Agenda
 
@@ -163,9 +163,9 @@ Jordan seemed rushed at the start.
 
 // The notes step's own answer at Stop (the first of the two model calls): the minutes merge with it.
 const NOTES_REPLY = {
-  summary: 'Mia and Jordan met about the till rollout.',
-  decisions: [{ text: 'Open the second till lane before the Saturday rush', at: '1:50' }],
-  actions: [{ what: 'Ring the contractor about the lane proofs', who: 'Mia Tran', when: 'Friday' }],
+  summary: 'Mia and Jordan met about the counter refit.',
+  decisions: [{ text: 'Open the second coffee counter before the Saturday rush', at: '1:50' }],
+  actions: [{ what: 'Ring the contractor about the counter proofs', who: 'Mia Tran', when: 'Friday' }],
   people: ['Mia Tran', 'Jordan Lee'],
   named: ['Liam Walker'],
 };
@@ -180,7 +180,7 @@ function run() {
     people: PEOPLE,
     me: ME,
     date: DATE,
-    recording: 'Recording: [[Files/Harbour till 1-2-1/recording.webm]] · 26 minutes',
+    recording: 'Recording: [[Files/Harbour counter 1-2-1/recording.webm]] · 26 minutes',
   }).text;
   const named = Sp.writeSpeakerNames(withNotes, Sp.speakerPartKey(0), NAMES);
   const held = M.readMinutesExisting(named);
@@ -228,15 +228,15 @@ test('people: holds the 2 speakers only; the mentioned linked where mentioned', 
 
 test('actions are the project’s Tasks, with who and when', () => {
   const { text, props } = run();
-  assert.equal(props.project, '[[Harbour Till Rollout]]', 'the meeting is in its project');
+  assert.equal(props.project, '[[Harbour Counter Refit]]', 'the meeting is in its project');
   const found = Mt.findActions(text, { people: PEOPLE });
   assert.equal(found.length, 11, `eleven actions, saw ${found.map((a) => a.what).join(' | ')}`);
   assert.ok(!found.some((a) => /pastoral/i.test(a.what)), 'the agenda tick box is not an action');
   const tasks = T.findAllTasks(text);
   assert.equal(tasks.length, 11, 'eleven tasks, the agenda box not one of them');
   for (const t of tasks) assert.ok(T.parseTaskLine(text.split('\n')[t.line]), 'each a task line the Tasks view reads');
-  const meeting = Wm.readMeeting({ path: 'Meetings/2026-11-06 Harbour till 1-2-1.md', title: 'Harbour till 1-2-1', props, content: text }, PEOPLE);
-  assert.equal(meeting.project, 'Harbour Till Rollout');
+  const meeting = Wm.readMeeting({ path: 'Meetings/2026-11-06 Harbour counter 1-2-1.md', title: 'Harbour counter 1-2-1', props, content: text }, PEOPLE);
+  assert.equal(meeting.project, 'Harbour Counter Refit');
   assert.equal(meeting.actions.length, 11, 'the project reads them as its tasks from the note');
   assert.equal(meeting.agenda.length, 1, 'the agenda item still on the meeting, as coverage');
   assert.ok(Wm.lineInAgenda(text, text.split('\n').findIndex((l) => /Pastoral check-in/.test(l))), 'the agenda line reads as agenda, so ticks never cascade');
@@ -247,7 +247,7 @@ test('actions are the project’s Tasks, with who and when', () => {
   assert.equal(electrician.due, '2026-11-09', 'an exact day resolves');
   const ask = meeting.actions.find((a) => /Tuesday delivery/.test(a.what));
   assert.equal(ask.who, undefined, 'nobody named stays unassigned');
-  assert.ok(text.includes('Update [[lighting plan|the lighting plan]]: the second lane changes the speaker layout'), 'the lighting plan follow-up is a Task linked to the document, not a note');
+  assert.ok(text.includes('Update [[lighting plan|the lighting plan]]: the second counter changes the speaker layout'), 'the lighting plan follow-up is a Task linked to the document, not a note');
 });
 
 test('questions are Questions: open and answered, with who', () => {
@@ -255,7 +255,7 @@ test('questions are Questions: open and answered, with who', () => {
   const questions = Q.findQuestions(text);
   assert.equal(questions.length, 2);
   const [open, answered] = [questions.find((q) => !q.answered), questions.find((q) => q.answered)];
-  assert.equal(open.what, 'Who signs off the till logs?');
+  assert.equal(open.what, 'Who signs off the oven logs?');
   assert.equal(open.askedBy, 'Jordan Lee');
   assert.equal(answered.what, 'Does the receipt show the tax line?');
   assert.equal(answered.askedBy, 'Mia Tran');
@@ -266,8 +266,8 @@ test('questions are Questions: open and answered, with who', () => {
 test('the detail folded, the transcript whole with its speakers', () => {
   const { lines, text } = run();
   assert.equal((text.match(/\[!quote\]- /g) ?? []).length, 4, 'three topics and the transcript, each folded');
-  assert.ok(!text.includes('### Till lanes'), 'no unfolded topic headings');
-  for (const w of ['The second lane opens before the Saturday rush.', 'Harbour Print Co keeps the shelf labels.', 'The stocktake moves to Monday the 9th of November.']) {
+  assert.ok(!text.includes('### Coffee counters'), 'no unfolded topic headings');
+  for (const w of ['The second counter opens before the Saturday rush.', 'Harbour Print Co keeps the shelf labels.', 'The stocktake moves to Monday the 9th of November.']) {
     assert.ok(text.includes(w), 'detail kept, not shown by default');
   }
   const stamps = text.match(/\*\*\d{1,2}:\d{2}(?::\d{2})?\*\*/g) ?? [];
@@ -279,7 +279,7 @@ test('the detail folded, the transcript whole with its speakers', () => {
 test('figures only with their context, placeholders never written', () => {
   const { text } = run();
   const figures = text.split('## Key figures')[1].split('## Discussion')[0];
-  assert.ok(figures.includes('- 6: New scanners') && figures.includes('- 9 November: Stocktake day') && figures.includes('- 2: Count sheets'));
+  assert.ok(figures.includes('- 6: New grinders') && figures.includes('- 9 November: Stocktake day') && figures.includes('- 2: Count sheets'));
   assert.ok(!text.includes('Moon budget'), 'a number with an invented context never lands');
   assert.ok(!text.includes('$4,800'), 'a value never said never lands');
   assert.ok(!text.includes('- None'), 'no placeholder decision');
@@ -291,7 +291,7 @@ test('nothing about the meeting written anywhere else; no PDF unless asked', () 
   // The writer takes one note in and returns one note out: the same input twice is the same output.
   const again = M.applyMeetingMinutes(text, minutes(), { people: PEOPLE, me: ME, attendees: ATTENDEES, date: DATE, merged: true, docs: ['lighting plan'] }).text;
   assert.equal(again, text, 'pure: one note in, one note out, steady on re-run');
-  assert.ok(text.includes('Files/Harbour till 1-2-1/recording.webm'), 'the recording beside the note, as now');
+  assert.ok(text.includes('Files/Harbour counter 1-2-1/recording.webm'), 'the recording beside the note, as now');
   assert.ok(!text.includes('.pdf'), 'no minutes PDF unless the person asks');
   assert.ok(!/→ \[\[/.test(text), 'no filed marks scattering copies');
   assert.ok(!/^## Document Changes/m.test(text), 'no companion note');
@@ -316,11 +316,11 @@ test('the minutes door falls back to what is there when the review call fails', 
     saveFile: async (name) => `Attachments/${name}`,
   });
   const existing = {
-    summary: 'Mia and Jordan met about the till rollout.',
-    decisions: ['Open the second till lane before the Saturday rush.'],
-    actions: [{ what: 'Ring the contractor about the lane proofs', who: 'Mia Tran', when: 'Friday' }],
-    questions: [{ what: 'Who signs off the till logs?', askedBy: 'Jordan Lee' }],
-    topics: [{ heading: 'Till lanes', words: ['The second lane opens before the Saturday rush.'] }],
+    summary: 'Mia and Jordan met about the counter refit.',
+    decisions: ['Open the second coffee counter before the Saturday rush.'],
+    actions: [{ what: 'Ring the contractor about the counter proofs', who: 'Mia Tran', when: 'Friday' }],
+    questions: [{ what: 'Who signs off the oven logs?', askedBy: 'Jordan Lee' }],
+    topics: [{ heading: 'Coffee counters', words: ['The second counter opens before the Saturday rush.'] }],
   };
   const r = await handlers['recorder:minutes']('Meetings/x.md', { title: 'X', date: DATE, transcript: '[0:00] Speaker 1: hello.', people: [], attendees: ['Mia Tran'], existing }, 'req-1');
   assert.equal(r.partial, true, 'flagged partial, never stuck');

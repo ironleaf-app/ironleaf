@@ -137,7 +137,7 @@ test('one action read into what / who / by when', () => {
   assert.deepEqual(M.readAction('I will send the minutes', { me: 'Priya Shah' }), { what: 'I will send the minutes' }, '"I" isn’t read as a name');
   assert.deepEqual(M.readAction('Decide the menu — this matters', {}), { what: 'Decide the menu — this matters' }, 'words after a dash that aren’t a person stay in what');
   assert.deepEqual(M.readAction('Read [[Pricing ideas|the pricing note]] and **reply**', {}), { what: 'Read the pricing note and reply' });
-  // e2-meeting-faults fault 2 (6 Nov 2026, the Fitzroy take): loose words read as words with no
+  // e2-meeting-faults fault 2 (6 Nov 2026, the Brookfield take): loose words read as words with no
   // firm day, in every shape, judged against the meeting's day (Friday 6 Nov 2026).
   const fri = new Date(2026, 10, 6);
   assert.deepEqual(M.readAction('Chase the stone top for Thursday morning — by Thursday morning', { date: fri }), { what: 'Chase the stone top for Thursday morning', whenWords: 'Thursday morning' }, 'a weekday with its part of day names no known day');
@@ -257,7 +257,7 @@ test('the project a meeting belongs to: its property, its folder, then what it l
   ];
   const resolve = (t) => projects.find((p) => p.name.toLowerCase() === t.toLowerCase())?.path ?? null;
   assert.deepEqual(M.projectsFor({ path: 'Meetings/Site.md', props: { project: '[[Harbour Fit-out]]' }, links: ['Projects/Studio Upgrade/Studio Upgrade.md'] }, projects, resolve).map((p) => [p.name, p.why]), [['Harbour Fit-out', 'property'], ['Studio Upgrade', 'link']]);
-  assert.deepEqual(M.projectsFor({ path: 'Projects/Studio Upgrade/Meetings/Wave 2.md', props: {} }, projects, resolve).map((p) => [p.name, p.why]), [['Studio Upgrade', 'folder']]);
+  assert.deepEqual(M.projectsFor({ path: 'Projects/Studio Upgrade/Meetings/Desk install.md', props: {} }, projects, resolve).map((p) => [p.name, p.why]), [['Studio Upgrade', 'folder']]);
   assert.deepEqual(M.projectsFor({ path: 'Projects/Studio Upgrade/Activity/Task.md', props: {} }, projects, resolve), [], 'an Activity note isn’t a meeting of the project');
   assert.deepEqual(M.projectsFor({ path: 'Meetings/x.md', props: { project: 'Winter Menu Launch' } }, projects, resolve).map((p) => p.name), ['Winter Menu Launch']);
   assert.deepEqual(M.projectsFor({ path: 'Projects/Studio Upgrade/Studio Upgrade.md', props: {} }, projects, resolve), [], 'the project file itself');
@@ -304,11 +304,11 @@ test('an action becomes a next step the project file keeps, read back the same',
 });
 
 test('the assistant’s finds are kept only when they quote the note and are new', () => {
-  const text = 'We should probably get the oven serviced before winter.\nSam mentioned the till keeps freezing.\n## Actions\n- [ ] Send the quote — Sam\n';
+  const text = 'We should probably get the oven serviced before winter.\nSam mentioned the coffee machine keeps freezing.\n## Actions\n- [ ] Send the quote — Sam\n';
   const found = M.findActions(text, { date: THU });
   const reply = { actions: [
     { what: 'Get the oven serviced', who: 'Mia', when: 'Friday', quote: 'get the oven serviced before winter' },
-    { what: 'Look at the till', quote: 'the till keeps freezing' },
+    { what: 'Look at the coffee machine', quote: 'the coffee machine keeps freezing' },
     { what: 'Made up', quote: 'words that are not in the note' },
     { what: 'send the quote', quote: 'Send the quote' },
     { what: '', quote: 'Sam mentioned' },
@@ -316,7 +316,7 @@ test('the assistant’s finds are kept only when they quote the note and are new
   const extra = M.readAssistantActions(reply, text, found, { date: THU });
   assert.deepEqual(extra.map((a) => [a.what, a.who ?? '', a.due ?? '', a.line, a.how]), [
     ['Get the oven serviced', 'Mia', '2026-10-16', 0, 'assistant'],
-    ['Look at the till', '', '', 1, 'assistant'],
+    ['Look at the coffee machine', '', '', 1, 'assistant'],
   ]);
   assert.deepEqual(M.readAssistantActions('not json', text, found), []);
 });
@@ -350,7 +350,7 @@ test('9.5 batch 9: the assistant’s quote matches whatever its case (F105)', ()
 
 test('9.5 batch 9: retro, kick-off and workshop folders are meetings (F107)', () => {
   assert.ok(M.isMeetingNote('Retros/Sprint 12.md', {}));
-  assert.ok(M.isMeetingNote('Workshops/Intro to tills.md', {}));
+  assert.ok(M.isMeetingNote('Workshops/Intro to sourdough.md', {}));
   assert.ok(M.isMeetingNote('Kick-offs/Q1 planning.md', {}));
   assert.ok(M.isMeetingNote('Stand-ups/Daily.md', {}));
 });
