@@ -90,7 +90,7 @@ test('a workbook read cell by cell: sheets, dates, formulas, the heading row and
   assert.match(words, /Headings in row 5: A Phase · B Task · C Owner · D Due · E Status · F Notes · G Days to go/);
   assert.match(words, /A reset clears \(filled in\): C Owner \(3 cells\) · D Due \(3 cells\) · E Status \(3 cells\) · F Notes \(1 cell\) · B2 beside “Venue” · B3 beside “Opening date”/);
   assert.match(words, /A reset keeps: the headings and titles; A Phase, B Task, G Days to go \(formulas\); 5 formula cells; all formatting/);
-  assert.match(words, /6: A6 Pre-opening \| B6 Order signage \| C6 Sam \| D6 \d{4}-\d\d-\d\d \| E6 Done \| G6 =D6-\$B\$3/);
+  assert.match(words, /6: A6 Before opening \| B6 Order signage \| C6 Sam \| D6 \d{4}-\d\d-\d\d \| E6 Done \| G6 =D6-\$B\$3/);
   assert.match(words, /Sheet “Lists”[\s\S]*A reset clears nothing here\./, 'a list of choices is the template’s own');
   const part = M.workbookWords(wb, { range: M.parseRange('Tasks!A9:G10') });
   assert.ok(!/Order signage/.test(part) && /E10 =COUNTIF\(E6:E9,"Done"\)/.test(part), 'a range looks at part of a sheet');
@@ -115,7 +115,7 @@ test('reset: the filled-in entries cleared; headings, tasks, formulas, formattin
   const back = await M.readWorkbook(r.bytes);
   const t = back.sheets[0].cells;
   assert.deepEqual(['B2', 'B3', 'C6', 'D6', 'E6', 'C7', 'D7', 'E7', 'F7', 'C8', 'D8', 'E8'].filter((x) => t.has(x)), [], 'every entry is blank');
-  assert.equal(t.get('A6').value, 'Pre-opening');
+  assert.equal(t.get('A6').value, 'Before opening');
   assert.equal(back.sheets[1].cells.size, 4);
   // keep: a column the reset would clear is left when asked (an Owner column holding roles, say).
   const kept = await M.changeWorkbook(before, { reset: { keep: [M.parseRange('Tasks!C:C')] } });
