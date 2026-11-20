@@ -37,7 +37,7 @@ cpSync(path.join(project, 'tools', 'review-notes'), notes, { recursive: true });
 
 // A cafe opening's project, its folder on this PC as a real one is: the checklist two folders down (the cafe's working
 // copy filled in, and the blank master), with its README, CHANGELOG and structure file.
-const NAME = '07 Wexley St Ashford (Launch)';
+const NAME = 'Wexley St Bakery (Launch)';
 const folder = path.join(pc, NAME);
 const book = path.join(folder, 'Project files', 'checklist');
 mkdirSync(book, { recursive: true });
@@ -282,7 +282,7 @@ try {
   // The card opens it in the viewer, as a search result does.
   await click('.chat-turn.assistant:last-child .cf-card.is-made .cf-row');
   check('the viewer opens the template', await waitFor(`/Launch template – Cafe Opening Checklist\\.xlsx/.test(document.querySelector('.pf-overlay-box .pf-preview-name')?.textContent || '')`, 8000));
-  check('it shows the template’s words (tasks kept, Wexley St gone)', await waitFor(`(() => { const t = document.querySelector('.pf-overlay-box')?.textContent || ''; return /Cafe Opening Checklist/.test(t) && !/Wexley St\\b(?! Ashford)/.test(t.replace(/07 Wexley St Ashford \\(Launch\\)/g, '')); })()`, 10000));
+  check('it shows the template’s words (tasks kept, Wexley St gone)', await waitFor(`(() => { const t = document.querySelector('.pf-overlay-box')?.textContent || ''; return /Cafe Opening Checklist/.test(t) && !/Wexley St\\b(?! Bakery)/.test(t.replace(/Wexley St Bakery \\(Launch\\)/g, '')); })()`, 10000));
   await shot('62-template-in-viewer');
   await ev(`document.querySelector('.pf-overlay')?.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))`);
   await sleep(300);
