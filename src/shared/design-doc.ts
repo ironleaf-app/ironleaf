@@ -22,6 +22,7 @@
 
 import { BAND_DARK, contrastOf, esc, inkFor, accentOf, type BrandContent } from './brand-document';
 import { cleanHex, fromHex, toHex, type BrandKit } from './assets';
+import { DESIGN_EXEMPLARS } from './design-exemplars';
 
 // ── Kinds ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -40,6 +41,10 @@ export interface DesignKindInfo {
   pages?: number;
   /** A long document's shape: a designed cover (and at most one summary page), then every block in one flow. */
   flow?: boolean;
+  /** Which reference design it is shown: a page, a deck or a document. */
+  shape: 'page' | 'deck' | 'document';
+  /** The proven page plan for this kind, page by page: the AI fills it rather than inventing a structure. */
+  plan: string;
   /** What the AI is told about this kind, beyond the line. */
   brief: string;
 }
@@ -49,12 +54,12 @@ const A4 = { w: 210, h: 297 };
 const SLIDE = { w: 297, h: 167 };
 
 export const DESIGN_KINDS: DesignKindInfo[] = [
-  { id: 'report', name: 'Report', line: 'A designed cover, then every word of the note set to read well.', page: A4, words: 'keep', flow: true, brief: 'A report: a designed cover page (the logo, the title, what it is, the key figures when there are any), then the whole note set beautifully in the brand.' },
-  { id: 'one-pager', name: 'One-pager', line: 'The note on a single page: the headline, the key points, the figures.', page: A4, words: 'shorten', pages: 1, brief: 'A one-pager: exactly one page that a busy reader takes in at a glance. A strong headline, a short summary, the key points and figures from the note, the next steps when there are any. Shorten: choose what matters, never cram.' },
-  { id: 'proposal', name: 'Proposal', line: 'A cover and sections laid out to persuade: the ask, the why, the how.', page: A4, words: 'keep', flow: true, brief: 'A proposal: a confident cover, a summary page that makes the ask and its reasons stand out (the key figures, the decision wanted, the why in a few lines, all from the note), then the whole note set beautifully in the brand.' },
-  { id: 'handout', name: 'Handout', line: 'Two pages, visual and easy to skim, for a meeting or a customer.', page: A4, words: 'shorten', pages: 2, brief: 'A two-page handout: visual, easy to skim, with panels, figures and short sections. Shorten: the reader has two minutes.' },
-  { id: 'poster', name: 'Poster', line: 'One bold page: a big message, a few words, the brand.', page: A4, words: 'shorten', pages: 1, brief: 'A poster: one page, a big message in display type, a few supporting lines, the brand strong. Very few words.' },
-  { id: 'slides', name: 'Slides', line: 'A slide deck (16:9): one idea per slide.', page: SLIDE, words: 'shorten', brief: 'A slide deck of 16:9 slides, one section class="page" per slide: a title slide, then one idea per slide (a headline and at most five short lines, or one figure, or one chart), and a closing slide. Shorten: slides carry headlines, not paragraphs.' },
+  { id: 'report', name: 'Report', line: 'A designed cover, then every word of the note set to read well.', page: A4, words: 'keep', flow: true, brief: 'A report: a designed cover page (the logo, the title, what it is, the key figures when there are any), then the whole note set beautifully in the brand.', shape: 'document', plan: "Page 1, the cover: the logo top left, a small label top right, the title huge (class display) low on the page with a one-line summary under it, the key figures in a full-width band at the foot. Page 2, at a glance (when the note has figures): one hero number with what it means, the why in three short lines, a bar chart of the main numbers, what to watch. Then the flow: every block in order, each section opened by a short brand rule, a small section number and its heading; tables set clean; the decision or ask in one strong panel where the note makes it." },
+  { id: 'one-pager', name: 'One-pager', line: 'The note on a single page: the headline, the key points, the figures.', page: A4, words: 'shorten', pages: 1, brief: 'A one-pager: exactly one page that a busy reader takes in at a glance. A strong headline, a short summary, the key points and figures from the note, the next steps when there are any. Shorten: choose what matters, never cram.', shape: 'page', plan: "Top: the logo and a small label on one line. A headline (fs-7, two lines at most) and a two-line summary. The key figures in a band (3 or 4). The body in a 12-column grid: span-7 for the why and the plan (numbered steps), span-5 for the money as bars or a short table and the risks. The foot: the decision or ask in one strong panel beside the next steps (who, what, when). The footer." },
+  { id: 'proposal', name: 'Proposal', line: 'A cover and sections laid out to persuade: the ask, the why, the how.', page: A4, words: 'keep', flow: true, brief: 'A proposal: a confident cover, a summary page that makes the ask and its reasons stand out (the key figures, the decision wanted, the why in a few lines, all from the note), then the whole note set beautifully in the brand.', shape: 'document', plan: "Page 1, the cover: confident and simple, the logo, the title huge, who it is for. Page 2, the ask: the decision wanted in one sentence set large, the key figures, the why in three lines, the cost as bars, the timeline. Then the flow: every block in order, sections opened by a short brand rule and their heading, the ask repeated in a strong panel at the end." },
+  { id: 'handout', name: 'Handout', line: 'Two pages, visual and easy to skim, for a meeting or a customer.', page: A4, words: 'shorten', pages: 2, brief: 'A two-page handout: visual, easy to skim, with panels, figures and short sections. Shorten: the reader has two minutes.', shape: 'page', plan: "Page 1: the logo and label, a headline, a short summary, the key figures in a band, then two columns (span-7 and span-5) with the story and a chart. Page 2: the details people keep (a table, the steps, the people or dates), a pull quote or callout, and what happens next. Visual and skimmable: short paragraphs, many small headings." },
+  { id: 'poster', name: 'Poster', line: 'One bold page: a big message, a few words, the brand.', page: A4, words: 'shorten', pages: 1, brief: 'A poster: one page, a big message in display type, a few supporting lines, the brand strong. Very few words.', shape: 'page', plan: "One page: the brand strong (a full-bleed colour band or a page of the brand colour), the logo, one message in display type (fs-9 or fs-10, three lines at most), one hero number with its label, three short supporting lines at most, and the when or call to action at the foot." },
+  { id: 'slides', name: 'Slides', line: 'A slide deck (16:9): one idea per slide.', page: SLIDE, words: 'shorten', brief: 'A slide deck of 16:9 slides, one section class="page" per slide: a title slide, then one idea per slide (a headline and at most five short lines, or one figure, or one chart), and a closing slide. Shorten: slides carry headlines, not paragraphs.', shape: 'deck', plan: "Slide 1: the title slide in the brand colour (logo, a small label, the title in display type, one line under it). Then one idea per slide, each with a small label and a headline that states the point: a hero-number slide, a timeline slide for the plan, a chart slide for the money, a risks slide, a decision slide in the brand colour, and a closing next-steps slide. Never more than five short lines of text on a slide." },
 ];
 
 export const kindInfo = (id: unknown): DesignKindInfo => DESIGN_KINDS.find((k) => k.id === id) ?? DESIGN_KINDS[0];
@@ -271,7 +276,8 @@ The person's content:
 - Never <img>, links, scripts, forms, iframes, web fonts, @import or url(…): they are removed.
 
 Design direction (Astryx's design conventions, Meta's open design system, set for paper):
-- Space before boxes: closely related things sit tight, separate things sit apart, and the gap grows with each level of grouping (line < item < group < section). Use at least three distinct gaps on a page; never one gap everywhere. Group with space and alignment before reaching for another panel; never a panel inside a panel.
+- Space before boxes: closely related things sit tight, separate things sit apart, and the gap grows with each level of grouping (line < item < group < section). Group with space and alignment before reaching for another panel; never a panel inside a panel.
+- The spacing system, used everywhere (this is where most designs lose marks): page sides var(--sp-7); between sections var(--sp-6); a heading to its own content var(--sp-2), with at least twice that above it; between items of a group var(--sp-3); inside a panel or band var(--sp-5) all round; grid and column gaps var(--sp-5) or var(--sp-6). Space comes from gap on a flex or grid container: set margin:0 on what sits inside one, so margins and gaps never add up to uneven steps. Nothing touches the edge of a band or panel, and nothing is stranded far from what it belongs to.
 - Type contrast: each step of the hierarchy is clearly different (at least 1.25 times the size, or a real change of weight). Two text sizes on a body page plus one display size. Body text leads at 1.45 to 1.5, lines of 60 to 75 characters (about 110 to 130 mm at 10pt: use columns, never full-width body text), no justified or all-capital body text, letter-spacing only on small labels.
 - Colour with emphasis: one thing per page carries the brand colour's full strength; the rest is paper, ink and tints. Words on colour use the matching on- token; never grey words on a coloured panel.
 - Shapes: corners from the radius tokens; a box inside a rounded box has a smaller radius (outer radius minus the gap between them). Square is fine too: choose one and keep it.
@@ -289,11 +295,26 @@ Design well:
 - One dominant element per page, then headings, then text. Body text var(--fs-1) with line-height 1.45; nothing smaller than var(--fs-0).
 - The brand colour with intent: a band, a panel, a rule, a big number. Mostly paper and ink; never a page of solid colour behind long text.
 - Fill each page well: nothing past an edge, and no large empty area anywhere on it (a gap in the middle or an empty lower fifth looks unfinished, the last page excepted). A designed page holds about 350 words at body size: past that, cut, or move the rest to a flow section.
+- Fill a page with scale, never with spreading: when there is room, make the title, the hero number or the chart bigger, or add a figure band. Never push sections apart with justify-content:space-between (or space-around, or flex-grow on spacers) down a page: it strands them with holes between. Sections keep the system's gaps, and any room left over sits in one deliberate place (a band of the brand colour at the foot, or the hero made larger).
 - Words on the brand colour use var(--on-accent); on var(--dark) use var(--on-dark).
+
+The plan for this kind (proven: fill it with this content rather than inventing a structure):
+${kind.plan}
 
 Frames (starting points, not finished designs):
 ${framesFor(kind)}
 
+A reference design at the standard expected, made for different content (an invented bakery). Match its quality, structure, restraint and finish; never copy its words, numbers or names:
+${DESIGN_EXEMPLARS[kind.shape]}
+
+Before you reply, check your design silently against this list and fix anything that fails, so the first version is the finished one:
+- The logo (or the business name) is on the first page; every page but a cover or title slide has the small footer.
+- Each page has one dominant element, then a clear path for the eye; nothing competes with it.
+- Words fit: a designed page holds about 350 words at body size (a slide about 40); nothing runs past an edge or under the footer; no page is left mostly empty.
+- Spacing follows the system: sections var(--sp-6) apart, headings close to their own content, gap (not stacked margins) inside flex and grid; no space-between spreading sections down a page; edges line up; body text no wider than about 130 mm.
+- Only tokens and parts: no hex colour, no px, no font name, no side-stripe card, no panel inside a panel.
+- Every number, date, name and claim is from the note; nothing is decided or promised that the note doesn't say.
+${keep ? '- Every block is placed once, as an empty <nv-block ref>.\n' : ''}
 Reply with the document only: one <style> element, then the <section> elements. No explanation and no code fence.`;
 }
 
@@ -316,6 +337,9 @@ export function blocksShown(content: BrandContent): number {
   return shown;
 }
 
+/** Words a designed page holds at body size beside its title, figures and headings. */
+const WORDS_A_PAGE = 350;
+
 export function designAsk(kind: DesignKindInfo, content: BrandContent, brief: string): string {
   const lines = [`Design a ${kind.name.toLowerCase()}: ${kind.line} Page ${kind.page.w} × ${kind.page.h} mm.`];
   const asked = brief.trim();
@@ -331,6 +355,12 @@ export function designAsk(kind: DesignKindInfo, content: BrandContent, brief: st
   for (const [i, b] of content.blocks.slice(0, shown).entries()) lines.push(`<nv-block ref="b${i + 1}">${forTheAi(b)}</nv-block>`);
   if (shown < content.blocks.length) lines.push(`(The note is long: blocks b${shown + 1} to b${content.blocks.length} are left out of this list; they are added at the end as they are.)`);
   if (kind.words === 'keep' && shown) lines.push('', `Place all ${shown} blocks, each once, as empty <nv-block ref="bN"></nv-block> elements: b1 to b${shown}.`);
+  // The room, said up front: most first drafts that broke ran past the page because the words were never counted.
+  const words = content.blocks.slice(0, shown).reduce((n, b) => n + b.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length, 0);
+  if (kind.pages && words) {
+    const room = kind.pages * WORDS_A_PAGE;
+    lines.push('', `Room: the blocks hold about ${words} words; ${kind.pages === 1 ? 'one designed page holds' : `${kind.pages} designed pages hold`} about ${room} at body size beside the title, figures and headings.${words > room ? (kind.words === 'keep' ? ' That is more than fits: set the long blocks in two columns at var(--fs-1), keep the cover band and display parts compact, and give the words the room before any decoration.' : ` That is more than fits: choose what matters and leave the rest out (about ${room} words in all), rather than squeezing it in.`) : words < room * 0.55 ? ' That leaves room: use it for scale (a bigger title, a hero number, a chart) rather than leaving space empty.' : ''}`);
+  }
   return lines.join('\n');
 }
 
@@ -343,6 +373,8 @@ export interface DesignProblem {
    *  logo, and none on the first page. */
   kind: 'over' | 'empty' | 'small' | 'block' | 'count' | 'contrast' | 'logo' | 'narrow' | 'overlap';
   words: string;
+  /** over, past the bottom edge: how much smaller the page would have to be set to fit (per cent). */
+  shrink?: number;
 }
 
 export interface DesignReport {
@@ -381,6 +413,45 @@ export function designFeedback(report: DesignReport, o: { pictures: boolean; fin
   lines.push('The document goes in the same form as before: one <style> element, then the <section> elements.');
   return lines.join('\n');
 }
+
+const JUDGE_AXES = [
+  '- layout: an intentional page: clear regions, a grid, every edge lining up',
+  '- hierarchy: the squint test: one dominant element, then a clear path for the eye',
+  '- spacing: gaps that grow with grouping, on the rhythm, nothing cramped or stranded',
+  '- parts: the right part for each thing, none of the tells of AI-made design',
+  '- colour: the brand used with intent, one strong emphasis, every word readable',
+];
+
+/** The judge alone: score the printed pages, a line back, no document (cheap: the first draft is usually finished). */
+export function designJudgeOnly(report: DesignReport, kind: DesignKindInfo): string {
+  return [
+    `It printed as ${report.pages} ${report.pages === 1 ? 'page' : 'pages'}; the pages are attached as pictures, in order${report.pages > MAX_JUDGED_PAGES ? ` (the first ${MAX_JUDGED_PAGES})` : ''}. Nothing measured wrong.`,
+    `Judge them the way Astryx's design judge does, 0 to 100 on each axis, strictly and honestly (a competent but ordinary ${kind.name.toLowerCase()} is 70; 90 is one a design studio would be proud to hand a client):`,
+    ...JUDGE_AXES,
+    'Reply with one line only, exactly like: Scores: layout 82, hierarchy 75, spacing 80, parts 85, colour 88',
+  ].join('\n');
+}
+
+/** A rewrite: what was measured, the scores when there are any, and the axis to raise first. */
+export function designRewrite(report: DesignReport, o: { kind: DesignKindInfo; pictures: boolean; scores?: { layout: number; hierarchy: number; spacing: number; parts: number; colour: number } | null }): string {
+  const lines = [`It printed as ${report.pages} ${report.pages === 1 ? 'page' : 'pages'}.${o.pictures ? ' The pages are attached as pictures, in order.' : ''}`];
+  if (o.kind.pages && report.pages !== o.kind.pages) lines.push(`It must be exactly ${o.kind.pages} ${o.kind.pages === 1 ? 'page' : 'pages'}.`);
+  const measured = report.problems.filter((p) => p.kind !== 'small' && p.kind !== 'contrast');
+  if (measured.length) {
+    lines.push('Measured on the printed pages:');
+    for (const p of measured.slice(0, 20)) lines.push(`- ${p.page ? `page ${p.page}: ` : ''}${p.words}`);
+  }
+  if (o.scores) {
+    const axes = (['layout', 'hierarchy', 'spacing', 'parts', 'colour'] as const).map((k) => [k, o.scores![k]] as const).sort((a, b) => a[1] - b[1]);
+    lines.push(`Judged on Astryx's axes: ${axes.map(([k, v]) => `${k} ${v}`).join(', ')} (the bar is ${JUDGE_BAR} on each). Raise ${axes[0][0]} first, then ${axes[1][0]}:`);
+    lines.push(...JUDGE_AXES.filter((a) => a.startsWith(`- ${axes[0][0]}`) || a.startsWith(`- ${axes[1][0]}`)));
+  }
+  lines.push('Fix it in one go, keeping what works. Reply with the whole document: one <style> element, then the <section> elements.');
+  return lines.join('\n');
+}
+
+/** How many pages the judge is shown. */
+export const MAX_JUDGED_PAGES = 4;
 
 /** Words the person typed to change the design ("bolder", "landscape", "put the figures first"). */
 export const designChange = (words: string) => `The person looked at it and asks for this change: ${words.trim().slice(0, 2000)}\nMake the change, keep the rest, and reply with the whole document again in the same form.`;
@@ -678,7 +749,8 @@ function measure(pass){
         var painted=cs.backgroundColor&&cs.backgroundColor!=='rgba(0, 0, 0, 0)'&&cs.backgroundColor!=='transparent';
         if(painted||((e.children.length===0||ownText(e))&&(words(e)||e.localName==='img'))||e.tagName.toLowerCase()==='svg'||cs.borderLeftWidth!=='0px'&&parseFloat(cs.borderLeftWidth)>2)spans.push([Math.max(q.top,r.top)-r.top,Math.min(q.bottom,r.bottom)-r.top]);
         // Words squeezed into a column too narrow for them (a few letters a line).
-        if(ownText(e)&&q.width>0&&q.width<24*MM&&(e.textContent||'').trim().length>40&&q.height>parseFloat(cs.fontSize)*8)problems.push({page:n,kind:'narrow',words:'words squeezed into a column '+Math.round(q.width/MM)+' mm wide ("'+words(e)+'"): give it room'});
+        // Counted in characters a line (about half the type size each), so a short item in a squeezed column counts too.
+        if(ownText(e)&&q.width>0&&(e.textContent||'').trim().length>40){const per=q.width/(parseFloat(cs.fontSize)*0.5);if((q.width<24*MM||per<22)&&q.height>parseFloat(cs.fontSize)*4)problems.push({page:n,kind:'narrow',words:'words squeezed into a column '+Math.round(q.width/MM)+' mm wide, about '+Math.round(per)+' characters a line ("'+words(e)+'"): give it room (35 or more a line)'});}
         if(e.children.length===0&&words(e)&&parseFloat(cs.fontSize)<7.4*96/72)problems.push({page:n,kind:'small',words:'text smaller than 7.5pt ("'+words(e)+'")'});
       }
       // Words over another box: a title running into a band above it, a panel laid over text (each pair once).
@@ -693,11 +765,13 @@ function measure(pass){
       }
       // Words under the footer: a footer drawn over the page's content (a slide's footer sits at its foot by itself).
       var foot=sec.querySelector('.nv-foot');
-      if(foot){var fr=foot.getBoundingClientRect();var under=null;for(var u=0;u<all.length&&!under;u++){var ue=all[u];if(foot.contains(ue)||ue.contains(foot)||ue.children.length||!words(ue))continue;var uq=ue.getBoundingClientRect();if(uq.bottom>fr.top+1&&uq.top<fr.bottom-1&&uq.right>fr.left&&uq.left<fr.right)under=ue;}
-        if(under)problems.push({page:n,kind:'over',words:'content runs under the footer ("'+words(under)+'"): leave the footer its own room at the foot of the page'});}
-      // Too much for the page: on the last look it is fitted (the type made smaller, no more than to 72%), else said.
-      if(maxB>MM&&D.fit&&pass===0){var f=r.height/(r.height+maxB+3*MM);if(f>=0.72){sec.style.zoom=String(f);sec.style.width=(D.page.w/f)+'mm';sec.style.height=(D.page.h/f)+'mm';zoomed=true;}}
-      if(maxB>MM){var whole=(r.height+maxB)/r.height;problems.push({page:n,kind:'over',words:'content runs '+Math.round(maxB/MM)+' mm past the bottom edge and is cut off (from "'+words(worst)+'"): it is '+Math.round(whole*100)+'% of the page, so cut or shrink it by about '+Math.round((1-1/whole)*100+5)+'%'});}
+      var under=null,low=0,fr=null;
+      if(foot){fr=foot.getBoundingClientRect();for(var u=0;u<all.length;u++){var ue=all[u];if(foot.contains(ue)||ue.contains(foot)||ue.children.length||!words(ue))continue;var uq=ue.getBoundingClientRect();if(uq.right>fr.left&&uq.left<fr.right&&uq.top<fr.bottom-1)low=Math.max(low,uq.bottom);if(!under&&uq.bottom>fr.top+1&&uq.top<fr.bottom-1&&uq.right>fr.left&&uq.left<fr.right)under=ue;}
+        if(under)problems.push({page:n,kind:'over',words:'content runs under the footer ("'+words(under)+'"): leave the footer its own room at the foot of the page',shrink:Math.round((1-(fr.top-2*MM-r.top)/(low-r.top))*100)});}
+      // Too much for the page: on the last look it is fitted (the type made smaller, no more than to 72%), else said. The
+      // room is down to the footer's top when there is one, so the fitted page never lands its last lines on the footer.
+      if((maxB>MM||under)&&D.fit&&pass===0){var bottom=Math.max(r.bottom+maxB,low),limit=fr?fr.top-2*MM:r.bottom-MM;var f=(limit-r.top)/(bottom-r.top);if(f<1&&f>=0.72){sec.style.zoom=String(f);sec.style.width=(D.page.w/f)+'mm';sec.style.height=(D.page.h/f)+'mm';zoomed=true;}}
+      if(maxB>MM){var whole=(r.height+maxB)/r.height;problems.push({page:n,kind:'over',words:'content runs '+Math.round(maxB/MM)+' mm past the bottom edge and is cut off (from "'+words(worst)+'"): it is '+Math.round(whole*100)+'% of the page, so cut or shrink it by about '+Math.round((1-1/whole)*100+5)+'%',shrink:Math.round((1-1/whole)*100)});}
       if(maxR>MM)problems.push({page:n,kind:'over',words:'content runs '+Math.round(maxR/MM)+' mm past the right edge and is cut off'});
       // Empty room: the lower part of the page, or a gap between things (a cover's or a title page's space is its design).
       spans.sort(function(a,b){return a[0]-b[0];});var reach=0,gap=0,gapAt=0;spans.forEach(function(sp){if(sp[0]-reach>gap&&reach>0){gap=sp[0]-reach;gapAt=reach;}reach=Math.max(reach,sp[1]);});
@@ -705,7 +779,7 @@ function measure(pass){
       var last=sec===secs[secs.length-1];
       var empty=(r.height-reach)/r.height;
       if(empty>0.2&&!last&&!titled)problems.push({page:n,kind:'empty',words:'the lower '+Math.round(empty*100)+'% of the page is empty'});
-      if(gap/r.height>0.28&&!titled)problems.push({page:n,kind:'empty',words:'an empty gap of '+Math.round(gap/MM)+' mm ('+Math.round(gap/r.height*100)+'% of the page) from '+Math.round(gapAt/MM)+' mm down: bring things together or fill it'});
+      if(gap/r.height>0.22&&!titled)problems.push({page:n,kind:'empty',words:'an empty gap of '+Math.round(gap/MM)+' mm ('+Math.round(gap/r.height*100)+'% of the page) from '+Math.round(gapAt/MM)+' mm down: bring things together or fill it'});
     } else {
       var printable=pageH-34*MM;var est=Math.max(1,Math.ceil((r.height-34*MM)/printable));var first=pages+1;pages+=est;
       for(var p=0;p<est;p++)boxes.push({x:r.left+scrollX,y:r.top+scrollY+p*pageH,w:r.width,h:Math.min(pageH,r.height-p*pageH)});

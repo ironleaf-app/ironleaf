@@ -237,7 +237,7 @@ test('in Chromium: a hostile layout comes out clean, the blocks and logo are pla
     assert.match(words, /^3:empty:/m, `${name}: page 3 is mostly empty\n${words}`);
     assert.match(words, /^3:overlap:words run into another box \("Title into the band" over a coloured header\)/m, `${name}: a title over a band is named\n${words}`);
     assert.match(words, /^3:contrast:words that did not read on their background \("Grey on the band"\): set in white/m);
-    assert.match(words, /^4:narrow:words squeezed into a column 15 mm wide \("Decision needed/m, `${name}: a squeezed column is named\n${words}`);
+    assert.match(words, /^4:narrow:words squeezed into a column 15 mm wide, about 9 characters a line \("Decision needed/m, `${name}: a squeezed column is named\n${words}`);
     assert.match(words, /^4:over:content runs under the footer \("under the foot"\)/m, `${name}: words under the footer are named\n${words}`);
     assert.match(words, /blocks placed more than once.*b1/);
     assert.match(words, /blocks b2 were never placed/);
