@@ -28,6 +28,7 @@ import { bookmarksRenamed } from '../state/bookmarks';
 import { askInChat } from '../state/chat';
 import { noteMenu as noteTabMenu } from '../state/menus';
 import { shareMenuItems } from '../state/share';
+import { DesignButton } from '../components/DesignButton';
 import { openTemplates, templateMenuItems } from '../state/templates';
 import { docs } from '../state/docs';
 import { setWorkspace } from '../state/layout';
@@ -887,6 +888,7 @@ function ProjectShell({
     const over = overflowMenuItems(headerOverflowHidden(wtab.id), {
       'fields': () => ({ label: 'Fields', icon: 'properties' as const, submenu: fieldsMenuItems() }),
       'share': () => ({ label: 'Share', submenu: shareMenuItems(path) }),
+      'design': () => ({ label: 'Design with AI…', icon: 'palette', run: () => openModal({ kind: 'design', path }) }),
       'publish': publishItem,
       'people': () => ({ label: 'Everyone on this project', icon: 'people' as const, run: () => goSection('people') }),
     });
@@ -928,6 +930,7 @@ function ProjectShell({
   const headActions = factsOpen ? (
     <>
       {canEdit && <button className="btn" data-overflow="fields" data-overflow-order={2} title="Page layout, progress, add or remove a fact" onClick={(e) => fieldsMenu(e.currentTarget)}>Fields</button>}
+      <DesignButton path={path} overflow="design" overflowOrder={3} />
       <button className="btn" data-overflow="share" data-overflow-order={3} title="Share this project" onClick={(e) => shareMenu(e.currentTarget)}>Share</button>
       <button className="btn" data-overflow="publish" data-overflow-order={1} title="Publish this project as a website" onClick={() => openModal({ kind: 'publish', source: { kind: 'project', path } })}>Publish</button>
     </>
@@ -940,6 +943,7 @@ function ProjectShell({
           ))}
         </button>
       )}
+      <DesignButton path={path} overflow="design" overflowOrder={3} />
       <button className="btn" data-overflow="share" data-overflow-order={3} title="Share this project" onClick={(e) => shareMenu(e.currentTarget)}>Share</button>
       <button className="btn" data-overflow="publish" data-overflow-order={1} title="Publish this project as a website" onClick={() => openModal({ kind: 'publish', source: { kind: 'project', path } })}>Publish</button>
     </>

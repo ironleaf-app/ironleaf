@@ -8,6 +8,7 @@ import { moduleInfo } from '../../../../shared/life-modules';
 import { Icon } from '../../components/Icon';
 import { PageHead, PageProps } from '../../components/PageHead';
 import { ShareButton } from '../../components/ShareButton';
+import { DesignButton } from '../../components/DesignButton';
 import { openMenu, type MenuItem } from '../../components/Menu';
 import * as A from '../../state/actions';
 import { ScopedAsk } from '../../components/ScopedAsk';
@@ -43,7 +44,8 @@ export function PackShell({ glyph, tint, title, sub, facts, actions, menu, wide,
         actions={
           <>
             {actions}
-            {sharePath && <ShareButton path={sharePath} />}
+            {sharePath && <DesignButton path={sharePath} />}
+            {sharePath && <DesignButton path={sharePath} />}{sharePath && <ShareButton path={sharePath} />}
             {menu && (
               <button type="button" className="btn iconbtn" aria-label={`More for ${typeof title === 'string' ? title : 'this page'}`} title="More" onClick={(e) => openMenu(e.currentTarget, menu())}>
                 <Icon name="more" size={16} />

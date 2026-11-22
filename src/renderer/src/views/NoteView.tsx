@@ -56,6 +56,8 @@ import { noteMenu } from '../state/menus';
 import { openTypePage } from '../state/noteTypes';
 import { requestSearch } from '../state/modals';
 import { shareMenuItems } from '../state/share';
+import { DesignButton } from '../components/DesignButton';
+import { openModal } from '../state/modals';
 import { getState, prefs, showError, toast, useApp, usePrefs } from '../state/store';
 import * as W from '../state/workspace';
 import { ViewHeader } from './ViewHeader';
@@ -492,6 +494,7 @@ export function NoteView({ tab, focused }: { tab: W.TabState; focused: boolean }
   const noteOverflowMenu = (): MenuItem[] => {
     const over = overflowMenuItems(headerOverflowHidden(tab.id), {
       'share': () => ({ label: 'Share', submenu: shareMenuItems(path) }),
+      'design': () => ({ label: 'Design with AI…', icon: 'palette', run: () => openModal({ kind: 'design', path }) }),
       'private': () => ({ label: 'Private note: encrypted, opened only here', icon: 'lock', disabled: true }),
       'read': null,
     });
@@ -537,6 +540,7 @@ export function NoteView({ tab, focused }: { tab: W.TabState; focused: boolean }
             </span>
           </>
         )}
+        {!isPrivate && <DesignButton path={path} overflow="design" overflowOrder={9} />}
         {!isPrivate && <ShareButton path={path} overflow="share" overflowOrder={11} />}
         <button
           className="icon-button"

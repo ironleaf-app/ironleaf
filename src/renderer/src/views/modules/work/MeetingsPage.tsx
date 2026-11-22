@@ -20,6 +20,7 @@ import { openMenu, type MenuItem } from '../../../components/Menu';
 import { ListFind, restoreFindFolds, useFindMemory } from '../../../components/PageTabs';
 import { pickFile } from '../../../components/Pickers';
 import { ShareButton } from '../../../components/ShareButton';
+import { DesignButton } from '../../../components/DesignButton';
 import { useEscape } from '../../../lib/useEscape';
 import { initials } from '../../../lib/projectLook';
 import * as A from '../../../state/actions';
@@ -824,6 +825,7 @@ function MeetingPage({ m, view, canEdit, onMore }: { m: Meet; view: MeetingsView
           <h1 className="vtitle w2b-title-words">{bareTitle(m.title)}</h1>
           {live && <span className="pill coral">Recording</span>}
           <span className="w2b-titleacts">
+            <DesignButton path={m.path} />
             <ShareButton path={m.path} />
             <button type="button" className="iconbtn" aria-label="More for this meeting" title="More" onClick={(e) => onMore(e.currentTarget)}>
               <Icon name="more" size={15} />
@@ -890,6 +892,7 @@ function SeriesPage({ s, view, canEdit, onMore }: { s: SeriesRec; view: Meetings
                 <Icon name="plus" size={12} /> Next meeting
               </button>
             )}
+            <DesignButton path={s.path} />
             <ShareButton path={s.path} />
             <button type="button" className="iconbtn" aria-label="More for this series" title="More" onClick={(e) => onMore(e.currentTarget)}>
               <Icon name="more" size={15} />

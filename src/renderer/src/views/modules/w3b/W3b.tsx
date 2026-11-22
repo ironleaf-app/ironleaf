@@ -9,6 +9,7 @@ import { EmptyState } from '../../../components/EmptyState';
 import { Icon, type IconName } from '../../../components/Icon';
 import { PageHead, PageProps } from '../../../components/PageHead';
 import { ShareButton } from '../../../components/ShareButton';
+import { DesignButton } from '../../../components/DesignButton';
 import { RecordFormHost } from '../RecordForm';
 import * as A from '../../../state/actions';
 import { ScopedAsk } from '../../../components/ScopedAsk';
@@ -40,7 +41,8 @@ export function Glyph({ tint, children, size }: { tint: 'slate' | 'green' | 'amb
 /** A pack's head in the one page shape: tinted tile, 32 px title, one sub line, actions right. A record's own screen
  *  passes its note as sharePath (8.8): Share on its top bar shares a clean copy of that note. */
 export function PackHead({ glyph, tint, title, lead, actions, icon, sharePath }: { glyph?: ReactNode; tint: 'slate' | 'green' | 'amber' | 'red' | 'blue'; title: ReactNode; lead?: ReactNode; actions?: ReactNode; icon?: ReactNode; sharePath?: string }) {
-  return <PageHead icon={icon ?? <Glyph tint={tint}>{glyph}</Glyph>} title={title} lead={lead} actions={<>{actions}{sharePath && <ShareButton path={sharePath} />}</>} />;
+  return <PageHead icon={icon ?? <Glyph tint={tint}>{glyph}</Glyph>} title={title} lead={lead} actions={<>{actions}{sharePath && <DesignButton path={sharePath} />}
+            {sharePath && <DesignButton path={sharePath} />}{sharePath && <ShareButton path={sharePath} />}</>} />;
 }
 
 /** A section: its small grey label, then its content. No divider lines inside pages. */

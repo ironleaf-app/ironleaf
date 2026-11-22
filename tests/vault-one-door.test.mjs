@@ -251,7 +251,7 @@ test('live: Ctrl+O and Ctrl+K open the one panel; no Search row, no Ask button',
   assert.equal(await ev(`!!document.querySelector('.top-search')`), true, 'the centred bar stays');
 });
 
-test('live: a note’s header carries Share, Read and More — and More carries Publish', async () => {
+test('live: a note’s header carries Design, Share, Read and More — and More carries Publish', async () => {
   const h = await harness();
   const ev = h.browser.ev;
   await h.browser.send('Emulation.setDeviceMetricsOverride', { width: 2000, height: 900, deviceScaleFactor: 1, mobile: false });
@@ -265,9 +265,9 @@ test('live: a note’s header carries Share, Read and More — and More carries 
     const right = document.querySelector('.topbar .right');
     return [...right.children].filter(vis).map((el) => el.getAttribute('aria-label') || el.innerText.replace(/\\s+/g, ' ').trim() || el.title);
   })()`);
-  // The frame's own chrome (show-side, avatar) aside, the page carries three things.
+  // The frame's own chrome (show-side, avatar) aside, the page carries four things (Design in plain sight, 22 Nov 2026).
   const page = head.filter((w) => w !== 'Show the right side' && !w.includes('open Settings'));
-  assert.deepEqual(page, ['Share', 'Read (Ctrl+E)', 'More'], `Share, Read and More only (got: ${JSON.stringify(head)})`);
+  assert.deepEqual(page, ['Design', 'Share', 'Read (Ctrl+E)', 'More'], `Design, Share, Read and More only (got: ${JSON.stringify(head)})`);
   assert.equal(await clickWords(h, 'More', '.topbar .right'), 'CLICKED', 'the … menu opens');
   await sleep(800);
   const menu = await ev(`[...document.querySelectorAll('.menu button, .menu [role="menuitem"]')].map((e) => e.innerText.replace(/\\s+/g, ' ').trim()).join(' | ')`);

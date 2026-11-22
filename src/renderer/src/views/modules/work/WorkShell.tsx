@@ -12,6 +12,7 @@ import type { FieldValue, RecordKind, WsRecord } from '../../../../../shared/wor
 import { Icon, type IconName } from '../../../components/Icon';
 import { openMenu, type MenuItem } from '../../../components/Menu';
 import { ShareButton } from '../../../components/ShareButton';
+import { DesignButton } from '../../../components/DesignButton';
 import * as A from '../../../state/actions';
 import { openModule, partOfTab } from '../../../state/modules';
 import { peek } from '../../../state/peek';
@@ -101,7 +102,8 @@ export function WorkShell({ tab: _tab, module, sections, here, actions, more, de
               </button>
             )}
             {actions}
-            {sharePath && <ShareButton path={sharePath} className="sv-tool" />}
+            {sharePath && <DesignButton path={sharePath} className="sv-tool" />}
+            {sharePath && <DesignButton path={sharePath} />}{sharePath && <ShareButton path={sharePath} className="sv-tool" />}
             {more && (
               <button type="button" className="sv-tool sv-tool-icon" aria-label={`More for ${module.name}`} title="More" onClick={(e) => openMenu(e.currentTarget, more())}>
                 <Icon name="more" size={15} />
