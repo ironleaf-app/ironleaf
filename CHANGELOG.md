@@ -6,6 +6,12 @@ the website. `tools/release.mjs` takes a release's notes from here when `--notes
 
 Format: one `## <version> — <YYYY-MM-DD>` heading a release, then one `- ` line a change.
 
+## 2.0.11 — 2026-11-21
+
+- AI replies can no longer be broken by a doubly patched model library (the build's patch step now patches once, whatever state it finds).
+- Meetings: a long summary in the minutes card reads as short paragraphs, and the word-correction box keeps its 360 px width.
+- Chat: a long title under an answer's sources wraps instead of being cut mid-word.
+
 ## 2.0.10 — 2026-11-21
 
 - Project pages: Notes and files (and every other long tab) scrolls again on a big window; opening a big project and switching its tabs no longer freezes for a second or two.
