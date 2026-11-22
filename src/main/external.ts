@@ -247,9 +247,14 @@ export class ExternalEntry {
   // ── Files from outside the vault ──
 
   /** A Markdown file from anywhere: a note in the vault opens as itself; any other opens in a tab of its own. */
-  async openFile(abs: unknown): Promise<LooseOpened> {
+  /** A file from outside the vault: from outside the window (a start, "Open with", a second start) it is brought to the
+   *  window and handed over as an item; asked for by the window itself (its tab opening the file again after a
+   *  restart, File › Open, a drop) it is only opened and returned, the window showing it as it does — 22 Nov 2026: a
+   *  tab's own re-open handed the file back as a new item, which opened another tab, which opened it again, without end. */
+  async openFile(abs: unknown, from: 'outside' | 'window' = 'outside'): Promise<LooseOpened> {
     await this.host.ready().catch(() => {});
     const r = await this.loose.open(abs);
+    if (from === 'window') return r;
     if (r.kind === 'vault') await this.host.openWindow({ note: r.rel });
     else {
       await this.host.openWindow();
@@ -276,13 +281,13 @@ export class ExternalEntry {
     h.handle('external:take', () => this.items.splice(0));
     h.handle('external:state', () => this.state());
     h.handle('external:allow', (kinds: unknown) => this.setAllow(kinds));
-    h.handle('loose:open', (abs: unknown) => this.openFile(abs));
+    h.handle('loose:open', (abs: unknown) => this.openFile(abs, 'window'));
     h.handle('loose:pick', async () => {
       const win = h.window();
       const options = { title: 'Open a Markdown file', buttonLabel: 'Open', properties: ['openFile' as const, 'multiSelections' as const], filters: [{ name: 'Markdown', extensions: ['md', 'markdown', 'mdown', 'mkd', 'txt'] }] };
       const r = win ? await dialog.showOpenDialog(win, options) : await dialog.showOpenDialog(options);
       const out: LooseOpened[] = [];
-      for (const f of r.canceled ? [] : r.filePaths) out.push(await this.openFile(f));
+      for (const f of r.canceled ? [] : r.filePaths) out.push(await this.openFile(f, 'window'));
       return out;
     });
     h.handle('loose:read', (id: unknown) => this.loose.read(id));
