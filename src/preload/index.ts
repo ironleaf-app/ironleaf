@@ -7,6 +7,7 @@ import { managedApi } from './managed';
 import { accountApi } from './account';
 import type { DocConvertResult, ProjectConversation, PrivateEntry, PrivateStatus, ProjectCard, FolderProjectOffer, ProjectEditResult, ProjectFiles, ProjectFileText, ProjectView, FolderHereResult, TidyPreview, TidyResult } from '../shared/types';
 import type { Project, ProjectEdit } from '../shared/project-file';
+import type { DesignStartIn, DesignViewOut } from '../shared/design-doc';
 import type { ProjectCheckState } from '../shared/project-checks';
 import type { ProjectChange } from '../shared/project-hub';
 import type { TodayData, TodayFileInput } from '../shared/today';
@@ -213,6 +214,16 @@ const api = {
   canvas: {
     /** Keep a damaged board's bytes in File recovery before starting over (nothing is written into the file). */
     keepDamaged: (path: string) => invoke<boolean>('canvas:keep-damaged', path),
+  },
+  /** The Design studio (22 Nov 2026, src/main/design-studio.ts): a note designed into a finished PDF by the person's AI. */
+  design: {
+    start: (requestId: string, input: DesignStartIn) => invoke<DesignViewOut>('design:start', requestId, input),
+    change: (requestId: string, id: string, words: string) => invoke<DesignViewOut>('design:change', requestId, id, words),
+    cancel: (requestId: string) => invoke<void>('design:cancel', requestId),
+    /** The design printed and saved where the person picks: the file, or null when they cancelled. */
+    save: (id: string, name: string) => invoke<string | null>('design:save', id, name),
+    /** Whether the chat's model is set up, and sees pictures. */
+    ready: () => invoke<{ model: string | null; pictures: boolean }>('design:ready'),
   },
   exports: {
     /** Prints what the window shows for print (the Weekly page as shown) to a PDF the person names. */
@@ -882,6 +893,8 @@ row when one was named. */
     /** The vault's writer changed (the other app opened or closed it): read the lock again. */
     vaultLockChanged: (cb: (view: VaultLockView) => void) => subscribe('vault-lock:changed', cb),
     chatDelta: (cb: (event: ChatEvent) => void) => subscribe('ai:chat-delta', cb),
+    /** What the Design studio is doing (its request's id and the step in words). */
+    designStep: (cb: (event: { requestId: string; words: string }) => void) => subscribe('design:step', cb),
     /** Something the assistant did while answering (searched, read, made a note…). */
     chatStep: (cb: (event: ChatStepEvent) => void) => subscribe('ai:chat-step', cb),
     /** The assistant suggested changes to a note (or none wait there any more). */

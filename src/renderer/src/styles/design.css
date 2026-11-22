@@ -1,0 +1,314 @@
+/* The Design studio (22 Nov 2026, components/DesignDialog.tsx): choose, watch it work, look at the pages, change, save.
+   A wide dialog: the pages are the point, so the result gives them most of the room and keeps its controls in a
+   narrow column beside them. */
+
+.dialog.ds-dialog {
+  width: min(760px, calc(100vw - 48px));
+  max-height: calc(100vh - 12vh - 24px);
+  display: flex;
+  flex-direction: column;
+  /* Choosing scrolls within when the window is short; the result pins its head and scrolls its pages. */
+  overflow-y: auto;
+  padding: 20px 22px 18px;
+}
+
+.dialog.ds-dialog.is-result {
+  overflow: hidden;
+  /* The overlay starts dialogs 12vh down (kit.css): the result takes the rest, and the width a wide screen has. */
+  width: min(1680px, calc(100vw - 96px));
+  height: calc(100vh - 12vh - 24px);
+}
+
+.ds-head {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  flex: none;
+}
+
+.ds-mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-4);
+  background: color-mix(in srgb, var(--accent) 13%, transparent);
+  color: var(--accent);
+}
+
+.ds-head-words {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ds-head h2 {
+  margin: 1px 0 3px;
+}
+
+.ds-head .hint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+
+.ds-close {
+  flex: none;
+}
+
+.ds-body {
+  min-height: 0;
+  margin-top: 16px;
+}
+
+.ds-label {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.ds-kinds {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 8px 0 16px;
+}
+
+.ds-kind {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 10px;
+  row-gap: 2px;
+  align-items: center;
+  padding: 11px 12px;
+  border-radius: var(--r-4);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ds-kind:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+}
+
+.ds-kind.active {
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--border));
+  background: color-mix(in srgb, var(--accent) 7%, var(--bg-raised));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.ds-kind-icon {
+  grid-row: 1 / span 2;
+  align-self: start;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-3);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+}
+
+.ds-kind-name {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.ds-kind-words {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.ds-field {
+  display: grid;
+  gap: 6px;
+}
+
+.ds-field textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 64px;
+  font: inherit;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  padding: 8px 10px;
+  border-radius: var(--r-3);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.ds-failed {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  margin: 12px 0 0;
+  color: var(--danger);
+  font-size: var(--fs-small);
+  line-height: 1.45;
+}
+
+.ds-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.ds-model {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+.ds-space {
+  flex: 1 1 auto;
+}
+
+/* Working */
+.ds-working {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 28px 0 10px;
+  text-align: center;
+}
+
+.ds-spinner {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2.5px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  border-top-color: var(--accent);
+  animation: nv-spin var(--nv-spin) linear infinite;
+}
+
+.ds-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  justify-items: start;
+  font-size: var(--fs-small);
+}
+
+.ds-steps li {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--text-muted);
+}
+
+.ds-steps li.is-now {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.ds-dot {
+  width: 8px;
+  height: 8px;
+  margin: 0 2px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.ds-working .hint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+}
+
+/* Result: the pages fill the room; the controls sit in a column beside them. */
+.ds-result {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 18px;
+}
+
+.ds-pages {
+  min-height: 0;
+  overflow: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  align-content: start;
+  gap: 16px;
+  padding: 14px;
+  border-radius: var(--r-4);
+  background: var(--bg-sunken, color-mix(in srgb, var(--text) 6%, var(--bg)));
+}
+
+.ds-pages.is-wide {
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+}
+
+.ds-page {
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.ds-page img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #fff;
+  border-radius: var(--r-1);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 18%), 0 6px 18px rgb(0 0 0 / 10%);
+}
+
+.ds-page figcaption {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.ds-more {
+  align-self: center;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+}
+
+.ds-side {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ds-left {
+  padding: 10px 12px;
+  border-radius: var(--r-3);
+  background: color-mix(in srgb, var(--amber-tx, #b7791f) 9%, var(--bg-raised));
+  font-size: var(--fs-caption);
+  line-height: 1.45;
+}
+
+.ds-left ul {
+  margin: 6px 0 0;
+  padding-left: 16px;
+}
+
+.ds-side .button {
+  justify-content: center;
+}
+
+.ds-save {
+  flex: none;
+}
+
+@media (max-width: 860px) {
+  .ds-kinds {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ds-result {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+}

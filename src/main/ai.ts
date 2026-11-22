@@ -10,7 +10,7 @@ import { randomUUID } from 'node:crypto';
 import { addStep } from '../shared/chat-steps';
 import { agentSystem, AgentTools, ASSISTANT_VOICE, WEB_OFF_WORDS, namedPaths, runAgent, summarise, undoChanges, webToolsOffered, type AgentHost, type CatalogueCaller, type Change, type ModuleCaller, type Proposal } from './agent';
 import { memoryWords } from '../shared/assistant-memory';
-import type { ChatMessageIn } from './providers/types';
+import type { ChatMessageIn, StreamResult } from './providers/types';
 import type { AiLinkResult, AiLinkSuggestion, ChatOptions, ChatResult, ChatSource, ChatStep, ChatTurn } from '../shared/types';
 import { isProjectProps, parseProject, projectContext } from '../shared/project-file';
 import { projectWhere } from '../shared/project-folder';
@@ -390,6 +390,20 @@ export class AiService {
     if (result.error) return { text: result.text, error: result.error };
     if (result.stopReason === 'length') return { text: result.text, error: 'The answer was cut off. Try again.' };
     return { text: result.text };
+  }
+
+  /** One turn of the Design studio (src/main/design-studio.ts, 22 Nov 2026): the conversation so far, pictures
+   *  included, on the chat's model, with no tools. */
+  async askTurns(system: string, messages: ChatMessageIn[], o: { signal: AbortSignal; maxTokens: number }): Promise<StreamResult> {
+    return this.providers.stream(this.settings.raw.model, system, messages, { signal: o.signal, maxTokens: o.maxTokens });
+  }
+
+  /** Whether the chat's model sees pictures, for the Design studio's look at its printed pages: only when its
+   *  connection lists the model and doesn't say it can't (a design turn sent pictures it can't take would fail). */
+  designSeesPictures(): boolean {
+    const picked = this.providers.effectiveChoice(this.settings.raw.model);
+    const entry = picked ? this.providers.view().connections.find((c) => c.id === picked.provider)?.models.find((m) => m.id === picked.model) : undefined;
+    return entry ? entry.images !== false : false;
   }
 
   /** The chat's model in words (for a system prompt that names it), or null. */

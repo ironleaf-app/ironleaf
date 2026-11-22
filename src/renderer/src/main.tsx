@@ -70,6 +70,7 @@ import './styles/work-sites.css';
 import './styles/personal-modules.css';
 import './styles/work-vendors.css';
 import './styles/publications.css';
+import './styles/design.css';
 import './styles/life-records.css';
 // The calm shell (Ironleaf Calm): the left side's calm list, page headers, Ask, one page at a time.
 import './styles/shell-calm.css';

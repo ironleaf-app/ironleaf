@@ -34,7 +34,7 @@ them, on your terms.
 - **AI built in, on your own key or a local model**: a side chat beside every note, Ask (a question in the Ctrl+K
   box, answered from your notes with its sources) and meeting minutes, on Anthropic, OpenAI, Gemini, Ollama or any OpenAI-compatible
   endpoint. No Ironleaf middleman, and private notes never reach a model.
-- **MCP server with 80 tools**: Claude Desktop, Claude Code, ChatGPT desktop, Cursor, VS Code and other MCP apps can
+- **MCP server with 81 tools**: Claude Desktop, Claude Code, ChatGPT desktop, Cursor, VS Code and other MCP apps can
   search, read and (only if you allow it) change your notes. Every change is listed with Undo.
 - **Search by meaning and OCR**, on-device and offline; a quick switcher (Ctrl+O) and every command (Ctrl+K) from
   the keyboard.
@@ -99,7 +99,7 @@ npm test               # everything, including the UI walks that start the built
 Settings › Connect an AI switches the MCP server on (off by default; Read only until you choose Read and write).
 Two ways in: the `ironleaf mcp` command (stdio) for apps that start a server, or the local URL
 (`http://127.0.0.1:47731/mcp` with a token) for apps that take an address. Set-up for Claude Desktop, Claude Code,
-Cursor, VS Code and ChatGPT desktop, and the list of all 80 tools, are in **[docs/MCP.md](docs/MCP.md)**. Private
+Cursor, VS Code and ChatGPT desktop, and the list of all 81 tools, are in **[docs/MCP.md](docs/MCP.md)**. Private
 notes and secrets are never served, and nothing leaves your machine unless the AI app you connect sends it.
 
 ## How Ironleaf is funded

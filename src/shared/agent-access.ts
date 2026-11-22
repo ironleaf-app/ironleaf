@@ -475,6 +475,15 @@ export const AGENT_TOOLS: AgentToolDef[] = [
     required: ['note'],
   },
   {
+    name: 'design_document',
+    title: 'Design a document',
+    level: 'edit',
+    description:
+      'This is how a person’s note becomes a designed document in their brand kit, laid out by the AI, printed and checked page by page: a report (a designed cover, then every word), a one-pager, a proposal, a handout (two pages), a poster, or slides (16:9). Use it when they ask for one of these (“turn this into a one-pager”, “make slides from the plan”, “design a proposal for the board”); a plain PDF of the note is note_to_pdf’s. Give the note by its path or title, the kind, and the brief in their words (who it is for, what to lead with). It takes a minute or two. The PDF is kept in the note’s Files (a new version when there was one) and the answer gives the file with its pages — hand it over from there.',
+    input: { note: S('The note’s path or title.'), kind: { type: 'string', enum: ['report', 'one-pager', 'proposal', 'handout', 'poster', 'slides'], description: 'What to make.' }, brief: S('What the person asked for, in their words: who it is for, what to lead with, the tone (optional).') },
+    required: ['note', 'kind'],
+  },
+  {
     name: 'tidy_apply',
     title: 'Apply a tidy fix',
     level: 'edit',

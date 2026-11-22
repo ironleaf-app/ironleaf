@@ -157,6 +157,7 @@ const ABILITIES_HEAD: Ability[] = [
   { id: 'other-ai-apps', group: 'spark', title: 'Use the Vault from other AI apps', words: 'Claude Code, Claude Desktop, Cursor and VS Code read your notes, or change them with Undo, as far as you allow.', target: page('settings', 'agents') },
   { id: 'plugins', group: 'spark', title: 'Plugins', words: 'Small add-ons with a command and a Home card each, off until you switch them on.', target: page('settings', 'plugins') },
   { id: 'export-pdf', group: 'spark', title: 'Export to PDF', words: 'A note laid out as pages, saved where you say.', target: cmd('export-pdf') },
+  { id: 'design-note', group: 'spark', title: 'Design with AI', words: 'A note designed by your AI in your brand kit: a report, one-pager, proposal, handout, poster or slides, checked page by page.', target: cmd('design-note') },
   { id: 'present', group: 'spark', title: 'Present as slides', words: 'A note as slides, straight from the page.', target: cmd('present') },
   { id: 'publish-site', group: 'spark', title: 'Publish as a website', words: 'Chosen pages as a finished site, in a folder or on your own host.', target: cmd('publish') },
 ];
