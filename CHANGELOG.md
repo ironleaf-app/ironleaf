@@ -6,6 +6,13 @@ the website. `tools/release.mjs` takes a release's notes from here when `--notes
 
 Format: one `## <version> — <YYYY-MM-DD>` heading a release, then one `- ` line a change.
 
+## 2.0.15 — 2026-11-23
+
+- Slide decks look like a consultancy made them on the first pass: type set at slide size, one frame on every slide, an at-a-glance slide of key figures, and one highlight colour for the point that matters. Content grows to fill the room under each headline, and the PowerPoint file matches. Decks take about half the AI tokens they did.
+- Meetings without minutes give the side panel the whole row, and a meeting's title lines up with the list it opens from.
+- Long names in the account menu, About's version history and the side rail are cut cleanly instead of trailing dots.
+- Packs at a wide window: a quiet section's week and figures use the rest of its line.
+
 ## 2.0.14 — 2026-11-22
 
 - Design with AI is one click away: a Design button beside Share on every note, project and meeting.
