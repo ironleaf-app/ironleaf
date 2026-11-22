@@ -270,7 +270,8 @@ test('a meeting from start to minutes: note, transcript, names, minutes, tick, p
     assert.ok(afterNames.includes('neuralvault-speaker-names:'), 'the names live in the note properties');
     assert.ok(afterNames.includes('Sarah Mitchell') && afterNames.includes('Priya Sharma'), 'both names kept');
     // Renaming changes every line where a person reads: open the transcript and read it.
-    await h.browser.ev(`document.querySelector('.mp-toggle')?.click()`);
+    // It may stand open already (layout round 3 opens the transcript beside the minutes): open it only if shut.
+    await h.browser.ev(`(() => { const t = document.querySelector('.mp-toggle'); if (t && t.getAttribute('aria-expanded') !== 'true') t.click(); })()`);
     await sleep(800);
     const shown = await h.browser.ev(`document.querySelector('.mp-lines')?.innerText ?? ''`);
     assert.ok(shown.includes('Sarah Mitchell') && shown.includes('Priya Sharma'), 'every line reads in its name');

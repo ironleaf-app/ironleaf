@@ -267,9 +267,12 @@ test('Today: Next for you reads as Tasks, counts plain, time chips one chip', { 
   const rows = await h.browser.ev(ROWS_JS('.td-next .td-row.tkrow', '.td-row-what', '.td-row-sub', '.tkrow-when'));
   assert.ok(rows.length >= 2, `Next for you rows stand to judge (${rows.length})`);
   assertOne(rows, (x) => `${x.title.weight}/${x.title.size}/${x.title.lh}`, '500/15px/21px', 'Next for you title');
-  assertOne(rows, (x) => `${x.padT}/${x.padB}`, '12px/12px', 'Next for you rhythm');
+  // Today's composed columns (layout rounds 2 and 3, styles/compose.css) keep their rows a tight tool's height: the
+  // words at the body step as Tasks, the rhythm 3 px (Tasks' own page keeps 12 px).
+  assertOne(rows, (x) => `${x.padT}/${x.padB}`, '3px/3px', 'Next for you rhythm');
   assertDividers(rows, 'Next for you');
-  assertHeights(rows, 'Next for you');
+  // No same-shape height check here: a Today row puts its project on the title's line where it fits and under it
+  // where it does not (compose.css, .td-row-main wraps), so two one-line-title rows differ by that one line.
   const counts = await h.browser.ev(`[...document.querySelectorAll('main .td-count')].map((el) => { const s = getComputedStyle(el); return s.fontWeight + '/' + s.fontSize + '/' + s.fontVariantNumeric + '/' + s.backgroundColor; })`);
   assert.ok(counts.length >= 1, 'section counts stand to judge');
   for (const c of counts) assert.equal(c, '500/13px/tabular-nums/rgba(0, 0, 0, 0)', `section counts read the plain count (${c})`);
