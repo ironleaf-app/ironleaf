@@ -196,8 +196,18 @@ test("project Your next section: one flat list, no view switch, in the reading c
   assert.ok(!(await h.browser.ev(`!!document.querySelector('[data-section="whats-next"] .cal')`)), 'no calendar grid');
   const rows = await h.browser.ev(`document.querySelectorAll('[data-section="whats-next"] .tkrow').length`);
   assert.ok(rows >= 3, `one flat list of yours (${rows} rows)`);
-  const max = await h.browser.ev(`(() => getComputedStyle(document.querySelector('.pj-page .vpage')).maxWidth)()`);
-  assert.equal(max, '980px', `project page column is ${max}, want the Projects column (980px)`);
+  // Layout round 2 (compose.css, 20 Nov 2026): every room's frame starts at one left edge and takes the room, so
+  // the Projects column is no longer 980 px. The project page still reads in the Projects column: the same width
+  // rule and the same left edge as Projects home (updated 23 Nov 2026).
+  const frame = (sel) => `(() => { const el = document.querySelector(${JSON.stringify(sel)}); if (!el) return null; return { max: getComputedStyle(el).maxWidth, left: Math.round(el.getBoundingClientRect().left) }; })()`;
+  const page = await h.browser.ev(frame('.pj-page .vpage'));
+  await clickWords(h, 'Projects', '.side');
+  await waitFor(h, `!document.querySelector('.pj-page') && !![...document.querySelectorAll('main h1')].some((e) => e.innerText.includes('Projects'))`);
+  await sleep(800);
+  const home = await h.browser.ev(frame('main .vpage'));
+  assert.ok(page && home, 'both pages stand in a frame');
+  assert.equal(page.max, home.max, `project page column is ${page.max}, want the Projects column (${home.max})`);
+  assert.ok(Math.abs(page.left - home.left) <= 1, `project page starts at the Projects column's edge (${page.left} vs ${home.left})`);
 }, { timeout: 120000 });
 
 test('Tasks page: who and when share one x on every row', async () => {

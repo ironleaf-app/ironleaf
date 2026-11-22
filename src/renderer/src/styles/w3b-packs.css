@@ -129,4 +129,13 @@
   .w3b-photos {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   }
+  /* A quiet section's week or figures take the rest of its line (23 Nov 2026, t300 at 3456: Health's empty week
+     stood 433 px of seven day cards in a 1,525 px half, a 992 px blank beside it). The figures keep a tile's
+     width, so a short figure never stands in a wide empty box (t254). */
+  .w3b-page > [data-quiet="1"] > :is(.w3b-week, .w3b-stats) {
+    flex: 1 1 auto;
+  }
+  .w3b-page > [data-quiet="1"] > .w3b-stats > .w3b-stat {
+    max-width: 320px;
+  }
 }

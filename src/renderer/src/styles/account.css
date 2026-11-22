@@ -307,12 +307,13 @@ button.acct-badge:hover {
   line-height: 1.25;
   text-align: left;
 }
+/* The name, plan and email lines clip without dots, their whole words on hover (t207, 23 Nov 2026). */
 .acct-chip-name {
   font-size: var(--fs-small);
   font-weight: 600;
   color: var(--rail-ink, var(--text));
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: clip;
   white-space: nowrap;
 }
 .acct-chip.is-out .acct-chip-name {
@@ -326,7 +327,7 @@ button.acct-badge:hover {
   font-size: var(--fs-caption);
   color: var(--rail-faint, var(--text-faint));
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: clip;
   white-space: nowrap;
 }
 .srow .acct-chip-sub svg.acct-chip-heart {
@@ -371,14 +372,14 @@ button.acct-badge:hover {
   font-weight: 600;
   color: var(--text-strong);
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: clip;
   white-space: nowrap;
 }
 .acct-menu-email {
   font-size: var(--fs-caption);
   color: var(--text-muted);
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: clip;
   white-space: nowrap;
 }
 .acct-menu-plan {

@@ -353,8 +353,9 @@ button.card.w2b-stat.on { background: var(--sel); }
     grid-template-columns: minmax(0, 1fr) clamp(var(--w-side), 34%, 560px);
     align-items: start;
   }
-  .w2b-after:has(> .w2b-after-main:empty) {
-    grid-template-columns: minmax(0, 1fr);
+  /* With no minutes the side takes the whole row: a sibling rule, as the rest of this sheet asks nothing of its children (23 Nov 2026). */
+  .w2b-after-main:empty + .w2b-after-side {
+    grid-column: 1 / -1;
   }
   .w2b-after-side {
     position: sticky;

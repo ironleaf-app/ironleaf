@@ -235,6 +235,11 @@ h3.nv-context-head {
 .nv-page:has(> .w2b-meeting[data-has-panes], > * > .w2b-meeting[data-has-panes]) {
   padding-top: var(--space-5);
 }
+/* That 24 px is the compact head's whole pad, as on the list it opens from (23 Nov 2026): the title's own frame pad
+   (w2b.css, the page without panes) sat on top of it and dropped the title 24 px under the list's, at 116. */
+.nv-page .w2b-meeting[data-has-panes] > .w2b-title {
+  margin-top: 0;
+}
 .w2b-meeting:has(> .nv-panes-root) > .metapills {
   margin-bottom: 0;
 }

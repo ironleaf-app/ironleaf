@@ -34,26 +34,48 @@ test('one Also section past Meetings, remembered; never the old naming', () => {
 // ── Every former block is a row in the list ──────────────────────────────────
 
 test('the nags, the vault, the projects waiting, the packs and the cards list as rows', () => {
+  // Layout rounds 2 and 3 (20 Nov 2026) re-laid the calm screen: the rows that once sat inside the Also fold now
+  // read in Needs you (the nags, projects waiting, upkeep and the live hub), the packs' own blocks (due, the
+  // turned-on cards) stand as blocks of their own beside it and count with it, the vault's line sits at the foot of
+  // the day, and the work sections fold inside More for today (data-section="also"). The meetings to prep left for
+  // the one Meetings card (2.0.1). What this protects stays: every former block is a counted row in one place,
+  // and nothing stands past the quiet line (updated 23 Nov 2026).
   const src = read('src/renderer/src/views/TodayView.tsx');
-  const at = (mark) => {
-    const i = src.indexOf(mark);
+  const at = (mark, from = 0) => {
+    const i = src.indexOf(mark, from);
     assert.ok(i >= 0, `${mark} is on the page`);
     return i;
   };
-  const fold = at('data-section="also"');
-  const items = at('td-look-items');
-  assert.ok(fold < items, 'the rows live inside the fold');
+  const needs = at('data-section="needs"');
+  const items = at('td-look-items', needs);
+  const also = at('data-section="also"');
+  const foot = at('data-section="vault"');
+  assert.ok(needs < items && items < also, 'the rows live in Needs you, before More for today');
   // The nags and loose ends (worded as now, opening as now): the review and dormant lines (tidy left
   // Today for the weekly review, 8 Nov 2026 calm list).
-  for (const nag of ['reviewQuiet', 'dormantQuiet']) assert.ok(at(`{isToday && ${nag}}`) > items, `${nag} lists with the rows`);
+  for (const nag of ['reviewQuiet', 'dormantQuiet']) {
+    const i = at(`{isToday && ${nag}}`);
+    assert.ok(i > items && i < also, `${nag} lists with the rows`);
+  }
   assert.ok(src.includes('data-look-row'), 'the nags count as rows');
-  // The vault, the projects waiting and the packs, as rows under their own words.
-  for (const block of ['<VaultTodayCards />', '<ProjectChecksToday />', '<TodayModules group="due"', '<TodayModules group="waiting"', '<TodayModules group="upkeep"', '<TodayModules group="rest"', '<LookCards']) assert.ok(at(block) > items, `${block} lists with the rows`);
-  // The work sections follow the rows, as they were (waiting still folds inside).
-  assert.ok(at('td-else-groups') > items, 'the work sections follow the rows');
-  assert.ok(at('id="waiting"') > items, 'waiting folds inside');
+  // The projects waiting and the packs, as rows under their own words, each in a counted list.
+  for (const block of ['<ProjectChecksToday />', '<TodayModules group="upkeep"', '<TodayModules group="due"', '<TodayModules group="rest"', '<LookCards']) {
+    const i = at(block);
+    assert.ok(i > items && i < also, `${block} lists with the rows`);
+    assert.ok(src.lastIndexOf('td-look-items', i) > needs, `${block} sits in a counted list`);
+  }
+  assert.ok(!src.includes('<TodayModules group="waiting"'), 'meetings to prep read in the one Meetings card, never twice');
   // The live hub is one click away in the list too, never blocks on the calm screen.
-  for (const live of ['<ChangesWaiting />', '<CardsDue />']) assert.ok(at(live) > items, `${live} folds inside`);
+  for (const live of ['<ChangesWaiting />', '<CardsDue />']) {
+    const i = at(live);
+    assert.ok(i > items && i < also, `${live} folds inside Needs you`);
+  }
+  // The vault's own line at the day's foot.
+  assert.ok(at('<VaultTodayCards />') > foot, 'the vault reads as the day’s foot line');
+  // The work sections fold inside More for today: built into its list, shown only once it is open.
+  const more = at('const moreForToday: BalanceItem[] = [];');
+  assert.ok(at('id="waiting"') > more && at('id="waiting"') < needs, 'waiting folds inside More for today');
+  assert.ok(src.includes('...(elseOpen ? moreForToday : [])'), 'More for today shows its sections only when open');
   // Nothing stands past the fold any more.
   const tail = src.slice(src.indexOf('Everything else lives in the one fold above'));
   assert.ok(!tail.includes('<VaultTodayCards') && !tail.includes('<ProjectChecksToday') && !tail.includes('<TodayModules'), 'no block stands past the quiet line');
@@ -273,9 +295,15 @@ async function shot(h, W, Hg, file, scrollTo = '') {
   writeFileSync(path.join(shotsDir, file), Buffer.from(d.result.data, 'base64'));
 }
 
-/** The list's kinds as the quiet line counts them: sections and marked rows, expansions once. */
-const ROWS_JS = `document.querySelector('.td-look-items').querySelectorAll(':scope section[data-section]:not(details section), :scope [data-look-row]:not(section):not(details [data-look-row])').length`;
+/** The list's kinds as Needs you counts them: sections and marked rows, expansions once. Since layout round 2 and
+ *  2.0.1 the rows stand in three lists (Needs you, the packs' due block, the cards block), so every list counts. */
+const ROWS_JS = `[...document.querySelectorAll('.td-look-items')].reduce((n, list) => n + list.querySelectorAll(':scope section[data-section]:not(details section), :scope [data-look-row]:not(section):not(details [data-look-row])').length, 0)`;
 
+// Layout rounds 2 and 3 (20 Nov 2026) re-laid the calm screen: Needs you stands on it with its rows and its count, the
+// packs' due and cards blocks beside it, and the rest of the day (waiting, risk, activity) folds behind one quiet
+// "More for today" head that stands open in three columns at a wide window and is remembered narrower. The walks
+// below check that shape (updated 23 Nov 2026); what they protect is the same: one calm screen, every former block
+// a counted row that opens as before, nothing else standing on it.
 test('shut: one calm screen at 3456, 1920 and 1219, pictured', { timeout: 420000 }, async () => {
   const h = await harness();
   const ev = h.browser.ev;
@@ -284,24 +312,24 @@ test('shut: one calm screen at 3456, 1920 and 1219, pictured', { timeout: 420000
   await waitFor(h, `!!document.querySelector('.td-view')`);
   await waitFor(h, `!!document.querySelector('[data-section="also"]')`);
   await sleep(2500);
-  // What stays, top to bottom: the date and greeting, one plain line, Late, Next, questions, meetings, Also.
+  // What stays, top to bottom: the date and greeting, one plain line, Late, Next, meetings, Needs you, More for today.
   assert.ok(await ev(`!!document.querySelector('.td-view .td-date')`), 'the date');
   assert.ok(await ev(`(document.querySelector('.td-view h1')?.innerText ?? '').length > 0`), 'the greeting');
   assert.ok(await ev(`!!document.querySelector('.td-view .td-sentence')`), 'one plain line of what matters');
   assert.ok(await ev(`!!document.querySelector('[data-section="late"]')`), 'Late answers first');
   assert.equal(await ev(`document.querySelectorAll('[data-section="next"] .td-row').length`), 5, 'Next (5)');
-  assert.ok(await ev(`!!document.querySelector('.th-agenda')`), 'today’s meetings, with Record beside them');
-  assert.ok(await ev(`[...document.querySelectorAll('.th-agenda button')].some((b) => (b.innerText || '').includes('Record a meeting'))`), 'Record beside them');
-  const line = await ev(`document.querySelector('[data-section="also"] h2')?.innerText.replace(/\\s+/g, ' ') ?? ''`);
-  const m = /Also (\d+)/.exec(line);
-  assert.ok(m, `one Also head counts what opening shows (saw ${JSON.stringify(line)})`);
+  assert.ok(await ev(`!!document.querySelector('[data-section="meetings"]')`), 'today’s meetings, with Record beside them');
+  assert.ok(await ev(`[...document.querySelectorAll('[data-section="meetings"] button')].some((b) => (b.innerText || '').includes('Record a meeting'))`), 'Record beside them');
+  const head = await ev(`document.querySelector('[data-section="also"] h2')?.innerText.replace(/\\s+/g, ' ').trim() ?? ''`);
+  assert.equal(head, 'More for today', 'one quiet head for the rest of the day');
+  // Needs you counts what it shows: its number is the rows across its lists, and a busy vault folds into a few.
+  const needs = await ev(`document.querySelector('[data-section="needs"] h2')?.innerText.replace(/\\s+/g, ' ') ?? ''`);
+  const m = /Needs you (\d+)/.exec(needs);
+  assert.ok(m, `one Needs you head counts its rows (saw ${JSON.stringify(needs)})`);
   const n = Number(m[1]);
-  // The look rows render with it, hidden, and count inside the head's number with the rest of the work.
-  assert.ok((await ev(ROWS_JS)) <= n, `the look rows count inside Also’s number (${n})`);
-  assert.ok(n >= 5, `a busy vault folds several rows into Also (saw ${n})`);
-  assert.ok(await ev(`document.querySelector('.td-look-open')?.hidden === true`), 'shut while shut');
-  assert.equal(await ev(`getComputedStyle(document.querySelector('.td-look-open')).display`), 'none', 'hidden rows paint nothing');
-  // Nothing else stands on the calm screen: no offers, no cards, no blocks, no box count.
+  assert.equal(await ev(ROWS_JS), n, `Needs you's number is its rows (${n})`);
+  assert.ok(n >= 5, `a busy vault folds several rows into Needs you (saw ${n})`);
+  // Nothing else stands on the calm screen: no offers, no card chooser, no folder nag, no box count.
   const shut = await ev(`document.querySelector('.td-view')?.innerText.replace(/\\s+/g, ' ') ?? ''`);
   for (const gone of ['Switch on', 'could help', 'Your cards', 'Change cards', 'Move this folder', '101 waiting', '100 waiting', 'Recently viewed']) {
     assert.ok(!shut.includes(gone), `no ${gone} on the calm screen`);
@@ -310,16 +338,14 @@ test('shut: one calm screen at 3456, 1920 and 1219, pictured', { timeout: 420000
   const chips = await ev(`[...document.querySelectorAll('.td-areas button')].map((b) => b.innerText.replace(/\\s+/g, ' ').trim())`);
   assert.ok(chips.includes('All areas') && chips.includes('Work'), `kept chips show: ${JSON.stringify(chips)}`);
   assert.ok(!chips.includes('Family') && !chips.includes('Library'), `empty areas chip nothing: ${JSON.stringify(chips)}`);
-  // At 3456 and 1920 the calm screen fits without scrolling; at 1219 the quiet line still shows at a glance.
+  // At 3456 wide More for today's head, the last head on the calm screen, shows at a glance; Today keeps no
+  // width of its own at any size (compose.css: it takes the room like every room).
   for (const [W, Hg, file] of [[3456, 1408, '03-after-3456.png'], [1920, 1117, '04-after-1920.png'], [1219, 709, '05-after-1219.png']]) {
     await h.browser.send('Emulation.setDeviceMetricsOverride', { width: W, height: Hg, deviceScaleFactor: 1, mobile: false });
     await sleep(900);
-    const fit = await ev(`(() => { const v = document.querySelector('.td-view'); const l = document.querySelector('[data-section="also"] h2'); const h = (s) => document.querySelector(s)?.getBoundingClientRect().height ?? -1; return { scroll: v.scrollHeight - v.clientHeight, lineBottom: l.getBoundingClientRect().bottom, innerH: window.innerHeight, max: getComputedStyle(document.querySelector('.td-inner')).maxWidth, head: h('.nv-today-head'), next: h('[data-section="next"]'), meet: h('[data-section="meetings"]'), chips: h('.td-areas'), inner: h('.td-inner') }; })()`);
-    // Step 2 answers three questions before Meetings, so the calm screen runs past one window on smaller
-    // sizes; at 3456 wide Also's head — the last thing on the calm screen — still shows at a glance.
-    if (W >= 3456) assert.ok(fit.lineBottom <= fit.innerH, `at ${W}px Also shows at a glance (bottom ${Math.round(fit.lineBottom)} of ${fit.innerH})`);
-    // t254 (13 Nov 2026): Today stands in the rooms' one 2400 column again, replacing its own 2000.
-    assert.equal(fit.max, W >= 2400 ? '2400px' : W >= 1700 ? '1280px' : '1080px', `at ${W}px the column reads ${fit.max}`);
+    const fit = await ev(`(() => { const l = document.querySelector('[data-section="also"] h2'); return { lineBottom: l.getBoundingClientRect().bottom, innerH: window.innerHeight, max: getComputedStyle(document.querySelector('.td-inner')).maxWidth }; })()`);
+    if (W >= 3456) assert.ok(fit.lineBottom <= fit.innerH, `at ${W}px More for today shows at a glance (bottom ${Math.round(fit.lineBottom)} of ${fit.innerH})`);
+    assert.equal(fit.max, 'none', `at ${W}px Today keeps no width of its own`);
     await shot(h, W, Hg, file);
   }
 });
@@ -327,13 +353,15 @@ test('shut: one calm screen at 3456, 1920 and 1219, pictured', { timeout: 420000
 test('open: every former block is a row, honestly counted, opening as now', { timeout: 420000 }, async () => {
   const h = await harness();
   const ev = h.browser.ev;
-  await h.browser.send('Emulation.setDeviceMetricsOverride', { width: 3456, height: 1408, deviceScaleFactor: 1, mobile: false });
+  // At 1920 More for today is shut until opened, and remembered (at 3456 it stands open in its own column).
+  await h.browser.send('Emulation.setDeviceMetricsOverride', { width: 1920, height: 1117, deviceScaleFactor: 1, mobile: false });
   await sleep(700);
-  await clickWords(h, 'Show', '[data-section="also"]');
+  if ((await ev(`document.querySelector('[data-section="also"] .td-more')?.getAttribute('aria-expanded')`)) !== 'true') await clickWords(h, 'Show', '[data-section="also"]');
   await sleep(1200);
-  assert.ok(await ev(`document.querySelector('.td-look-open')?.hidden === false`), 'Also opens');
+  assert.equal(await ev(`document.querySelector('[data-section="also"] .td-more')?.getAttribute('aria-expanded')`), 'true', 'More for today opens');
   const line = await ev(`document.querySelector('[data-section="also"] .td-more')?.innerText.replace(/\\s+/g, ' ') ?? ''`);
   assert.match(line, /Show fewer/, 'open, it says Show fewer');
+  assert.ok(await ev(`!!document.querySelector('[data-section="waiting"]')`), 'the work sections show once open');
   // The hundred linked boxes wait on nothing: the hub reads its one slipped date, never the boxes.
   // The projects fold into one row (8 Nov 2026 calm list): open it to read them.
   await ev(`[...document.querySelectorAll('.td-look-items .td-look-row > summary')].find((e) => e.innerText.includes('projects have notes waiting'))?.click()`);
@@ -344,10 +372,10 @@ test('open: every former block is a row, honestly counted, opening as now', { ti
   assert.ok(!/10\d waiting/.test(projects.join(' | ')), `no box count anywhere: ${JSON.stringify(projects).slice(0, 200)}`);
   const kitchen = projects.find((t) => t.startsWith('Harbour Kitchen')) ?? '';
   assert.match(kitchen, /2 waiting from your notes/, `its own note's open tasks still wait: ${JSON.stringify(kitchen)}`);
-  // The packs' items list as rows: bills due, meetings to carry, systems at risk.
+  // The packs' items list as rows: bills due, systems at risk. (Meetings to prep left these lists for the one
+  // Meetings card in 2.0.1; this vault's one meeting is tomorrow.)
   assert.equal(await ev(`document.querySelectorAll('.td-look-items [data-section="bills"] .rm-today-row').length`), 3, 'three bills due');
   assert.equal(await ev(`document.querySelectorAll('.td-look-items [data-section="systems"] .rm-today-row').length`), 4, 'four systems at risk');
-  assert.ok((await ev(`document.querySelectorAll('.td-look-items [data-section="meetings"] .rm-today-row').length`)) >= 1, 'meetings to carry');
   // A turned-on card is a row; empty Recently viewed is none.
   const rows = await ev(`[...document.querySelectorAll('.td-look-items .td-look-row > summary')].map((e) => e.innerText.replace(/\\s+/g, ' ').trim())`);
   assert.ok(rows.includes('Inbox'), `the Inbox is a row: ${JSON.stringify(rows)}`);
@@ -372,7 +400,7 @@ test('open: every former block is a row, honestly counted, opening as now', { ti
   await clickWords(h, 'Today');
   await waitFor(h, `!!document.querySelector('.td-view')`);
   await sleep(1500);
-  assert.ok(await ev(`document.querySelector('.td-look-open')?.hidden === false`), 'the list stays open, as remembered');
+  assert.equal(await ev(`document.querySelector('[data-section="also"] .td-more')?.getAttribute('aria-expanded')`), 'true', 'More for today stays open, as remembered');
   await shot(h, 3456, 1408, '06-after-open-3456.png');
   await shot(h, 1219, 709, '07-after-open-1219.png', '[data-section="systems"]');
 });

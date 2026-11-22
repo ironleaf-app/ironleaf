@@ -59,6 +59,9 @@ const ALLOW_JS = [
   ['main/agent.ts', 'edits.slice(0, 6)'],
   ['main/agent.ts', 'lost.slice(0, 25)'],
   ['main/work/meetings.ts', 'x.people.slice(0, 6)'],
+  // 23 Nov 2026: the account service's log line shortens the account id on purpose (the log file never holds
+  // the whole id); the log is not shown in the app, like error-log.ts's marked cuts above.
+  ['main/account/service.ts', 'profile.sub.slice(0, 8)'],
 ];
 
 test('no truncation outside the allow-list', () => {
@@ -115,6 +118,7 @@ test('the allow-list guards real exceptions', () => {
   assert.ok(read('src/main/agent.ts').includes('edits.slice(0, 6)'), 'cell lists tell the model (t212)');
   assert.ok(read('src/main/agent.ts').includes('call reorganise_project again'), 'rewrite retries tell the model (t212)');
   assert.ok(read('src/main/work/meetings.ts').includes("The agents' tools"), 'meeting lists brief the agent (t212)');
+  assert.ok(read('src/main/account/service.ts').includes('this.log(`signed in (${profile.sub.slice(0, 8)}'), 'the sign-in log line shortens the account id');
 });
 
 // Menus wrap whole words to three lines at most, never dots, full words on hover (answer 1).

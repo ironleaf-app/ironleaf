@@ -129,6 +129,12 @@ test('live: near zero work at rest, cheap frames while panning, at 3456x1408 und
     // p50 ~390 ms; after: drift redraws at a low rate, p50 ~17 ms).
     await h.browser.ev(`window.__ft = [];`);
     await sleep(6000);
+    // Enough frames to judge, not a set time (23 Nov 2026): on a machine busy with the rest of the suite six
+    // seconds at 4x throttle sometimes gave 29 frames; the samples keep coming until there are 31, up to 20 s.
+    for (let waited = 6000; waited < 20000; waited += 1000) {
+      if ((await h.browser.ev(`window.__ft.filter((x) => x < 5000).length`)) > 30) break;
+      await sleep(1000);
+    }
     const rest = (await h.browser.ev(`window.__ft.slice()`)).filter((x) => x < 5000);
     assert.ok(rest.length > 30, `frames flow at rest (${rest.length})`);
     assert.ok(q(rest, 0.5) < 50, `rest p50 under 50 ms (stood ${q(rest, 0.5).toFixed(1)} ms over ${rest.length} frames)`);
@@ -150,7 +156,24 @@ test('live: near zero work at rest, cheap frames while panning, at 3456x1408 und
     // Draw cost under throttle, including the background blit (a 62 MB copy reads ~25 ms at 4x
     // throttle in software; on their graphics it is a sub-millisecond texture copy). Fails on a
     // real JS regression, not on raster noise.
-    assert.ok(pan.draw.p95 < 45, `pan draw p95 under 45 ms throttled (stood ${pan.draw.p95} ms over ${pan.draw.n} draws)`);
+    // The 45 ms holds where that blit reads ~25 ms; a machine busy with the rest of the suite reads it slower, so the
+    // budget scales with a blit of the same size timed here, now, under the same throttle (23 Nov 2026): a draw that
+    // got dearer than the machine did still fails.
+    const blit = await h.browser.ev(`(() => {
+      const g = document.querySelector('.nj-graph-body .lg-canvas');
+      const w = g.width, hh = g.height;
+      const src = document.createElement('canvas'); src.width = w; src.height = hh;
+      const sc = src.getContext('2d'); sc.fillStyle = '#20302a'; sc.fillRect(0, 0, w, hh);
+      const dst = document.createElement('canvas'); dst.width = w; dst.height = hh;
+      const dc = dst.getContext('2d');
+      const t = [];
+      for (let i = 0; i < 9; i++) { const t0 = performance.now(); dc.drawImage(src, 0, 0); dc.getImageData(0, 0, 1, 1); t.push(performance.now() - t0); }
+      t.sort((a, b) => a - b);
+      return t[4];
+    })()`);
+    const budget = 45 * Math.max(1, blit / 25);
+    console.log(`graph pan: draw p95 ${pan.draw.p95} ms over ${pan.draw.n} draws; same-size blit ${blit.toFixed(1)} ms; budget ${budget.toFixed(0)} ms`);
+    assert.ok(pan.draw.p95 < budget, `pan draw p95 under ${budget.toFixed(0)} ms throttled (stood ${pan.draw.p95} ms over ${pan.draw.n} draws; a same-size blit reads ${blit.toFixed(1)} ms here)`);
   } finally {
     await h.close().catch(() => {});
   }

@@ -185,6 +185,7 @@ const MEASURE_JS = `(() => {
     boxL: br.left, boxR: br.right, titleTop: hr.top, titleH: hr.height,
     bodyL: sr?.left ?? null, bodyR: sr?.right ?? null,
     isVsub: sib?.classList?.contains('vsub') ?? false,
+    panes: box.hasAttribute('data-has-panes'),
     font: [hs.fontSize, hs.lineHeight, hs.fontWeight, hs.fontFamily].join(' '),
   };
 })()`;
@@ -222,7 +223,20 @@ function check(rows, size) {
   const bodied = rows.filter((r) => !r.room.startsWith('Settings/') && r.room !== 'Shared spaces');
   assert.ok(spread(columned, 'boxL') <= 1, `column left edges stay put ${tag} (spread ${spread(columned, 'boxL').toFixed(1)}: ${columned.map((r) => `${r.room}=${r.boxL.toFixed(1)}`).join(', ')})`);
   assert.ok(spread(columned, 'boxR') <= 1, `column right edges stay put ${tag} (spread ${spread(columned, 'boxR').toFixed(1)})`);
-  assert.ok(spread(titled, 'titleTop') <= 1, `title tops stay put ${tag} (spread ${spread(titled, 'titleTop').toFixed(1)}: ${titled.map((r) => `${r.room}=${r.titleTop.toFixed(1)}`).join(', ')})`);
+  // App panes (panes.css, 20 Nov 2026): a list-and-detail room fills the window as panes under a compact head, its
+  // frame pad --space-5 (24) instead of --space-6 (36), so its title sits 12 px higher on purpose. The one title
+  // place is now one place per head shape: every pane room shares one top, every other room shares one top, and
+  // the two stand exactly that 12 px apart (23 Nov 2026).
+  const tops = (rs) => `spread ${spread(rs, 'titleTop').toFixed(1)}: ${rs.map((r) => `${r.room}=${r.titleTop.toFixed(1)}`).join(', ')}`;
+  const paned = titled.filter((r) => r.panes);
+  const framed = titled.filter((r) => !r.panes);
+  assert.ok(framed.length > 0, `some rooms keep the frame's own head ${tag}`);
+  assert.ok(spread(framed, 'titleTop') <= 1, `title tops stay put ${tag} (${tops(framed)})`);
+  if (paned.length) {
+    assert.ok(spread(paned, 'titleTop') <= 1, `pane rooms' title tops stay put among themselves ${tag} (${tops(paned)})`);
+    const gap = framed[0].titleTop - paned[0].titleTop;
+    assert.ok(Math.abs(gap - 12) <= 1, `a pane room's compact head lifts its title exactly 12 px ${tag} (saw ${gap.toFixed(1)}: ${tops(titled)})`);
+  }
   assert.ok(spread(titled, 'titleH') <= 1, `title heights stay put ${tag} (spread ${spread(titled, 'titleH').toFixed(1)})`);
   const fonts = new Set(titled.map((r) => r.font));
   assert.equal(fonts.size, 1, `room titles share one font ${tag} (${[...fonts].join(' vs ')})`);

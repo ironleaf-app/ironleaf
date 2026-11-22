@@ -40,7 +40,13 @@ before(async () => {
   } catch {}
   M = await import(pathToFileURL(path.join(work, 'w.mjs')).href);
 });
-after(() => rmSync(work, { recursive: true, force: true }));
+// Every AgentAccess made below saves its activity in the background; the folder goes once those saves finish
+// (23 Nov 2026: under load the last save landed while the folder was being removed, ENOTEMPTY).
+const accesses = [];
+after(async () => {
+  await Promise.all(accesses.map((a) => a.flush()));
+  rmSync(work, { recursive: true, force: true });
+});
 
 const LIGHTS = 'Projects/Lighting Upgrade/Lighting Upgrade.md';
 const NOTES = {
@@ -134,6 +140,7 @@ async function setup(overrides = {}) {
   const dataDir = path.join(work, `data-${++n}`);
   const t = makeHost(dataDir, overrides);
   const access = new M.AgentAccess(t.host);
+  accesses.push(access);
   access.load();
   const reviews = new M.Reviews({
     index: t.index,

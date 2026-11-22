@@ -64,27 +64,39 @@ const VENDOR_TEXT = '# TechParts\nKeep shipping late.';
 // The main thread's own delays while `fn` runs: a 5 ms timer records how late it runs (normally a millisecond;
 // any block on the thread shows as the lateness). Returns the longest block in milliseconds, with every block past
 // 10 ms and when it landed (for the report: what, if anything, still holds the thread).
+// A block is the thread's own work (23 Nov 2026): the lateness counts only as far as the main thread actually ran
+// (process.threadCpuUsage), so a busy machine that leaves the thread waiting for a core no longer reads as a block.
+// In a full suite run the timer was often 15-20 ms late with nothing of the app's running; a real block still runs
+// on the thread and still counts in full.
 async function mainDelays(fn) {
   let max = 0;
   const gaps = [];
+  const cpu = () => {
+    const u = process.threadCpuUsage();
+    return (u.user + u.system) / 1000;
+  };
   const t0 = performance.now();
   let last = t0;
+  let lastCpu = cpu();
   const every = 5;
+  const note = (now, nowCpu, where) => {
+    const late = now - last - every;
+    const block = Math.min(late, nowCpu - lastCpu);
+    max = Math.max(max, block);
+    if (block > 10) gaps.push(`${block.toFixed(1)}ms (late ${late.toFixed(1)}ms)@${where}`);
+    last = now;
+    lastCpu = nowCpu;
+  };
   const timer = setInterval(() => {
     const now = performance.now();
-    const block = now - last - every;
-    max = Math.max(max, block);
-    if (block > 10) gaps.push(`${block.toFixed(1)}ms@${((now - t0) / 1000).toFixed(1)}s`);
-    last = now;
+    note(now, cpu(), `${((now - t0) / 1000).toFixed(1)}s`);
   }, every);
   try {
     await fn();
   } finally {
     clearInterval(timer);
     // A block that never let the timer fire (the whole run as microtasks): the trailing gap is the block.
-    const end = performance.now();
-    max = Math.max(max, end - last - every);
-    if (end - last - every > 10) gaps.push(`${(end - last - every).toFixed(1)}ms@trailing`);
+    note(performance.now(), cpu(), 'trailing');
   }
   return { max, gaps };
 }

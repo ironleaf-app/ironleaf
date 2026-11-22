@@ -65,10 +65,16 @@ test('the sides yield measured: the crumb caps, then hides; buttons yield only o
 
 test('centred past the scrollbar gutter (the window buttons need no shift: the bar’s 50% counts the padding box)', () => {
   const kit = read('src/renderer/src/styles/kit.css');
-  // A classic scrollbar would pull the centred column half its width off the header's middle: both
-  // edges keep the gutter, so the column's middle is the header's middle, scrollbar or not.
-  assert.ok(rule(read('src/renderer/src/styles/today.css'), '.td-view').includes('scrollbar-gutter: stable both-edges'), 'Today keeps both gutters');
-  assert.ok(rule(kit, '.vscroll').includes('scrollbar-gutter: stable both-edges'), 'every vscroll page keeps both gutters');
+  // Layout round 2 (compose.css 7, 20 Nov 2026): every page starts at one left edge and takes the room, so the
+  // scrollers keep their bar's lane on the right only (both edges stood some pages 10 px right of others). The
+  // bar centres over the scroller's whole box, its lane included, so a scrollbar never pulls it off; the live walk
+  // below measures that box (updated 23 Nov 2026).
+  assert.ok(rule(read('src/renderer/src/styles/today.css'), '.td-view').includes('scrollbar-gutter: stable'), 'Today keeps its gutter');
+  assert.ok(rule(kit, '.vscroll').includes('scrollbar-gutter: stable'), 'every vscroll page keeps its gutter');
+  const compose = read('src/renderer/src/styles/compose.css');
+  assert.ok(/\.vscroll,\s*\.nv-page-scroll,\s*\.td-view\s*\{\s*scrollbar-gutter: stable;/.test(compose), 'the scrollers keep the lane on one side, after kit.css');
+  const main = read('src/renderer/src/main.tsx');
+  assert.ok(main.indexOf("import './styles/compose.css';") > main.indexOf("import './styles/kit.css';"), 'compose.css settles it, loaded after kit.css');
 });
 
 // ── 2. one search, at the top ────────────────────────────────────────────────────────────────────
@@ -163,7 +169,8 @@ ${column(filler)}
 `;
 }
 
-const ava = `<button class="topbar-ava" aria-label="Test Person, open Settings">T</button>`;
+// No avatar since 20 Nov 2026: Settings and the account live in one account row at the side bar's foot.
+const ava = '';
 
 test('always-equal sides centre the bar exactly over the column, at 1219, 1440, 1600 and a wide window', async () => {
   assert.ok(existsSync(SHELL), `no headless Chromium (HEADLESS_SHELL): ${SHELL}`);
@@ -175,7 +182,7 @@ test('always-equal sides centre the bar exactly over the column, at 1219, 1440, 
   await build({ input: path.join(root, 'src/renderer/src/lib/headerOverflow.ts'), platform: 'browser', output: { file: path.join(dir, 'hdr.mjs'), format: 'iife', name: 'Hdr' }, logLevel: 'silent' });
   const lib = readFileSync(path.join(dir, 'hdr.mjs'), 'utf8');
   const todayCol = (filler) => `<div class="td-view th-hub"><div class="td-inner"><header class="td-head nv-today-head"><h1 class="nv-page-title">Good morning, Test</h1></header><section class="td-section td-next"><header class="td-section-head"><h2>Next for you</h2></header><div class="td-row plan-row"><span class="td-row-main"><span class="td-row-what"><span class="td-text">Book a GP visit</span></span></span><span class="plan-pill tone-bad"><span class="dot" aria-hidden="true"></span>14 days late</span></div></section><div class="card">${filler}</div></div></div>`;
-  const homeCol = (filler) => `<div class="vscroll"><div class="vpage wide" style="max-width: 1080px"><h1 class="w2a-title">Home</h1><div class="card">${filler}</div></div></div>`;
+  const homeCol = (filler) => `<div class="vscroll"><div class="vpage wide"><h1 class="w2a-title">Home</h1><div class="card">${filler}</div></div></div>`;
   const startBtn = `<button type="button" class="btn quiet" data-overflow="start-template" data-overflow-order="1">Start from a template</button><button type="button" class="navbtn topbar-tight-only" data-overflow-fallback="" aria-label="More for today">${icon()}</button>`;
   const scenes = {
     today: scene({ topbarClass: 'topbar', platform: 'linux', right: `${startBtn}${ava}`, column: todayCol }),
@@ -242,7 +249,8 @@ test('always-equal sides centre the bar exactly over the column, at 1219, 1440, 
         const m = await ev(`(() => {
           const r = (el) => { const b = el.getBoundingClientRect(); return { x: b.x, w: b.width }; };
           const bar = document.querySelector('.topbar'), search = document.querySelector('.top-search');
-          const col = document.querySelector('.td-inner, .vpage');
+          // The column is the scroller's box, its bar's lane included (compose.css 7; see the gutter check above).
+          const col = document.querySelector('.td-view, .vscroll');
           const left = document.querySelector('.topbar-left'), right = document.querySelector('.topbar .right');
           const B = r(bar), S = r(search), C = r(col), L = r(left), R = r(right);
           return { barH: bar.getBoundingClientRect().height, searchW: S.w, searchC: S.x + S.w / 2, colC: C.x + C.w / 2, leftW: L.w, rightW: R.w, gapL: S.x - (L.x + L.w), gapR: R.x - (S.x + S.w), hidden: Hdr.headerOverflowHidden('tab-1'), roomy: bar.classList.contains('is-left-roomy') || bar.classList.contains('is-right-roomy') };
@@ -280,7 +288,7 @@ test('always-equal sides centre the bar exactly over the column, at 1219, 1440, 
     const b = await ev(`(() => {
       const r = (el) => { const b = el.getBoundingClientRect(); return { x: b.x, w: b.width }; };
       const bar = document.querySelector('.topbar');
-      const S = r(document.querySelector('.top-search')), C = r(document.querySelector('.td-inner'));
+      const S = r(document.querySelector('.top-search')), C = r(document.querySelector('.td-view'));
       const L = r(document.querySelector('.topbar-left')), R = r(document.querySelector('.topbar .right'));
       const kids = [...document.querySelector('.topbar .right').children].map((el) => {
         const q = r(el);

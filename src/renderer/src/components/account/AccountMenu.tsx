@@ -143,8 +143,8 @@ function AccountMenu({ anchor, side, chip, entries, viaKeys, onClose }: MenuProp
         <div className="acct-menu-who" role="presentation">
           <Avatar chip={chip} big />
           <div className="acct-menu-id">
-            <div className="acct-menu-name">{chip.name}</div>
-            {chip.email && chip.email !== chip.name && <div className="acct-menu-email">{chip.email}</div>}
+            <div className="acct-menu-name" title={chip.name}>{chip.name}</div>
+            {chip.email && chip.email !== chip.name && <div className="acct-menu-email" title={chip.email}>{chip.email}</div>}
             <div className="acct-menu-plan">
               <span>{chip.sub}</span>
               {chip.supporter && <SupporterBadge />}

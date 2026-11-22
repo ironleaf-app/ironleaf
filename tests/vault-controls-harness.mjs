@@ -292,10 +292,23 @@ export async function buildRenderer(work) {
   const mine = `nvctrl-dist-${ns}-${key}`;
   const dir = path.join(tmpdir(), mine);
   if (!existsSync(path.join(dir, 'index.html'))) {
-    for (const e of readdirSync(tmpdir())) if (e.startsWith(`nvctrl-dist-${ns}-`) && e !== mine) rmSync(path.join(tmpdir(), e), { recursive: true, force: true });
+    // Only finished bundles of other keys go; a bundle still being built (its own suffix below) is left alone.
+    const done = new RegExp(`^nvctrl-dist-${ns}-[0-9a-f]{16}(-map)?$`);
+    for (const e of readdirSync(tmpdir())) if (done.test(e) && e !== mine) rmSync(path.join(tmpdir(), e), { recursive: true, force: true });
     const { build } = await import(path.join(root, 'node_modules', 'vite', 'dist', 'node', 'index.js'));
     const react = (await import(path.join(root, 'node_modules', '@vitejs', 'plugin-react', 'dist', 'index.js'))).default;
-    await build({ root: path.join(root, 'src', 'renderer'), plugins: [react()], logLevel: 'silent', build: { outDir: dir, emptyOutDir: true, sourcemap: !!process.env.NV_CONTROLS_SOURCEMAP, chunkSizeWarningLimit: 20000 } });
+    // Built aside, then moved into place whole (23 Nov 2026): the full suite starts several harnesses at once, and
+    // two building into the one folder (emptyOutDir) emptied it under a page already served from it, so a lazy
+    // chunk went missing ("Unable to preload CSS") and the page showed its couldn't-show card. The first finished
+    // bundle wins; a later one is dropped and the first served.
+    const aside = `${dir}.${process.pid}.${Date.now()}`;
+    await build({ root: path.join(root, 'src', 'renderer'), plugins: [react()], logLevel: 'silent', build: { outDir: aside, emptyOutDir: true, sourcemap: !!process.env.NV_CONTROLS_SOURCEMAP, chunkSizeWarningLimit: 20000 } });
+    if (existsSync(dir) && !existsSync(path.join(dir, 'index.html'))) rmSync(dir, { recursive: true, force: true });
+    try {
+      renameSync(aside, dir);
+    } catch {
+      rmSync(aside, { recursive: true, force: true });
+    }
   }
   return dir;
 }

@@ -918,4 +918,4 @@ a { color: inherit; }
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   }
 }
-.side .vault .wm-text { display: block; font-family: var(--font-head, inherit); font-weight: 700; font-size: var(--fs-section); line-height: 22px; letter-spacing: -0.01em; color: var(--text, inherit); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.side .vault .wm-text { display: block; font-family: var(--font-head, inherit); font-weight: 700; font-size: var(--fs-section); line-height: 22px; letter-spacing: -0.01em; color: var(--text, inherit); white-space: nowrap; overflow: hidden; text-overflow: clip; }

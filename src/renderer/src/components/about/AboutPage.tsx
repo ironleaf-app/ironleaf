@@ -148,7 +148,7 @@ function HistoryRow({ e, current, open, onToggle }: { e: ReleaseEntry; current: 
         <span className="about-hist-ver">{e.version}</span>
         {e.version === current && <span className="about-chip">Installed</span>}
         <span className="about-hist-date">{longDate(e.date)}</span>
-        <span className="about-hist-first">{open ? '' : first}</span>
+        <span className="about-hist-first" title={open ? undefined : first}>{open ? '' : first}</span>
         {lines.length > 0 && <Icon name={open ? 'chevronDown' : 'chevron'} size={13} />}
       </button>
       {open && <Notes notes={e.notes} className="about-hist-notes" />}
