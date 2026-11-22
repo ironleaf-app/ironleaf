@@ -61,7 +61,7 @@ function commandEntries() {
 
 const SKIP = [
   [/editor:\s*true/, 'editor-only'],
-  [/openModal\(\{\s*kind:\s*'(switcher|palette|publish|recovery|starter-picker|send|slides|new-project)'/, 'dialog'],
+  [/openModal\(\{\s*kind:\s*'(switcher|palette|publish|recovery|starter-picker|send|slides|design|new-project)'/, 'dialog'],
   [/requestSearch\(/, 'search panel'],
   [/openLife\(\{/, 'life modal'],
   [/setPanel\(/, 'side panel'],
