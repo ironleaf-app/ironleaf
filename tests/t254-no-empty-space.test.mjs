@@ -198,7 +198,8 @@ async function openRoom(h, name) {
 // The page gutters beside the column, and the nav's own scroll.
 const GUTTERS_JS = `(() => {
   const main = document.querySelector('main');
-  const box = document.querySelector('main .nv-page, main .vpage.wide, main .td-inner, main .tk-inner, main .tp-inner, main .pv-inner, main .nv-page-frame, main .settings-page');
+  // The page on show: a page kept mounted behind it (hidden, no box) is not the one judged.
+  const box = [...document.querySelectorAll('main .nv-page, main .vpage.wide, main .td-inner, main .tk-inner, main .tp-inner, main .pv-inner, main .nv-page-frame, main .settings-page')].find((el) => el.getBoundingClientRect().width > 0);
   if (!main || !box) return { error: 'no page box' };
   const m = main.getBoundingClientRect(), b = box.getBoundingClientRect();
   const nav = document.querySelector('nav.places-list');
