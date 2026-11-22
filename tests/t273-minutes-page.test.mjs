@@ -152,7 +152,7 @@ test('t273 static: the calm column and the calm bottom live in the shared rules 
   const mm = rec.slice(rec.indexOf('/* Minutes ready to send'));
   assert.ok(mm.includes('.mm-row'), 'the row keeps its shared place');
   assert.ok(!/\.mm-context\s*\{[^}]*space-between/s.test(mm), 'Play sits beside the heard line, never pushed to the edge');
-  assert.ok(/\.mm-fix input\s*\{[^}]*max-width:\s*360px/s.test(mm), 'the correction box caps at a word or so');
+  assert.ok(/\.mm-fix input[^{]*\{[^}]*max-width:\s*360px/s.test(mm), 'the correction box caps at a word or so');
   // t301: one calm column — each check its own stack (the word, Seen as, the heard line with Play, the box
   // with Fix), capped to a reading width at every window. The shared grid and the wide pairing are gone.
   assert.ok(/\.mm-list\s*\{[^}]*flex-direction:\s*column/s.test(mm), 'the checks read as one calm column');
@@ -281,7 +281,7 @@ test('t273 live: calm checks in one column and a calm bottom at 1219, 1920 and 3
       });
       const sumSec = [...document.querySelectorAll('.w2b-meeting section')].find((s) => s.getAttribute('aria-label') === 'Summary');
       const noteSec = document.querySelector('.w2b-meeting section[aria-label="Tasks, decisions and questions"]');
-      const paras = [...document.querySelectorAll('.w2b-meeting .w2b-summary')].map((p) => ({ ...rect(p), scrollW: p.scrollWidth, clientW: p.clientWidth, words: p.innerText }));
+      const paras = [...document.querySelectorAll('.w2b-meeting .w2b-summary')].map((p) => ({ ...rect(p), scrollW: p.scrollWidth, clientW: p.clientWidth, words: p.innerText, measure: getComputedStyle(p).maxWidth }));
       const card = noteSec?.querySelector('.card');
       const noteBtn = noteSec?.querySelector('.button');
       const pdfBtn = document.querySelector('.w2b-meeting .mm-finish .button.primary');
@@ -370,23 +370,26 @@ test('t273 live: calm checks in one column and a calm bottom at 1219, 1920 and 3
       // The summary at a reading width, in short paragraphs, nothing cut.
       assert.ok(m.paras.length >= 2, `the long summary breaks into paragraphs at ${width} (stood ${m.paras.length})`);
       for (const [i, p] of m.paras.entries()) {
-        assert.ok(p.width <= 780, `summary paragraph ${i} keeps a reading width at ${width} (stood ${p.width}px)`);
+        // The reading measure is the stylesheet's (100ch at the reading size since the minutes card took the summary,
+        // layout round 3), never the column's whole width.
+        assert.ok(p.measure !== 'none' && p.width <= parseFloat(p.measure) + 1, `summary paragraph ${i} keeps a reading width at ${width} (stood ${p.width}px, measure ${p.measure})`);
         assert.ok(p.scrollW <= p.clientW + 1, `summary paragraph ${i} cuts nothing at ${width}`);
       }
       assert.ok(!m.paras.some((p) => p.words.includes('[[')), 'note links read as words, never brackets');
       assert.equal(m.docX, false, `nowhere sideways at ${width}`);
     }
-    // No empty half: at the window the summary pairs beside the note card.
+    // No empty half: at the window the meeting stands in three regions (layout round 3) — the minutes with their
+    // summary at the left, the recording, then the meeting note's counts and connections — all from one top.
     await h.browser.send('Emulation.setDeviceMetricsOverride', { width: 3456, height: 1408, deviceScaleFactor: 2, mobile: false });
     await sleep(1200);
     const pair = await h.browser.ev(`(() => {
-      const secs = [...document.querySelectorAll('.nv-page .w2b-meeting > section')].map((s) => ({ label: s.getAttribute('aria-label') || s.className, top: Math.round(s.getBoundingClientRect().top) }));
-      return secs;
+      const top = (sel) => { const el = document.querySelector(sel); return el ? Math.round(el.getBoundingClientRect().top) : null; };
+      return { regions: document.querySelector('.w2b-meeting .mt-regions')?.getAttribute('data-regions') ?? null, minutes: top('.w2b-meeting .w2b-after-main'), note: top('.w2b-meeting .mt-context section[aria-label="Tasks, decisions and questions"]'), summary: top('.w2b-meeting .w2b-after-main .w2b-summary'), context: top('.w2b-meeting .mt-context') };
     })()`);
-    const sumTop = pair.find((s) => s.label === 'Summary')?.top;
-    const noteTop = pair.find((s) => s.label === 'Tasks, decisions and questions')?.top;
-    assert.ok(sumTop !== undefined && noteTop !== undefined, `both bottom sections show (${JSON.stringify(pair)})`);
-    assert.ok(Math.abs(sumTop - noteTop) <= 8, `the summary pairs beside the note card, no empty half (tops ${sumTop} vs ${noteTop})`);
+    assert.equal(pair.regions, '3', `three regions at the window (${JSON.stringify(pair)})`);
+    assert.ok(pair.minutes !== null && pair.note !== null && pair.summary !== null, `the minutes, their summary and the note card all show (${JSON.stringify(pair)})`);
+    // The far region heads with the words to check, the note card under them.
+    assert.ok(Math.abs(pair.minutes - pair.context) <= 8, `the far region stands beside the minutes, no empty half (tops ${pair.minutes} vs ${pair.context})`);
 
     // t275: the voices' choice still joins two voices by hand, driven like a person, then undoes.
     await h.browser.send('Emulation.setDeviceMetricsOverride', { width: 1920, height: 1117, deviceScaleFactor: 2, mobile: false });
@@ -413,7 +416,9 @@ test('t273 live: calm checks in one column and a calm bottom at 1219, 1920 and 3
       btn.click();
       return was;
     })()`);
-    assert.equal(wasShut, 'false', 'the transcript starts shut, so Play opening it proves the wiring');
+    // Layout round 3: the transcript stands open beside the minutes from the start (TranscriptOpen), so Play answers
+    // in an open transcript; it still draws every line.
+    assert.equal(wasShut, 'true', 'the transcript stands open beside the minutes');
     await waitFor(`document.querySelector('.w2b-meeting .mp-toggle')?.getAttribute('aria-expanded') === 'true'`, 30000);
     await waitFor(`document.querySelectorAll('.w2b-meeting .mp-lines .mp-line').length === 12`, 30000);
     const fixR = await h.browser.ev(`(async () => {
