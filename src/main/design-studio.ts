@@ -10,15 +10,17 @@
 import { randomBytes } from 'node:crypto';
 import type { BrandKit } from '../shared/assets';
 import type { BrandContent } from '../shared/brand-document';
-import { blocksShown, designAsk, readScores, designChange, designFeedback, designPage, designSystem, designTheme, kindInfo, readDesign, saysFinished, type DesignKind, type DesignKindInfo, type DesignReport, type DesignTheme, type DesignViewOut } from '../shared/design-doc';
+import { blocksShown, designAsk, designJudgeOnly, designRewrite, readScores, designChange, designPage, designSystem, designTheme, kindInfo, readDesign, type DesignKind, type DesignKindInfo, type DesignReport, type DesignTheme, type DesignViewOut } from '../shared/design-doc';
 import type { BrandPrinter } from './brand-print';
-import type { ChatImage, ChatMessageIn, StreamResult } from './providers/types';
+import type { ChatMessageIn, StreamResult } from './providers/types';
 
 export interface DesignStudioDeps {
   /** One turn on the chat's model, no tools. */
   ask(system: string, messages: ChatMessageIn[], o: { signal: AbortSignal; maxTokens: number }): Promise<StreamResult>;
   /** Whether the chat's model sees pictures (then it is shown the printed pages). */
   seesPictures(): boolean;
+  /** Score the finished pages on Astryx's five axes (one more turn with the pages shown; trials and tests). */
+  judge?: boolean;
   printer: Pick<BrandPrinter, 'pdf' | 'look'>;
   /** The app's own type (Inter, Source Serif) by file address. */
   fonts(): Promise<{ sans?: string; sansItalic?: string; serif?: string }>;
@@ -55,6 +57,8 @@ interface Design {
 export type DesignStep = (words: string) => void;
 
 const MAX_TOKENS = 16_000;
+/** A page this much too full (per cent) is set smaller rather than redesigned. */
+const FIT_FREE = 12;
 const TURN_MS = 300_000;
 /** Pages shown to the AI each look (pictures cost), and pages shown to the person. */
 const MAX_AI_SHOTS = 4;
@@ -79,8 +83,8 @@ export class DesignStudio {
     return d;
   }
 
-  private async turn(d: Design, messages: ChatMessageIn[], signal: AbortSignal): Promise<string> {
-    const result = await this.deps.ask(d.system, messages, { signal: AbortSignal.any([signal, AbortSignal.timeout(TURN_MS)]), maxTokens: MAX_TOKENS });
+  private async turn(d: Design, messages: ChatMessageIn[], signal: AbortSignal, maxTokens = MAX_TOKENS): Promise<string> {
+    const result = await this.deps.ask(d.system, messages, { signal: AbortSignal.any([signal, AbortSignal.timeout(TURN_MS)]), maxTokens });
     if (signal.aborted) throw new Error('Stopped.');
     if (result.error) throw new Error(result.error);
     if (result.stopReason === 'length' && !result.text.includes('</section>')) throw new Error('The AI’s design was cut off before it finished. Try a shorter kind (a one-pager), or a model that writes longer answers.');
@@ -101,65 +105,65 @@ export class DesignStudio {
   private needsFixing(d: Design): boolean {
     const r = d.report;
     if (!r) return true;
-    // Words set in ink or white by the page already read, so they alone never cost a round.
-    return r.problems.some((p) => p.kind !== 'small' && p.kind !== 'contrast') || (!!d.kind.pages && r.pages !== d.kind.pages);
+    // Words set in ink or white by the page already read, so they alone never cost a round; nor does a page a little too
+    // full, which the last look fits by setting it a touch smaller.
+    return r.problems.some((p) => p.kind !== 'small' && p.kind !== 'contrast' && !(p.kind === 'over' && p.shrink !== undefined && p.shrink <= FIT_FREE)) || (!!d.kind.pages && r.pages !== d.kind.pages);
   }
 
-  /** Looks at the printed pages and has the AI fix them, `fixes` times at most. A model that sees pictures is shown the
-   *  printed pages and judges them on Astryx's five axes each round, improving the weakest until every axis reaches
-   *  the bar (JUDGE_BAR); its last judgement is kept for the person to see. */
+  /** The judge alone: the printed pages shown, the five scores back (a line of words, not a document). */
+  private async judge(d: Design, signal: AbortSignal): Promise<DesignViewOut['score'] | null> {
+    const shots = d.shots.slice(0, MAX_AI_SHOTS).map((b, i) => ({ mediaType: 'image/jpeg', data: b.toString('base64'), name: `page-${i + 1}.jpg` }));
+    if (!shots.length) return null;
+    try {
+      const reply = await this.turn(d, [{ role: 'user', text: d.ask }, { role: 'assistant', text: d.layout }, { role: 'user', text: designJudgeOnly(d.report!, d.kind), images: shots }], signal, 2000);
+      const scores = readScores(reply);
+      if (scores) this.deps.log?.(`design ${d.kind.id}: judged ${JSON.stringify(scores)}`);
+      return scores;
+    } catch (err) {
+      if (signal.aborted) throw err;
+      return null;
+    }
+  }
+
+  /**
+   * Right first time (22 Nov 2026: a premium version on the first pass every time, not three times the tokens). Measured on
+   * Sonnet 5.5 over twelve designs: the first draft scored 66-80 on Astryx's five axes, and two more whole drafts written
+   * against the judge's notes moved that by 0-4 points for three times the tokens. So taste is spent on the first draft
+   * (a reference design, a page plan, a spacing system and a check list), and a further turn goes only on what the page
+   * measured as broken (words cut off, boxes on top of each other, a squeezed column, a block left out): at most
+   * `fixes` of them. Contrast and a page a little too full are put right without the AI.
+   */
   private async settle(d: Design, fixes: number, step: DesignStep, signal: AbortSignal): Promise<void> {
     const pictures = this.deps.seesPictures();
-    const images = (): ChatImage[] => d.shots.slice(0, MAX_AI_SHOTS).map((b, i) => ({ mediaType: 'image/jpeg', data: b.toString('base64'), name: `page-${i + 1}.jpg` }));
-    // The last look shows what will print: a page still too full is fitted.
-    const fitLast = async () => {
-      if (d.report?.problems.some((p) => p.kind === 'over')) await this.look(d, true);
-    };
-    let judged = false;
     for (let round = 0; ; round++) {
       step(round ? 'Checking the pages again' : 'Printing and checking the pages');
       await this.look(d);
       this.deps.log?.(`design ${d.kind.id}: look ${round + 1}, ${d.report?.pages ?? 0} pages, ${d.report?.problems.length ?? 0} problems${d.report?.problems.length ? ` (${d.report.problems.slice(0, 4).map((p) => `${p.page}:${p.kind}`).join(', ')})` : ''}`);
-      const broken = this.needsFixing(d);
-      judged = false;
-      if (round >= fixes || signal.aborted) break;
-      if (!broken && !pictures) break;
+      if (signal.aborted || !this.needsFixing(d) || round >= fixes) break;
       const n = d.report?.problems.filter((p) => p.kind !== 'small' && p.kind !== 'contrast').length ?? 0;
-      step(broken ? `Fixing ${n || 'what is wrong'}${n ? (n === 1 ? ' thing' : ' things') : ''}` : 'Judging it as a designer and raising the weakest part');
-      const shown = pictures ? images() : [];
-      const feedback = designFeedback(d.report!, { pictures: shown.length > 0, final: round + 1 >= fixes, kind: d.kind });
+      step(`Fixing ${n || 'what is wrong'}${n ? (n === 1 ? ' thing' : ' things') : ''}`);
+      const shown = pictures ? d.shots.slice(0, MAX_AI_SHOTS).map((b, i) => ({ mediaType: 'image/jpeg', data: b.toString('base64'), name: `page-${i + 1}.jpg` })) : [];
       // A fix that fails (cut off, the service busy) keeps the design as it stands: it printed, and it is shown.
       let reply: string;
       try {
-        reply = await this.turn(d, [{ role: 'user', text: d.ask }, { role: 'assistant', text: d.layout }, { role: 'user', text: feedback, ...(shown.length ? { images: shown } : {}) }], signal);
+        reply = await this.turn(d, [{ role: 'user', text: d.ask }, { role: 'assistant', text: d.layout }, { role: 'user', text: designRewrite(d.report!, { kind: d.kind, pictures: shown.length > 0, scores: null }), ...(shown.length ? { images: shown } : {}) }], signal);
       } catch (err) {
         if (signal.aborted) throw err;
-        this.deps.log?.(`design ${d.kind.id}: a fix round failed, keeping the design as it stands (${err instanceof Error ? err.message : String(err)})`);
+        this.deps.log?.(`design ${d.kind.id}: a fix failed, keeping the design as it stands (${err instanceof Error ? err.message : String(err)})`);
         break;
       }
-      const scores = readScores(reply);
-      if (scores) {
-        d.score = scores;
-        judged = true;
-        this.deps.log?.(`design ${d.kind.id}: judged ${JSON.stringify(scores)}`);
-      }
-      if (saysFinished(reply)) break;
       const next = readDesign(reply);
       if (!next) break;
       d.layout = next;
       d.rounds++;
     }
-    await fitLast();
-    // The pages changed since the AI last judged them: one more look, judged only, so the score shown is this design's.
-    if (pictures && !judged && d.rounds > 0 && !signal.aborted) {
-      step('Scoring the finished pages');
-      try {
-        const reply = await this.turn(d, [{ role: 'user', text: d.ask }, { role: 'assistant', text: d.layout }, { role: 'user', text: `${designFeedback(d.report!, { pictures: true, final: true, kind: d.kind }).split('\nStart your reply')[0]}\nReply with the scores line only.`, images: images() }], signal);
-        const scores = readScores(reply);
-        if (scores) d.score = scores;
-      } catch {
-        // The design stands without a score.
-      }
+    // The last look shows what will print: a page still too full is fitted.
+    if (d.report?.problems.some((p) => p.kind === 'over')) await this.look(d, true);
+    // A score, only when asked for (it costs a look-over turn and changes nothing).
+    d.score = undefined;
+    if (this.deps.judge && pictures && !signal.aborted) {
+      step('Scoring the pages');
+      d.score = (await this.judge(d, signal)) ?? undefined;
     }
   }
 
@@ -197,7 +201,7 @@ export class DesignStudio {
     const layout = readDesign(text);
     if (!layout) throw new Error('The AI didn’t answer with a design. Try again, or choose a stronger model in Settings › AI.');
     d.layout = layout;
-    await this.settle(d, this.deps.seesPictures() ? 3 : 2, step, signal);
+    await this.settle(d, 1, step, signal);
     this.remember(d);
     return this.view(d);
   }
@@ -214,7 +218,7 @@ export class DesignStudio {
     d.layout = layout;
     d.rounds = 0;
     d.score = undefined;
-    await this.settle(d, this.deps.seesPictures() ? 2 : 1, step, signal);
+    await this.settle(d, 1, step, signal);
     this.remember(d);
     return this.view(d);
   }
