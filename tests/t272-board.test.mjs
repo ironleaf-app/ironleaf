@@ -420,6 +420,9 @@ test('every layout in the switch uses the width at 3456x1408', { timeout: 300000
   const h = await harness();
   await openBoard(h, 3, 5);
   await setSize(h, 3456, 1408);
+  // The layout picked here is kept with the view: put Board back whatever happens, or every later walk opens a
+  // gallery or a chart instead of the board.
+  try {
   const bodyJS = `[...document.querySelectorAll('section.ws-view')].find((s) => (s.getAttribute('aria-label') || '').includes('Open actions')).querySelector('.ws-view-body').getBoundingClientRect()`;
   await openLayout(h, 'Table');
   const table = await h.browser.ev(`(() => { const b = ${bodyJS}; const t = document.querySelector('section.ws-view .ws-table').getBoundingClientRect(); return { body: Math.round(b.width), table: Math.round(t.width) }; })()`);
@@ -477,7 +480,9 @@ test('every layout in the switch uses the width at 3456x1408', { timeout: 300000
     return { body: Math.round(body.width), line: Math.round(view.querySelector('.ws-line').getBoundingClientRect().width) };
   })()`);
   assert.ok(line.line >= line.body - 40, `the line runs the width (saw ${line.line} in ${line.body})`);
-  await openLayout(h, 'Board');
+  } finally {
+    await openLayout(h, 'Board');
+  }
 });
 
 // ── t276: the slim empty column keeps its room and reads like the rest ──────
