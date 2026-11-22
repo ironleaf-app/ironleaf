@@ -130,6 +130,10 @@ import { makeRowResolver } from './life-records/system-tables';
 import { PERSONAL_GROUP, personalInbox } from './personal-modules';
 import { Publications, registerPublications, type PublicationsDeps } from './publications';
 import { createBrandPrinter } from './brand-print';
+import { DesignStudio } from './design-studio';
+import { fileUrlPath } from './file-url-guard';
+import { cleanBrand } from '../shared/assets';
+import { kindInfo as designKindInfo, type DesignStartIn } from '../shared/design-doc';
 import { createEditionPrinter } from './edition-print';
 import { pathToFileURL } from 'node:url';
 import type { Project } from '../shared/project-file';
@@ -2237,6 +2241,16 @@ null. */
     }
     return (editionFontsFound = found);
   };
+  // The Design studio (22 Nov 2026, src/main/design-studio.ts): a note designed into a finished PDF by the person's own
+  // AI on the chat's model, printed and checked in the same sealed window the branded document prints in.
+  const designStudio = new DesignStudio({
+    ask: (system, messages, o) => ai.askTurns(system, messages, o),
+    seesPictures: () => ai.designSeesPictures(),
+    printer: brandPrinter,
+    fonts: editionFonts,
+    log: (m) => host.log?.(m),
+  });
+  const designControllers = new Map<string, AbortController>();
   const publicationsDeps: PublicationsDeps = {
     root: () => vault?.root ?? null,
     index,
@@ -3931,6 +3945,69 @@ reminders. */
       const result = testDir ? { canceled: false, filePath: path.join(testDir, `${base}.pdf`) } : await showSave({ title: 'Export to PDF', defaultPath: path.join(app.getPath('documents'), `${base}.pdf`), filters: [{ name: 'PDF', extensions: ['pdf'] }] });
       if (result.canceled || !result.filePath) return null;
       const { pdf } = await brandPrinter.pdf(html.slice(0, 60_000_000));
+      await fsp.writeFile(result.filePath, pdf);
+      exported.add(result.filePath);
+      return result.filePath;
+    });
+    // The Design studio (22 Nov 2026): the window hands over the note's cleaned content (brandContent, the branded
+    // document's own reading) with its kit; the AI designs it here, on the chat's model, as the side chat would read it.
+    const designInput = (raw: unknown): DesignStartIn => {
+      const o = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>;
+      const str = (v: unknown, max: number) => (typeof v === 'string' ? v.slice(0, max) : '');
+      const strs = (v: unknown, n: number, max: number) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string').slice(0, n).map((x) => x.slice(0, max)) : []);
+      const c = (o.content && typeof o.content === 'object' ? o.content : {}) as Record<string, unknown>;
+      const path = str(o.path, 2000);
+      if (!path || !index.get(path)) throw new Error('Open a note to design it.');
+      const g = ai.gate?.();
+      if (g && !g.sees(path)) throw new Error('This note’s level isn’t one the assistant may read (Settings › Privacy and secrets), so it can’t be designed by AI.');
+      const blocks = strs(c.blocks, 600, 400_000);
+      if (blocks.reduce((n, b) => n + b.length, 0) > 4_000_000) throw new Error('This note is too long to design in one go.');
+      const logo = (v: unknown) => (typeof v === 'string' && v.startsWith('file:') && fileUrlPath(v, process.platform) !== null ? v : undefined);
+      const logos = (o.logos && typeof o.logos === 'object' ? o.logos : {}) as Record<string, unknown>;
+      return {
+        path,
+        kind: designKindInfo(o.kind).id,
+        brief: str(o.brief, 2000),
+        title: str(o.title, 300),
+        content: {
+          title: str(c.title, 300) || 'Untitled',
+          label: str(c.label, 120),
+          sub: strs(c.sub, 4, 300),
+          figures: (Array.isArray(c.figures) ? c.figures : []).slice(0, 8).map((f) => ({ value: str((f as Record<string, unknown>)?.value, 80), label: str((f as Record<string, unknown>)?.label, 120) })).filter((f) => f.value),
+          people: (Array.isArray(c.people) ? c.people : []).slice(0, 3).map((p) => ({ label: str((p as Record<string, unknown>)?.label, 40), names: strs((p as Record<string, unknown>)?.names, 60, 120) })),
+          blocks,
+          confidential: c.confidential === true,
+          foot: str(c.foot, 300),
+        },
+        kit: o.kit ? cleanBrand(o.kit) : null,
+        logos: { primary: logo(logos.primary), onDark: logo(logos.onDark) },
+        brandName: str(o.brandName, 120),
+      };
+    };
+    const designRun = async <T>(requestId: unknown, run: (step: (words: string) => void, signal: AbortSignal) => Promise<T>): Promise<T> => {
+      await requireCreate();
+      if (!models.effectiveChoice(settings.raw.model)) throw new Error('Designing needs an AI: choose one in Settings › AI.');
+      const id = typeof requestId === 'string' ? requestId.slice(0, 80) : '';
+      const controller = new AbortController();
+      if (id) designControllers.set(id, controller);
+      try {
+        return await run((words) => send('design:step', { requestId: id, words }), controller.signal);
+      } finally {
+        if (id) designControllers.delete(id);
+      }
+    };
+    handle('design:ready', () => ({ model: models.effectiveChoice(settings.raw.model) ? ai.currentModelName() ?? 'your AI' : null, pictures: ai.designSeesPictures() }));
+    handle('design:start', (requestId: unknown, input: unknown) => designRun(requestId, (step, signal) => designStudio.start(designInput(input), step, signal)));
+    handle('design:change', (requestId: unknown, id: unknown, words: unknown) => designRun(requestId, (step, signal) => designStudio.change(id, words, step, signal)));
+    handle('design:cancel', (requestId: unknown) => {
+      if (typeof requestId === 'string') designControllers.get(requestId)?.abort();
+    });
+    handle('design:save', async (id: unknown, name: unknown) => {
+      const { pdf, kind } = await designStudio.pdf(id);
+      const base = cleanFileName(typeof name === 'string' && name.trim() ? `${name} – ${kind.name}` : kind.name, 'Design');
+      const testDir = !app.isPackaged && host.kind === 'standalone' ? process.env.NV_TEST_EXPORT_DIR : '';
+      const result = testDir ? { canceled: false, filePath: path.join(testDir, `${base}.pdf`) } : await showSave({ title: 'Save the design as a PDF', defaultPath: path.join(app.getPath('documents'), `${base}.pdf`), filters: [{ name: 'PDF', extensions: ['pdf'] }] });
+      if (result.canceled || !result.filePath) return null;
       await fsp.writeFile(result.filePath, pdf);
       exported.add(result.filePath);
       return result.filePath;
@@ -6026,6 +6103,13 @@ reminders. */
     brandPrint: async (html: string) => {
       const { pdf, laidOut } = await brandPrinter.pdf(html);
       return { pdf, pages: laidOut.pages };
+    },
+    // A note designed by the person's AI for an AI's call (design_document, 22 Nov 2026): the Design studio's own loop.
+    design: async (input) => {
+      if (!models.effectiveChoice(settings.raw.model)) throw new Error('Designing needs an AI: choose one in Settings › AI.');
+      const view = await designStudio.start(input, () => {}, AbortSignal.timeout(15 * 60_000));
+      const { pdf, pages } = await designStudio.pdf(view.id);
+      return { pdf, pages, problems: view.problems };
     },
     changed: () => send('agents:changed', null),
     log: (m) => host.log?.(m),

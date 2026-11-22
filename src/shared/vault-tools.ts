@@ -228,7 +228,7 @@ const SPARK_EVERYDAY = new Set(['today_get', 'tasks_list', 'files_find', 'remind
 export const SIDE_EVERYDAY: ReadonlySet<string> = new Set([
   'projects_list', 'project_get', 'today_get', 'timeline_get', 'meetings_list', 'meeting_actions', 'reviews_list',
   'templates_list', 'template_apply', 'project_add_next_step', 'project_tick_next_step', 'project_log_update',
-  'project_add_item', 'project_change_item', 'note_to_pdf', 'daily_note', 'project_move_item', 'project_archive',
+  'project_add_item', 'project_change_item', 'note_to_pdf', 'design_document', 'daily_note', 'project_move_item', 'project_archive',
   'project_pin_file', 'files_find', 'tasks_list', 'calendar_get',
 ]);
 

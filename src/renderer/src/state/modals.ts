@@ -21,6 +21,8 @@ export type Modal =
   | { kind: 'publish'; siteId?: string; source?: SiteSource }
   /** Names Windows cannot keep (components/NamesDialog.tsx): the plan, asked once, with one Undo. */
   | { kind: 'names' }
+  /** The Design studio (22 Nov 2026, components/DesignDialog.tsx): a note designed into a finished PDF by AI. */
+  | { kind: 'design'; path: string }
   | null;
 
 let modal: Modal = null;

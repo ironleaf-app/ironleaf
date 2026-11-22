@@ -15,6 +15,9 @@ import { fileUrlPath } from './file-url-guard';
 export interface BrandPrinter {
   /** The document laid out and printed to a PDF: its bytes and how the pages laid out. */
   pdf(html: string): Promise<{ pdf: Buffer; laidOut: BrandLaidOut }>;
+  /** The document laid out and looked at (the Design studio, 22 Nov 2026): what its own script measured, and its pages
+   *  as pictures (JPEG), from the boxes the script reported, at most `max` of them. The window is the page's width. */
+  look(html: string, o: { width: number; height: number; max: number }): Promise<{ report: BrandLaidOut & Record<string, unknown>; shots: Buffer[] }>;
 }
 
 const LAYOUT_MS = 45_000;
@@ -66,33 +69,50 @@ export function createBrandPrinter(o: { dir: string; log?: (m: string) => void }
     });
     ses.setPermissionRequestHandler((_wc, _perm, cb) => cb(false));
   };
-  return {
-    async pdf(html) {
-      await fsp.mkdir(o.dir, { recursive: true });
-      await sweepBrandDir(o.dir).catch(() => {});
-      seal();
-      const file = path.join(o.dir, `brand-${process.pid}-${Date.now()}-${++n}.html`);
-      await fsp.writeFile(file, html, 'utf8');
-      const w = new BrowserWindow({ show: false, width: 1000, height: 1300, webPreferences: { partition: 'brand-print', sandbox: true, contextIsolation: true, nodeIntegration: false, javascript: true, backgroundThrottling: false, spellcheck: false, webviewTag: false } });
-      w.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
-      w.webContents.on('will-navigate', (e) => e.preventDefault());
-      try {
-        await w.loadFile(file);
-        const started = Date.now();
-        for (;;) {
-          const r = (await w.webContents.executeJavaScript('window.__report || null', true)) as BrandLaidOut | null;
-          if (r) {
-            if (r.cut.length) o.log?.(`brand print: ${r.cut.length} block${r.cut.length === 1 ? ' is' : 's are'} taller than a page and kept whole (${r.cut.slice(0, 3).join('; ')})`);
-            const pdf = await w.webContents.printToPDF({ pageSize: 'A4', printBackground: true, preferCSSPageSize: true, margins: { top: 0, bottom: 0, left: 0, right: 0 }, generateDocumentOutline: true });
-            return { pdf, laidOut: r };
-          }
-          if (Date.now() - started > LAYOUT_MS) throw new Error('The document took too long to lay out (a picture or font in it may not open).');
-          await new Promise((res) => setTimeout(res, 120));
+  /** The document opened in a sealed window nobody sees, laid out by its own script; `use` runs once its report is in. */
+  const open = async <T>(html: string, size: { width: number; height: number }, use: (w: BrowserWindow, r: BrandLaidOut & Record<string, unknown>) => Promise<T>): Promise<T> => {
+    await fsp.mkdir(o.dir, { recursive: true });
+    await sweepBrandDir(o.dir).catch(() => {});
+    seal();
+    const file = path.join(o.dir, `brand-${process.pid}-${Date.now()}-${++n}.html`);
+    await fsp.writeFile(file, html, 'utf8');
+    const w = new BrowserWindow({ show: false, width: size.width, height: size.height, useContentSize: true, webPreferences: { partition: 'brand-print', sandbox: true, contextIsolation: true, nodeIntegration: false, javascript: true, backgroundThrottling: false, spellcheck: false, webviewTag: false } });
+    w.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+    w.webContents.on('will-navigate', (e) => e.preventDefault());
+    try {
+      await w.loadFile(file);
+      const started = Date.now();
+      for (;;) {
+        const r = (await w.webContents.executeJavaScript('window.__report || null', true)) as (BrandLaidOut & Record<string, unknown>) | null;
+        if (r) {
+          if (r.cut?.length) o.log?.(`brand print: ${r.cut.length} block${r.cut.length === 1 ? ' is' : 's are'} taller than a page and kept whole (${r.cut.slice(0, 3).join('; ')})`);
+          return await use(w, r);
         }
-      } finally {
-        if (!w.isDestroyed()) w.destroy();
-        await fsp.rm(file, { force: true }).catch(() => {});
+        if (Date.now() - started > LAYOUT_MS) throw new Error('The document took too long to lay out (a picture or font in it may not open).');
+        await new Promise((res) => setTimeout(res, 120));
       }
-    },
+    } finally {
+      if (!w.isDestroyed()) w.destroy();
+      await fsp.rm(file, { force: true }).catch(() => {});
+    }
+  };
+  return {
+    pdf: (html) =>
+      open(html, { width: 1000, height: 1300 }, async (w, r) => {
+        const pdf = await w.webContents.printToPDF({ pageSize: 'A4', printBackground: true, preferCSSPageSize: true, margins: { top: 0, bottom: 0, left: 0, right: 0 }, generateDocumentOutline: true });
+        return { pdf, laidOut: r };
+      }),
+    look: (html, size) =>
+      open(html, { width: Math.max(200, Math.min(2400, Math.ceil(size.width))), height: Math.max(200, Math.min(2400, Math.ceil(size.height))) }, async (w, r) => {
+        const boxes = (Array.isArray(r.boxes) ? r.boxes : []) as { x: number; y: number; w: number; h: number }[];
+        const shots: Buffer[] = [];
+        for (const b of boxes.slice(0, Math.max(0, size.max))) {
+          if (![b.x, b.y, b.w, b.h].every((v) => typeof v === 'number' && Number.isFinite(v)) || b.w < 10 || b.h < 10) continue;
+          const sy = Number(await w.webContents.executeJavaScript(`(window.scrollTo(0, ${Math.max(0, Math.floor(b.y))}), new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => r(window.scrollY)))))`, true)) || 0;
+          const img = await w.webContents.capturePage({ x: Math.max(0, Math.round(b.x)), y: Math.max(0, Math.round(b.y - sy)), width: Math.round(b.w), height: Math.round(Math.min(b.h, size.height)) });
+          if (!img.isEmpty()) shots.push(img.toJPEG(78));
+        }
+        return { report: r, shots };
+      }),
   };
 }

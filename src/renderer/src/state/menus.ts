@@ -110,6 +110,7 @@ export function fileMenu(path: string, options: { isFolder?: boolean; onRename?(
     { label: marked ? 'Remove the bookmark' : 'Bookmark', icon: 'bookmark', run: () => toast(toggleBookmark(path) ? 'Bookmarked.' : 'Bookmark removed.') },
     ...(canEdit && !isPrivatePath(path) ? [levelMenuEntry(path)] : []),
     ...(isNote ? [{ label: 'Export to PDF', icon: 'download', run: () => void exportPdf(path) } as MenuItem] : []),
+    ...(isNote && !isPrivatePath(path) ? [{ label: 'Design with AI…', icon: 'palette', run: () => openModal({ kind: 'design', path }) } as MenuItem] : []),
     { separator: true },
     { label: 'Copy its path', icon: 'copy', run: () => void A.copyPath(path) },
     { label: 'Show in File Explorer', icon: 'reveal', run: () => void A.revealInSystem(path) },

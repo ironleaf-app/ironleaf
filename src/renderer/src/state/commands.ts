@@ -459,6 +459,8 @@ export const COMMANDS: Command[] = [
   { id: 'open-default', outward: true, name: 'Open in its default app', icon: 'external', file: true, run: (c) => c.path && void A.openInDefaultApp(c.path) },
   { id: 'copy-path', outward: true, name: 'Copy its path', icon: 'copy', file: true, run: (c) => c.path && void A.copyPath(c.path) },
   { id: 'export-pdf', outward: true, name: 'Export to PDF', icon: 'download', note: true, run: (c) => c.path && void exportPdf(c.path) },
+  // The Design studio (22 Nov 2026, components/DesignDialog.tsx): the note designed into a finished PDF by AI.
+  { id: 'design-note', outward: true, name: 'Design with AI: a report, one-pager, slides or poster…', icon: 'palette', note: true, run: (c) => c.path && openModal({ kind: 'design', path: c.path }) },
   { id: 'present', outward: true, name: 'Present as slides', icon: 'present', note: true, run: (c) => c.path && openModal({ kind: 'slides', path: c.path }) },
   { id: 'merge', outward: true, name: 'Merge into another note…', icon: 'merge', note: true, run: (c) => c.path && void mergeInto(c.path) },
   { id: 'extract', outward: true, name: 'Move the selection to a new note', icon: 'scissors', editor: true, run: (c) => c.view && c.path && void extractSelection(c.view, c.path) },

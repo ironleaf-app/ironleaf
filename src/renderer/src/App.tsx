@@ -7,6 +7,7 @@ import { ImportsStrip } from './components/ImportsStrip';
 import { ReviewCards } from './components/ReviewCards';
 import { StarterPicker } from './components/StarterPicker';
 import { PublishDialog } from './components/PublishDialog';
+import { DesignDialog } from './components/DesignDialog';
 import { RecordingPill } from './components/RecordingPill';
 import { LEAF_ACCENT, LEAF_ACCENT_DARK, shows } from '../../shared/prefs';
 import { frontMatterRange } from '../../shared/frontmatter';
@@ -217,6 +218,7 @@ function ModalLayer({ modal }: { modal: Modal }) {
       {m.kind === 'publish' && <PublishDialog siteId={m.siteId} source={m.source} onClose={closeModal} />}
       {m.kind === 'move-vault' && <MoveVaultDialog onClose={() => (m.from === 'settings' ? openModal({ kind: 'settings', section: 'files' }) : closeModal())} />}
       {m.kind === 'names' && <NamesDialog onClose={closeModal} />}
+      {m.kind === 'design' && <DesignDialog path={m.path} onClose={closeModal} />}
     </div>
   );
 }
