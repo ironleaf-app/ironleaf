@@ -31,7 +31,7 @@ import { peek } from '../../../state/peek';
 import { clearJobSpeakerName, jobFor, jobSpeakerUndoable, liveClip, mergeJobVoices, pauseRecording, resumeRecording, setJobSpeakerName, startRecording, stopRecording, undoJobSpeakers, useElapsed, useMics, useRecorder } from '../../../state/recorder';
 import { SpeakerNames, useSpeakerSuggestions } from '../../../components/SpeakerNames';
 import { docs } from '../../../state/docs';
-import { allSpeakerNames, relabelSpeakerMentions, shownWho, speakerNum, splitSentences } from '../../../../../shared/meeting-speakers';
+import { allSpeakerNames, relabelSpeakerMentions, shownWho, speakerNum, summaryParagraphs } from '../../../../../shared/meeting-speakers';
 import { countWords } from '../../../../../shared/vault-place';
 import { showError, toast, useApp, usePrefs } from '../../../state/store';
 import { plainWords, useWork, useWorkOptions, workCall, workDid } from '../../../state/workModules';
@@ -709,7 +709,7 @@ function AfterMeeting({ m, canEdit }: { m: Meet; canEdit: boolean }) {
           {summary && !minutesMade && (
             <section aria-label="Summary" className="mt-summary">
               <div className="glabel w2b-group">Summary</div>
-              {summaryParas(stripNoteLinks(summary)).map((para, i) => (
+              {summaryParagraphs(stripNoteLinks(summary)).map((para, i) => (
                 <p key={i} className="w2b-summary">
                   {para}
                 </p>
@@ -778,26 +778,6 @@ function restOfMeeting(text: string, summaryShown: boolean): string {
 /** A note's links read as their words ("Harbour", never "[[Harbour Stores|Harbour]]"). */
 const stripNoteLinks = (s: string): string => s.replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, '$2').replace(/\[\[([^\]]+)\]\]/g, '$1');
 
-/** A long summary in short paragraphs (t273): the note's own breaks kept; a long unbroken stretch splits by
- *  sentence, two to a paragraph, through the speakers' shared splitter. */
-const summaryParas = (s: string): string[] => {
-  const out: string[] = [];
-  for (const chunk of s.split(/\n\s*\n/)) {
-    const t = chunk.replace(/\s+/g, ' ').trim();
-    if (!t) continue;
-    if (t.length <= 320) {
-      out.push(t);
-      continue;
-    }
-    const sentences = splitSentences(t);
-    if (sentences.length < 2) {
-      out.push(t);
-      continue;
-    }
-    for (let i = 0; i < sentences.length; i += 2) out.push(sentences.slice(i, i + 2).join(' '));
-  }
-  return out.length ? out : [s];
-};
 
 /** The meeting itself lives in its note (t248, 12 Nov 2026: the note page is the meeting; this room is
  *  the record around it, the recording, the transcript and the prep). Its tasks, decisions and questions

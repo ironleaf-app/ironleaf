@@ -9,7 +9,7 @@ import { aiReadyOrSay } from '../components/AiSetup';
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import type { MeetingContext } from '../../../main/reviews';
 import { dueWords, readTranscript, type TranscriptPartRead } from '../../../shared/meeting-notes';
-import { marksFromLines, readAllSpeakerNames, readSpeakerNames, speakerDisplay, speakerPartKey, staleSpeakerLabels } from '../../../shared/meeting-speakers';
+import { marksFromLines, readAllSpeakerNames, readSpeakerNames, speakerDisplay, speakerPartKey, staleSpeakerLabels, summaryParagraphs } from '../../../shared/meeting-speakers';
 import { applyMeetingMinutes, hasMinutesExisting, minutesFallbackWords, minutesWords, readMinutesExisting, tidiedWords } from '../../../shared/meeting-minutes';
 import { CHECK_LIMIT, applyCorrection, findThinStretches, findUncertain, isPersonName, lengthMs, replaceTranscriptStretch, type ThinStretch, type UncertainWord } from '../../../shared/meeting-words';
 import { clockWords, downsample, encodeWav, stamp, transcribeHints, transcriptText, type TranscriptLine } from '../../../shared/recorder';
@@ -308,7 +308,14 @@ function MeetingMinutesInner({ path, text, canEdit, onChangeText }: { path: stri
           )}
           {minutesHere && (minutesHere.summary || (minutesHere.decisions?.length ?? 0) > 0 || (minutesHere.actions?.length ?? 0) > 0) ? (
             <div className="mm-minutes">
-              {minutesHere.summary ? <p>{stripLinks(minutesHere.summary)}</p> : null}
+              {/* A long summary in short paragraphs, as the meeting page read it before the summary moved into this card. */}
+              {minutesHere.summary
+                ? summaryParagraphs(stripLinks(minutesHere.summary)).map((para, i) => (
+                    <p key={i} className="w2b-summary">
+                      {para}
+                    </p>
+                  ))
+                : null}
               {(minutesHere.decisions?.length ?? 0) > 0 ? (
                 <div className="mm-min-block">
                   <span className="mm-faint">Decisions · {minutesHere.decisions!.length}</span>
