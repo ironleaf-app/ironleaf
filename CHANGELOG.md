@@ -6,6 +6,11 @@ the website. `tools/release.mjs` takes a release's notes from here when `--notes
 
 Format: one `## <version> — <YYYY-MM-DD>` heading a release, then one `- ` line a change.
 
+## 2.0.13 — 2026-11-22
+
+- Design with AI gets it right first time: one well-planned draft, with a further pass only when a page measures as broken, so a design is ready in about half the time on about half the AI tokens.
+- Designed pages keep an even spacing rhythm instead of spreading sections apart, and a page that is a little too full is fitted above its footer.
+
 ## 2.0.12 — 2026-11-22
 
 - Opening a Markdown file from outside the vault no longer opens it in tab after tab, and a window that had piled up those tabs opens cleanly again.
