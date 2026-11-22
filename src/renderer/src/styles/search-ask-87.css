@@ -218,6 +218,7 @@ button.sas-src:hover { background: var(--bg-side); }
 .chat .chat-source-row { align-items: flex-start; padding-top: 5px; padding-bottom: 5px; }
 .chat .chat-source-row > .gtile { margin-top: 2px; flex: none; }
 .chat .chat-source-text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
-.chat .chat-source-title { min-width: 0; }
+/* The title wraps whole words rather than clip: at a 300 px panel a meeting's dated name ran 14 px past its line. */
+.chat .chat-source-title { min-width: 0; white-space: normal; overflow-wrap: break-word; }
 .chat .chat-source-text > .n { min-width: 0; }
 .chat .chat-steps { margin-top: 0; }
