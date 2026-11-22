@@ -113,7 +113,7 @@ mkdirSync(electronCache, { recursive: true });
 // electron-builder reads its project folder's package.json even when prepackaged (16 Nov 2026: the first laptop build
 // stopped on "Cannot find package.json in build-standalone"). The former host app's recovery-build carries one the
 // same way.
-writeFileSync(path.join(root, 'build-standalone', 'package.json'), JSON.stringify({ name: 'neuralvault-standalone-build', version: pkg.version, private: true, description: 'Ironleaf', author: 'Kaitiaki IT' }, null, 2) + '\n');
+writeFileSync(path.join(root, 'build-standalone', 'package.json'), JSON.stringify({ name: 'ironleaf-standalone-build', version: pkg.version, private: true, description: 'Ironleaf', author: 'Kaitiaki IT' }, null, 2) + '\n');
 const built = spawnSync(process.execPath, [path.join(toolsDir, 'node_modules', 'electron-builder', 'out', 'cli', 'cli.js'), '--projectDir', path.join(root, 'build-standalone'), '--config', configFile, '--win', 'nsis', '--x64', '--prepackaged', application, '--publish', 'never'], { cwd: root, stdio: 'inherit', env: { ...process.env, ELECTRON_BUILDER_CACHE: builderCache, ELECTRON_CACHE: electronCache, CSC_IDENTITY_AUTO_DISCOVERY: 'false', ELECTRON_BUILDER_7Z_FILTER: 'BCJ' } });
 if (built.status !== 0) fail('electron-builder stopped with exit code ' + built.status + '.');
 const installer = path.join(output, `Ironleaf-Setup-${pkg.version}.exe`);
