@@ -271,7 +271,9 @@ async function shot(h, W, Hg, file, scrollTo = '') {
 }
 
 /** The list's kinds in order, as the quiet line counts them. */
-const KINDS_JS = `[...document.querySelector('.td-look-items').querySelectorAll(':scope section[data-section]:not(details section), :scope [data-look-row]:not(section):not(details [data-look-row])')].map((el) => el.getAttribute('data-section') || el.innerText.replace(/\\s+/g, ' ').trim().slice(0, 60))`;
+// Since layout round 2 and 2.0.1 Today's look rows stand in three lists (Needs you, the packs' due block, the cards
+// block) and the meetings finished with actions open read as one line in the Meetings card.
+const KINDS_JS = `[...document.querySelectorAll('.td-look-items')].flatMap((list) => [...list.querySelectorAll(':scope section[data-section]:not(details section), :scope [data-look-row]:not(section):not(details [data-look-row])')].map((el) => el.getAttribute('data-section') || el.innerText.replace(/\\s+/g, ' ').trim().slice(0, 60))).concat([...document.querySelectorAll('.wmt-after-line')].map(() => 'meetings'))`;
 
 test('a busy vault reads about 6 to 8, folded and ordered, pictured shut and open', { timeout: 420000 }, async () => {
   const h = await harness();
@@ -281,35 +283,32 @@ test('a busy vault reads about 6 to 8, folded and ordered, pictured shut and ope
   await waitFor(h, `!!document.querySelector('.td-view')`);
   await waitFor(h, `!!document.querySelector('[data-section="also"]')`);
   await sleep(2500);
-  const line = await ev(`document.querySelector('[data-section="also"] h2')?.innerText.replace(/\\s+/g, ' ') ?? ''`);
-  const m = /Also (\d+)/.exec(line);
-  assert.ok(m, `one Also head counts what opening shows (saw ${JSON.stringify(line)})`);
-  const n = Number(m[1]);
+  // The rest of the day sits behind one quiet "More for today" head (it stands open in three columns).
+  const head = await ev(`document.querySelector('[data-section="also"] h2')?.innerText.replace(/\\s+/g, ' ').trim() ?? ''`);
+  assert.equal(head, 'More for today', 'one quiet head for the rest of the day');
   const kinds = await ev(KINDS_JS);
-  assert.ok(kinds.length >= 6 && kinds.length <= 8, `about 6 to 8 look kinds, not 22 (saw ${kinds.length})`);
-  assert.ok(n >= kinds.length, `Also counts the look kinds with the rest of the work (${n} over ${kinds.length})`);
-  // Folded: one systems row naming every machine, one projects row, one meetings row.
-  const items = await ev(`document.querySelector('.td-look-items')?.innerText.replace(/\\s+/g, ' ') ?? ''`);
-  assert.match(items, /Security updates have waited over a week on Fileshare, Mediabox, Plover and Juniper/, 'systems fold into one row');
+  assert.ok(kinds.length >= 6 && kinds.length <= 8, `about 6 to 8 look kinds, not 22 (saw ${kinds.length}: ${JSON.stringify(kinds)})`);
+  // Folded: one systems row naming every machine, one projects row, one meetings line.
+  const items = await ev(`[...document.querySelectorAll('.td-look-items, .wmt-after-line')].map((el) => el.innerText).join(' ').replace(/\\s+/g, ' ')`);
+  // One row naming every machine (in name order now; the order is not the point).
+  const machines = /Security updates have waited over a week on ([^.]*?) Next step/.exec(items)?.[1] ?? '';
+  assert.ok(['Fileshare', 'Mediabox', 'Plover', 'Juniper'].every((n) => machines.includes(n)), `systems fold into one row (${machines})`);
   assert.match(items, /12 projects have notes waiting/, 'projects fold into one row');
-  assert.match(items, /3 meetings finished with actions still open/, 'meetings fold into one row');
+  assert.match(items, /3 meetings finished with actions still open/, 'meetings fold into one line, in the Meetings card');
   assert.equal(await ev(`document.querySelectorAll('.td-look-items [data-section="bills"] .rm-today-row').length`), 3, 'three bills still list');
   // Not for today: no tidy row, and the tip waits its week once put away.
   assert.ok(!items.includes('ready to tidy'), 'tidy leaves Today');
-  // Order: bills and editions first, meetings and notes next, systems and review last.
-  const order = await ev(`[...document.querySelector('.td-look-items').querySelectorAll(':scope section[data-section]:not(details section), :scope [data-look-row]:not(section):not(details [data-look-row])')].map((el) => el.getAttribute('data-section') || (el.innerText.includes('projects have notes waiting') ? 'notes' : el.innerText.includes('review') ? 'review' : el.innerText.includes('loose end') ? 'dormant' : el.innerText.includes('only on this PC') ? 'vault' : '?'))`);
-  const pos = (k) => order.indexOf(k);
-  assert.ok(pos('bills') >= 0 && pos('publications') >= 0 && pos('meetings') >= 0, `due and waiting list: ${JSON.stringify(order)}`);
-  assert.ok(pos('bills') < pos('meetings') && pos('publications') < pos('meetings'), `due today first: ${JSON.stringify(order)}`);
-  assert.ok(pos('meetings') < pos('notes') && pos('notes') < pos('systems'), `then waiting, then upkeep: ${JSON.stringify(order)}`);
-  assert.ok(pos('systems') < pos('dormant') && pos('dormant') < pos('review'), `upkeep ends with the review: ${JSON.stringify(order)}`);
+  // Order: the packs' due block holds bills and editions; Needs you reads notes waiting, systems, loose ends, review.
+  const lists = await ev(`[...document.querySelectorAll('.td-look-items')].map((list) => [...list.querySelectorAll(':scope section[data-section]:not(details section), :scope [data-look-row]:not(section):not(details [data-look-row])')].map((el) => el.getAttribute('data-section') || (el.innerText.includes('notes waiting') ? 'notes' : el.innerText.includes('loose end') ? 'dormant' : el.innerText.includes('weekly review') ? 'review' : el.innerText.replace(/\\s+/g, ' ').trim().slice(0, 30))))`);
+  const needs = lists.find((l) => l.includes('systems')) ?? [];
+  const due = lists.find((l) => l.includes('bills')) ?? [];
+  assert.ok(due.includes('bills') && due.includes('publications'), `bills and editions list in the due block: ${JSON.stringify(lists)}`);
+  const pos = (k) => needs.indexOf(k);
+  assert.ok(pos('notes') >= 0 && pos('notes') < pos('systems') && pos('systems') < pos('dormant') && pos('dormant') < pos('review'), `Needs you: notes waiting, systems, loose ends, review: ${JSON.stringify(needs)}`);
   // Shut at every size, then open: every item one click from its row or its page.
   await shot(h, 3456, 1408, 'look-after-shut-3456.png');
   await shot(h, 1920, 1117, 'look-after-shut-1920.png');
   await shot(h, 1219, 709, 'look-after-shut-1219.png');
-  await clickWords(h, 'Show', '[data-section="also"]');
-  await sleep(1200);
-  assert.ok(await ev(`document.querySelector('.td-look-open')?.hidden === false`), 'Also opens');
   // The folded projects row opens to all twelve, each with its Open.
   await ev(`[...document.querySelectorAll('.td-look-items .td-look-row > summary')].find((e) => e.innerText.includes('projects have notes waiting'))?.click()`);
   await sleep(600);

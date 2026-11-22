@@ -33,11 +33,14 @@ test('the frame caps every room page at the one width', () => {
   const frame = read('src/renderer/src/styles/page-frame.css');
   assert.ok(/\.vscroll > \.vpage\.wide \{[^}]*max-width: var\(--page-max\)/s.test(frame), 'wide room pages stand in --page-max');
   assert.ok(/\.vscroll > \.vpage\.wide\.full \{[^}]*max-width: none/s.test(frame), 'a full-width page opts out with .full');
-  for (const f of ['src/renderer/src/views/HomeView.tsx', 'src/renderer/src/views/InboxPage.tsx', 'src/renderer/src/views/SharedSpacesHome.tsx']) {
+  for (const f of ['src/renderer/src/views/HomeView.tsx', 'src/renderer/src/views/SharedSpacesHome.tsx']) {
     assert.ok(read(f).includes('<div className="vpage wide">'), `${f} stands its page in the frame with no width of its own`);
   }
+  // Inbox is a list with its detail beside it (layout round 3): .has-split, still no width of its own.
+  assert.ok(read('src/renderer/src/views/InboxPage.tsx').includes('<div className="vpage wide has-split">'), 'Inbox stands its list and detail in the frame with no width of its own');
   const projects = read('src/renderer/src/views/ProjectsHome.tsx');
-  assert.ok(projects.includes("`vpage wide${view === 'list' ? '' : ' full'}`"), 'Projects stands its list in the frame and runs the rest full width');
+  // Layout round 3: the list reads with its detail beside it (.has-split); the gallery and board run full width.
+  assert.ok(projects.includes("`vpage wide${view === 'list' ? ' has-split' : ' full'}`"), 'Projects stands its list in the frame and runs the rest full width');
   assert.ok(!projects.includes('vpage wide" style={{ maxWidth'), 'Projects carries no width of its own');
   const tasks = read('src/renderer/src/views/TasksView.tsx');
   assert.ok(tasks.includes('<div className="vpage wide">'), 'Tasks stands its one view in the frame (t249: the board is gone)');
