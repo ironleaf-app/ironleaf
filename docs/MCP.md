@@ -135,7 +135,7 @@ printf '%s\n' \
 `isError: true` and plain words. While Connect an AI is off the read tools still list (so set-up reads right) and
 every call is refused with where to switch it on. More than 10 changes in one call are refused: split them.
 
-## The tools (80)
+## The tools (81)
 
 37 at Read only; all 80 at Read and write. A path is the note's path in the library
 (`Notes/Oven service.md`) or its title.
@@ -243,6 +243,7 @@ every call is refused with where to switch it on. More than 10 changes in one ca
 | `files_find` | Read only | Where a file is in Ironleaf, answered from the vault itself. |
 | `note_attach_file` | Read and write | Attach a file to a note (a meeting, a person, any note). |
 | `note_to_pdf` | Read and write | This is how a person’s note becomes a finished branded PDF, set in their brand kit (their logo, colours and fonts). |
+| `design_document` | Read and write | This is how a person’s note becomes a designed document in their brand kit, laid out by the AI, printed and checked page by page: a report (a designed cover, then every word), a one-pager, a proposal, a handout (two pages), a poster, or slides (16:9). |
 | `asset_add` | Read and write | Copy a file into the asset store. |
 | `asset_update` | Read and write | Change what the asset store says about a file (its path from assets_search). |
 | `brand_kit_set` | Read and write | Change the brand kit. |

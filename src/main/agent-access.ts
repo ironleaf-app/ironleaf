@@ -52,7 +52,9 @@ import { runMcpTool, type McpToolsHost } from './mcp-tools';
 import { isPrivatePath } from '../shared/private';
 import type { Area } from '../shared/areas';
 import type { BrandKit } from '../shared/assets';
-import { brandDocument } from '../shared/brand-document';
+import { brandContent, brandDocument } from '../shared/brand-document';
+import { kindInfo as designKindInfo } from '../shared/design-doc';
+import type { DesignStart } from './design-studio';
 import { kitForNote } from '../shared/brand-kits';
 import { readProps } from '../shared/frontmatter';
 import { answerRecordTool } from '../shared/records';
@@ -131,6 +133,8 @@ export interface AgentAccessHost {
   /** A branded document printed to a PDF (note_to_pdf): the same hidden window Export to PDF prints through
    *  (src/main/brand-print.ts) — its bytes and its true page count. */
   brandPrint?(html: string): Promise<{ pdf: Buffer; pages: number }>;
+  /** A note designed by the person's AI into a finished PDF (design_document; src/main/design-studio.ts). */
+  design?(input: DesignStart): Promise<{ pdf: Buffer; pages: number; problems: string[] }>;
   /** Connect an AI or What agents did changed: the window reads them again. */
   changed(): void;
   log?(message: string): void;
@@ -1054,37 +1058,7 @@ export class AgentAccess {
     if (!/\.md$/i.test(rel)) throw new Error('PDFs are made from notes (.md).');
     const body = this.host.index.content(rel) ?? (await this.host.notes.read(rel));
     const title = this.host.index.get(rel)?.title ?? titleOf(rel);
-    // The vault's own level for the note (a Health folder's note marks Confidential though its properties name no
-    // level): read through the call's gate, after the read above refused what the agent may not have.
-    let level: Level | null = null;
-    try {
-      level = callAgent.getStore()?.gate?.level(rel) ?? null;
-    } catch {
-      level = null;
-    }
-    // The note's own kit, through the one function Export to PDF prints through (the renderer's brandHtmlAndKit reads
-    // the same kitForNote rule): its project's kit, else its area's, else the default — with its logos' measured
-    // colours. A listing the tool cannot read still prints, cleanly.
-    let brand: BrandKit | null = null;
-    const palette: Partial<Record<'primary' | 'onDark', string[]>> = {};
-    try {
-      const listing = await this.host.notes.assets?.list();
-      if (listing) {
-        const props = this.host.index.get(rel)?.props ?? readProps(body ?? '');
-        brand = kitForNote(
-          { brand: listing.brand, brands: listing.kits, brandDefault: listing.brandDefault, brandAreas: listing.brandAreas, brandProjects: listing.brandProjects },
-          { path: rel, props },
-          { areas: this.host.areas?.() ?? [], projects: this.host.projects().map((c) => ({ path: c.path, name: c.name })), places: { templatesFolder: this.host.prefs().templatesFolder, assetsFolder: listing.folder } },
-        );
-        for (const role of ['primary', 'onDark'] as const) {
-          const logoRel = brand?.logos?.[role];
-          const entry = logoRel ? listing.assets.find((x) => x.path === logoRel) : undefined;
-          if (entry?.palette?.length) palette[role] = entry.palette;
-        }
-      }
-    } catch {
-      brand = null;
-    }
+    const { level, brand, palette } = await this.noteBrand(rel, body);
     // The mic reads as the owner, as on every other door (18 Nov 2026, t301 round 2).
     const me = this.person();
     const html = brandDocument({
@@ -1136,6 +1110,93 @@ export class AgentAccess {
           undo: { kind: 'file-saved', abs: d.abs, size: d.size, mtime: d.mtime, library: d.path, ...(noteAfter !== undefined ? { note: { path: rel, before: noteBefore, after: noteAfter } } : {}) } as FileSavedUndo,
         },
       };
+    } finally {
+      await fsp.rm(temp, { force: true }).catch(() => {});
+    }
+  }
+
+  /** A note's level and its own brand kit (its project's, else its area's, else the default) with its logos' measured
+   *  colours: the one reading note_to_pdf and design_document print through, as Export to PDF does. */
+  private async noteBrand(rel: string, body: string | null): Promise<{ level: Level | null; brand: BrandKit | null; palette: Partial<Record<'primary' | 'onDark', string[]>> }> {
+    // The vault's own level for the note (a Health folder's note marks Confidential though its properties name no
+    // level): read through the call's gate, after the read above refused what the agent may not have.
+    let level: Level | null = null;
+    try {
+      level = callAgent.getStore()?.gate?.level(rel) ?? null;
+    } catch {
+      level = null;
+    }
+    // The note's own kit, through the one function Export to PDF prints through (the renderer's brandHtmlAndKit reads
+    // the same kitForNote rule): its project's kit, else its area's, else the default — with its logos' measured
+    // colours. A listing the tool cannot read still prints, cleanly.
+    let brand: BrandKit | null = null;
+    const palette: Partial<Record<'primary' | 'onDark', string[]>> = {};
+    try {
+      const listing = await this.host.notes.assets?.list();
+      if (listing) {
+        const props = this.host.index.get(rel)?.props ?? readProps(body ?? '');
+        brand = kitForNote(
+          { brand: listing.brand, brands: listing.kits, brandDefault: listing.brandDefault, brandAreas: listing.brandAreas, brandProjects: listing.brandProjects },
+          { path: rel, props },
+          { areas: this.host.areas?.() ?? [], projects: this.host.projects().map((c) => ({ path: c.path, name: c.name })), places: { templatesFolder: this.host.prefs().templatesFolder, assetsFolder: listing.folder } },
+        );
+        for (const role of ['primary', 'onDark'] as const) {
+          const logoRel = brand?.logos?.[role];
+          const entry = logoRel ? listing.assets.find((x) => x.path === logoRel) : undefined;
+          if (entry?.palette?.length) palette[role] = entry.palette;
+        }
+      }
+    } catch {
+      brand = null;
+    }
+    return { level, brand, palette };
+  }
+
+  /**
+   * design_document (22 Nov 2026, the Design studio): a note designed by the person's own AI into a finished PDF in its
+   * brand kit — a report, one-pager, proposal, handout, poster or slides — laid out, printed, measured and fixed by
+   * src/main/design-studio.ts, then kept in the note's Files as note_to_pdf keeps its PDF. The note's words reach the
+   * AI as the branded document reads them (secrets, private paths and the transcript left out), through this call's gate.
+   */
+  private async designDocument(rec: Caller, a: Record<string, unknown>): Promise<{ text: string; done?: Done }> {
+    const files = this.host.files;
+    const design = this.host.design;
+    if (!files || !design) throw new Error('Designing needs the Ironleaf app with an AI chosen in Settings › AI.');
+    const rel = this.pdfNote(a.note);
+    if (!/\.md$/i.test(rel)) throw new Error('Designs are made from notes (.md).');
+    const body = this.host.index.content(rel) ?? (await this.host.notes.read(rel));
+    const title = this.host.index.get(rel)?.title ?? titleOf(rel);
+    const { level, brand } = await this.noteBrand(rel, body);
+    const url = (r: string) => {
+      try {
+        return pathToFileURL(files.absolute(r)).href;
+      } catch {
+        return '';
+      }
+    };
+    const me = this.person();
+    const content = brandContent({ title, text: body ?? '', path: rel, kit: brand, level, url, resolve: (t) => this.host.index.resolveAny(t, rel) ?? t, ...(me ? { me } : {}) });
+    const kind = designKindInfo(a.kind);
+    const logo = (r?: string) => (r ? url(r) || undefined : undefined);
+    const made = await design({ kind: kind.id, brief: str(a.brief, 2000), title, content, kit: brand, logos: { primary: logo(brand?.logos?.primary), onDark: logo(brand?.logos?.onDark) }, brandName: brand?.name?.trim() ?? '' });
+    const name = `${title} – ${kind.name}.pdf`;
+    const temp = path.join(this.host.dataDir, 'agent-uploads', `design_${randomBytes(9).toString('base64url')}.part`);
+    await fsp.mkdir(path.dirname(temp), { recursive: true });
+    await fsp.writeFile(temp, made.pdf);
+    try {
+      const who = rec.name;
+      const d = await deliver(files, temp, { note: rel, name, replace: false, move: true, newVersion: { by: who, how: 'agent' } });
+      const what = `The note designed as a ${kind.name.toLowerCase()}`;
+      if (!d.version) await files.recorded?.(d.path, { by: who, how: 'agent', what, record: rel }).catch(() => undefined);
+      const pageWords = `${made.pages} ${made.pages === 1 ? 'page' : 'pages'}`;
+      const lines = [
+        `Designed ${d.name} (${pageWords}) from ${quote(title)}: a ${kind.name.toLowerCase()}${brand ? ' in the brand kit' : ''}, printed and checked page by page.`,
+        `Kept in the note’s Files as ${d.path}${d.version ? `, version ${d.version} (the one before is kept)` : ''}.`,
+        `Whole path on this PC: ${d.abs}. Hand it to the person from there — link it ([[${d.path}|${d.name}]]) — and say its pages in a line. To change it, they can open Design with AI on the note and ask for the change in words.`,
+        ...(made.problems.length ? [`Still not right on the pages: ${made.problems.slice(0, 3).join('; ')}. Say so in a line.`] : []),
+        ...(brand ? [] : ['There is no brand kit yet: it came out in a plain neutral style, and a brand kit would put their logo and colours on it.']),
+      ];
+      return { text: lines.join(' '), done: { words: `Designed ${quote(d.name, 90)} from the note ${quote(title)}.`, file: { name: d.name, size: d.size, place: d.place, path: d.path, abs: d.abs, mtime: d.mtime, what }, note: rel, undo: { kind: 'file-saved', abs: d.abs, size: d.size, mtime: d.mtime, library: d.path } as FileSavedUndo } };
     } finally {
       await fsp.rm(temp, { force: true }).catch(() => {});
     }
@@ -1749,6 +1810,8 @@ export class AgentAccess {
         return this.saveFile(rec, name, a);
       case 'note_to_pdf':
         return this.noteToPdf(rec, a);
+      case 'design_document':
+        return this.designDocument(rec, a);
       default: {
         // A life module's tool (Wave 5), through this call's gate (the agent's levels; Health and Family-private refused
         // unless the person allowed them).

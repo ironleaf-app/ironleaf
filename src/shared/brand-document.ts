@@ -1163,8 +1163,9 @@ export interface BrandLaidOut {
   cut: string[];
 }
 
-/** The whole finished document: paginated by its own script (print), or page one static (preview). */
-export function brandDocument(d: BrandDocInput): string {
+/** The note read for print: its title, what it knows (facts) and its blocks of finished, cleaned HTML. One reading for
+ *  the branded document and the designed one (src/shared/design-doc.ts), so both print the same cleaned words. */
+function readNote(d: BrandDocInput): { title: string; facts: DocFacts; parsed: ParsedBody } {
   const props = readProps(d.text) as Record<string, unknown>;
   const kept = typeof props.title === 'string' ? props.title.replace(/\s+/g, ' ').trim() : '';
   const shown = d.path && kept ? displayTitle(d.path, props) : '';
@@ -1180,6 +1181,42 @@ export function brandDocument(d: BrandDocInput): string {
   facts.absent = dedupePeople(facts.absent.map(linkWords).map((n) => n.trim()).filter(Boolean));
   facts.also = dedupePeople(facts.also.map(linkWords).map((n) => n.trim()).filter(Boolean));
   facts.present = dedupePeople(facts.present.map(linkWords).map((n) => n.trim()).filter(Boolean));
+  return { title, facts, parsed };
+}
+
+/** What a designed document is made from (22 Nov 2026, the Design studio): the note's words as the branded document
+ *  reads them (secrets, private paths, front matter and the transcript left out; pictures as vault file addresses),
+ *  in blocks a layout places by number, with what the note knows for its cover. */
+export interface BrandContent {
+  title: string;
+  /** The small label: Meeting minutes, a Project brief, the note's own type, else a Note. */
+  label: string;
+  /** Subtitle lines (the project, then the day, time and length). */
+  sub: string[];
+  figures: { value: string; label: string }[];
+  /** A meeting's people rows: Present, Not present, Also named. */
+  people: { label: string; names: string[] }[];
+  /** The body's blocks of finished HTML, in order. */
+  blocks: string[];
+  confidential: boolean;
+  /** The footer's words (the kit's footer when it has one). */
+  foot: string;
+}
+
+export function brandContent(d: BrandDocInput): BrandContent {
+  const { title, facts, parsed } = readNote(d);
+  const people: { label: string; names: string[] }[] = [];
+  if (facts.meeting) {
+    if (facts.present.length) people.push({ label: 'Present', names: facts.present });
+    if (facts.absent.length) people.push({ label: 'Not present', names: facts.absent });
+    if (facts.also.length) people.push({ label: 'Also named', names: facts.also });
+  }
+  return { title, label: facts.label, sub: facts.sub, figures: facts.figures.map((f) => ({ value: linkWords(f.value), label: linkWords(f.label) })), people, blocks: parsed.blocks, confidential: facts.confidential, foot: facts.foot };
+}
+
+/** The whole finished document: paginated by its own script (print), or page one static (preview). */
+export function brandDocument(d: BrandDocInput): string {
+  const { title, facts, parsed } = readNote(d);
 
   const kit = d.kit ?? null;
   const accent = accentOf(kit) ?? BAND_DARK;

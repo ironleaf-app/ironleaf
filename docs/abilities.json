@@ -611,6 +611,12 @@
       "words": "A note laid out as pages, saved where you say."
     },
     {
+      "id": "design-note",
+      "group": "spark",
+      "title": "Design with AI",
+      "words": "A note designed by your AI in your brand kit: a report, one-pager, proposal, handout, poster or slides, checked page by page."
+    },
+    {
       "id": "present",
       "group": "spark",
       "title": "Present as slides",

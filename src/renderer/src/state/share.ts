@@ -7,7 +7,8 @@
 // note, "Keep with this note" files it in the note's Files and links it in the note.
 
 import type { AssetListing, NamedBrandKit } from '../../../shared/assets';
-import { brandDocument } from '../../../shared/brand-document';
+import { brandContent, brandDocument } from '../../../shared/brand-document';
+import type { DesignKind, DesignStartIn } from '../../../shared/design-doc';
 import { kitForNote, kitWords } from '../../../shared/brand-kits';
 import { readProps } from '../../../shared/frontmatter';
 import { isMeetingNote } from '../../../shared/meetings';
@@ -91,6 +92,20 @@ export async function brandHtmlAndKit(path: string, title: string, text: string)
   const { kit, palette, multi, level } = await noteKit(path, text);
   const opts = await shareOpts(path);
   return { html: brandDocument({ title, text, path, kit, level, url: (rel) => fileUrl(rel), resolve: opts.resolve, ...(opts.me ? { me: opts.me } : {}), logoPalette: palette }), kit, multi };
+}
+
+/**
+ * What the Design studio designs from (22 Nov 2026): the note read the way its branded document reads it (secrets,
+ * private paths, front matter and the transcript left out), its kit and its logos' file addresses. Private notes refuse.
+ */
+export async function designInputFor(path: string, kind: DesignKind, brief: string): Promise<DesignStartIn | null> {
+  const src = await shareSource(path);
+  if (!src) return null;
+  const { kit, level } = await noteKit(path, src.text);
+  const opts = await shareOpts(path);
+  const content = brandContent({ title: src.title, text: src.text, path, kit, level, url: (rel) => fileUrl(rel), resolve: opts.resolve, ...(opts.me ? { me: opts.me } : {}) });
+  const logo = (rel?: string) => (rel ? fileUrl(rel) || undefined : undefined);
+  return { path, kind, brief, title: src.title, content, kit, logos: { primary: logo(kit?.logos?.primary), onDark: logo(kit?.logos?.onDark) }, brandName: kit?.name?.trim() ?? '' };
 }
 
 /**
@@ -251,6 +266,7 @@ export async function emailShare(path: string): Promise<void> {
 export function shareMenuItems(path: string): MenuItem[] {
   return [
     { label: 'Save as PDF', icon: 'pdf', run: () => void saveSharePdf(path) },
+    { label: 'Design with AI…', icon: 'palette', run: () => void import('./modals').then((m) => m.openModal({ kind: 'design', path })) },
     { label: 'Copy as formatted text', icon: 'copy', run: () => void copyShareFormatted(path) },
     { label: 'Save as Markdown', icon: 'notes', run: () => void saveShareMarkdown(path) },
     { label: 'Email it', icon: 'mail', run: () => void emailShare(path) },
