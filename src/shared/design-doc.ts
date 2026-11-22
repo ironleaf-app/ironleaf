@@ -59,7 +59,7 @@ export const DESIGN_KINDS: DesignKindInfo[] = [
   { id: 'proposal', name: 'Proposal', line: 'A cover and sections laid out to persuade: the ask, the why, the how.', page: A4, words: 'keep', flow: true, brief: 'A proposal: a confident cover, a summary page that makes the ask and its reasons stand out (the key figures, the decision wanted, the why in a few lines, all from the note), then the whole note set beautifully in the brand.', shape: 'document', plan: "Page 1, the cover: confident and simple, the logo, the title huge, who it is for. Page 2, the ask: the decision wanted in one sentence set large, the key figures, the why in three lines, the cost as bars, the timeline. Then the flow: every block in order, sections opened by a short brand rule and their heading, the ask repeated in a strong panel at the end." },
   { id: 'handout', name: 'Handout', line: 'Two pages, visual and easy to skim, for a meeting or a customer.', page: A4, words: 'shorten', pages: 2, brief: 'A two-page handout: visual, easy to skim, with panels, figures and short sections. Shorten: the reader has two minutes.', shape: 'page', plan: "Page 1: the logo and label, a headline, a short summary, the key figures in a band, then two columns (span-7 and span-5) with the story and a chart. Page 2: the details people keep (a table, the steps, the people or dates), a pull quote or callout, and what happens next. Visual and skimmable: short paragraphs, many small headings." },
   { id: 'poster', name: 'Poster', line: 'One bold page: a big message, a few words, the brand.', page: A4, words: 'shorten', pages: 1, brief: 'A poster: one page, a big message in display type, a few supporting lines, the brand strong. Very few words.', shape: 'page', plan: "One page: the brand strong (a full-bleed colour band or a page of the brand colour), the logo, one message in display type (fs-9 or fs-10, three lines at most), one hero number with its label, three short supporting lines at most, and the when or call to action at the foot." },
-  { id: 'slides', name: 'Slides', line: 'A slide deck (16:9): one idea per slide.', page: SLIDE, words: 'shorten', brief: 'A slide deck of 16:9 slides, one section class="page" per slide: a title slide, then one idea per slide (a headline and at most five short lines, or one figure, or one chart), and a closing slide. Shorten: slides carry headlines, not paragraphs.', shape: 'deck', plan: "Slide 1: the title slide in the brand colour (logo, a small label, the title in display type, one line under it). Then one idea per slide, each with a small label and a headline that states the point: a hero-number slide, a timeline slide for the plan, a chart slide for the money, a risks slide, a decision slide in the brand colour, and a closing next-steps slide. Never more than five short lines of text on a slide." },
+  { id: 'slides', name: 'Slides', line: 'A slide deck (16:9): one idea per slide.', page: SLIDE, words: 'shorten', brief: 'A slide deck of 16:9 slides, one section class="page" per slide, made like a top consultancy\'s board deck: every slide a headline that states its point, one idea, and a real visual structure (a hero number, a bar chart, a comparison in panels, a timeline, a table) set big enough to read across a room. Shorten: slides carry headlines and short phrases, never paragraphs.', shape: 'deck', plan: "Slide 1: the title slide in the brand colour (the logo, a small label, the title in display type, one line under it, a thin row of facts at its foot). Slide 2, at a glance: a headline of your own that says the whole story; under it, on the left, the main point or decision in a line or two of plain words (var(--fs-5), regular weight: never a second bold headline, never a paragraph block), and on the right the key figures set big, two by two (class=\"figures\": on a slide each figure stands on a brand-colour rule; class \"key\" on the one that matters most). Then one idea per slide, six to eight slides in all, each a different visual structure under a headline that states its point: a hero number beside its reasons, a timeline for the plan, a bar chart for the money or the scores, two panels side by side for a before and after or two options, the risks as numbered rows, and a closing slide with the decision in a brand-colour band and the next steps. At most five short lines of text on a slide, none longer than about 12 words." },
 ];
 
 export const kindInfo = (id: unknown): DesignKindInfo => DESIGN_KINDS.find((k) => k.id === id) ?? DESIGN_KINDS[0];
@@ -121,6 +121,8 @@ export interface DesignTheme {
   branded: boolean;
   /** The kit's other colours by token, for the AI's list. */
   extra: { token: string; name: string }[];
+  /** Whether var(--highlight) is a colour of the kit's own beside the brand colour (else it is the brand colour). */
+  highlight?: boolean;
 }
 
 const mix = (a: string, b: string, t: number): string => {
@@ -173,6 +175,10 @@ export function designTheme(kit: BrandKit | null | undefined): DesignTheme {
     tokens.push([token, hex], [`on-${token}`, inkFor(hex)]);
     extra.push({ token, name: [c.name, c.use].filter(Boolean).join(', ') || hex });
   }
+  // The highlight: the kit's first other colour that shows on white (a gold beside a green), for the one thing that
+  // matters on a slide; without one, the brand colour itself.
+  const hi = extra.map((e) => tokens.find(([k]) => k === e.token)?.[1] ?? '').find((hex) => hex && contrastOf(hex, '#ffffff') >= 1.6);
+  tokens.push(['highlight', hi ?? strong]);
   TYPE_SCALE.forEach((pt, i) => tokens.push([`fs-${i}`, `${pt}pt`]));
   SPACE_SCALE.forEach((mm, i) => tokens.push([`sp-${i + 1}`, `${mm}mm`]));
   tokens.push(['r-1', '1.5mm'], ['r-2', '3mm'], ['r-3', '6mm']);
@@ -182,7 +188,7 @@ export function designTheme(kit: BrandKit | null | undefined): DesignTheme {
   const head = headFont ? `"${headFont.name}",${SANS_FALLBACK}` : SANS_FALLBACK;
   const body = bodyFont ? `"${bodyFont.name}",${SANS_FALLBACK}` : SANS_FALLBACK;
   tokens.push(['font-head', head], ['font-body', body], ['font-serif', SERIF_FALLBACK]);
-  return { tokens, head, body, branded: !!accentOf(kit), extra };
+  return { tokens, head, body, branded: !!accentOf(kit), extra, highlight: !!hi };
 }
 
 /** Typefaces every copy of PowerPoint, Word and Excel has (Windows and Mac), with metric twins elsewhere. */
@@ -238,11 +244,10 @@ function framesFor(kind: DesignKindInfo): string {
     <p class="lead" style="color:var(--on-accent)">One line on what it is</p>
   </div>
 </section>
-A slide with one idea and its proof:
-<section class="page" style="padding:var(--sp-6) var(--sp-7)">
-  <p class="kicker">The plan</p>
-  <h2 style="font-size:var(--fs-6);margin:0 0 var(--sp-5)">One idea, said as a headline</h2>
-  <div class="cols-2 fill" style="align-items:center"><ol class="steps">…three to five short lines…</ol><div class="figures quiet">…</div></div>
+A slide with one idea and its proof (every content slide keeps this frame: the head in the same place, the body filling the rest):
+<section class="page" style="padding:var(--sp-6) var(--sp-7) var(--sp-8)">
+  <header style="margin:0 0 var(--sp-6)"><p class="kicker">The plan</p><h2 style="font-size:var(--fs-6);line-height:1.1;margin:0">One idea, said as a headline</h2></header>
+  <div class="grid fill" style="align-items:stretch"><div class="span-5" style="display:flex;flex-direction:column;justify-content:center">…a hero number…</div><div class="span-7">…three rows sharing the height, or a chart as big as the area…</div></div>
   <footer class="nv-foot"><span>Name</span><nv-page-number></nv-page-number></footer>
 </section>
 A big-number slide:
@@ -272,6 +277,17 @@ Long running text (continues over as many pages as it needs; margins, footer and
 <section class="flow"><nv-block ref="b4"></nv-block><nv-block ref="b5"></nv-block>…</section>`;
 }
 
+/** How a deck differs from paper (23 Nov 2026: slides scored lowest of the kinds on the first pass, 66-74, for parts
+ *  set at paper size on a slide, content floated in the middle of empty space under the headline, a paragraph set large
+ *  as the second slide, and slide after slide of the same hero number beside a list). */
+const slidesDirection = (theme: DesignTheme) => `Slides are not paper (they are read across a room and taken in at a glance):
+- One frame for every content slide: padding var(--sp-6) var(--sp-7) var(--sp-8) (the foot keeps room for the footer); at the top a kicker and the headline (var(--fs-6), one line, two at most), in the same place on every slide; under it, var(--sp-6) down, the body (class="fill"), which takes the rest; the footer sits at the foot by itself.
+- Type at slide size: headlines var(--fs-6); the main words var(--fs-3) or var(--fs-4); supporting words var(--fs-2); labels and captions var(--fs-1). Paper's sizes read as tiny on a slide.
+- The body is filled by its content, never a small thing floating in the middle of empty space: columns and panels stretch to its full height (align-items:stretch), the rows of a list share its height (flex:1 on each, a hairline between), a chart is as big as the area allows. With little to show, make it bigger (a larger number, taller bars, larger words). Centre only a single statement or one number.
+- Real visual structure on every slide, a different one from the slide before: a hero number beside its reasons, a bar chart, two panels compared (one quiet, one in the brand colour), a timeline, numbered rows, a table. Never a wall of bullets, never a paragraph of more than about 25 words, and a big number always says what it counts. A bar chart needs three values or more (two numbers are two big figures side by side, with the change between them), and a number that is one slide's hero is not another's.
+- A band of colour runs to the slide's edges (across the top, or the whole slide), never floating in the middle; a figures band never repeats the slide's own hero number. A panel is as tall as what it holds, unless it stands beside another; never a panel left half empty.
+- Colour: the brand colour carries the deck (the title slide, the big numbers, at most one panel or band a slide). ${theme.highlight ? 'var(--highlight), the brand\'s second colour, marks the single thing that matters on a slide (class="bar hi" on the bar that matters, a key date\'s marker, a short rule): never for words on white, never more than one thing a slide.' : 'Mark the single thing that matters on a slide with class="bar hi" on the bar that matters, or the brand colour at full strength.'}`;
+
 export function designSystem(kind: DesignKindInfo, theme: DesignTheme, o: { logo: boolean; brandName: string }): string {
   const { w, h } = kind.page;
   const keep = kind.words === 'keep';
@@ -288,7 +304,7 @@ The page system (already on the page: never write @page, html or body styles):
 - <section class="flow">…</section> is running text that continues over as many pages as it needs, with margins, a footer and page numbers drawn for you. Use it only for long running text, after a designed page.
 - ${kind.pages ? `This document is exactly ${kind.pages} ${kind.pages === 1 ? 'page' : 'pages'}: ${kind.pages} section class="page", no flow section.` : kind.flow ? 'Its shape is fixed: (1) a designed cover, one section class="page"; (2) if it helps, one designed summary page (no more), a section class="page" (your words from the blocks: the key figures, the ask or decision, the why in a few lines); (3) then one section class="flow" (only one) holding every block in order, b1 to the last, each once as an empty <nv-block ref>. Between blocks inside the flow you may add a part (a callout, a figures band, a panel). No designed pages after the flow. Give the flow its look with CSS of your own scoped to section.flow (its h2, h3, tables, lists, quotes), so the whole reads as one designed document.' : 'Use as many pages as the content needs.'}
 - Lay pages out with CSS grid and flexbox. Measure in mm and pt (never px, vw or vh). Put your CSS in one <style> element and in style attributes.
-- A page is a column (display:flex;flex-direction:column) unless you set otherwise; class="fill" on a child takes the height left, so a page ends where it should. A footer of class="nv-foot" sits at the foot of the page by itself.${kind.id === 'slides' ? ' On a slide the content is centred top to bottom by itself: never leave it stuck at the top with the space below empty.' : ''}
+- A page is a column (display:flex;flex-direction:column) unless you set otherwise; class="fill" on a child takes the height left, so a page ends where it should. A footer of class="nv-foot" sits at the foot of the page by itself.${kind.id === 'slides' ? ' A slide without a fill area is centred top to bottom by itself: never leave its content stuck at the top with the space below empty.' : ''}
 - <nv-page-number></nv-page-number> prints "n of N" where you put it.
 
 The parts (already styled in the brand: build with these first, and write CSS of your own only for what they don't cover; never restyle a part's insides — its numbers, figures, bars and labels — only place and size it):
@@ -321,10 +337,12 @@ Make it remarkable (the person should be proud to send it):
 - Moves that work on paper: a confident cover with a huge title and generous, deliberate space; one hero number set enormous; an asymmetric grid (8 + 4, 7 + 5); a full-bleed band of the brand colour; a pull quote; a chart that tells the story at a glance, with its caption; a closing page that says what happens next.
 - Contrast is the tool: very big against small, brand colour against paper, dense detail against open space. Restraint keeps it premium: one accent doing most of the work, one panel style per page.
 
-Design well:
+${kind.id === 'slides' ? `${slidesDirection(theme)}
+
+` : ''}Design well:
 - ${kind.brief}
 - Start from a frame below and make it yours for this content, built from the parts. Keep the side margins (var(--sp-7)) and the spacing rhythm.
-- One dominant element per page, then headings, then text. Body text var(--fs-1) with line-height 1.45; nothing smaller than var(--fs-0).
+- One dominant element per page, then headings, then text. ${kind.id === 'slides' ? 'On a slide the main words are var(--fs-3) or var(--fs-4), supporting words var(--fs-2), nothing smaller than var(--fs-1) but the footer.' : 'Body text var(--fs-1) with line-height 1.45; nothing smaller than var(--fs-0).'}
 - The brand colour with intent: a band, a panel, a rule, a big number. Mostly paper and ink; never a page of solid colour behind long text.
 - Fill each page well: nothing past an edge, and no large empty area anywhere on it (a gap in the middle or an empty lower fifth looks unfinished, the last page excepted). A designed page holds about 350 words at body size: past that, cut, or move the rest to a flow section.
 - Fill a page with scale, never with spreading: when there is room, make the title, the hero number or the chart bigger, or add a figure band. Never push sections apart with justify-content:space-between (or space-around, or flex-grow on spacers) down a page: it strands them with holes between. Sections keep the system's gaps, and any room left over sits in one deliberate place (a band of the brand colour at the foot, or the hero made larger).
@@ -342,7 +360,7 @@ ${DESIGN_EXEMPLARS[kind.shape]}
 Before you reply, check your design silently against this list and fix anything that fails, so the first version is the finished one:
 - The logo (or the business name) is on the first page; every page but a cover or title slide has the small footer.
 - Each page has one dominant element, then a clear path for the eye; nothing competes with it.
-- Words fit: a designed page holds about 350 words at body size (a slide about 40); nothing runs past an edge or under the footer; no page is left mostly empty.
+- Words fit: a designed page holds about 350 words at body size (a slide about 40); nothing runs past an edge or under the footer; no page is left mostly empty.${kind.id === 'slides' ? '\n- Slides: the head (kicker and headline) in the same place on every content slide; the body filling its area with no hole between the headline and the content; no text below var(--fs-1) but the footer; no two slides in a row with the same structure; no paragraph set large.' : ''}
 - Spacing follows the system: sections var(--sp-6) apart, headings close to their own content, gap (not stacked margins) inside flex and grid; no space-between spreading sections down a page; edges line up; body text no wider than about 130 mm.
 - Only tokens and parts: no hex colour, no px, no font name, no side-stripe card, no panel inside a panel.
 - Every number, date, name and claim is from the note; nothing is decided or promised that the note doesn't say.
@@ -581,6 +599,34 @@ export interface DesignPageInput {
 
 const fontFace = (family: string, url: string | undefined, style = 'normal') => (url ? `@font-face{font-family:"${family}";src:url("${url.replace(/["\\]/g, '')}") format("woff2");font-weight:100 900;font-style:${style}}` : '');
 
+/** A slide is read from across a room, and taken in at a glance: its parts set at slide size, not paper size (a bar
+ *  chart's 8pt labels, a 9pt table and a 10pt caption read as tiny on a 16:9 slide, the most common mark lost on decks).
+ *  Under :where() so they weigh no more than the parts' own rules, and a design's own CSS still wins. */
+const SLIDE_CSS = `section.page{justify-content:center;font-size:var(--fs-2);line-height:1.4}
+section.page>.nv-foot{position:absolute;left:16mm;right:16mm;bottom:5mm;margin:0;font-size:var(--fs-0)}
+:where(section.page) .kicker{font-size:var(--fs-1)}
+:where(section.page) .lead{font-size:var(--fs-3);line-height:1.4;max-width:220mm}
+:where(section.page) h3{font-size:var(--fs-3)}
+:where(section.page) table{font-size:var(--fs-2)}
+:where(section.page) th,:where(section.page) td{padding:2.2mm 3.2mm}
+:where(section.page) .caption{font-size:var(--fs-2)}
+:where(section.page) .figures{gap:var(--sp-6);align-items:start}
+:where(section.page) .figures b{font-size:var(--fs-8)}
+:where(section.page) .figures span{font-size:var(--fs-2);line-height:1.35;letter-spacing:0;text-transform:none}
+:where(section.page .figures:not(.on-accent):not(.on-dark):not(.quiet))>div{border-top:0.6mm solid var(--accent);padding-top:var(--sp-3)}
+:where(section.page .figures)>div.key{border-top-color:var(--highlight)}
+:where(section.page) .stat span{font-size:var(--fs-3)}
+:where(section.page) .bars{gap:var(--sp-3)}
+:where(section.page) .bar{grid-template-columns:64mm 1fr auto;gap:var(--sp-4);font-size:var(--fs-2);line-height:1.25}
+:where(section.page) .bar::after{height:1.8em;border-radius:1.5mm}
+:where(section.page) .bar>b{font-family:var(--font-head);font-size:var(--fs-3)}
+:where(section.page) ol.steps>li{font-size:var(--fs-3);line-height:1.35;padding-left:13mm;min-height:9mm;margin-bottom:var(--sp-4)}
+:where(section.page) ol.steps>li::before{width:9mm;height:9mm;font:700 var(--fs-2)/9mm var(--font-head)}
+:where(section.page) .chips>span{font-size:var(--fs-1);padding:1.2mm 3.6mm}
+:where(section.page) .panel{padding:var(--sp-5)}
+:where(section.page) .callout{font-size:var(--fs-4)}
+:where(section.page) .pull{font-size:var(--fs-6);max-width:230mm}`;
+
 function baseCss(d: DesignPageInput): string {
   const { w, h } = d.kind.page;
   return `${fontFace('Inter', d.fonts?.sans)}${fontFace('Inter', d.fonts?.sansItalic, 'italic')}${fontFace('Source Serif 4', d.fonts?.serif)}
@@ -596,7 +642,6 @@ section.page{width:${w}mm;height:${h}mm;position:relative;overflow:hidden;backgr
 section.page>*{flex:none}
 section.page>.fill,.fill{flex:1 1 auto;min-height:0}
 section.page>.nv-foot{margin-top:auto}
-${d.kind.id === 'slides' ? 'section.page{justify-content:center}section.page>.nv-foot{position:absolute;left:16mm;right:16mm;bottom:5mm;margin:0}' : ''}
 section.flow{page:flow;width:${w}mm;background:var(--paper);padding:16mm 16mm 18mm;break-after:page}
 section.flow .panel,section.flow .callout,section.flow .figures,section.flow figure,section.flow .bars,section.flow ol.steps>li{break-inside:avoid}
 /* Every printed page is the page's full width: a flow page's side margins are its own padding, never the page's
@@ -671,6 +716,7 @@ ol.steps>li::before{content:counter(st);position:absolute;left:0;top:-.4mm;width
 .bars{display:flex;flex-direction:column;gap:var(--sp-2)}
 .bar{display:grid;grid-template-columns:34mm 1fr auto;align-items:center;gap:var(--sp-2);font-size:var(--fs-0)}
 .bar::after{content:"";grid-column:2;grid-row:1;height:4mm;border-radius:1mm;background:linear-gradient(90deg,var(--accent) calc(var(--v,0)*100%),var(--accent-1) 0)}
+.bar.hi::after{background:linear-gradient(90deg,var(--highlight) calc(var(--v,0)*100%),var(--accent-1) 0)}
 .bar>span{grid-column:1;grid-row:1;color:var(--ink)}.bar>b{grid-column:3;grid-row:1;font-variant-numeric:tabular-nums}
 .chips{display:flex;flex-wrap:wrap;gap:var(--sp-1)}.chips>span{background:var(--accent-1);color:var(--accent-strong);border-radius:99mm;padding:.8mm 3mm;font-size:var(--fs-0);font-weight:600}
 .nv-b>:first-child{margin-top:0}.nv-b>:last-child{margin-bottom:0}
@@ -680,6 +726,7 @@ nv-logo,.nv-logo{display:inline-block}
 .nv-logo-name{font-family:var(--font-head);font-weight:700;font-size:var(--fs-3)}
 .nv-rest h2:first-child{margin-top:0}
 svg{max-width:100%;overflow:visible}
+${d.kind.id === 'slides' ? SLIDE_CSS : ''}
 `;
 }
 
@@ -753,6 +800,48 @@ function words(el){return (el.textContent||'').replace(/\s+/g,' ').trim().slice(
 /** Whether an element holds words of its own (a text node of its own, not only in its children). */
 function ownText(el){for(var c=el.firstChild;c;c=c.nextSibling)if(c.nodeType===3&&c.textContent.trim())return true;return false;}
 /** A big number never wraps: one too wide for its box is set smaller until it fits (to 10pt at the least). */
+/**
+ * A content slide whose body leaves the room under its headline mostly empty is set larger to fill it (23 Nov 2026: a
+ * chart or a few figures centred in a band of white under the headline read as stranded, the axis decks lost most on).
+ * The body's own type and spacing tokens are made larger, so every size is a real one (the PowerPoint file reads the
+ * same sizes and boxes as the picture): at most 1.35 times, no words past the headline's size (a hero number already
+ * past it keeps its own), nothing past the footer or the page's edge, no word broken and no column squeezed. Title,
+ * cover and closing slides keep theirs.
+ */
+function grow(){
+  if(!D.grow)return;
+  var secs=Array.prototype.slice.call(root.children).filter(function(x){return x.classList.contains('page');});
+  secs.forEach(function(sec,si){
+    if(si===0||si===secs.length-1||sec.querySelector('.display'))return;
+    var body=null;for(var c=sec.firstElementChild;c;c=c.nextElementSibling)if(c.classList.contains('fill')&&!c.classList.contains('nv-foot')){body=c;break;}
+    if(!body)return;
+    var head=null;for(var p=body.previousElementSibling;p&&!head;p=p.previousElementSibling)head=p.matches('h1,h2,h3')?p:p.querySelector('h1,h2,h3');
+    if(!head)return;
+    var headSize=parseFloat(getComputedStyle(head).fontSize);
+    var foot=sec.querySelector('.nv-foot');
+    var parts=Array.prototype.slice.call(body.querySelectorAll('*'));
+    function extent(){var e={top:1e9,bottom:-1e9,right:-1e9};parts.forEach(function(x){if(x.closest('svg')&&x.localName!=='svg')return;var q=x.getBoundingClientRect();if(!q.width||!q.height)return;var cs=getComputedStyle(x);if(cs.display==='none'||cs.visibility==='hidden')return;var painted=cs.backgroundColor&&cs.backgroundColor!=='rgba(0, 0, 0, 0)'&&cs.backgroundColor!=='transparent';var bt=parseFloat(cs.borderTopWidth)||0,bb=parseFloat(cs.borderBottomWidth)||0;
+      // A box seen only by its rules (a stretched column with a line on top) reaches only as far as its rules.
+      var top=q.top,bottom=q.bottom;if(!(painted||x.localName==='svg'||(ownText(x)&&words(x)))){if(!bt&&!bb)return;top=bt?q.top:q.bottom-bb;bottom=bb?q.bottom:q.top+bt;}
+      e.top=Math.min(e.top,top);e.bottom=Math.max(e.bottom,bottom);if(!x.closest('.figures b,.stat b'))e.right=Math.max(e.right,q.right);});return e;}
+    function room(){var b=body.getBoundingClientRect(),bottom=b.bottom;if(foot)bottom=Math.min(bottom,foot.getBoundingClientRect().top-2*MM);return {top:b.top,bottom:bottom};}
+    var r0=room(),e0=extent();
+    if(e0.bottom<e0.top||(e0.bottom-e0.top)/(r0.bottom-r0.top)>=0.9)return;
+    // Sizes in points: a size at the headline's or above (a hero number) keeps it; any other grows to the headline's at most.
+    var headPt=headSize*0.75;
+    var base=parseFloat(getComputedStyle(body).fontSize);
+    var edge=Math.max(e0.right,sec.getBoundingClientRect().right-16*MM)+1;
+    function set(f){D.grow.fs.forEach(function(v,i){body.style.setProperty('--fs-'+i,(v>=headPt?v:Math.min(v*f,headPt)).toFixed(2)+'pt');});D.grow.sp.forEach(function(v,i){body.style.setProperty('--sp-'+(i+1),(v*f).toFixed(2)+'mm');});body.style.fontSize=(base>=headSize?base:Math.min(base*f,headSize)).toFixed(2)+'px';}
+    function unset(){D.grow.fs.forEach(function(v,i){body.style.removeProperty('--fs-'+i);});D.grow.sp.forEach(function(v,i){body.style.removeProperty('--sp-'+(i+1));});body.style.removeProperty('font-size');}
+    function fits(){var r=room(),e=extent();if(e.top<r.top-1||e.bottom>r.bottom+1||e.right>edge)return false;
+      for(var i=0;i<parts.length;i++){var x=parts[i];if(!ownText(x)||!words(x)||x.closest('svg,.figures b,.stat b'))continue;var q=x.getBoundingClientRect(),z=parseFloat(getComputedStyle(x).fontSize),tx=(x.textContent||'').trim();
+        if(tx.length>40&&q.height>z*4&&q.width/(z*0.5)<NARROW+2)return false;
+        if(tx.length>1&&!/\s/.test(tx)){var rg=document.createRange();rg.selectNodeContents(x);var tops={};Array.prototype.slice.call(rg.getClientRects()).forEach(function(l){if(l.width>0)tops[Math.round(l.top)]=1;});if(Object.keys(tops).length>1)return false;}}
+      return true;}
+    for(var f=1.35;f>=1.05;f-=0.05){set(f);if(fits())return;}
+    unset();
+  });
+}
 function fitFigures(){Array.prototype.slice.call(root.querySelectorAll('.figures b, .stat b')).forEach(function(b){var size=parseFloat(getComputedStyle(b).fontSize);var room=b.parentElement?b.parentElement.clientWidth:0;for(var i=0;i<30&&room>0&&b.scrollWidth>room+1&&size>13.3;i++){size*=0.92;b.style.fontSize=size+'px';}});}
 function rgba(c){var m=/rgba?\(([^)]+)\)/.exec(c||'');if(!m)return null;var p=m[1].split(/[ ,\/]+/).filter(Boolean).map(Number);return {r:p[0],g:p[1],b:p[2],a:p.length>3?p[3]:1};}
 function lum(c){var f=function(v){v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);};return 0.2126*f(c.r)+0.7152*f(c.g)+0.0722*f(c.b);}
@@ -760,6 +849,9 @@ function ratio(a,b){var x=lum(a),y=lum(b);return (Math.max(x,y)+0.05)/(Math.min(
 /** The colour behind an element: the nearest box painted with a solid colour, else the paper (null over a picture or gradient). */
 function behind(el){for(var e=el;e&&e.nodeType===1;e=e.parentElement){var cs=getComputedStyle(e);if(cs.backgroundImage&&cs.backgroundImage!=='none')return null;var c=rgba(cs.backgroundColor);if(c&&c.a>0.5)return c;}return {r:255,g:255,b:255,a:1};}
 var INK={r:16,g:24,b:32,a:1},WHITE={r:255,g:255,b:255,a:1};
+/** Characters a line below which a column reads as squeezed: a slide's few large words read well at fewer (a timeline's
+ *  four columns of 15pt type, about 20 a line), so it is said there only when the column is truly narrow. */
+var NARROW=D.page.w>D.page.h?15:22;
 /** Each logo is the one made for what is behind it (the AI asked for one; the colour decides). */
 function pickLogos(){var waits=[];Array.prototype.slice.call(root.querySelectorAll('img.nv-logo')).forEach(function(img){var bg=behind(img.parentElement);if(!bg)return;var dark=lum(bg)<0.35;var want=dark?(D.logos.onDark||''):(D.logos.primary||'');if(want&&img.getAttribute('src')!==want){img.src=want;if(img.decode)waits.push(img.decode().catch(function(){}));}});return Promise.all(waits);}
 /** Words that don't read on their background are set in ink or white, whichever reads, and named. */
@@ -782,7 +874,7 @@ function measure(pass){
         if(painted||((e.children.length===0||ownText(e))&&(words(e)||e.localName==='img'))||e.tagName.toLowerCase()==='svg'||cs.borderLeftWidth!=='0px'&&parseFloat(cs.borderLeftWidth)>2)spans.push([Math.max(q.top,r.top)-r.top,Math.min(q.bottom,r.bottom)-r.top]);
         // Words squeezed into a column too narrow for them (a few letters a line).
         // Counted in characters a line (about half the type size each), so a short item in a squeezed column counts too.
-        if(ownText(e)&&q.width>0&&(e.textContent||'').trim().length>40){const per=q.width/(parseFloat(cs.fontSize)*0.5);if((q.width<24*MM||per<22)&&q.height>parseFloat(cs.fontSize)*4)problems.push({page:n,kind:'narrow',words:'words squeezed into a column '+Math.round(q.width/MM)+' mm wide, about '+Math.round(per)+' characters a line ("'+words(e)+'"): give it room (35 or more a line)'});}
+        if(ownText(e)&&q.width>0&&(e.textContent||'').trim().length>40){const per=q.width/(parseFloat(cs.fontSize)*0.5);if((q.width<24*MM||per<NARROW)&&q.height>parseFloat(cs.fontSize)*4)problems.push({page:n,kind:'narrow',words:'words squeezed into a column '+Math.round(q.width/MM)+' mm wide, about '+Math.round(per)+' characters a line ("'+words(e)+'"): give it room (35 or more a line)'});}
         // Words that spill out of their column (a figure set nowrap in a squeezed grid), or a number or single word
         // broken across lines ("41,00" then "0"): both read as broken, on paper and in PowerPoint.
         if(ownText(e)&&words(e)&&spillSaid<3){var rg=document.createRange();rg.selectNodeContents(e);var lr=Array.prototype.slice.call(rg.getClientRects()).filter(function(x){return x.width>0&&x.height>0;});
@@ -794,7 +886,7 @@ function measure(pass){
       var boxesP=[],texts=[];
       for(var o=0;o<all.length;o++){var oe=all[o];if(oe.closest('svg'))continue;var ocs=getComputedStyle(oe);var oq=oe.getBoundingClientRect();if(!oq.width||!oq.height)continue;var pc=ocs.backgroundColor&&ocs.backgroundColor!=='rgba(0, 0, 0, 0)'&&ocs.backgroundColor!=='transparent';if(pc||oe.localName==='img')boxesP.push([oe,oq]);if(ownText(oe)&&words(oe))texts.push([oe,oq]);}
       var overlapSaid=0;
-      for(var ti=0;ti<texts.length&&overlapSaid<3;ti++){var te=texts[ti][0],tq=texts[ti][1];
+      for(var ti=0;ti<texts.length&&overlapSaid<3;ti++){var te=texts[ti][0],tq=texts[ti][1];if(te.closest('.nv-foot'))continue;
         for(var bi=0;bi<boxesP.length;bi++){var be=boxesP[bi][0],bq=boxesP[bi][1];if(be===te||be.contains(te)||te.contains(be))continue;
           var ix=Math.min(tq.right,bq.right)-Math.max(tq.left,bq.left),iy=Math.min(tq.bottom,bq.bottom)-Math.max(tq.top,bq.top);
           if(ix>2*MM&&iy>2*MM&&ix*iy>0.15*tq.width*tq.height){problems.push({page:n,kind:'overlap',words:'words run into another box ("'+words(te)+'" over '+(be.localName==='img'?'a picture':'a coloured '+be.tagName.toLowerCase())+'): move one so they don\'t touch'});overlapSaid++;break;}
@@ -804,6 +896,9 @@ function measure(pass){
       var foot=sec.querySelector('.nv-foot');
       var under=null,low=0,fr=null;
       if(foot){fr=foot.getBoundingClientRect();for(var u=0;u<all.length;u++){var ue=all[u];if(foot.contains(ue)||ue.contains(foot)||ue.children.length||!words(ue))continue;var uq=ue.getBoundingClientRect();if(uq.right>fr.left&&uq.left<fr.right&&uq.top<fr.bottom-1)low=Math.max(low,uq.bottom);if(!under&&uq.bottom>fr.top+1&&uq.top<fr.bottom-1&&uq.right>fr.left&&uq.left<fr.right)under=ue;}
+        // A panel or band that ends on the footer (not one running on to the page's foot, behind it by design): too
+        // much in it for the page, said as one and fitted like words under the footer.
+        for(var pb=0;pb<boxesP.length;pb++){var pe=boxesP[pb][0],pq=boxesP[pb][1];if(pe.contains(foot)||foot.contains(pe))continue;if(pq.bottom>fr.top+1&&pq.top<fr.top&&pq.bottom<r.bottom-MM&&pq.right>fr.left&&pq.left<fr.right){low=Math.max(low,pq.bottom);if(!under)under=pe;}}
         if(under)problems.push({page:n,kind:'over',words:'content runs under the footer ("'+words(under)+'"): leave the footer its own room at the foot of the page',shrink:Math.round((1-(fr.top-2*MM-r.top)/(low-r.top))*100)});}
       // Too much for the page: on the last look it is fitted (the type made smaller, no more than to 72%), else said. The
       // room is down to the footer's top when there is one, so the fitted page never lands its last lines on the footer.
@@ -833,11 +928,11 @@ function measure(pass){
   var seen={},out=[];problems.forEach(function(p){var k=p.page+p.kind+p.words;if(!seen[k]){seen[k]=1;out.push(p);}});
   window.__report={pages:pages,moved:0,split:0,cut:[],problems:out.slice(0,30),unused:D.keepAll?unused.filter(function(ref){return Number(ref.slice(1))<=D.asked;}):[],boxes:boxes};
 }
-settle().then(pickLogos).then(fitFigures).then(function(){requestAnimationFrame(function(){requestAnimationFrame(function(){measure(0);});});});
+settle().then(pickLogos).then(grow).then(fitFigures).then(function(){requestAnimationFrame(function(){requestAnimationFrame(function(){measure(0);});});});
 })();`;
 
 export function designPage(d: DesignPageInput): string {
-  const data = { layout: d.layout, blocks: d.blocks, logos: d.logos, brand: d.brandName, keepAll: d.keepAll, page: d.kind.page, asked: d.asked ?? d.blocks.length, fit: d.fit === true };
+  const data = { layout: d.layout, blocks: d.blocks, logos: d.logos, brand: d.brandName, keepAll: d.keepAll, page: d.kind.page, asked: d.asked ?? d.blocks.length, fit: d.fit === true, ...(d.kind.id === 'slides' ? { grow: { fs: TYPE_SCALE, sp: SPACE_SCALE } } : {}) };
   const nonce = d.nonce.replace(/[^\w-]/g, '');
   const csp = `default-src 'none'; img-src file: data:; font-src file: data:; style-src 'unsafe-inline'; script-src 'nonce-${nonce}'; base-uri 'none'; form-action 'none'`;
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="${csp}"><title>${esc(d.title)}</title><style>${baseCss(d)}</style></head><body><div id="doc"></div><script type="application/json" id="nv-data">${JSON.stringify(data).replace(/</g, '\\u003c')}</script><script nonce="${nonce}">${DESIGN_JS}</script></body></html>`;
