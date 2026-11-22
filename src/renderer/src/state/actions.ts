@@ -423,7 +423,7 @@ export async function newDrawing(folder?: string, where: W.Where = 'tab'): Promi
  *  showing it comes forward when there is one. A file that is in the vault opens as its note. */
 export function openLoose(opened: { kind: 'loose'; file: { path: string } } | { kind: 'vault'; rel: string }, where: W.Where = 'tab'): void {
   if (opened.kind === 'vault') return openPath(opened.rel, { where, reuse: true });
-  const existing = W.revealExisting(getWorkspace(), opened.file.path);
+  const existing = W.revealExisting(getWorkspace(), opened.file.path, 'loose');
   if (existing) return setWorkspace(existing);
   setWorkspace((ws) => W.open(ws, { type: 'loose', path: opened.file.path }, W.activeTab(ws).type === 'empty' ? 'current' : where));
 }

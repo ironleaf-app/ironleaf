@@ -273,13 +273,15 @@ export function open(ws: Workspace, place: Place, where: Where = 'current', mode
 }
 
 /** Focuses a tab that already shows this file, anywhere; false when none does. */
-export function revealExisting(ws: Workspace, path: string): Workspace | null {
+export function revealExisting(ws: Workspace, path: string, type: ViewType = typeOf(path)): Workspace | null {
   // Tabs off: the tab comes into the one pane, never into a narrow split left beside it (ITEMS 2).
   if (!tabsShown) ws = onePane(ws);
   for (const group of groups(ws.root)) {
     // Only a tab that shows that file itself (8.0.1, 29 Oct 2026): the Graph centred on a project carries the project's
     // path too, and Open came back to the Graph instead of opening the project.
-    const tab = group.tabs.find((t) => t.path === path && t.type === typeOf(path));
+    // A file from outside the vault is its own type (22 Nov 2026: a .md outside read as a note here, never matched its
+    // loose tab, and every open of it made another tab).
+    const tab = group.tabs.find((t) => t.path === path && t.type === type);
     if (tab) {
       // Back to an open tab (state/pageScroll.ts): it restores where the person was.
       armRestore(tab.id);
@@ -550,6 +552,9 @@ export function withoutPrivate(ws: Workspace): Workspace {
 function foldDuplicateTabs(ws: Workspace): Workspace {
   const all = groups(ws.root);
   const keyOf = (t: TabState): string | null => {
+    // A file from outside the vault shows once (22 Nov 2026: a loop opened one file in hundreds of tabs, and they all
+    // came back on every start): its tabs fold to one, by its path in any case.
+    if (t.type === 'loose' && typeof t.path === 'string' && t.path) return `loose\n${t.path.replace(/\\/g, '/').toLowerCase()}`;
     const tg = tabTarget(t);
     return tg ? `${tg.place ?? ''}\n${tg.folder ?? ''}\n${tg.note ?? ''}` : null;
   };
