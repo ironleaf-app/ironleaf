@@ -6,6 +6,11 @@ the website. `tools/release.mjs` takes a release's notes from here when `--notes
 
 Format: one `## <version> — <YYYY-MM-DD>` heading a release, then one `- ` line a change.
 
+## 2.0.12 — 2026-11-22
+
+- Opening a Markdown file from outside the vault no longer opens it in tab after tab, and a window that had piled up those tabs opens cleanly again.
+- New: Design with AI. Turn a note into a finished report, one-pager, proposal, handout, poster or slide deck in your brand kit, saved as a PDF. Your own AI lays out the pages, Ironleaf prints and checks every page, and you can ask for changes in plain words. The note itself is never changed.
+
 ## 2.0.11 — 2026-11-21
 
 - AI replies can no longer be broken by a doubly patched model library (the build's patch step now patches once, whatever state it finds).
