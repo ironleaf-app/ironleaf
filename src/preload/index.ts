@@ -7,7 +7,7 @@ import { managedApi } from './managed';
 import { accountApi } from './account';
 import type { DocConvertResult, ProjectConversation, PrivateEntry, PrivateStatus, ProjectCard, FolderProjectOffer, ProjectEditResult, ProjectFiles, ProjectFileText, ProjectView, FolderHereResult, TidyPreview, TidyResult } from '../shared/types';
 import type { Project, ProjectEdit } from '../shared/project-file';
-import type { DesignStartIn, DesignViewOut } from '../shared/design-doc';
+import type { DesignFormat, DesignStartIn, DesignViewOut } from '../shared/design-doc';
 import type { ProjectCheckState } from '../shared/project-checks';
 import type { ProjectChange } from '../shared/project-hub';
 import type { TodayData, TodayFileInput } from '../shared/today';
@@ -220,8 +220,9 @@ const api = {
     start: (requestId: string, input: DesignStartIn) => invoke<DesignViewOut>('design:start', requestId, input),
     change: (requestId: string, id: string, words: string) => invoke<DesignViewOut>('design:change', requestId, id, words),
     cancel: (requestId: string) => invoke<void>('design:cancel', requestId),
-    /** The design printed and saved where the person picks: the file, or null when they cancelled. */
-    save: (id: string, name: string) => invoke<string | null>('design:save', id, name),
+    /** The design saved where the person picks, as a PDF, PowerPoint, Word or Excel file: the file, or null when they
+     *  cancelled. */
+    save: (id: string, name: string, format: DesignFormat = 'pdf') => invoke<string | null>('design:save', id, name, format),
     /** Whether the chat's model is set up, and sees pictures. */
     ready: () => invoke<{ model: string | null; pictures: boolean }>('design:ready'),
   },

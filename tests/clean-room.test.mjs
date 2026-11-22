@@ -21,7 +21,8 @@ test('every asset is listed in ASSETS.md', () => {
 
 test('bundled packages carry allowed licences', () => {
   const pkg = JSON.parse(read('package.json'));
-  const allowed = /^(MIT|ISC|BSD-2-Clause|BSD-3-Clause|Apache-2\.0|0BSD|OFL-1\.1|\(MPL-2\.0 OR Apache-2\.0\)|Unlicense)$/;
+  // A choice of licences is taken under its permissive one: JSZip is (MIT OR GPL-3.0-or-later), used under MIT.
+  const allowed = /^(MIT|ISC|BSD-2-Clause|BSD-3-Clause|Apache-2\.0|0BSD|OFL-1\.1|\(MPL-2\.0 OR Apache-2\.0\)|\(MIT OR GPL-3\.0-or-later\)|Unlicense)$/;
   const names = [...Object.keys(pkg.dependencies ?? {}), ...Object.keys(pkg.devDependencies ?? {})];
   const bad = [];
   for (const name of names) {

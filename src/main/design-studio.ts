@@ -10,7 +10,10 @@
 import { randomBytes } from 'node:crypto';
 import type { BrandKit } from '../shared/assets';
 import type { BrandContent } from '../shared/brand-document';
-import { blocksShown, designAsk, designJudgeOnly, designRewrite, readScores, designChange, designPage, designSystem, designTheme, kindInfo, readDesign, type DesignKind, type DesignKindInfo, type DesignReport, type DesignTheme, type DesignViewOut } from '../shared/design-doc';
+import { blocksShown, designAsk, designJudgeOnly, designRewrite, readScores, designChange, designPage, designSystem, designTheme, officeTheme, kindInfo, readDesign, DESIGN_FORMATS, type DesignFormat, type DesignKind, type DesignKindInfo, type DesignReport, type DesignTheme, type DesignViewOut } from '../shared/design-doc';
+import { designDocx } from './design-export/docx';
+import { designPptx } from './design-export/pptx';
+import { designXlsx, hasSheetContent } from './design-export/xlsx';
 import type { BrandPrinter } from './brand-print';
 import type { ChatMessageIn, StreamResult } from './providers/types';
 
@@ -21,7 +24,7 @@ export interface DesignStudioDeps {
   seesPictures(): boolean;
   /** Score the finished pages on Astryx's five axes (one more turn with the pages shown; trials and tests). */
   judge?: boolean;
-  printer: Pick<BrandPrinter, 'pdf' | 'look'>;
+  printer: Pick<BrandPrinter, 'pdf' | 'look' | 'slides'>;
   /** The app's own type (Inter, Source Serif) by file address. */
   fonts(): Promise<{ sans?: string; sansItalic?: string; serif?: string }>;
   log?(m: string): void;
@@ -91,8 +94,8 @@ export class DesignStudio {
     return result.text;
   }
 
-  private async page(d: Design, layout: string, fit = false): Promise<string> {
-    return designPage({ fit, kind: d.kind, theme: d.theme, title: d.input.content.title, layout, blocks: d.input.content.blocks, logos: d.input.logos, brandName: d.input.brandName, foot: d.input.content.foot, fonts: await this.deps.fonts(), keepAll: d.kind.words === 'keep', asked: blocksShown(d.input.content), nonce: randomBytes(12).toString('base64url') });
+  private async page(d: Design, layout: string, fit = false, theme: DesignTheme = d.theme): Promise<string> {
+    return designPage({ fit, kind: d.kind, theme, title: d.input.content.title, layout, blocks: d.input.content.blocks, logos: d.input.logos, brandName: d.input.brandName, foot: d.input.content.foot, fonts: await this.deps.fonts(), keepAll: d.kind.words === 'keep', asked: blocksShown(d.input.content), nonce: randomBytes(12).toString('base64url') });
   }
 
   private async look(d: Design, fit = false): Promise<void> {
@@ -176,7 +179,44 @@ export class DesignStudio {
       problems: (d.report?.problems ?? []).filter((p) => p.kind !== 'small' && p.kind !== 'contrast').map((p) => (p.page ? `Page ${p.page}: ${p.words}` : p.words)),
       rounds: d.rounds,
       ...(d.score ? { score: d.score } : {}),
+      formats: this.formats(d),
     };
+  }
+
+  /** What this design saves as: PDF always; slides as PowerPoint, any other kind as Word; and Excel when the note has
+   *  tables or key figures to work with. */
+  private formats(d: Design): DesignFormat[] {
+    const out: DesignFormat[] = ['pdf', d.kind.id === 'slides' ? 'pptx' : 'docx'];
+    if (hasSheetContent(d.input.content)) out.push('xlsx');
+    return out;
+  }
+
+  /** The kit's logo as a PNG for Word and Excel, drawn by the sealed print window (an SVG logo too), or null. */
+  private async logoPng(d: Design): Promise<Buffer | null> {
+    const url = d.input.logos.primary || d.input.logos.onDark;
+    if (!url) return null;
+    const html = `<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#fff}img{display:block;max-width:900px;max-height:300px}</style></head><body><img src="${url.replace(/"/g, '%22')}" onload="window.__report={pages:1,moved:0,split:0,cut:[],problems:[],unused:[],boxes:[{x:0,y:0,w:this.width,h:this.height}]}" onerror="window.__report={pages:0,moved:0,split:0,cut:[],problems:[],unused:[],boxes:[]}"></body></html>`;
+    try {
+      const { shots } = await this.deps.printer.look(html, { width: 940, height: 340, max: 1, png: true });
+      return shots[0] ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  /** The design as a file in one of its formats: its bytes and the kind's name (for the file's name). */
+  async file(id: unknown, format: DesignFormat): Promise<{ data: Buffer; kind: DesignKindInfo }> {
+    const d = this.get(id);
+    if (!this.formats(d).includes(format)) throw new Error(`This design doesn't save as ${DESIGN_FORMATS[format].name}.`);
+    if (format === 'pptx') return { data: (await this.pptx(id)).pptx, kind: d.kind };
+    if (format === 'docx' || format === 'xlsx') {
+      const input = { content: d.input.content, theme: d.theme, kindName: d.kind.name, brandName: d.input.brandName, logo: await this.logoPng(d) };
+      if (format === 'docx') return { data: await designDocx(input), kind: d.kind };
+      const xlsx = await designXlsx(input);
+      if (!xlsx) throw new Error('This note has no tables or key figures to put in a spreadsheet.');
+      return { data: xlsx, kind: d.kind };
+    }
+    return { data: (await this.pdf(id)).pdf, kind: d.kind };
   }
 
   /** A new design of a note. */
@@ -228,5 +268,18 @@ export class DesignStudio {
     const d = this.get(id);
     const { pdf, laidOut } = await this.deps.printer.pdf(await this.page(d, d.layout, true));
     return { pdf, pages: laidOut.pages, title: d.input.content.title, kind: d.kind };
+  }
+
+  /** A designed deck as a PowerPoint file: each slide's picture without its words, the words on top as text boxes
+   *  (src/main/design-export/pptx.ts). Slides only: a page document goes to Word instead. */
+  async pptx(id: unknown): Promise<{ pptx: Buffer; slides: number; title: string }> {
+    const d = this.get(id);
+    if (d.kind.id !== 'slides') throw new Error('Only slides save as PowerPoint. Save this one as Word or PDF.');
+    const [w, h] = [d.kind.page.w, d.kind.page.h];
+    // Laid out in typefaces PowerPoint has, so the words wrap there as they do here.
+    const read = await this.deps.printer.slides(await this.page(d, d.layout, true, officeTheme(d.theme)), { width: w * PX + 40, height: h * PX + 4 });
+    if (!read.length) throw new Error('The slides could not be read back. Try again.');
+    const pptx = await designPptx({ slides: read, title: d.input.content.title, author: d.input.brandName || undefined });
+    return { pptx, slides: read.length, title: d.input.content.title };
   }
 }
