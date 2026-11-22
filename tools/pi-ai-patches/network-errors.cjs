@@ -23,10 +23,22 @@ function networkReasonFromCause(error) {
     return null;
 }
 `;
+// What any earlier version of this patch put in (its comment named NeuralSpark, NeuralVault or Ironleaf, its helper
+// neuralSparkNetworkReason or networkReasonFromCause). A copy patched under the old name and then again under the new
+// one held both, declared `network` twice and failed to load, so every model call failed: such a copy is taken back to
+// pi-ai's own code first, then patched once.
+const OLD_CALL=/\n    \/\/ (?:NeuralSpark|NeuralVault|Ironleaf)\b[^\n]*\n    const network = status === undefined \? (?:neuralSparkNetworkReason|networkReasonFromCause)\(error\) : null;\n    if \(network\) return \{ message: network, messageCarriesBody: true \};/g;
+const OLD_HELPER=/\n*\/\/ (?:NeuralSpark|NeuralVault|Ironleaf)\b[^\n]*\nfunction (?:neuralSparkNetworkReason|networkReasonFromCause)\(error\) \{\n[\s\S]*?\n    return null;\n\}\n/g;
+function unpatch(source){
+ return source.replace(OLD_CALL,'').replace(OLD_HELPER,'\n');
+}
 function patch(source){
- if(source.includes('networkReasonFromCause'))return source;
- if(source.split(BEFORE).length!==2)throw Error('pi-ai normalizeProviderError changed: check the network error wording before packaging.');
- return source.replace(BEFORE,()=>AFTER)+HELPER;
+ const calls=(source.match(/const network = status === undefined/g)||[]).length;
+ const helpers=(source.match(/\nfunction (?:neuralSparkNetworkReason|networkReasonFromCause)\(/g)||[]).length;
+ if(calls===1&&helpers===1&&source.includes('networkReasonFromCause(error)')&&!source.includes('neuralSparkNetworkReason'))return source;
+ const plain=calls||helpers?unpatch(source):source;
+ if(plain.split(BEFORE).length!==2||plain.includes('const network = status'))throw Error('pi-ai normalizeProviderError changed: check the network error wording before packaging.');
+ return plain.replace(BEFORE,()=>AFTER).replace(/\n*$/,'\n')+HELPER;
 }
 async function apply(resources){
  for(const rel of COPIES){
@@ -34,4 +46,4 @@ async function apply(resources){
   const next=patch(source);if(next!==source)await fs.writeFile(name,next);
  }
 }
-module.exports={patch,apply,BEFORE};
+module.exports={patch,unpatch,apply,BEFORE};
