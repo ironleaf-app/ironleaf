@@ -6,6 +6,12 @@ the website. `tools/release.mjs` takes a release's notes from here when `--notes
 
 Format: one `## <version> — <YYYY-MM-DD>` heading a release, then one `- ` line a change.
 
+## 2.0.14 — 2026-11-22
+
+- Design with AI is one click away: a Design button beside Share on every note, project and meeting.
+- Designs save as PowerPoint, Word and Excel as well as PDF. Slides become a PowerPoint deck that looks like the design, with every word still editable; reports, one-pagers, proposals, handouts and posters become a branded Word document; a note's tables and key figures become an Excel workbook whose totals are live formulas. Ask the chat for any of them too.
+- The design check also catches figures squeezed out of their columns and numbers broken across lines.
+
 ## 2.0.13 — 2026-11-22
 
 - Design with AI gets it right first time: one well-planned draft, with a further pass only when a page measures as broken, so a design is ready in about half the time on about half the AI tokens.
