@@ -70,10 +70,12 @@ test('a warm note open re-reads no words', { timeout: 300000 }, async () => {
   const { h, ev, sideClick, waitMain } = await boot();
   try {
     const openFirst = () => ev(`(() => { [...document.querySelectorAll('main .w2b-row')][0]?.click(); return 1; })()`);
+    // Since round 3 (20 Nov 2026) Notes shows the chosen row's note beside the list, read as soon as the list lands,
+    // so the cold read can come before the click; it is counted from before Notes opens (updated 23 Nov 2026).
+    await ev(`window.__nvCalls.length = 0`);
     assert.equal(await sideClick('Notes'), 'CLICKED', 'the sidebar reaches Notes');
     await waitMain(`m.querySelectorAll('.w2b-row').length > 0`);
     await sleep(600);
-    await ev(`window.__nvCalls.length = 0`);
     await openFirst();
     await waitMain(`!!m.querySelector('.cm-editor')`);
     await sleep(600);

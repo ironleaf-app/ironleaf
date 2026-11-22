@@ -296,11 +296,25 @@ test('a due date from Today opens Facts and flashes its row', { timeout: 300000 
 test('Overview has no scroll wide, and stays short narrow', { timeout: 300000 }, async () => {
   const h = await harness();
   await openProject(h);
+  // Layout round 3 (20 Nov 2026): from about 1800x900 the Overview shows every block whole and adds Notes and files,
+  // Waiting and Activity as panes under the blocks. Tall and wide enough (3456x1408) the panes fill the window to its
+  // foot and nothing scrolls; shorter (1920x1117) they stand a fixed height under the blocks and the page scrolls to
+  // them, by design. So at 1920 the ten-second read itself (the blocks) stays within one window and only the panes
+  // sit below it (23 Nov 2026).
   for (const [W, Hg] of [[3456, 1408], [1920, 1117]]) {
     await size(h, W, Hg);
     await openTab(h, 'overview');
-    const m = await h.browser.ev(`(() => { const sc = document.querySelector('.vscroll'); return { scroll: sc.scrollHeight, client: sc.clientHeight }; })()`);
-    assert.ok(m.scroll <= m.client + 2, `${W}: Overview never scrolls (${m.scroll} in ${m.client})`);
+    const m = await h.browser.ev(`(() => {
+      const sc = document.querySelector('.vscroll');
+      const ov = document.querySelector('[data-section="overview"] .pj-ov').getBoundingClientRect();
+      const more = document.querySelector('[data-section="overview"] .pj-ov-more')?.getBoundingClientRect();
+      return { scroll: sc.scrollHeight, client: sc.clientHeight, blocks: ov.height, panesTop: more ? more.top : null, blocksBottom: ov.bottom };
+    })()`);
+    if (W >= 2300) assert.ok(m.scroll <= m.client + 2, `${W}: Overview never scrolls (${m.scroll} in ${m.client})`);
+    else {
+      assert.ok(m.blocks <= m.client, `${W}: the Overview's blocks stand within one window (${Math.round(m.blocks)} in ${m.client})`);
+      assert.ok(m.scroll <= m.client + 2 || (m.panesTop !== null && m.panesTop >= m.blocksBottom), `${W}: only the panes under the blocks scroll into view (${m.scroll} in ${m.client})`);
+    }
     const blocks = await h.browser.ev(`[...document.querySelectorAll('[data-section="overview"] .pj-ov-block')].map((el) => el.getAttribute('aria-label')).join(',')`);
     assert.equal(blocks, 'Your next,Waiting on others,Key dates,Latest updates,Latest decisions,Open risks,People', `${W}: every block reads`);
   }
@@ -319,7 +333,9 @@ test('no column wider than about 400px stands empty', { timeout: 300000 }, async
   const scan = `(() => {
     const panel = [...document.querySelectorAll('[role="tabpanel"]')].find((el) => el.getClientRects().length > 0);
     const fr = panel.getBoundingClientRect();
-    const boxes = [...panel.querySelectorAll('.trow, .card, .pj-ov-block, .pj-folio-head, .pt-find, p.pj-faint, .pj-ov-names')]
+    // A drawn pane (.pj-ov-pane, round 3) is a bordered tile of the row's height: a short pane beside a long one
+    // reads as a tile, never a hole, so it counts as a box too (23 Nov 2026).
+    const boxes = [...panel.querySelectorAll('.trow, .card, .pj-ov-block, .pj-ov-pane, .pj-folio-head, .pt-find, p.pj-faint, .pj-ov-names')]
       .map((el) => el.getBoundingClientRect()).filter((r) => r.width > 4 && r.height > 4);
     let worst = 0;
     for (let y = fr.top + 20; y < fr.bottom - 10; y += 150) {

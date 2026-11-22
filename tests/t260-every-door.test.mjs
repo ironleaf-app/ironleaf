@@ -253,7 +253,11 @@ async function harness() {
       writeFileSync(projPath, proj.replace('## People', '## Documents\n\n- `Docs/Shop-floor guide.pdf` — Shop-floor guide\n\n## People'));
     }
     await H.services.rescanAll();
-    await H.services.invoke('health:put', ['appointments', { id: 'walk-visit-1', day: '2026-11-20', time: '09:30', who: 'Dr Lane', why: 'Knee check', status: 'booked', results: [] }]);
+    // Booked three days from the run's own today (23 Nov 2026: a fixed 2026-11-20 fell into the past, and Health lists
+    // only the visits coming up, so the row was gone).
+    const soon = new Date(Date.now() + 3 * 864e5);
+    const visitDay = `${soon.getFullYear()}-${String(soon.getMonth() + 1).padStart(2, '0')}-${String(soon.getDate()).padStart(2, '0')}`;
+    await H.services.invoke('health:put', ['appointments', { id: 'walk-visit-1', day: visitDay, time: '09:30', who: 'Dr Lane', why: 'Knee check', status: 'booked', results: [] }]);
     await H.browser.send('Page.navigate', { url: `${H.origin}/harness.html` });
     for (let i = 0; i < 120; i++) {
       await sleep(500);
@@ -837,7 +841,8 @@ const EXPECT = {
   'ocr-settings': 'general',
   packs: 'packs',
   'privacy-settings': 'privacy and secrets',
-  'ai-agents': 'agents',
+  // The section reads Connect an AI since 20 Nov 2026 (was AI agents).
+  'ai-agents': 'connect an ai',
   hotkeys: 'keyboard shortcuts',
   settings: ['settings', 'general'],
   'new-note': { marker: NOTE_MARKER },

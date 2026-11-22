@@ -75,8 +75,17 @@ test('the tree shows the person’s own folders, keeps its state, and scrolls in
     await sleep(1500);
     await key('Enter', 'Enter', 0);
     assert.ok(await waitFor(`!!document.querySelector('.sidebar.left .panel.explorer, .sidebar.left .nav-mode')`), 'the file list shows in the side bar');
-    // Folders mode: their own folders as a file tree.
-    await click(`[...document.querySelectorAll('.nav-mode-option')].find((b) => b.textContent.includes('Folders'))`);
+    // Folders mode: their own folders as a file tree. The side bar slides its panel in, so the switch is pressed once
+    // it stands still (23 Nov 2026: in a busy full run the press landed where it had been a moment before).
+    const FOLDERS = `[...document.querySelectorAll('.nav-mode-option')].find((b) => b.textContent.includes('Folders'))`;
+    let at = '';
+    for (let i = 0; i < 40; i++) {
+      const now = await ev(`(() => { const el = ${FOLDERS}; if (!el) return ''; const r = el.getBoundingClientRect(); return [r.left, r.top, r.width, r.height].map(Math.round).join(','); })()`);
+      if (now && now === at) break;
+      at = now;
+      await sleep(150);
+    }
+    await click(FOLDERS);
     assert.ok(await waitFor(`[...document.querySelectorAll('.nav-mode-option')].some((b) => b.textContent.includes('Folders') && b.className.includes(' on'))`), 'Folders mode switches on');
     const tops = await folders();
     for (const f of ['Business', 'Me', 'Bills']) assert.ok(tops.includes(f), `the person’s own ${f} folder shows with the packs off (saw: ${tops.join(', ')})`);

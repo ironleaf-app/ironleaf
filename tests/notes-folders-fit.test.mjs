@@ -114,6 +114,8 @@ test('live: every folder is one click away at three sizes with 8, 24 and 60 fold
         return {
           top: Math.round(r.top), bottom: Math.round(r.bottom),
           pos: cs.position, overflowY: cs.overflowY,
+          // App panes (panes.css, 20 Nov 2026): the rail is a pane as tall as the window beside the list.
+          panes: !!nav.parentElement?.hasAttribute('data-has-panes'),
           scrollH: nav.scrollHeight, clientH: nav.clientHeight,
           groups: [...nav.querySelectorAll('[data-fgroup]')].map((g) => g.getAttribute('data-fgroup')),
           more: [...nav.querySelectorAll('.w2b-morefolders')].map((b) => ({ text: (b.innerText || '').replace(/\\s+/g, ' ').trim(), expanded: b.getAttribute('aria-expanded') })),
@@ -162,7 +164,13 @@ test('live: every folder is one click away at three sizes with 8, 24 and 60 fold
         const folded = st.groups.length < N;
         // Nothing moved: All notes, Daily, Docs lead in their order, folder rows keep their count and menu.
         assert.deepEqual(st.first, ['All notes', 'Daily', 'Docs'], `${tag}: All notes, Daily, Docs lead as before (${st.first.join(' / ')})`);
-        assert.ok(!['auto', 'scroll'].includes(st.overflowY), `${tag}: the rail never scrolls on its own (overflow ${st.overflowY})`);
+        // Since app panes (round 3, 20 Nov 2026) the rail beside the list is a pane as tall as the window that
+        // scrolls inside itself, as every pane does, so its rows are reached in place; outside panes it never
+        // scrolls on its own and sticks while it fits. Either way the fold, the counts and the real click to
+        // the last folder below hold (updated 23 Nov 2026).
+        const railPos = st.panes ? 'static' : 'sticky';
+        if (st.panes) assert.ok(st.bottom <= st.vh, `${tag}: the rail pane ends inside the window (bottom ${st.bottom} of ${st.vh})`);
+        else assert.ok(!['auto', 'scroll'].includes(st.overflowY), `${tag}: the rail never scrolls on its own (overflow ${st.overflowY})`);
         if (folded) {
           assert.equal(st.more.length, 1, `${tag}: one more row folds the rest`);
           const hidden = N - st.groups.length;
@@ -178,7 +186,7 @@ test('live: every folder is one click away at three sizes with 8, 24 and 60 fold
         assert.ok(st.groups.includes('Folder 01'), `${tag}: the first folder draws`);
         assert.ok(st.subRows >= 1, `${tag}: its sub row rides with it`);
         assert.equal(st.moreBtns, st.groups.length + st.subRows, `${tag}: every folder row keeps its own menu button`);
-        assert.equal(st.pos, 'sticky', `${tag}: the fitting rail stays sticky`);
+        assert.equal(st.pos, railPos, `${tag}: the fitting rail ${st.panes ? 'stands as its pane' : 'stays sticky'}`);
 
         if (SHOTS && N === 24) {
           await browser.send('Emulation.setDeviceMetricsOverride', { width: W, height: Ht, deviceScaleFactor: 2, mobile: false });
@@ -196,8 +204,10 @@ test('live: every folder is one click away at three sizes with 8, 24 and 60 fold
         if (folded) await clickRailRow('more folder');
         st = await railState();
         assert.equal(st.groups.length, N, `${tag}: the opened rail draws every folder (${st.groups.length} of ${N})`);
-        assert.ok(!['auto', 'scroll'].includes(st.overflowY), `${tag}: the opened rail still never scrolls on its own`);
-        assert.equal(st.pos, folded ? 'static' : 'sticky', `${tag}: the ${folded ? 'tall rail stops sticking so the page scroll reaches it' : 'fitting rail stays sticky'}`);
+        if (st.panes) assert.ok(st.bottom <= st.vh, `${tag}: the opened rail pane still ends inside the window, scrolling in itself`);
+        else assert.ok(!['auto', 'scroll'].includes(st.overflowY), `${tag}: the opened rail still never scrolls on its own`);
+        if (st.panes) assert.equal(st.pos, 'static', `${tag}: the opened rail stands as its pane`);
+        else assert.equal(st.pos, folded ? 'static' : 'sticky', `${tag}: the ${folded ? 'tall rail stops sticking so the page scroll reaches it' : 'fitting rail stays sticky'}`);
         await clickRailRow(lastName);
         st = await railState();
         assert.ok(st.on.includes(lastName), `${tag}: the last folder takes the row on show (${st.on})`);
@@ -219,7 +229,7 @@ test('live: every folder is one click away at three sizes with 8, 24 and 60 fold
           st = await railState();
           assert.ok(st.groups.length < N, `${tag}: Fewer folds the rest away again`);
           assert.ok(st.bottom <= st.vh, `${tag}: the shut rail fits again (bottom ${st.bottom} of ${st.vh})`);
-          assert.equal(st.pos, 'sticky', `${tag}: and sticks again`);
+          assert.equal(st.pos, railPos, `${tag}: and ${st.panes ? 'stands as its pane' : 'sticks'} again`);
         }
       }
     } finally {

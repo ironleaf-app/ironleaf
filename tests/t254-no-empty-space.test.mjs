@@ -83,7 +83,17 @@ test('Inbox cards and a meeting’s sections pair, the folder rail widens', () =
   assert.ok(w2b.slice(mt).includes('.nv-page .w2b-meeting'), 'scoped to the room page, as a1');
   assert.ok(w2b.slice(mt).includes('section:first-of-type:nth-last-of-type(odd)'), 'the odd section spans with no :has');
   assert.ok(/\.w2b-folders \{\s*width: 280px/.test(w2b.slice(mt)), 'the Notes rail widens for long names');
-  assert.ok(!/:has\(/.test(w2a.slice(at)) && !/:has\(/.test(w2b.slice(mt)), 'no :has() in either');
+  // The pairing rules themselves carry no :has(); read only their own @media blocks (23 Nov 2026: a later,
+  // unrelated @container rule in w2b.css has one, and slicing to the end of the sheet failed on it).
+  const block = (css, i) => {
+    let depth = 0;
+    for (let j = css.indexOf('{', i); j < css.length; j++) {
+      if (css[j] === '{') depth++;
+      else if (css[j] === '}' && --depth === 0) return css.slice(i, j + 1);
+    }
+    return css.slice(i);
+  };
+  assert.ok(!/:has\(/.test(block(w2a, at)) && !/:has\(/.test(block(w2b, mt)), 'no :has() in either');
   const page = read('src/renderer/src/views/modules/work/MeetingsPage.tsx');
   assert.ok(page.includes('<section className="card w2b-card w2b-norec"'), 'the no-recording card is a section, so it pairs');
 });
@@ -98,10 +108,16 @@ test('gallery and photo grids reflow to the width', () => {
 });
 
 test('settings keeps its form width, the note and search their widths', () => {
+  // 20 Nov 2026 the body stopped pinning 640/880 px left of a dead band: it takes the rest of the frame beside the
+  // rail, and a wide window splits a group of plain rows into two columns instead, so each control still stands
+  // near its words, never one row 1,600 px from label to switch (room-frames.css). Updated 23 Nov 2026.
   const css = read('src/renderer/src/styles/settings-87.css');
-  const at = css.indexOf('@media (min-width: 2400px)');
+  assert.ok(/\.settings-page \.settings-body \{\s*max-width: none/s.test(css), 'the body takes the rest of the frame beside the rail');
+  const rooms = read('src/renderer/src/styles/room-frames.css');
+  const at = rooms.indexOf('@container settings (min-width: 1300px)');
   assert.ok(at > 0, 'settings answers very wide windows');
-  assert.ok(/\.settings-page \.settings-body \{\s*max-width: 880px/s.test(css.slice(at)), 'the body reads 880, near enough to keep each control by its words');
+  assert.ok(/\.settings-card:is\([^)]*\[data-section="general"\][^)]*\) \{\s*columns: 2/s.test(rooms.slice(at)), 'a wide group of plain rows reads in two columns, each control by its words');
+  assert.ok(/\.setting-row,[^{]*\{\s*break-inside: avoid/s.test(rooms.slice(at)), 'a row never splits across the columns');
   const frame = read('src/renderer/src/styles/page-frame.css');
   assert.ok(/\.nv-page\.read\s*\{[^}]*max-width:\s*var\(--page-read\)/s.test(frame), 'reading pages keep --page-read');
   const search = read('src/renderer/src/styles/search-ask-87.css');
@@ -217,7 +233,7 @@ const GUTTERS_JS = `(() => {
 // reads off grid placement, not width: a capped prose line (the fills line at 76ch) spans its band by design.
 const PAIRS_JS = `(() => {
   const out = [];
-  const sels = ['.p87-body', '.w3b-page', "div[aria-label='Waiting to be filed']", '.nv-page .w2b-meeting', '.td-else-groups', '.w2b-halves'];
+  const sels = ['.p87-body', '.w3b-page', "div[aria-label='Waiting to be filed']", '.nv-page .w2b-meeting', '.w2b-after', '.td-else-groups', '.w2b-halves'];
   for (const sel of sels) {
     for (const c of document.querySelectorAll('main ' + sel)) {
       const cr = c.getBoundingClientRect();
@@ -326,8 +342,14 @@ test('a meeting’s sections pair with no empty slot', { timeout: 600000 }, asyn
   assert.equal(opened, 'CLICKED', 'a meeting opens');
   await sleep(1200);
   const containers = await h.browser.ev(PAIRS_JS);
-  const meeting = containers.filter((c) => c.sel === '.nv-page .w2b-meeting');
-  assert.ok(meeting.length >= 1, 'the meeting page pairs through the shared rule');
+  // Layout round 3 (panes.css 4, 20 Nov 2026): at a wide window the meeting page fills the window in regions
+  // (minutes | the recording and its transcript | what it connects to) instead of pairing its sections in a
+  // two-column grid; the panes' fill chain makes .w2b-meeting a column and the regions (.w2b-after) stand side by
+  // side. Either way every band pairs or spans, and each region holds something (23 Nov 2026).
+  const meeting = containers.filter((c) => c.sel === '.nv-page .w2b-meeting' || c.sel === '.w2b-after');
+  assert.ok(meeting.length >= 1, 'the meeting page pairs through the shared rule or stands in regions');
+  const emptyRegions = await h.browser.ev(`[...document.querySelectorAll('main .w2b-after.nv-panes-root > *')].filter((k) => k.getBoundingClientRect().width > 2 && ![...k.children].some((c) => { const r = c.getBoundingClientRect(); return r.width > 2 && r.height > 2; })).map((k) => k.className)`);
+  assert.deepEqual(emptyRegions, [], 'no region of the meeting page stands empty');
   let paired = 0;
   for (const c of meeting) {
     for (const b of c.bands) {
@@ -601,7 +623,9 @@ test('Import, Tidy, Export, Person and Template hold the column with no boxed li
   ];
   for (const [id, open] of pages) {
     await open();
-    await sleep(900);
+    // The page lands when its box shows, not after a set time: under a loaded machine 900 ms was not always enough
+    // (23 Nov 2026); the wait ends as soon as the box is there.
+    await waitFor(h, `!(${GUTTERS_JS}).error`);
     const m = await h.browser.ev(GUTTERS_JS);
     assert.ok(!m.error, `${id} shows its box`);
     assert.equal(m.docX, false, `${id} scrolls nowhere sideways`);
@@ -620,6 +644,7 @@ test('record, tag, folder and search-as-page hold with no boxed line (t258 remai
   await h.browser.send('Emulation.setDeviceMetricsOverride', { width: 3456, height: 1408, deviceScaleFactor: 1, mobile: false });
   await sleep(600);
   async function checkPage(id) {
+    await waitFor(h, `!(${GUTTERS_JS}).error`);
     const m = await h.browser.ev(GUTTERS_JS);
     assert.ok(!m.error, `${id} shows its box${m.error ? `: ${m.error}` : ''}`);
     assert.equal(m.docX, false, `${id} scrolls nowhere sideways`);

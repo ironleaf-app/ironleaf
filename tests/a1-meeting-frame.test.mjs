@@ -76,8 +76,11 @@ async function clickWords(h, words, scope = '') {
   })()`);
 }
 
-test('a meeting page titles at 92 with its body at the edge', { timeout: 300000 }, async () => {
+test('a meeting page titles where its rooms do, with its body at the edge', { timeout: 300000 }, async () => {
   const h = await harness();
+  // 23 Nov 2026: with app panes (panes.css, 20 Nov 2026) the list rooms and the meeting page take the compact head,
+  // so their titles sit at 80, not 92. The check still compares with the Notes room, so the meeting title joins
+  // whatever place the rooms share; it caught the meeting title's own pad doubling the panes' pad (116).
   // t264: proven at the review size and 3456 wide (t254 pairs sections two across past 2400px —
   // the title still joins the frame pad, the body still starts at the column edge).
   for (const [W, Hg] of [[1920, 1117], [3456, 1408]]) {

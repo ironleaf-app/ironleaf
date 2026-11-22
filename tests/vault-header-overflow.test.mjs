@@ -126,7 +126,9 @@ function stylesheets() {
 
 const icon = (s = 16) => `<svg width="${s}" height="${s}" viewBox="0 0 16 16" aria-hidden="true"><rect width="16" height="16" fill="currentColor"/></svg>`;
 // (No Ask chip since 5 Nov 2026, one search door: it left every header for the centred bar's panel.)
-const ava = `<button class="topbar-ava" aria-label="Test Person, open Settings">T</button>`;
+// No avatar either since 20 Nov 2026: Settings and the account moved to one account row at the side bar's foot, so
+// the header's right side holds only the page's own buttons and its ⋯ (updated 23 Nov 2026).
+const ava = '';
 const more = `<button class="navbtn" title="More" aria-label="More">${icon()}</button>`;
 // A page's header as its view draws it (button classes, words and overflow keys from the views above).
 const HEADS = {
@@ -167,7 +169,7 @@ function scene(css) {
 <body>
 <div class="app" data-platform="linux"><div class="ribbon"></div><aside class="sidebar left side" style="width:292px" aria-label="Places and notes"></aside><main class="main">
 ${bars}
-<div class="vscroll"><div class="vpage wide" style="max-width: 1080px"><h1 class="w2a-title">Page</h1><div class="card">${filler}</div></div></div>
+<div class="vscroll"><div class="vpage wide"><h1 class="w2a-title">Page</h1><div class="card">${filler}</div></div></div>
 </main></div>
 </body>
 </html>
@@ -239,7 +241,10 @@ test('always-equal sides centre the bar; a crowded side yields, then falls back:
       // Lay every bar out as the app does after a render, then read every rectangle.
       const measured = await ev(`(() => {
         const out = [];
-        const col = document.querySelector('.vpage').getBoundingClientRect();
+        // The page column is the scroller's box: since layout round 2 every frame takes the room from one left edge,
+        // and the scroller keeps its bar's lane on the right only (compose.css 7), so the content's own box sits
+        // half that lane left of the room's centre; the bar centres over the room, lane included (23 Nov 2026).
+        const col = document.querySelector('.vscroll').getBoundingClientRect();
         const colC = col.x + col.width / 2;
         for (const bar of document.querySelectorAll('.topbar')) {
           const page = bar.dataset.page;
@@ -310,7 +315,8 @@ test('always-equal sides centre the bar; a crowded side yields, then falls back:
         assert.deepEqual(at('projects'), ['new-project', 'weekly-review'], 'Projects at 1219: both yield for the exact centre, least used first');
         assert.deepEqual(at('today'), ['start-template'], 'Today at 1219: its action rides in the ⋯');
         assert.deepEqual(at('bare'), [], 'a bare bar at 1219: nothing to yield');
-        assert.deepEqual(at('note'), ['read'], 'a note at 1219: Read yields, Share stays (5 Nov 2026, the clean header)');
+        // Since the avatar left the header (20 Nov 2026) a note's two buttons fit at 1219 (was: Read yielded).
+        assert.deepEqual(at('note'), [], 'a note at 1219: Share and Read both fit');
         assert.deepEqual(at('project-facts'), ['fields', 'publish'], 'a project Facts at 1219: Fields and Publish yield, Share stays (the Ask chip’s room)');
         assert.deepEqual(at('locked'), ['lock-now', 'new-secret', 'unlocked'], 'Locked at 1219: all yield, New secret last');
       }
@@ -344,8 +350,9 @@ test('always-equal sides centre the bar; a crowded side yields, then falls back:
 // The real window's band gap once ballooned (a frozen overlay rect) and crushed the bar to 240px through
 // the width steps. Round 4's trusted width caps the gap (window-buttons-87 pins the fallback), and the gap
 // lives inside the right cell, so it only pushes the buttons left: with the live 138px gap at 1219 the bare
-// sides cannot fit their equal cells, so both sides fall back to max-content (the least move, ~57px since the
-// Ask chip left every header) with everything yielded; at 1920 everything fits and the bar is exactly centred.
+// side cannot fit its equal cell, so it falls back to max-content with everything yielded (the least move, ~27px
+// since the avatar left the header); with the side bar hidden the way back carries a fourth button and the left
+// cell cannot hold it, so both sides fall back; at 1920 everything fits and the bar is exactly centred.
 // Past the trusted cap cannot
 // occur; the squeeze path (a window too narrow for the bare sides) is proven at a narrow window instead: the
 // 40px button, everything yieldable in the ⋯, the ⋯ itself whole and clickable, never overlapping, never
@@ -359,7 +366,7 @@ test('a live band gap falls back by the least move, and a narrow window squeezes
   await build({ input: path.join(root, 'src/renderer/src/lib/headerOverflow.ts'), platform: 'browser', output: { file: path.join(dir, 'hdr.mjs'), format: 'iife', name: 'Hdr' }, logLevel: 'silent' });
   const lib = readFileSync(path.join(dir, 'hdr.mjs'), 'utf8');
   const bar = (page, cls, style, right) => `<div class="topbar${cls}" data-page="${page}"${style ? ` style="${style}"` : ''}>
-  <div class="topbar-left"><div class="view-nav"><button class="navbtn" aria-label="Back" disabled>←</button><button class="navbtn" aria-label="Forward" disabled>→</button><button class="navbtn" aria-label="New">+</button></div>
+  <div class="topbar-left"><div class="view-nav">${page.startsWith('sideless') ? `<button class="navbtn" aria-label="Show the left side">${icon()}</button>` : ''}<button class="navbtn" aria-label="Back" disabled>←</button><button class="navbtn" aria-label="Forward" disabled>→</button><button class="navbtn" aria-label="New">+</button></div>
   <div class="crumb" title="Projects/Harbour/Launch plan.md">${CRUMB}</div></div>
   <button class="top-search" aria-label="Commands, pages and search">${icon()}<span class="clip">Ask or find anything</span><kbd>Ctrl+K</kbd></button>
   <div class="right">${right}</div>
@@ -371,6 +378,7 @@ test('a live band gap falls back by the least move, and a narrow window squeezes
 <div class="app" data-platform="win32"><div class="ribbon"></div><aside class="sidebar left side" style="width:292px" aria-label="Places and notes"></aside><main class="main">
 ${bar('singleton-live', ' drag is-band controls-gap', '--wbtn-w: 138px', HEADS.today)}
 ${bar('multi-live', ' drag is-band controls-gap', '--wbtn-w: 138px', HEADS.projects)}
+${bar('sideless-live', ' drag is-band controls-gap', '--wbtn-w: 138px', HEADS.projects)}
 ${bar('singleton-narrow', '', '', HEADS.today)}
 ${bar('multi-narrow', '', '', HEADS.projects)}
 </main></div>
@@ -420,10 +428,10 @@ ${bar('multi-narrow', '', '', HEADS.projects)}
     for (let i = 0; i < 60 && !ready; i++) {
       await sleep(150);
       try {
-        ready = await ev(`document.querySelectorAll('.topbar').length === 4`);
+        ready = await ev(`document.querySelectorAll('.topbar').length === 5`);
       } catch {}
     }
-    assert.ok(ready, 'all four band bars drew');
+    assert.ok(ready, 'all five band bars drew');
     await ev(lib);
     for (const [W, H] of [[1219, 709], [1920, 1117], [700, 600]]) {
       await send('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: 1, mobile: false });
@@ -454,7 +462,7 @@ ${bar('multi-narrow', '', '', HEADS.projects)}
         return out;
       })()`);
       // The band bars at full widths; the plain bars at the narrow window.
-      const pages = W === 700 ? ['singleton-narrow', 'multi-narrow'] : ['singleton-live', 'multi-live'];
+      const pages = W === 700 ? ['singleton-narrow', 'multi-narrow'] : ['singleton-live', 'multi-live', 'sideless-live'];
       for (const m of measured.filter((x) => pages.includes(x.page))) {
         assert.deepEqual(m.again, m.hidden, `${m.page} at ${W}px: settled, the same bar keeps its state`);
         const off = Math.abs(m.searchC - m.topC);
@@ -474,19 +482,26 @@ ${bar('multi-narrow', '', '', HEADS.projects)}
           assert.ok(Math.round(m.searchW) >= 360 && Math.round(m.searchW) <= 520, `${m.page} at ${W}px: the bar keeps 360–520px with the live gap (${Math.round(m.searchW)}px)`);
           assert.equal(m.squeezed, false, `${m.page} at ${W}px: no squeeze with the live gap`);
           if (W === 1219) {
-            // Both bare sides crowd their equal cells (the in-cell 144px gap crowds the right, the
-            // shrunken left cell crowds the way back), so both fall back with everything yielded: the
-            // least move, ~57px since the Ask chip left every header (5 Nov 2026), never an overlap.
-            assert.equal(m.lr, true, `${m.page} at ${W}px: the left side falls back (the way back never hides)`);
+            // The in-cell 144px gap crowds the right side, so it yields everything and falls back to its
+            // max-content column; the left cell that leaves still holds the way back, so the left never falls
+            // back: the least move, ~27px since the avatar left the header (20 Nov 2026; ~57px when both sides
+            // fell back), never an overlap. ← → + never hide either way (updated 23 Nov 2026).
+            assert.ok(m.navR <= m.searchL - 11.5, `${m.page} at ${W}px: the way back shows whole, clear of the bar`);
             assert.equal(m.rr, true, `${m.page} at ${W}px: the right side falls back with everything yielded`);
             assert.equal(m.hidden.length, m.items, `${m.page} at ${W}px: everything yielded before the fallback (${m.hidden.join(', ')})`);
-            assert.ok(off >= 47 && off <= 67, `${m.page} at ${W}px: the least move is ~57px (${off.toFixed(1)}px off)`);
-            if (m.page.startsWith('multi')) assert.deepEqual(m.hidden.sort(), ['new-project', 'weekly-review'], `${m.page} at ${W}px: the gap crowds both buttons out, least-used-first`);
+            if (m.page.startsWith('sideless')) {
+              // Four buttons in the way back crowd the left cell the right's fallback left: it falls back too.
+              assert.equal(m.lr, true, `${m.page} at ${W}px: the left side falls back (the way back never hides)`);
+            } else {
+              assert.equal(m.lr, false, `${m.page} at ${W}px: the left cell still holds the way back`);
+              assert.ok(off >= 17 && off <= 38, `${m.page} at ${W}px: the least move is ~27px (${off.toFixed(1)}px off)`);
+            }
+            if (!m.page.startsWith('singleton')) assert.deepEqual(m.hidden.sort(), ['new-project', 'weekly-review'], `${m.page} at ${W}px: the gap crowds both buttons out, least-used-first`);
             else assert.deepEqual(m.hidden, ['start-template'], `${m.page} at ${W}px: the singleton yields into its ⋯`);
           } else {
             assert.equal(m.lr, false, `${m.page} at ${W}px: no left fallback at room`);
             assert.equal(m.rr, false, `${m.page} at ${W}px: no right fallback at room`);
-            if (m.page.startsWith('multi')) assert.deepEqual(m.hidden, [], `${m.page} at ${W}px: both fit beside the live gap (the Ask chip’s room)`);
+            if (!m.page.startsWith('singleton')) assert.deepEqual(m.hidden, [], `${m.page} at ${W}px: both fit beside the live gap (the Ask chip’s room)`);
             else assert.deepEqual(m.hidden, [], `${m.page} at ${W}px: room for everything beside the live gap`);
           }
         } else {

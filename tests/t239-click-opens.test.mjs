@@ -322,6 +322,9 @@ async function runCase(h, c, tag) {
 }
 
 // ── The twenty references ───────────────────────────────────────────────────
+// 23 Nov 2026: from about a 1920 window the project Overview carries Notes and files as a pane of its own
+// (round 3), kept mounted and hidden under the other tabs, so a bare [data-section="notes"] found that hidden
+// copy first. The rows below are the Notes and files tab's own (#pj-panel-notes), the one a person clicked.
 
 const CLICK = (sel) => `document.querySelector(${JSON.stringify(sel)})`;
 const LINK_WITH = (words) => `[...document.querySelectorAll('main .reading-body a')].find((a) => (a.innerText || '').includes(${JSON.stringify(words)}))`;
@@ -405,12 +408,12 @@ const CASES = [
   {
     id: '07-meeting-row', expect: 'Cart standup', backTab: 'notes',
     marker: `document.querySelector('main .inline-title')?.value?.includes('Cart standup') ?? false`,
-    click: `document.querySelector('[data-section="notes"] [data-meeting] button.t[title*="standup"]')`,
+    click: `document.querySelector('#pj-panel-notes [data-section="notes"] [data-meeting] button.t[title*="standup"]')`,
     start: async (h) => {
       await openNote(h, 'Harbourline Cart Fix');
       await sleep(1500);
       await openTab(h, 'notes');
-      return place(h, `document.querySelector('[data-section="notes"] [data-meeting] button.t[title*="standup"]')`, 'Harbourline Cart Fix');
+      return place(h, `document.querySelector('#pj-panel-notes [data-section="notes"] [data-meeting] button.t[title*="standup"]')`, 'Harbourline Cart Fix');
     },
   },
   {
@@ -438,40 +441,40 @@ const CASES = [
   {
     id: '10-file-row', expect: 'totals.xlsx', backTab: 'notes',
     marker: `document.querySelector('.folder-file-view h1')?.innerText?.includes('totals.xlsx') ?? false`,
-    click: `[...document.querySelectorAll('[data-section="notes"] .trow button.t')].find((b) => (b.textContent || '').includes('totals.xlsx'))`,
+    click: `[...document.querySelectorAll('#pj-panel-notes [data-section="notes"] .trow button.t')].find((b) => (b.textContent || '').includes('totals.xlsx'))`,
     start: async (h) => {
       await openNote(h, 'Harbourline Cart Fix');
       await sleep(1500);
       await openTab(h, 'notes');
-      await tap(h, `[...document.querySelectorAll('[data-section="notes"] .chip')].find((b) => (b.textContent || '').includes('Files'))`);
+      await tap(h, `[...document.querySelectorAll('#pj-panel-notes [data-section="notes"] .chip')].find((b) => (b.textContent || '').includes('Files'))`);
       await sleep(500);
-      return place(h, `[...document.querySelectorAll('[data-section="notes"] .trow button.t')].find((b) => (b.textContent || '').includes('totals.xlsx'))`, 'Harbourline Cart Fix');
+      return place(h, `[...document.querySelectorAll('#pj-panel-notes [data-section="notes"] .trow button.t')].find((b) => (b.textContent || '').includes('totals.xlsx'))`, 'Harbourline Cart Fix');
     },
   },
   {
     id: '11-pdf-row', expect: 'Shopfit Contract v2.pdf', backTab: 'notes',
     marker: `document.querySelector('.folder-file-view h1')?.innerText?.includes('Shopfit Contract v2.pdf') && (document.querySelector('.folder-file-view iframe')?.src ?? '').includes('Shopfit%20Contract%20v2.pdf')`,
-    click: `[...document.querySelectorAll('[data-section="notes"] .trow button.t')].find((b) => (b.textContent || '').includes('Shopfit Contract v2.pdf'))`,
+    click: `[...document.querySelectorAll('#pj-panel-notes [data-section="notes"] .trow button.t')].find((b) => (b.textContent || '').includes('Shopfit Contract v2.pdf'))`,
     start: async (h) => {
       await openNote(h, 'Harbourline Cart Fix');
       await sleep(1500);
       await openTab(h, 'notes');
-      await tap(h, `[...document.querySelectorAll('[data-section="notes"] .chip')].find((b) => (b.textContent || '').includes('Files'))`);
+      await tap(h, `[...document.querySelectorAll('#pj-panel-notes [data-section="notes"] .chip')].find((b) => (b.textContent || '').includes('Files'))`);
       await sleep(500);
-      return place(h, `[...document.querySelectorAll('[data-section="notes"] .trow button.t')].find((b) => (b.textContent || '').includes('Shopfit Contract v2.pdf'))`, 'Harbourline Cart Fix');
+      return place(h, `[...document.querySelectorAll('#pj-panel-notes [data-section="notes"] .trow button.t')].find((b) => (b.textContent || '').includes('Shopfit Contract v2.pdf'))`, 'Harbourline Cart Fix');
     },
   },
   {
     id: '12-picture-row', expect: 'shopfront.png', backTab: 'notes',
     marker: `document.querySelector('.folder-file-view h1')?.innerText?.includes('shopfront.png') && (document.querySelector('.folder-file-view img')?.src ?? '').includes('shopfront.png')`,
-    click: `[...document.querySelectorAll('[data-section="notes"] .trow button.t')].find((b) => (b.textContent || '').includes('shopfront.png'))`,
+    click: `[...document.querySelectorAll('#pj-panel-notes [data-section="notes"] .trow button.t')].find((b) => (b.textContent || '').includes('shopfront.png'))`,
     start: async (h) => {
       await openNote(h, 'Harbourline Cart Fix');
       await sleep(1500);
       await openTab(h, 'notes');
-      await tap(h, `[...document.querySelectorAll('[data-section="notes"] .chip')].find((b) => (b.textContent || '').includes('Files'))`);
+      await tap(h, `[...document.querySelectorAll('#pj-panel-notes [data-section="notes"] .chip')].find((b) => (b.textContent || '').includes('Files'))`);
       await sleep(500);
-      return place(h, `[...document.querySelectorAll('[data-section="notes"] .trow button.t')].find((b) => (b.textContent || '').includes('shopfront.png'))`, 'Harbourline Cart Fix');
+      return place(h, `[...document.querySelectorAll('#pj-panel-notes [data-section="notes"] .trow button.t')].find((b) => (b.textContent || '').includes('shopfront.png'))`, 'Harbourline Cart Fix');
     },
   },
   {
@@ -575,12 +578,12 @@ const CASES = [
   {
     id: '18-doc-version', expect: 'Shopfit Contract v2', backTab: 'notes',
     marker: `document.querySelector('main .inline-title')?.value?.includes('Shopfit Contract v2') ?? false`,
-    click: `[...document.querySelectorAll('[data-section="notes"] .trow button.t')].find((b) => (b.textContent || '').includes('Shopfit Contract v2') && !(b.innerText || '').includes('.pdf'))`,
+    click: `[...document.querySelectorAll('#pj-panel-notes [data-section="notes"] .trow button.t')].find((b) => (b.textContent || '').includes('Shopfit Contract v2') && !(b.innerText || '').includes('.pdf'))`,
     start: async (h) => {
       await openNote(h, 'Harbourline Cart Fix');
       await sleep(1500);
       await openTab(h, 'notes');
-      return place(h, `[...document.querySelectorAll('[data-section="notes"] .trow button.t')].find((b) => (b.textContent || '').includes('Shopfit Contract v2') && !(b.innerText || '').includes('.pdf'))`, 'Harbourline Cart Fix');
+      return place(h, `[...document.querySelectorAll('#pj-panel-notes [data-section="notes"] .trow button.t')].find((b) => (b.textContent || '').includes('Shopfit Contract v2') && !(b.innerText || '').includes('.pdf'))`, 'Harbourline Cart Fix');
     },
   },
   {
@@ -656,7 +659,7 @@ test('Ctrl+click opens beside: the document in a new tab, Back untouched', { tim
   await sleep(1500);
   await openTab(h, 'notes');
   const tabs = await tabCount(h);
-  await tap(h, `[...document.querySelectorAll('[data-section="notes"] .trow button.t')].find((b) => (b.textContent || '').includes('Kickoff note'))`, { ctrl: true });
+  await tap(h, `[...document.querySelectorAll('#pj-panel-notes [data-section="notes"] .trow button.t')].find((b) => (b.textContent || '').includes('Kickoff note'))`, { ctrl: true });
   await sleep(800);
   assert.equal(await tabCount(h), tabs + 1, 'a new tab opens beside');
   assert.ok((await titleNow(h)).includes('Kickoff note'), 'the new tab shows the document');
@@ -676,7 +679,7 @@ test('middle-click opens beside where the row offers it', { timeout: 300000 }, a
   await sleep(1500);
   await openTab(h, 'notes');
   const tabs = await tabCount(h);
-  await tap(h, `[...document.querySelectorAll('[data-section="notes"] .trow button.t')].find((b) => (b.textContent || '').includes('Kickoff note'))`, { middle: true });
+  await tap(h, `[...document.querySelectorAll('#pj-panel-notes [data-section="notes"] .trow button.t')].find((b) => (b.textContent || '').includes('Kickoff note'))`, { middle: true });
   await sleep(800);
   assert.equal(await tabCount(h), tabs + 1, 'a new tab opens beside');
   assert.ok((await titleNow(h)).includes('Kickoff note'), 'the new tab shows the document');

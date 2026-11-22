@@ -306,7 +306,8 @@
   color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
+  /* One line that clips without dots, its whole line on hover (t207, 23 Nov 2026). */
+  text-overflow: clip;
 }
 .about-hist-first:empty {
   display: none;

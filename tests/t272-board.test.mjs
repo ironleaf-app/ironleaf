@@ -436,9 +436,14 @@ test('every layout in the switch uses the width at 3456x1408', { timeout: 300000
     const tiles = [...document.querySelectorAll('section.ws-view .ws-tile')].map((t) => t.getBoundingClientRect());
     const top = tiles[0].top;
     const row = tiles.filter((r) => Math.abs(r.top - top) <= 8);
-    return { body: Math.round(b.right), last: Math.round(Math.max(...row.map((r) => r.right))), tile: Math.round(row[0].width), across: row.length };
+    return { body: Math.round(b.right), bodyW: Math.round(b.width), last: Math.round(Math.max(...row.map((r) => r.right))), tile: Math.round(row[0].width), across: row.length };
   })()`);
-  assert.ok(gal.across >= 4, `the gallery reflows across the width (saw ${gal.across} across)`);
+  // Since round 3 (20 Nov 2026) Meetings is a list with its detail beside it, and its views stand in the list's pane
+  // (about 850 px of the 3456 window), not across the room. The gallery is judged against its own body: as many
+  // tiles across as their 560 px cap lets fit there (four or more across the whole room, as before), and no empty
+  // area wider than a tile beside the last (23 Nov 2026).
+  const fits = Math.max(1, Math.floor((gal.bodyW + 12) / (560 + 12)));
+  assert.ok(gal.across >= fits, `the gallery reflows across its width (saw ${gal.across} across in ${gal.bodyW}px, ${fits} fit)`);
   assert.ok(gal.body - gal.last <= gal.tile, `no empty area wider than a tile beside the last (saw ${gal.body - gal.last} beside ${gal.tile})`);
   await openLayout(h, 'Timeline');
   const tl = await h.browser.ev(`(() => { const s = document.querySelector('section.ws-view .ws-tl-scroll'); const c = document.querySelector('section.ws-view .ws-tl-canvas'); return { box: Math.round(s.clientWidth), canvas: Math.round(c.getBoundingClientRect().width) }; })()`);
