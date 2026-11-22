@@ -312,3 +312,19 @@
     grid-template-rows: minmax(0, 1fr) auto;
   }
 }
+
+/* The Design button beside Share (components/DesignButton.tsx): a light tint of the accent, so it is seen without
+   becoming the screen's one primary. */
+.btn.design-button,
+.sv-tool.design-button {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  background: color-mix(in srgb, var(--accent) 14%, var(--bg-raised));
+  color: var(--text-ink);
+}
+.btn.design-button:hover,
+.sv-tool.design-button:hover {
+  background: color-mix(in srgb, var(--accent) 22%, var(--bg-raised));
+}
+.design-button svg {
+  color: var(--accent);
+}
