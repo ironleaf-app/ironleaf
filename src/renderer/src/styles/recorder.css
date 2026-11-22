@@ -1148,7 +1148,9 @@
   flex-wrap: wrap;
   gap: 8px;
 }
-.mm-fix input {
+/* The correction box caps at a word or so, also inside a page (compose.css lets a page's text fields take the row). */
+.mm-fix input,
+.nv-page .mm-fix input[type='text']:not(.cm-content *) {
   width: auto;
   max-width: 360px;
 }
