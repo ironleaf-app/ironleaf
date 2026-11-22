@@ -12,13 +12,16 @@ const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 // What the app imports (src/**) and what the release stages beside it. Electron (MIT) ships its own notices for
 // Chromium, Node.js and their dependencies (LICENSE and LICENSES.chromium.html beside the program).
 export const ROOTS = [
-  '@earendil-works/pi-ai', 'd3-force', 'echarts', 'jose', 'onnxruntime-web', 'yaml',
+  '@earendil-works/pi-ai', 'd3-force', 'echarts', 'jose', 'onnxruntime-web', 'yaml', 'pptxgenjs', 'docx', 'exceljs', 'jszip',
   'react', 'react-dom', 'katex', 'markdown-it', 'markdown-it-footnote', 'mermaid', 'ssh2',
   '@codemirror/autocomplete', '@codemirror/commands', '@codemirror/lang-markdown', '@codemirror/lang-yaml', '@codemirror/language',
   '@codemirror/language-data', '@codemirror/search', '@codemirror/state', '@codemirror/view', '@lezer/highlight', '@lezer/common', '@lezer/markdown',
 ];
+// Dependencies a package names that the app never ships: ExcelJS is bundled from its own self-contained build
+// (src/main/design-export/xlsx.ts), which writes with JSZip, so its Node build's zip and temp-file packages stay out.
+const NOT_SHIPPED = { exceljs: ['archiver', 'unzipper', 'tmp'] };
 // Compatible with distribution under AGPL-3.0-or-later (permissive, or weak copyleft kept file-level).
-export const COMPATIBLE = /^(MIT|ISC|BSD-2-Clause|BSD-3-Clause|Apache-2\.0|0BSD|OFL-1\.1|Unlicense|CC0-1\.0|BlueOak-1\.0\.0|Python-2\.0|PSF-2\.0|Zlib|MPL-2\.0|\(MPL-2\.0 OR Apache-2\.0\)|\(MIT OR Apache-2\.0\)|\(Apache-2\.0 OR MIT\)|\(MIT OR CC0-1\.0\)|\(BSD-2-Clause OR MIT OR Apache-2\.0\)|\(MIT AND Zlib\)|\(MIT AND BSD-3-Clause\)|\(WTFPL OR MIT\)|LGPL-3\.0-or-later|AGPL-3\.0-or-later|GPL-3\.0-or-later)$/;
+export const COMPATIBLE = /^(MIT|ISC|BSD-2-Clause|BSD-3-Clause|Apache-2\.0|0BSD|OFL-1\.1|Unlicense|CC0-1\.0|BlueOak-1\.0\.0|Python-2\.0|PSF-2\.0|Zlib|MPL-2\.0|\(MPL-2\.0 OR Apache-2\.0\)|\(MIT OR Apache-2\.0\)|\(Apache-2\.0 OR MIT\)|\(MIT OR CC0-1\.0\)|\(BSD-2-Clause OR MIT OR Apache-2\.0\)|\(MIT AND Zlib\)|\(MIT OR GPL-3\.0-or-later\)|\(MIT AND BSD-3-Clause\)|\(WTFPL OR MIT\)|LGPL-3\.0-or-later|AGPL-3\.0-or-later|GPL-3\.0-or-later)$/;
 
 export function collect() {
   const found = new Map();
@@ -36,7 +39,7 @@ export function collect() {
         // No licence field but an MIT licence file (khroma): named from the file.
         const named = license || (/^(the )?MIT License/i.test(text) ? 'MIT' : '');
         found.set(real, { name: meta.name ?? name, version: meta.version ?? '?', license: named, repo: typeof meta.repository === 'string' ? meta.repository : meta.repository?.url ?? '', text });
-        for (const dep of Object.keys({ ...(meta.dependencies ?? {}), ...(meta.optionalDependencies ?? {}) })) visit(dep, real);
+        for (const dep of Object.keys({ ...(meta.dependencies ?? {}), ...(meta.optionalDependencies ?? {}) })) if (!NOT_SHIPPED[meta.name]?.includes(dep)) visit(dep, real);
         return;
       }
       const up = path.dirname(dir);

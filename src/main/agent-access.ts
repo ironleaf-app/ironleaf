@@ -53,7 +53,7 @@ import { isPrivatePath } from '../shared/private';
 import type { Area } from '../shared/areas';
 import type { BrandKit } from '../shared/assets';
 import { brandContent, brandDocument } from '../shared/brand-document';
-import { kindInfo as designKindInfo } from '../shared/design-doc';
+import { DESIGN_FORMATS, isDesignFormat, kindInfo as designKindInfo, type DesignFormat } from '../shared/design-doc';
 import type { DesignStart } from './design-studio';
 import { kitForNote } from '../shared/brand-kits';
 import { readProps } from '../shared/frontmatter';
@@ -134,7 +134,7 @@ export interface AgentAccessHost {
    *  (src/main/brand-print.ts) — its bytes and its true page count. */
   brandPrint?(html: string): Promise<{ pdf: Buffer; pages: number }>;
   /** A note designed by the person's AI into a finished PDF (design_document; src/main/design-studio.ts). */
-  design?(input: DesignStart): Promise<{ pdf: Buffer; pages: number; problems: string[] }>;
+  design?(input: DesignStart, format: DesignFormat): Promise<{ data: Buffer; ext: string; pages: number; problems: string[] }>;
   /** Connect an AI or What agents did changed: the window reads them again. */
   changed(): void;
   log?(message: string): void;
@@ -1176,13 +1176,16 @@ export class AgentAccess {
     };
     const me = this.person();
     const content = brandContent({ title, text: body ?? '', path: rel, kit: brand, level, url, resolve: (t) => this.host.index.resolveAny(t, rel) ?? t, ...(me ? { me } : {}) });
-    const kind = designKindInfo(a.kind);
+    const format: DesignFormat = isDesignFormat(a.format) ? a.format : 'pdf';
+    // PowerPoint is a deck's file; Word is every other kind's.
+    const kind = designKindInfo(format === 'pptx' ? 'slides' : a.kind);
+    if (format === 'docx' && kind.id === 'slides') throw new Error('Slides save as PowerPoint (pptx) or PDF; Word is for a report, one-pager, proposal, handout or poster.');
     const logo = (r?: string) => (r ? url(r) || undefined : undefined);
-    const made = await design({ kind: kind.id, brief: str(a.brief, 2000), title, content, kit: brand, logos: { primary: logo(brand?.logos?.primary), onDark: logo(brand?.logos?.onDark) }, brandName: brand?.name?.trim() ?? '' });
-    const name = `${title} – ${kind.name}.pdf`;
+    const made = await design({ kind: kind.id, brief: str(a.brief, 2000), title, content, kit: brand, logos: { primary: logo(brand?.logos?.primary), onDark: logo(brand?.logos?.onDark) }, brandName: brand?.name?.trim() ?? '' }, format);
+    const name = `${title} – ${kind.name}.${made.ext}`;
     const temp = path.join(this.host.dataDir, 'agent-uploads', `design_${randomBytes(9).toString('base64url')}.part`);
     await fsp.mkdir(path.dirname(temp), { recursive: true });
-    await fsp.writeFile(temp, made.pdf);
+    await fsp.writeFile(temp, made.data);
     try {
       const who = rec.name;
       const d = await deliver(files, temp, { note: rel, name, replace: false, move: true, newVersion: { by: who, how: 'agent' } });
@@ -1190,7 +1193,7 @@ export class AgentAccess {
       if (!d.version) await files.recorded?.(d.path, { by: who, how: 'agent', what, record: rel }).catch(() => undefined);
       const pageWords = `${made.pages} ${made.pages === 1 ? 'page' : 'pages'}`;
       const lines = [
-        `Designed ${d.name} (${pageWords}) from ${quote(title)}: a ${kind.name.toLowerCase()}${brand ? ' in the brand kit' : ''}, printed and checked page by page.`,
+        `Designed ${d.name} (${format === 'xlsx' ? 'an Excel workbook of its tables and key figures' : pageWords}) from ${quote(title)}: a ${kind.name.toLowerCase()}${brand ? ' in the brand kit' : ''}, printed and checked page by page${format === 'pdf' ? '' : `, saved as ${DESIGN_FORMATS[format].name}`}.`,
         `Kept in the note’s Files as ${d.path}${d.version ? `, version ${d.version} (the one before is kept)` : ''}.`,
         `Whole path on this PC: ${d.abs}. Hand it to the person from there — link it ([[${d.path}|${d.name}]]) — and say its pages in a line. To change it, they can open Design with AI on the note and ask for the change in words.`,
         ...(made.problems.length ? [`Still not right on the pages: ${made.problems.slice(0, 3).join('; ')}. Say so in a line.`] : []),

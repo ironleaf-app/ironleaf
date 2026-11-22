@@ -6,7 +6,7 @@
 // kind, or save the PDF (a meeting's or project's PDF can be kept with the note). The note itself is never changed.
 
 import { useEffect, useRef, useState } from 'react';
-import { DESIGN_KINDS, type DesignKind, type DesignViewOut } from '../../../shared/design-doc';
+import { DESIGN_FORMATS, DESIGN_KINDS, type DesignFormat, type DesignKind, type DesignViewOut } from '../../../shared/design-doc';
 import { errorMessage } from '../lib/errors';
 import { useEscape } from '../lib/useEscape';
 import * as A from '../state/actions';
@@ -17,6 +17,7 @@ import { showError, toast } from '../state/store';
 import { Icon, type IconName } from './Icon';
 
 const KIND_ICONS: Record<DesignKind, IconName> = { report: 'doc', 'one-pager': 'file', proposal: 'briefcase', handout: 'newspaper', poster: 'image', slides: 'present' };
+const FORMAT_ICONS: Record<DesignFormat, IconName> = { pdf: 'pdf', pptx: 'present', docx: 'doc', xlsx: 'table' };
 
 type Stage = 'choose' | 'working' | 'result';
 
@@ -32,7 +33,7 @@ export function DesignDialog({ path, onClose }: { path: string; onClose(): void 
   const [view, setView] = useState<DesignViewOut | null>(null);
   const [change, setChange] = useState('');
   const [failed, setFailed] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
+  const [saving, setSaving] = useState<DesignFormat | null>(null);
   const request = useRef<string>('');
   useEscape(() => {
     if (stage !== 'working') onClose();
@@ -93,11 +94,11 @@ export function DesignDialog({ path, onClose }: { path: string; onClose(): void 
     if (request.current) void window.nv.design.cancel(request.current);
   };
 
-  const save = async () => {
+  const save = async (format: DesignFormat) => {
     if (!view) return;
-    setSaving(true);
+    setSaving(format);
     try {
-      const file = await window.nv.design.save(view.id, title);
+      const file = await window.nv.design.save(view.id, title, format);
       if (!file) return;
       const name = file.split(/[\\/]/).pop();
       const text = docs.text(path) ?? (await window.nv.notes.read(path));
@@ -106,12 +107,13 @@ export function DesignDialog({ path, onClose }: { path: string; onClose(): void 
     } catch (err) {
       showError(err);
     } finally {
-      setSaving(false);
+      setSaving(null);
     }
   };
 
   const info = DESIGN_KINDS.find((k) => k.id === (view?.kind ?? kind)) ?? DESIGN_KINDS[0];
   const noModel = ready && !ready.model;
+  const mainFormat: DesignFormat = view?.formats?.includes('pptx') ? 'pptx' : 'pdf';
 
   return (
     <div className="overlay" onMouseDown={() => stage !== 'working' && onClose()}>
@@ -125,7 +127,7 @@ export function DesignDialog({ path, onClose }: { path: string; onClose(): void 
             <p className="hint">
               {stage === 'result' && view
                 ? `${info.name} of “${title}” · ${view.pages} ${view.pages === 1 ? 'page' : 'pages'}${view.rounds ? ` · checked and improved ${view.rounds === 1 ? 'once' : `${view.rounds} times`}` : ' · checked'}${view.score ? ` · design score ${view.score.mean} of 100` : ''}`
-                : `Your AI lays out “${title}” in your brand kit, prints it, checks every page and fixes what is wrong. The note itself is never changed.`}
+                : `Your AI lays out “${title}” in your brand kit, checks every page and fixes what is wrong. Save it as a PDF, PowerPoint, Word or Excel file. The note itself is never changed.`}
             </p>
           </div>
           <button className="icon-button ds-close" aria-label="Close" disabled={stage === 'working'} onClick={onClose}>
@@ -260,9 +262,15 @@ export function DesignDialog({ path, onClose }: { path: string; onClose(): void 
                 Make something else
               </button>
               <span className="ds-space" />
-              <button className="button primary ds-save" disabled={saving} onClick={() => void save()}>
-                <Icon name="download" size={13} /> Save as PDF…
-              </button>
+              {/* Every file it makes, in plain sight: the one that suits the design first (a deck as PowerPoint). */}
+              <div className="ds-label">Save as</div>
+              <div className="ds-saves" role="group" aria-label="Save as">
+                {(view.formats?.length ? view.formats : (['pdf'] as DesignFormat[])).map((f) => (
+                  <button key={f} className={`button${f === mainFormat ? ' primary' : ''}`} disabled={saving !== null} title={`Save as ${DESIGN_FORMATS[f].name === 'PDF' ? 'a PDF' : `a ${DESIGN_FORMATS[f].name} file`}`} onClick={() => void save(f)}>
+                    <Icon name={saving === f ? 'refresh' : FORMAT_ICONS[f]} size={13} /> {DESIGN_FORMATS[f].name}
+                  </button>
+                ))}
+              </div>
             </aside>
           </div>
         )}

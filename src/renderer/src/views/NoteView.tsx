@@ -540,7 +540,7 @@ export function NoteView({ tab, focused }: { tab: W.TabState; focused: boolean }
             </span>
           </>
         )}
-        {!isPrivate && <DesignButton path={path} overflow="design" overflowOrder={9} />}
+        {!isPrivate && <DesignButton path={path} overflow="design" overflowOrder={12} />}
         {!isPrivate && <ShareButton path={path} overflow="share" overflowOrder={11} />}
         <button
           className="icon-button"

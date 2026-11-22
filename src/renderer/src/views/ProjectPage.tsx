@@ -930,7 +930,7 @@ function ProjectShell({
   const headActions = factsOpen ? (
     <>
       {canEdit && <button className="btn" data-overflow="fields" data-overflow-order={2} title="Page layout, progress, add or remove a fact" onClick={(e) => fieldsMenu(e.currentTarget)}>Fields</button>}
-      <DesignButton path={path} overflow="design" overflowOrder={3} />
+      <DesignButton path={path} overflow="design" overflowOrder={4} />
       <button className="btn" data-overflow="share" data-overflow-order={3} title="Share this project" onClick={(e) => shareMenu(e.currentTarget)}>Share</button>
       <button className="btn" data-overflow="publish" data-overflow-order={1} title="Publish this project as a website" onClick={() => openModal({ kind: 'publish', source: { kind: 'project', path } })}>Publish</button>
     </>
@@ -943,7 +943,7 @@ function ProjectShell({
           ))}
         </button>
       )}
-      <DesignButton path={path} overflow="design" overflowOrder={3} />
+      <DesignButton path={path} overflow="design" overflowOrder={4} />
       <button className="btn" data-overflow="share" data-overflow-order={3} title="Share this project" onClick={(e) => shareMenu(e.currentTarget)}>Share</button>
       <button className="btn" data-overflow="publish" data-overflow-order={1} title="Publish this project as a website" onClick={() => openModal({ kind: 'publish', source: { kind: 'project', path } })}>Publish</button>
     </>

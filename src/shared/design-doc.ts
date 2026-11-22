@@ -92,7 +92,22 @@ export interface DesignViewOut {
   rounds: number;
   /** The AI's last judgement of its printed pages (Astryx's five axes, 0 to 100), when its model sees pictures. */
   score?: { layout: number; hierarchy: number; spacing: number; parts: number; colour: number; mean: number };
+  /** The files this design saves as, PDF first (phase 2): slides as PowerPoint, a page document as Word, a note with
+   *  tables or key figures as Excel. */
+  formats: DesignFormat[];
 }
+
+/** The files a design saves as. */
+export type DesignFormat = 'pdf' | 'pptx' | 'docx' | 'xlsx';
+
+export const DESIGN_FORMATS: Record<DesignFormat, { name: string; ext: string; filter: string }> = {
+  pdf: { name: 'PDF', ext: 'pdf', filter: 'PDF' },
+  pptx: { name: 'PowerPoint', ext: 'pptx', filter: 'PowerPoint presentation' },
+  docx: { name: 'Word', ext: 'docx', filter: 'Word document' },
+  xlsx: { name: 'Excel', ext: 'xlsx', filter: 'Excel workbook' },
+};
+
+export const isDesignFormat = (v: unknown): v is DesignFormat => v === 'pdf' || v === 'pptx' || v === 'docx' || v === 'xlsx';
 
 // ── The theme ────────────────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -168,6 +183,23 @@ export function designTheme(kit: BrandKit | null | undefined): DesignTheme {
   const body = bodyFont ? `"${bodyFont.name}",${SANS_FALLBACK}` : SANS_FALLBACK;
   tokens.push(['font-head', head], ['font-body', body], ['font-serif', SERIF_FALLBACK]);
   return { tokens, head, body, branded: !!accentOf(kit), extra };
+}
+
+/** Typefaces every copy of PowerPoint, Word and Excel has (Windows and Mac), with metric twins elsewhere. */
+const OFFICE_FONTS = /^(arial|calibri|cambria|candara|consolas|constantia|corbel|georgia|helvetica|segoe ui|tahoma|times new roman|trebuchet ms|verdana|aptos|garamond|palatino linotype|book antiqua|century gothic|franklin gothic medium|gill sans mt|lucida sans|rockwell)$/i;
+
+/** The theme set in typefaces an Office file can count on (phase 2): a kit font Office has is kept; any other (a web
+ *  font, the app's own type) becomes Arial, or Georgia for a serif. A deck is laid out in these before it is read
+ *  back for PowerPoint, so its words wrap there as they did here. */
+export function officeTheme(theme: DesignTheme): DesignTheme {
+  const pick = (stack: string, fallback: string) => {
+    const first = stack.split(',')[0].replace(/["']/g, '').trim();
+    return OFFICE_FONTS.test(first) ? `"${first}",${fallback}` : fallback;
+  };
+  const head = pick(theme.head, 'Arial,sans-serif');
+  const body = pick(theme.body, 'Arial,sans-serif');
+  const tokens = theme.tokens.map(([k, v]): [string, string] => (k === 'font-head' ? [k, head] : k === 'font-body' ? [k, body] : k === 'font-serif' ? [k, 'Georgia,serif'] : [k, v]));
+  return { ...theme, tokens, head, body };
 }
 
 const rootCss = (t: DesignTheme) => `:root{${t.tokens.map(([k, v]) => `--${k}:${v}`).join(';')}}`;
@@ -740,7 +772,7 @@ function measure(pass){
   secs.forEach(function(sec,si){
     var r=sec.getBoundingClientRect();
     if(sec.classList.contains('page')){pages++;var n=pages;nums.push([sec,n]);boxes.push({x:r.left+scrollX,y:r.top+scrollY,w:r.width,h:r.height});
-      var maxB=0,maxR=0,worst=null,spans=[];
+      var maxB=0,maxR=0,worst=null,spans=[],spillSaid=0;
       var all=sec.querySelectorAll('*');
       for(var i=0;i<all.length;i++){var e=all[i];var q=e.getBoundingClientRect();if(!q.width&&!q.height)continue;var cs=getComputedStyle(e);if(cs.visibility==='hidden'||cs.display==='none')continue;
         var inner=e.closest('svg')&&e.tagName.toLowerCase()!=='svg';if(inner)continue;
@@ -751,6 +783,11 @@ function measure(pass){
         // Words squeezed into a column too narrow for them (a few letters a line).
         // Counted in characters a line (about half the type size each), so a short item in a squeezed column counts too.
         if(ownText(e)&&q.width>0&&(e.textContent||'').trim().length>40){const per=q.width/(parseFloat(cs.fontSize)*0.5);if((q.width<24*MM||per<22)&&q.height>parseFloat(cs.fontSize)*4)problems.push({page:n,kind:'narrow',words:'words squeezed into a column '+Math.round(q.width/MM)+' mm wide, about '+Math.round(per)+' characters a line ("'+words(e)+'"): give it room (35 or more a line)'});}
+        // Words that spill out of their column (a figure set nowrap in a squeezed grid), or a number or single word
+        // broken across lines ("41,00" then "0"): both read as broken, on paper and in PowerPoint.
+        if(ownText(e)&&words(e)&&spillSaid<3){var rg=document.createRange();rg.selectNodeContents(e);var lr=Array.prototype.slice.call(rg.getClientRects()).filter(function(x){return x.width>0&&x.height>0;});
+          if(lr.length){var pr=Math.max.apply(null,lr.map(function(x){return x.right;}));if(pr>q.right+2*MM&&q.width<40*MM){problems.push({page:n,kind:'narrow',words:'words spill out of a column '+Math.round(q.width/MM)+' mm wide ("'+words(e)+'"): give the column room, or fewer columns'});spillSaid++;}
+            else{var tx=(e.textContent||'').trim();var tops={};lr.forEach(function(x){tops[Math.round(x.top)]=1;});if(tx.length>1&&!/\s/.test(tx)&&Object.keys(tops).length>1){problems.push({page:n,kind:'narrow',words:'"'+tx.slice(0,24)+'" is broken across lines: give it room or set it smaller'});spillSaid++;}}}}
         if(e.children.length===0&&words(e)&&parseFloat(cs.fontSize)<7.4*96/72)problems.push({page:n,kind:'small',words:'text smaller than 7.5pt ("'+words(e)+'")'});
       }
       // Words over another box: a title running into a band above it, a panel laid over text (each pair once).

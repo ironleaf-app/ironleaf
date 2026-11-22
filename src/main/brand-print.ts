@@ -10,6 +10,7 @@ import { BrowserWindow, session } from 'electron';
 import { promises as fsp } from 'node:fs';
 import path from 'node:path';
 import type { BrandLaidOut } from '../shared/brand-document';
+import { SLIDE_READ_JS, type SlidePage } from '../shared/design-slides';
 import { fileUrlPath } from './file-url-guard';
 
 export interface BrandPrinter {
@@ -17,7 +18,10 @@ export interface BrandPrinter {
   pdf(html: string): Promise<{ pdf: Buffer; laidOut: BrandLaidOut }>;
   /** The document laid out and looked at (the Design studio, 22 Nov 2026): what its own script measured, and its pages
    *  as pictures (JPEG), from the boxes the script reported, at most `max` of them. The window is the page's width. */
-  look(html: string, o: { width: number; height: number; max: number }): Promise<{ report: BrandLaidOut & Record<string, unknown>; shots: Buffer[] }>;
+  look(html: string, o: { width: number; height: number; max: number; png?: boolean }): Promise<{ report: BrandLaidOut & Record<string, unknown>; shots: Buffer[] }>;
+  /** A designed deck read back for PowerPoint (phase 2): each page's words and boxes, then its picture without the
+   *  words, at twice the resolution (src/shared/design-slides.ts). */
+  slides(html: string, o: { width: number; height: number }): Promise<{ page: SlidePage; background: Buffer }[]>;
 }
 
 const LAYOUT_MS = 45_000;
@@ -110,9 +114,35 @@ export function createBrandPrinter(o: { dir: string; log?: (m: string) => void }
           if (![b.x, b.y, b.w, b.h].every((v) => typeof v === 'number' && Number.isFinite(v)) || b.w < 10 || b.h < 10) continue;
           const sy = Number(await w.webContents.executeJavaScript(`(window.scrollTo(0, ${Math.max(0, Math.floor(b.y))}), new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => r(window.scrollY)))))`, true)) || 0;
           const img = await w.webContents.capturePage({ x: Math.max(0, Math.round(b.x)), y: Math.max(0, Math.round(b.y - sy)), width: Math.round(b.w), height: Math.round(Math.min(b.h, size.height)) });
-          if (!img.isEmpty()) shots.push(img.toJPEG(78));
+          if (!img.isEmpty()) shots.push(size.png ? img.toPNG() : img.toJPEG(78));
         }
         return { report: r, shots };
       }),
+    slides: (html, size) =>
+      open(html, { width: Math.max(200, Math.min(2400, Math.ceil(size.width))), height: Math.max(200, Math.min(2400, Math.ceil(size.height))) }, async (w) => {
+        const pages = (await w.webContents.executeJavaScript(SLIDE_READ_JS, true)) as SlidePage[];
+        // Twice the pixels for the pictures, the layout unchanged: the window doubled and the page zoomed to 2, so the
+        // page is still as many CSS pixels wide (Electron's device emulation doesn't change what capturePage returns).
+        const [cw, ch] = [Math.ceil(size.width), Math.ceil(size.height)];
+        w.setContentSize(cw * 2, ch * 2);
+        w.webContents.setZoomFactor(2);
+        // Until the page is drawn at the new zoom (its pixel ratio 2, its width the same CSS pixels), or about 3 s.
+        for (let i = 0; i < 60; i++) {
+          const [iw, dpr] = ((await w.webContents.executeJavaScript('new Promise((r) => requestAnimationFrame(() => r([window.innerWidth, window.devicePixelRatio])))', true)) as number[]) ?? [0, 0];
+          if (dpr >= 1.99 && Math.abs(iw - cw) <= 2) break;
+          await new Promise((res) => setTimeout(res, 50));
+        }
+        const out: { page: SlidePage; background: Buffer }[] = [];
+        for (const page of (Array.isArray(pages) ? pages : []).slice(0, MAX_SLIDES)) {
+          if (![page.x, page.y, page.w, page.h].every((v) => typeof v === 'number' && Number.isFinite(v)) || page.w < 10 || page.h < 10) continue;
+          const sy = Number(await w.webContents.executeJavaScript(`(window.scrollTo(0, ${Math.max(0, Math.floor(page.y))}), new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => r(window.scrollY)))))`, true)) || 0;
+          const img = await w.webContents.capturePage({ x: Math.max(0, Math.round(page.x * 2)), y: Math.max(0, Math.round((page.y - sy) * 2)), width: Math.round(page.w * 2), height: Math.round(Math.min(page.h, ch) * 2) });
+          if (!img.isEmpty()) out.push({ page, background: img.toPNG() });
+        }
+        return out;
+      }),
   };
 }
+
+/** The most slides a deck is read back for (a deck longer than this is a document). */
+const MAX_SLIDES = 40;

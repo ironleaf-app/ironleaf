@@ -133,7 +133,7 @@ import { createBrandPrinter } from './brand-print';
 import { DesignStudio } from './design-studio';
 import { fileUrlPath } from './file-url-guard';
 import { cleanBrand } from '../shared/assets';
-import { kindInfo as designKindInfo, type DesignStartIn } from '../shared/design-doc';
+import { DESIGN_FORMATS, isDesignFormat, kindInfo as designKindInfo, type DesignStartIn } from '../shared/design-doc';
 import { createEditionPrinter } from './edition-print';
 import { pathToFileURL } from 'node:url';
 import type { Project } from '../shared/project-file';
@@ -4002,13 +4002,15 @@ reminders. */
     handle('design:cancel', (requestId: unknown) => {
       if (typeof requestId === 'string') designControllers.get(requestId)?.abort();
     });
-    handle('design:save', async (id: unknown, name: unknown) => {
-      const { pdf, kind } = await designStudio.pdf(id);
+    handle('design:save', async (id: unknown, name: unknown, format: unknown = 'pdf') => {
+      if (!isDesignFormat(format)) throw new Error('Choose PDF, PowerPoint, Word or Excel.');
+      const f = DESIGN_FORMATS[format];
+      const { data, kind } = await designStudio.file(id, format);
       const base = cleanFileName(typeof name === 'string' && name.trim() ? `${name} – ${kind.name}` : kind.name, 'Design');
       const testDir = !app.isPackaged && host.kind === 'standalone' ? process.env.NV_TEST_EXPORT_DIR : '';
-      const result = testDir ? { canceled: false, filePath: path.join(testDir, `${base}.pdf`) } : await showSave({ title: 'Save the design as a PDF', defaultPath: path.join(app.getPath('documents'), `${base}.pdf`), filters: [{ name: 'PDF', extensions: ['pdf'] }] });
+      const result = testDir ? { canceled: false, filePath: path.join(testDir, `${base}.${f.ext}`) } : await showSave({ title: `Save the design as ${f.name === 'PDF' ? 'a PDF' : f.name}`, defaultPath: path.join(app.getPath('documents'), `${base}.${f.ext}`), filters: [{ name: f.filter, extensions: [f.ext] }] });
       if (result.canceled || !result.filePath) return null;
-      await fsp.writeFile(result.filePath, pdf);
+      await fsp.writeFile(result.filePath, data);
       exported.add(result.filePath);
       return result.filePath;
     });
@@ -6105,11 +6107,11 @@ reminders. */
       return { pdf, pages: laidOut.pages };
     },
     // A note designed by the person's AI for an AI's call (design_document, 22 Nov 2026): the Design studio's own loop.
-    design: async (input) => {
+    design: async (input, format) => {
       if (!models.effectiveChoice(settings.raw.model)) throw new Error('Designing needs an AI: choose one in Settings › AI.');
       const view = await designStudio.start(input, () => {}, AbortSignal.timeout(15 * 60_000));
-      const { pdf, pages } = await designStudio.pdf(view.id);
-      return { pdf, pages, problems: view.problems };
+      const { data } = await designStudio.file(view.id, view.formats.includes(format) ? format : 'pdf');
+      return { data, ext: DESIGN_FORMATS[view.formats.includes(format) ? format : 'pdf'].ext, pages: view.pages, problems: view.problems };
     },
     changed: () => send('agents:changed', null),
     log: (m) => host.log?.(m),
