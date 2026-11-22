@@ -67,8 +67,11 @@ test('the Overview is the ten-second read, each block ending in its tab', () => 
     assert.ok(ov.includes(`aria-label="${block}"`) && ov.includes(`all('${tab}'`), `${block} ends in All N for ${tab}`);
   }
   assert.ok(ov.includes('All {n}'), 'the one All N link all blocks share');
-  assert.ok(ov.includes('mine.slice(0, 3)') && ov.includes('kd.coming.slice(0, 3)'), 'three next steps, three key dates');
-  assert.ok(ov.includes('slice(-3)') && ov.includes('decisions.slice(0, 3)'), 'the latest three updates and decisions');
+  // Layout round 3: a roomy window (useRoomy, 1800x900 and up) shows each block whole in its own pane; a smaller
+  // one keeps three rows each.
+  assert.ok(ov.includes('const cap = roomy ? 50 : 3;'), 'three rows a block, every row on a roomy window');
+  assert.ok(ov.includes('mine.slice(0, cap)') && ov.includes('kd.coming.slice(0, cap)'), 'next steps and key dates by that cap');
+  assert.ok(ov.includes('updates.slice(-cap)') && ov.includes('decisions.slice(0, cap)'), 'the latest updates and decisions by that cap');
   assert.ok(ov.includes('openRisksRanked(p)'), 'open risks by rank');
   const ovDate = t.slice(t.indexOf('function OvDateRow'), t.indexOf('function OvDateRow') + 1500);
   assert.ok(ovDate.includes('<WentByAsk index={index}'), 'a past date asks its question, answered in one click');
@@ -188,7 +191,8 @@ test('every tab opens and its count equals its rows', { timeout: 300000 }, async
     await openTab(h, id);
     const badge = await tabCount(h, id);
     assert.equal(badge.quiet, false, `${id} reads open, not quiet`);
-    const n = await h.browser.ev(`[...document.querySelectorAll(${JSON.stringify(sel)})].filter((el) => ${id === 'whats-next' ? '!el.closest("details")' : 'true'}).length`);
+    // Rows on show only: a tab already visited stays mounted, hidden, so it comes back at once (its rows would count twice).
+    const n = await h.browser.ev(`[...document.querySelectorAll(${JSON.stringify(sel)})].filter((el) => el.getClientRects().length > 0 && ${id === 'whats-next' ? '!el.closest("details")' : 'true'}).length`);
     assert.equal(badge.count, n, `${id}: the count equals its rows (${badge.count} vs ${n})`);
     const selected = await h.browser.ev(`document.querySelector('[role="tab"][aria-selected="true"]')?.getAttribute('data-tab')`);
     assert.equal(selected, id, `${id} reads selected`);
@@ -267,11 +271,11 @@ test('a due date from Today opens Facts and flashes its row', { timeout: 300000 
   await sleep(1500);
   // The project's own due date lists in Also › Later ("Harbour Festival Build is due", flagged).
   const shown = await h.browser.ev(`(async () => {
+    // Today since layout round 2: the Later group stands in the day's list; More for today (the fold) may hold it.
     const also = document.querySelector('main [data-section="also"]');
-    if (!also) return 'NOALSO';
-    const fold = [...also.querySelectorAll('button.td-more')].find((b) => (b.innerText || '').includes('Show'));
+    const fold = also ? [...also.querySelectorAll('button.td-more')].find((b) => (b.innerText || '').includes('Show')) : null;
     if (fold && fold.getAttribute('aria-expanded') !== 'true') { fold.click(); await new Promise((r) => setTimeout(r, 800)); }
-    const group = also.querySelector('.td-group.later');
+    const group = document.querySelector('main .td-group.later');
     if (!group) return 'NOLATER';
     const more = [...group.querySelectorAll('button')].find((b) => (b.innerText || '').startsWith('Show all'));
     if (more) { more.click(); await new Promise((r) => setTimeout(r, 800)); }
