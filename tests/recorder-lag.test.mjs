@@ -99,7 +99,8 @@ test('the test-laptop meeting, driven with a fake service: behind one at a time,
   const firstPc2 = together.land.get('piece 0 pc');
   assert.ok(Math.abs(firstPc2 - firstMic2) < 150, `both sides land together (${firstPc2 - firstMic2} ms apart)`);
   const unwrittenTogether = clips.filter((c) => (together.land.get(c.key) ?? Infinity) > lastCut).length;
-  assert.ok(unwrittenTogether <= 2, `together stays close behind (${unwrittenTogether} unwritten at Stop)`);
+  // Measured against one at a time on the same machine, so a slow runner (a shared Windows CI box) doesn't fail it.
+  assert.ok(unwrittenTogether * 3 <= unwrittenOne, `together stays close behind (${unwrittenTogether} unwritten at Stop, against ${unwrittenOne} one at a time)`);
   const drainOne = one.wall - lastCut;
   const drainTogether = together.wall - lastCut;
   assert.ok(drainTogether < drainOne / 2, `after Stop the wait is half as long (${drainTogether} ms against ${drainOne} ms)`);
