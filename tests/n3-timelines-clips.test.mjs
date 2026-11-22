@@ -257,8 +257,9 @@ describe('live: nothing a person reads is clipped', () => {
       assert.ok(hero.pill, 'the hero carries its status pill');
       assert.equal(hero.pillClips, false, `the pill reads whole ("${hero.pill}")`);
       assert.equal(hero.pillCut, false, 'the pill sits inside the hero, never past its edge');
-      assert.equal(hero.tabs, 13, 'thirteen tabs stand in the bar');
-      assert.ok((hero.over ?? 0) > 2, 'the bar scrolls sideways past thirteen tabs');
+      // Twelve since the Chats tab went with the AI chat (20 Nov 2026).
+      assert.equal(hero.tabs, 12, 'twelve tabs stand in the bar');
+      assert.ok((hero.over ?? 0) > 2, 'the bar scrolls sideways past twelve tabs');
       assert.notEqual(hero.fade, 'none', 'a fade signals the tabs that hide');
       assert.deepEqual(hero.uncut, [], `no tab name cut with dots: ${hero.uncut.join(', ')}`);
       assert.deepEqual(await reachWhole(), [], 'every tab scrolls whole into view');

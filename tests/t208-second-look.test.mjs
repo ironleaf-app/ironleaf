@@ -194,7 +194,10 @@ test('Today Waiting: steps and note lines read as one', { timeout: 120000 }, asy
   assert.equal(await h.browser.ev(`(document.querySelector('[data-section="also"] .td-more')?.click(), !!document.querySelector('[data-section="also"] .td-more'))`), true, 'Also opens');
   await sleep(800);
   const rows = await h.browser.ev(ROWS_JS('[data-section="waiting"] .td-row.tkrow', '.td-row-what', '.td-row-sub', '.tkrow-when'));
-  assertOneList(rows, 'Waiting on others', ['td-wait', 'th-due-row']);
+  // Layout round 2: other people's lines in your notes are counted here and listed in Tasks (never 80 rows on
+  // Today), so Waiting's rows are the steps, grouped by who they wait on.
+  assertOneList(rows, 'Waiting on others', ['td-wait']);
+  assert.equal(await h.browser.ev(`document.querySelectorAll('[data-section="waiting"] .th-due-row').length`), 0, 'note lines are a count, not rows');
 });
 
 test('Tasks: the same titles and subs as Today', { timeout: 120000 }, async () => {
