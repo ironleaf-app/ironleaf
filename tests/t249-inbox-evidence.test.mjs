@@ -57,7 +57,11 @@ test('filler titles read as filler; shared words need distinctive words', () => 
 const TOM = 'Work/People/Tom Bradley.md';
 const PAST = 'Work/Meetings/2026-11-10 Tuesday standup.md';
 const PAST_AWNING = 'Work/Meetings/2026-11-09 Awning site visit.md';
-const FUTURE = 'Work/Meetings/2026-11-14 Awning deposit review with June.md';
+// A week from whenever this runs: a coming meeting stays coming (a fixed 14 Nov 2026 turned past, and a past meeting
+// rightly needs a link before it is offered).
+const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const SOON = iso(new Date(Date.now() + 7 * 864e5));
+const FUTURE = `Work/Meetings/${SOON} Awning deposit review with June.md`;
 const FILLER = 'Me/Me note 715.md';
 const HARBOUR = 'Work/Projects/Harbour/Harbour.md';
 const BANK = 'Call the bank about the card reader that failed twice on Saturday morning';
@@ -152,7 +156,7 @@ const vaultFiles = () => ({
   [TOM]: '---\ntype: person\n---\n# Tom Bradley\n\nElectrician.\n',
   [PAST]: '---\ntype: meeting\ndate: 2026-11-10\n---\n# 2026-11-10 Tuesday standup\n\nStood up, sat down.\n',
   [PAST_AWNING]: '---\ntype: meeting\ndate: 2026-11-09\n---\n# 2026-11-09 Awning site visit\n\nLooked at the awning brackets.\n',
-  [FUTURE]: '---\ntype: meeting\ndate: 2026-11-14\n---\n# 2026-11-14 Awning deposit review with June\n\nThe awning deposit and the December books.\n',
+  [FUTURE]: `---\ntype: meeting\ndate: ${SOON}\n---\n# ${SOON} Awning deposit review with June\n\nThe awning deposit and the December books.\n`,
   [FILLER]: '# Me note 715\n\nThe shop was quiet on Tuesday morning.\n',
   '.neuralvault/areas.json': JSON.stringify({ version: 1, areas: [{ id: 'work', name: 'Work', folder: 'Work' }] }),
 });
