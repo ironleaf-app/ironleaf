@@ -1360,3 +1360,24 @@ export function autoVoiceNames(
   }
   return { names, confidence };
 }
+
+/** A long summary in short paragraphs (t273): the note's own breaks kept; a long unbroken stretch splits by
+ *  sentence, two to a paragraph. The meeting page's summary and the minutes card read it the same way. */
+export function summaryParagraphs(s: string): string[] {
+  const out: string[] = [];
+  for (const chunk of s.split(/\n\s*\n/)) {
+    const t = chunk.replace(/\s+/g, ' ').trim();
+    if (!t) continue;
+    if (t.length <= 320) {
+      out.push(t);
+      continue;
+    }
+    const sentences = splitSentences(t);
+    if (sentences.length < 2) {
+      out.push(t);
+      continue;
+    }
+    for (let i = 0; i < sentences.length; i += 2) out.push(sentences.slice(i, i + 2).join(' '));
+  }
+  return out.length ? out : [s];
+}
