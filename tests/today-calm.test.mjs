@@ -127,15 +127,15 @@ test('chips wire the areas that hold something; linked notes wire out of waiting
   assert.ok(shared.includes('!n.linked'), 'the shared rule drops them');
 });
 
-test('past 2400px Today stands in the rooms’ column and Also pairs its groups, capped short of the window', () => {
-  // Step 2 (12 Nov 2026): no white oceans — the column widens and Also's groups pair into side columns. t254
-  // (13 Nov 2026): Today's own 2000 cap left 582 dead pixels each side, so their words replace it — Today
-  // stands in the rooms' one 2400 column.
-  const css = read('src/renderer/src/styles/polish-shell.css');
-  assert.ok(/@media \(min-width: 2400px\)\s*\{\s*:root\s*\{\s*--page-max:\s*2400px/s.test(css), 'the rooms’ one column reads 2400 past 2400px');
-  assert.ok(!/\.td-inner\s*\{\s*max-width:\s*2000px/.test(css), 'Today keeps no width of its own past the rooms’ (t254)');
-  const wide = css.split('@media (min-width: 2400px)')[1] ?? assert.fail('no 2400px rule');
-  assert.ok(wide.includes('.td-else-groups') && wide.includes('grid-template-columns'), 'Also’s groups pair into side columns');
+test('Today takes the frame like every room, and its sections balance into columns', () => {
+  // Layout round 2 (compose.css, 20 Nov 2026) replaced the 2400 column and Also's paired groups: every room takes
+  // the room from one left edge (--page-max 100%), Today with no width of its own, and Today's sections (Needs you,
+  // the packs' blocks, More for today once open) balance into columns through the shared Balance.
+  const compose = read('src/renderer/src/styles/compose.css');
+  assert.ok(/:root\s*\{[^}]*--page-max:\s*100%/s.test(compose), 'the rooms take the room');
+  assert.ok(/\.td-inner\.td-inner,[^{]*\{[^}]*max-width:\s*none/s.test(compose), 'Today keeps no width of its own');
+  const today = read('src/renderer/src/views/TodayView.tsx');
+  assert.ok(today.includes('<Balance') && today.includes('...(elseOpen ? moreForToday : [])'), 'More for today balances its sections with the rest once open');
 });
 
 // ── Live: a vault as busy as a real one ──────────────────────────────────────────

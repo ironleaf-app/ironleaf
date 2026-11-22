@@ -21,25 +21,24 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 // ── Static: the shared mechanism ─────────────────────────────────────────────
 // The wide-window steps ride at the end of their sheets (scoped additions, not rewrites).
 
-test('rooms widen through the one shared variable, in two steps', () => {
-  // The steps live in polish-shell.css: it redefines --page-max after the frame and loads last, so only its
-  // rules can move the rooms (page-frame.css keeps routing every room through the variable, as p25 proves).
-  // t254 (13 Nov 2026): the second step's 1440 left 862 dead pixels each side of every room at their
-  // window, so their words replace it with 2400.
-  const shell = read('src/renderer/src/styles/polish-shell.css');
-  assert.ok(/:root\s*\{[^}]*--page-max:\s*1080px/s.test(shell), 'below 1700px the 1080 column stands');
-  const ultra = shell.indexOf('@media (min-width: 1700px)');
-  assert.ok(ultra > 0, 'the first step starts past 1700px viewports, as the host app’s');
-  assert.ok(/--page-max:\s*1280px/.test(shell.slice(ultra)), 'past 1700px rooms share the 1280 ultra measure');
-  const owner = shell.indexOf('@media (min-width: 2400px)', ultra);
-  assert.ok(owner > ultra, 'the second step starts past 2400px viewports');
-  assert.ok(/--page-max:\s*2400px/.test(shell.slice(owner)), 'past 2400px rooms share the 2400 measure (t254)');
+test('rooms take the frame through the one shared variable', () => {
+  // Layout round 2 (compose.css, 20 Nov 2026): composed, not centred. Every room's frame starts at one left edge and
+  // takes the room; compose.css, loaded last of the width sheets, sets the shared --page-max to 100%, so the older
+  // 1080/1280/2400 steps (polish-shell.css) and the --w-content column (page-frame.css) give way.
+  const compose = read('src/renderer/src/styles/compose.css');
+  assert.ok(/:root\s*\{[^}]*--page-max:\s*100%/s.test(compose), 'the rooms take the room');
+  const main = read('src/renderer/src/main.tsx');
+  const at = (f) => main.indexOf(`import './styles/${f}';`);
+  assert.ok(at('compose.css') > at('polish-shell.css') && at('compose.css') > at('page-frame.css') && at('page-frame.css') > 0, 'compose.css loads after the older width sheets');
+  const frame = read('src/renderer/src/styles/page-frame.css');
+  assert.ok(frame.includes('max-width: var(--page-max)'), 'page-frame.css still routes every room through the variable');
 });
 
 test('reading pages stay narrow at every size', () => {
   const frame = read('src/renderer/src/styles/page-frame.css');
   assert.ok(/\.nv-page\.read\s*\{[^}]*max-width:\s*var\(--page-read\)/s.test(frame), 'reading pages keep --page-read');
-  assert.ok(/--page-read:\s*920px/.test(frame), 'the reading measure stands');
+  // 20 Nov 2026: the reading measure is the named --w-reading (720 px of text) plus the frame's gutters.
+  assert.ok(/--w-reading:\s*720px/.test(frame) && /--page-read:\s*calc\(var\(--w-reading\) \+ 2 \* var\(--page-pad-side\)\)/.test(frame), 'the reading measure stands');
 });
 
 test('the shared explainer paragraph keeps its own cap on wide windows', () => {
@@ -163,37 +162,45 @@ const MEASURE_JS = `(() => {
   const box = document.querySelector('main .nv-page, main .vpage.wide, main .td-inner, main .settings-page, main .nv-page-frame');
   const r = box?.getBoundingClientRect();
   const nav = document.querySelector('nav.places-list');
+  const parent = box?.parentElement;
+  const ps = parent ? getComputedStyle(parent) : null;
   return {
     boxW: r ? Math.round(r.width) : null,
+    left: r ? Math.round(r.left) : null,
+    room: parent ? Math.round(parent.clientWidth - parseFloat(ps.paddingLeft) - parseFloat(ps.paddingRight)) : null,
     docX: document.documentElement.scrollWidth > window.innerWidth + 1,
     navScrolls: nav ? nav.scrollHeight > nav.clientHeight + 1 : null,
   };
 })()`;
 
-async function roomsAt(h, rooms, size, want) {
+// Layout round 2 (compose.css): composed, not centred. Every room's page box takes the room its frame gives it
+// (no 1280 or 2400 column with empty sides) and starts at the one left edge.
+async function roomsAt(h, rooms, size) {
   const [w, hh] = size;
   await h.browser.send('Emulation.setDeviceMetricsOverride', { width: w, height: hh, deviceScaleFactor: 1, mobile: false });
   await sleep(600);
+  const lefts = [];
   for (const room of rooms) {
     await openRoom(h, room);
     await sleep(900);
     const m = await h.browser.ev(MEASURE_JS);
     assert.equal(m.docX, false, `${room} scrolls nowhere sideways at ${w}x${hh}`);
     assert.equal(m.navScrolls, false, `the nav never scrolls on ${room} at ${w}x${hh}`);
-    // t254 (13 Nov 2026): Today stands in the rooms' one column again — its own 2000 cap left 582 dead
-    // pixels each side, so their words replace it too, and every room below shares the one want.
-    assert.ok(m.boxW !== null && Math.abs(m.boxW - want) <= 2, `${room} stands in the ${want} column at ${w}x${hh} (stood ${m.boxW})`);
+    assert.ok(m.boxW !== null && m.boxW >= m.room - 2, `${room} takes its room at ${w}x${hh} (stood ${m.boxW} of ${m.room})`);
+    lefts.push(`${room}=${m.left}`);
   }
+  const xs = lefts.map((x) => Number(x.split('=')[1]));
+  assert.ok(Math.max(...xs) - Math.min(...xs) <= 2, `every room starts at one left edge at ${w}x${hh} (${lefts.join(', ')})`);
 }
 
-test('rooms stand in the 1280 column at 1920x1117', { timeout: 600000 }, async () => {
+test('rooms take the frame at 1920x1117', { timeout: 600000 }, async () => {
   const h = await harness();
-  await roomsAt(h, ['Today', 'Inbox', 'Notes', 'Money', 'Settings'], [1920, 1117], 1280);
+  await roomsAt(h, ['Today', 'Inbox', 'Notes', 'Money', 'Settings'], [1920, 1117]);
 });
 
-test('rooms stand in the 2400 column at 3456x1408', { timeout: 600000 }, async () => {
+test('rooms take the frame at 3456x1408', { timeout: 600000 }, async () => {
   const h = await harness();
-  await roomsAt(h, ['Today', 'Inbox', 'Projects', 'Tasks', 'Notes', 'Money', 'Goals', 'Settings'], [3456, 1408], 2400);
+  await roomsAt(h, ['Today', 'Inbox', 'Projects', 'Tasks', 'Notes', 'Money', 'Goals', 'Settings'], [3456, 1408]);
 });
 
 test('the rings graph fills a wide window with its legend over it', { timeout: 600000 }, async () => {

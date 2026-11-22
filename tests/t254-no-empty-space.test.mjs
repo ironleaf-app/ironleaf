@@ -29,17 +29,15 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // ── Static: the shared mechanisms ────────────────────────────────────────────
 
-test('the rooms’ one column reads 2400 past 2400px, and Today stands in it', () => {
-  const shell = read('src/renderer/src/styles/polish-shell.css');
-  assert.ok(/:root\s*\{[^}]*--page-max:\s*1080px/s.test(shell), 'below 1700px the 1080 column stands');
-  const ultra = shell.indexOf('@media (min-width: 1700px)');
-  assert.ok(/--page-max:\s*1280px/.test(shell.slice(ultra)), 'past 1700px the 1280 ultra measure stands');
-  const owner = shell.indexOf('@media (min-width: 2400px)', ultra);
-  assert.ok(owner > ultra, 'the second step starts past 2400px viewports');
-  assert.ok(/--page-max:\s*2400px/.test(shell.slice(owner)), 'past 2400px rooms share the 2400 measure');
-  assert.ok(!/\.td-inner\s*\{\s*max-width:\s*2000px/.test(shell), 'Today keeps no width of its own');
-  assert.ok(/\.td-else-groups\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\) minmax\(0, 1fr\)/s.test(shell), 'Also’s groups still pair inside it');
-  assert.ok(shell.includes('.td-else-groups > :first-child:nth-last-child(odd)'), 'the odd count’s first spans with no :has');
+test('the rooms take the frame, and Today stands in it', () => {
+  // Layout round 2 (compose.css, 20 Nov 2026) replaced the 1080/1280/2400 column steps: every room's frame starts at
+  // one left edge and takes the room (--page-max 100%), Today included, and Today's More for today balances its
+  // sections into columns through the shared Balance instead of pairing them in a grid.
+  const compose = read('src/renderer/src/styles/compose.css');
+  assert.ok(/:root\s*\{[^}]*--page-max:\s*100%/s.test(compose), 'the rooms take the room');
+  assert.ok(/\.td-inner\.td-inner,[^{]*\{[^}]*max-width:\s*none/s.test(compose), 'Today keeps no width of its own');
+  const today = read('src/renderer/src/views/TodayView.tsx');
+  assert.ok(today.includes("import { Balance, type BalanceItem } from '../components/Balance';") && today.includes('<Balance'), 'Today’s sections balance into columns');
 });
 
 test('pack sections pair two across with the odd first spanning, never a :has', () => {
