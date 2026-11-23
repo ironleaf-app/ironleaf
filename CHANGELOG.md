@@ -6,6 +6,13 @@ the website. `tools/release.mjs` takes a release's notes from here when `--notes
 
 Format: one `## <version> — <YYYY-MM-DD>` heading a release, then one `- ` line a change.
 
+## 2.0.17 — 2026-11-24
+
+- Skills: ready-made know-how the assistant loads when a job needs it. Built in: Word documents, Excel workbooks, PowerPoint decks, PDFs, designed documents, meeting minutes, project status reports, organising notes and making a skill. Settings › AI › Skills switches each on or off.
+- Your own skills: a folder in your notes with a SKILL.md. Ask the assistant to “make that a skill”, start one with New skill, make a built-in one yours, or bring in one someone published (its SKILL.md, or a .zip or .skill file) with Add a skill. Skills are words only: nothing in one is ever run.
+- The assistant makes a new Word document, Excel workbook (with working formulas) or PowerPoint deck at once, in your brand kit, kept with the project or note it is for.
+- Claude Desktop, Cursor and other AI apps connected to Ironleaf see the same skills: as tools, and as prompts to pick by name.
+
 ## 2.0.16 — 2026-11-23
 
 - One design language across the app: one spacing scale, quieter menus and dialogs, one strong button per page, and every screen checked at a normal window, a 2560 px monitor and in dark.
