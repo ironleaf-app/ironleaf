@@ -27,9 +27,10 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { after, before, test } from 'node:test';
 import { startHarness } from './vault-controls-harness.mjs';
+import { cssPxFor } from './css-px.mjs';
 
 const root = path.join(import.meta.dirname, '..');
-const read = (p) => readFileSync(path.join(root, p), 'utf8');
+const read = (p) => cssPxFor(p, readFileSync(path.join(root, p), 'utf8'));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // ── Static: every fix sits at its mechanism ────────────────────────────────

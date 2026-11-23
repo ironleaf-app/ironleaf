@@ -4,7 +4,7 @@
 .pjfh-card {
   container-type: inline-size;
   margin: -4px 0 20px;
-  padding: 16px 18px 14px;
+  padding: var(--space-4) 18px 14px;
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised);
@@ -61,7 +61,7 @@
   gap: 6px;
   max-width: 100%;
   margin: 9px 0 0;
-  padding: 4px 9px;
+  padding: var(--space-1) 9px;
   border-radius: var(--r-2);
   background: var(--bg-hover, color-mix(in srgb, var(--text) 5%, transparent));
   font-family: var(--font-mono, ui-monospace, 'Cascadia Mono', Consolas, monospace);
@@ -86,7 +86,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   margin: 14px 0 0 52px;
 }
 
@@ -97,7 +97,7 @@
 }
 
 .pjfh-quiet {
-  padding: 6px 8px;
+  padding: 6px var(--space-2);
   border: 0;
   border-radius: var(--r-2);
   background: none;
@@ -118,13 +118,13 @@
 }
 
 .pjfh-found {
-  margin: 12px 0 0 52px;
-  padding-top: 12px;
+  margin: var(--space-3) 0 0 52px;
+  padding-top: var(--space-3);
   border-top: 1px solid var(--border);
 }
 
 .pjfh-found p {
-  margin: 0 0 8px;
+  margin: 0 0 var(--space-2);
   font-size: var(--fs-small);
   color: var(--text);
 }
@@ -140,7 +140,7 @@
 .pjfh-found li {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   min-width: 0;
   font-size: var(--fs-small);
   color: var(--text-muted);

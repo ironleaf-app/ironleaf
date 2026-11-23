@@ -33,7 +33,7 @@ test('More pages: every control works, on the big vault', { timeout: 2700000 }, 
     { page: 'Timeline', open: () => more('Timeline'), stay: PAGENAME('Timeline'), scope: 'main', skip: ['Today'] },
     { page: 'Automations', open: () => more('Automations'), stay: PAGENAME('Automations'), scope: 'main' },
     { page: 'Shared spaces', open: () => more('Shared spaces'), stay: H1('Shared spaces'), scope: 'main' },
-    { page: 'Abilities', open: () => more('What Ironleaf can do'), stay: PAGENAME('What the Vault can do'), scope: 'main' },
+    { page: 'Abilities', open: () => more('What Ironleaf can do'), stay: PAGENAME('What Ironleaf can do'), scope: 'main' },
     { page: 'Tags', open: () => more('Tags'), stay: MODAL_STAY, scope: DIALOG_SEL },
     { page: 'Areas', open: () => more('Areas of life', 'Organise by area'), stay: MODAL_STAY, scope: DIALOG_SEL },
   ];

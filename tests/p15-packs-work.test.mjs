@@ -7,9 +7,10 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { cssPxFor } from './css-px.mjs';
 
 const root = process.env.NV_P15W_ROOT || path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const read = (f) => readFileSync(path.join(root, f), 'utf8');
+const read = (f) => cssPxFor(f, readFileSync(path.join(root, f), 'utf8'));
 
 // ── One left edge (the sub, facts and body start at the column edge, like every other page) ──
 

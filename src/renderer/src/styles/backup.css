@@ -3,14 +3,14 @@
 .backup-protects {
   max-width: 62ch;
   line-height: 1.55;
-  margin: 2px 0 10px;
+  margin: var(--space-0) 0 var(--space-2);
 }
 
 .backup-signin {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .backup-error {
@@ -19,5 +19,5 @@
 }
 
 .setting-row .capture-status + .capture-status {
-  margin-top: 3px;
+  margin-top: var(--space-0);
 }

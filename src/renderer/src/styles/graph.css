@@ -12,9 +12,9 @@
 .lg-note { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 20px; }
 
 /* The legend: the areas with their colours and counts; a row hides or shows its area. It never scrolls. */
-.lg-legend { position: absolute; top: 12px; left: 12px; z-index: 2; width: 196px; padding: 10px 8px 8px; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: var(--r-3); background: rgba(10, 14, 23, 0.84); backdrop-filter: blur(8px); }
-.lg-head { margin: 0 4px 6px; font-size: var(--fs-caption); font-weight: 600; color: #9aa5b8; }
-.lg-row { display: flex; align-items: center; gap: 8px; width: 100%; padding: 4px 6px; border: 0; border-radius: var(--r-2); background: transparent; color: #e6ebf4; font: inherit; font-size: var(--fs-small); cursor: pointer; }
+.lg-legend { position: absolute; top: 12px; left: 12px; z-index: 2; width: 196px; padding: 10px var(--space-2) var(--space-2); border: 1px solid rgba(255, 255, 255, 0.14); border-radius: var(--r-3); background: rgba(10, 14, 23, 0.84); backdrop-filter: blur(8px); }
+.lg-head { margin: 0 var(--space-1) 6px; font-size: var(--fs-caption); font-weight: 600; color: #9aa5b8; }
+.lg-row { display: flex; align-items: center; gap: var(--space-2); width: 100%; padding: var(--space-1) 6px; border: 0; border-radius: var(--r-2); background: transparent; color: #e6ebf4; font: inherit; font-size: var(--fs-small); cursor: pointer; }
 .lg-row:hover { background: rgba(255, 255, 255, 0.07); }
 .lg-row:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
 .lg-row.is-off { color: #6b7488; }
@@ -25,7 +25,7 @@
 .lg-row.is-off .lg-count { color: #525a6e; }
 .lg-more { padding: 3px 6px 0; font-size: var(--fs-caption); color: #6b7488; }
 /* The one quiet switch: the app's own switch, its on-track in coral so it reads on the dark. */
-.lg-rest { display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 6px 6px 2px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: #c3ccde; font-size: var(--fs-small); cursor: pointer; }
+.lg-rest { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-2); padding: 6px 6px var(--space-0); border-top: 1px solid rgba(255, 255, 255, 0.1); color: #c3ccde; font-size: var(--fs-small); cursor: pointer; }
 .lg-legend input[type='checkbox'].switch { width: 34px; height: 20px; }
 .lg-legend input[type='checkbox'].switch::after { top: 3px; left: 3px; width: 14px; height: 14px; }
 .lg-legend input[type='checkbox'].switch:checked { background: var(--accent-base, #357553); }
@@ -33,13 +33,13 @@
 
 /* The selection card (8 Nov 2026, the no-wait clicks): the picked note's name, area and link
    count with its Open, by the point. Dark glass like the legend, one coral Open; long names wrap whole. */
-.lg-card { position: absolute; z-index: 3; width: 220px; padding: 10px 12px; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: var(--r-3); background: rgba(10, 14, 23, 0.92); backdrop-filter: blur(8px); }
+.lg-card { position: absolute; z-index: 3; width: 220px; padding: 10px var(--space-3); border: 1px solid rgba(255, 255, 255, 0.14); border-radius: var(--r-3); background: rgba(10, 14, 23, 0.92); backdrop-filter: blur(8px); }
 .lg-card-title { color: #edf1f9; font-size: var(--fs-reading); font-weight: 600; line-height: 1.35; overflow-wrap: break-word; }
-.lg-card-sub { margin-top: 2px; color: #9aa5b8; font-size: var(--fs-caption); }
-.lg-card-actions { display: flex; gap: 8px; margin-top: 8px; }
-.lg-card-open { flex: none; padding: 5px 12px; border: 0; border-radius: var(--r-2); background: var(--accent-base, #357553); color: #fff; font: inherit; font-size: var(--fs-small); font-weight: 600; cursor: pointer; }
+.lg-card-sub { margin-top: var(--space-0); color: #9aa5b8; font-size: var(--fs-caption); }
+.lg-card-actions { display: flex; gap: var(--space-2); margin-top: var(--space-2); }
+.lg-card-open { flex: none; padding: 5px var(--space-3); border: 0; border-radius: var(--r-2); background: var(--accent-base, #357553); color: #fff; font: inherit; font-size: var(--fs-small); font-weight: 600; cursor: pointer; }
 .lg-card-open:hover { filter: brightness(1.1); }
-.lg-card-centre { flex: none; padding: 5px 12px; border: 0; border-radius: var(--r-2); background: transparent; color: #c3ccde; font: inherit; font-size: var(--fs-small); font-weight: 500; cursor: pointer; }
+.lg-card-centre { flex: none; padding: 5px var(--space-3); border: 0; border-radius: var(--r-2); background: transparent; color: #c3ccde; font: inherit; font-size: var(--fs-small); font-weight: 500; cursor: pointer; }
 .lg-card-centre:hover { background: rgba(255, 255, 255, 0.07); color: #fff; }
 .lg-card-open:focus-visible, .lg-card-centre:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
 

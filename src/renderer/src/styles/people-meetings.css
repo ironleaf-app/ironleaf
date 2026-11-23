@@ -1,27 +1,27 @@
 /* People, a person, and the top of a meeting (Job B, 29 Oct 2026, SPEC B): rows about the person's work, theme tokens only. */
-.pm-filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 16px 0 8px; }
+.pm-filters { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; margin: var(--space-4) 0 var(--space-2); }
 .pm-list { list-style: none; margin: 0; padding: 0; }
 .pm-row { border-bottom: 1px solid var(--border); }
-.pm-row-main { display: flex; gap: 12px; align-items: flex-start; width: 100%; padding: 12px 8px; text-align: left; background: none; border: 0; cursor: pointer; color: var(--text); }
+.pm-row-main { display: flex; gap: var(--space-3); align-items: flex-start; width: 100%; padding: var(--space-3) var(--space-2); text-align: left; background: none; border: 0; cursor: pointer; color: var(--text); }
 .pm-row-main:hover, .pm-row.is-selected .pm-row-main { background: var(--bg-hover); }
 .pm-row-main:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
 .pm-avatar { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background: color-mix(in srgb, hsl(var(--hue) 45% 55%) 22%, transparent); color: var(--text); font-weight: 650; font-size: var(--fs-small); }
-.pm-row-words { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.pm-row-words { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--space-0); }
 .pm-name { font-weight: 650; }
 .pm-sub, .pm-facts { color: var(--text-muted); font-size: var(--fs-small); overflow-wrap: anywhere; }
-.pm-facts { display: flex; flex-wrap: wrap; gap: 4px 14px; font-variant-numeric: tabular-nums; }
+.pm-facts { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-3); font-variant-numeric: tabular-nums; }
 .pm-fact.is-due { color: var(--danger); font-weight: 600; }
 .pm-avatars { display: inline-flex; }
-.pm-avatars .pm-avatar { width: 22px; height: 22px; font-size: var(--fs-caption); margin-left: -6px; border: 2px solid var(--bg-raised); }
+.pm-avatars .pm-avatar { width: 22px; height: 22px; font-size: var(--fs-caption); margin-left: calc(-1 * var(--space-2)); border: 2px solid var(--bg-raised); }
 .pm-avatars .pm-avatar:first-child { margin-left: 0; }
-.pm-section { margin-top: 28px; }
-.pm-section > h2 { font-size: var(--fs-body); margin: 0 0 8px; }
-.pm-day { color: var(--text-muted); font-size: var(--fs-caption); font-weight: 600; margin: 18px 0 4px; }
-.pm-chip { display: inline-flex; gap: 6px; align-items: center; padding: 2px 8px; border: 1px solid var(--border); border-radius: var(--r-3); background: var(--bg-raised); color: var(--text-muted); font-size: var(--fs-caption); }
+.pm-section { margin-top: var(--space-5); }
+.pm-section > h2 { font-size: var(--fs-body); margin: 0 0 var(--space-2); }
+.pm-day { color: var(--text-muted); font-size: var(--fs-caption); font-weight: 600; margin: var(--space-4) 0 var(--space-1); }
+.pm-chip { display: inline-flex; gap: var(--space-2); align-items: center; padding: var(--space-0) var(--space-2); border: 1px solid var(--border); border-radius: var(--r-3); background: var(--bg-raised); color: var(--text-muted); font-size: var(--fs-caption); }
 .pm-actions-list { list-style: none; margin: 0; padding: 0; }
-.pm-action { display: flex; gap: 10px; align-items: flex-start; padding: 8px; border-bottom: 1px solid var(--border); }
+.pm-action { display: flex; gap: var(--space-2); align-items: flex-start; padding: var(--space-2); border-bottom: 1px solid var(--border); }
 .pm-action-words { flex: 1; min-width: 0; }
 .pm-action-sub { color: var(--text-muted); font-size: var(--fs-caption); }
-.mt-top { padding: 12px 14px; margin: 12px 0; display: flex; flex-direction: column; gap: 8px; }
-.mt-top-row { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+.mt-top { padding: var(--space-3) var(--space-3); margin: var(--space-3) 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.mt-top-row { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); align-items: center; }
 .mt-top-when { font-weight: 650; font-variant-numeric: tabular-nums; }

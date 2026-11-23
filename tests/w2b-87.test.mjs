@@ -156,7 +156,9 @@ test('the product rules hold on the new words and styles', () => {
   }
   const css = read('src/renderer/src/styles/w2b.css');
   const hexes = [...css.matchAll(/#[0-9a-fA-F]{3,8}/g)].map((m) => m[0].toLowerCase());
-  assert.deepEqual([...new Set(hexes)], ['#d93b2b'], 'the only raw colour is the recorder red, as the kit');
+  // 23 Nov 2026 (design-language pass): the recorder's Stop red became the --danger role token, so the sheet holds
+  // no raw colour at all (it was the one exception, #d93b2b, the same red).
+  assert.deepEqual([...new Set(hexes)], [], 'no raw colour: the recorder red is the danger token');
   assert.ok(!/cream/i.test(css), 'no cream');
 });
 

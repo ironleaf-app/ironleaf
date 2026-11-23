@@ -2,7 +2,7 @@
    gantt's today line, board drop hints, the day plan's time column, inbox cards and the milestone form. Everything
    else is the kit's (kit.css): cards, rows, pills, tags, chips, boards, galleries, timelines, tables, tabs. */
 
-.w2a-head { display: flex; align-items: center; gap: 12px; }
+.w2a-head { display: flex; align-items: center; gap: var(--space-3); }
 /* The head row is the title's height: the h1's margins would add ~50px of dead space inside the flex row. */
 .w2a-head .w2a-title { margin: 0; }
 /* A row's trailing words keep their room; the name clips, never the due words. */
@@ -26,7 +26,7 @@
   position: relative;
   overflow: hidden;
   margin: -36px -36px 0;
-  padding: 44px 36px 30px;
+  padding: 44px var(--space-6) 30px;
   background: linear-gradient(180deg, var(--hero-1), var(--hero-2));
   border-bottom: 1px solid var(--border);
 }
@@ -54,12 +54,12 @@
 }
 .props.w2a-facts { margin: 14px 0 0 54px; }
 .w2a-facts .prow { padding: 5px 0; }
-.w2a-factbtn { border: 0; background: none; padding: 0; font: inherit; cursor: pointer; color: inherit; display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+.w2a-factbtn { border: 0; background: none; padding: 0; font: inherit; cursor: pointer; color: inherit; display: inline-flex; align-items: center; gap: var(--space-2); min-width: 0; }
 .w2a-factbtn:hover .pill, .w2a-factbtn:hover .tag { filter: brightness(.96); }
 /* The top bar's people (a button wearing the kit's avatar stack) and the facts panel's add row. */
 button.w2a-ava { border: 0; background: none; padding: 0; cursor: pointer; font: inherit; }
 button.w2a-ava:hover { filter: brightness(.96); }
-.w2a-addfact { display: flex; align-items: center; gap: 12px; padding: 6px 0; width: 100%; border: 0; background: none; cursor: pointer; font-family: inherit; text-align: left; }
+.w2a-addfact { display: flex; align-items: center; gap: var(--space-3); padding: 6px 0; width: 100%; border: 0; background: none; cursor: pointer; font-family: inherit; text-align: left; }
 .w2a-addfact .k { width: 140px; flex: none; font-size: var(--fs-small); color: var(--text-faint); }
 .w2a-addfact .v { font-size: var(--fs-small); color: var(--text-faint); }
 .w2a-addfact:hover .k, .w2a-addfact:hover .v { color: var(--text-muted); }
@@ -74,7 +74,7 @@ button.gbar { cursor: pointer; }
 .bcol.is-over .badd { border-color: var(--coral); color: var(--text); }
 .bcard.w2a-drag { cursor: grab; }
 .bcard.w2a-drag:active { cursor: grabbing; }
-.bcard.w2a-cardbtn { width: 100%; text-align: left; font-family: inherit; color: inherit; padding: 14px 16px; }
+.bcard.w2a-cardbtn { width: 100%; text-align: left; font-family: inherit; color: inherit; padding: 14px var(--space-4); }
 .bcard.w2a-cardbtn:hover { border-color: var(--border-strong); }
 .gcard.w2a-cardbtn { width: 100%; text-align: left; font-family: inherit; color: inherit; cursor: pointer; }
 .gcard.w2a-cardbtn:hover { border-color: var(--border-strong); }
@@ -82,6 +82,26 @@ button.gbar { cursor: pointer; }
 .trow.w2a-rowbtn:first-child { border-top: 0; }
 .card > .trow.w2a-rowbtn:first-child { border-top: 0; }
 .trow.w2a-rowbtn:hover .t { text-decoration: underline; }
+
+/* Shared spaces (23 Nov 2026): the spaces side by side, as many across as the page holds, each a quiet tile (hairline,
+   no shadow at rest): its name, the bot that looks after it, its folder, then what is open; late reads in the late
+   colour, nothing else does. */
+/* The lead sits under the title as a PageHead's does (8px), and the head row's 24px moves below the lead. */
+.vpage.wide > .w2a-head:has(+ .ss-lead) { margin-bottom: var(--space-2); }
+.ss-spaces { list-style: none; margin: var(--space-5) 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: var(--space-3); }
+.ss-space {
+  width: 100%; height: 100%; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: var(--space-1) var(--space-3);
+  padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--r-3); background: var(--bg-raised);
+  font: inherit; color: inherit; text-align: left; cursor: pointer;
+}
+.ss-space:hover { border-color: var(--border-strong); background: var(--bg-hover); }
+.ss-space:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.ss-space-words { display: flex; flex-direction: column; gap: var(--space-0); min-width: 0; }
+.ss-space-name { font-size: var(--fs-card); font-weight: 650; line-height: 1.3; color: var(--text-strong); overflow-wrap: anywhere; }
+.ss-space-bot { font-size: var(--fs-small); color: var(--text-muted); }
+.ss-space-folder { font-size: var(--fs-caption); color: var(--text-faint); overflow-wrap: anywhere; }
+.ss-space-counts { grid-column: 2; margin-top: var(--space-2); font-size: var(--fs-small); font-weight: 600; color: var(--text); }
+.ss-space-counts.is-late { color: var(--tone-bad); }
 .tk-row.is-done .t { color: var(--text-faint); }
 
 /* The day plan's time column and add row. */
@@ -90,37 +110,75 @@ button.gbar { cursor: pointer; }
 .w2a-addrow { color: var(--text-faint); font-size: var(--fs-body); }
 .check.w2a-add { border-style: dashed; color: var(--text-faint); display: grid; place-items: center; font-size: var(--fs-body); }
 
-/* Inbox cards: tile, words, FILE IN chips, one-step buttons. */
-.w2a-ib { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+/* Inbox rows: tile, words, File in chips, one-step buttons. One row per capture, hairlines between (wide-window pass,
+   23 Nov 2026: a card each, nine boxes down the pane); the row the pointer or the keys are on stands on a soft fill,
+   as a chosen row does in every list. */
+.w2a-ib-card { padding: var(--space-3); border-radius: var(--r-3); }
+.w2a-ib-card + .w2a-ib-card { border-top: 1px solid var(--border); }
+.w2a-ib-card[aria-current], .w2a-ib-card[aria-current] + .w2a-ib-card { border-top-color: transparent; }
+.w2a-ib-card[aria-current] { background: var(--bg-hover); }
+.w2a-ib { display: flex; gap: var(--space-3); align-items: flex-start; flex-wrap: wrap; }
 .w2a-ib-words { flex: 1 1 200px; min-width: 0; }
 .w2a-ib-title { font-size: var(--fs-body); font-weight: 600; }
-.w2a-ib-sub { font-size: var(--fs-small); color: var(--text-muted); margin-top: 2px; }
-.w2a-ib-filein { display: flex; gap: 8px; margin-top: 10px; align-items: center; flex-wrap: wrap; }
-.w2a-ib-actions { display: flex; gap: 8px; flex: none; min-width: 0; max-width: 100%; flex-wrap: wrap; justify-content: flex-end; margin-left: auto; }
+.w2a-ib-sub { font-size: var(--fs-small); color: var(--text-muted); margin-top: var(--space-0); }
+.w2a-ib-filein { display: flex; gap: var(--space-2); margin-top: var(--space-2); align-items: center; flex-wrap: wrap; }
+.w2a-ib-filein-label { font-size: var(--fs-caption); font-weight: 600; color: var(--text-faint); }
+/* One navy action on the screen (design language, 23 Nov 2026: every card's "File in …" stood navy, six down the
+   page). The card the pointer or the keys are on carries it; the rest keep the same button, quiet, until chosen. */
+.w2a-ib-card:not([aria-current]) .w2a-ib-actions .btn.pri { background: var(--bg-raised); border-color: var(--border); color: var(--text-ink); }
+.w2a-ib-card:not([aria-current]) .w2a-ib-actions .btn.pri:hover { background: var(--bg-hover); filter: none; }
+.w2a-ib-actions { display: flex; gap: var(--space-2); flex: none; min-width: 0; max-width: 100%; flex-wrap: wrap; justify-content: flex-end; margin-left: auto; }
 /* A long lead suggestion (p18, 4 Nov 2026, the 1219 walk: "File to Northside Community Garden Shed Rebuild"
    squeezed the words to a sliver, slid over the title and hung the bin past the card, at every window since
    the page caps at 960): the words keep 200 px before the actions wrap under them, the actions wrap among
    themselves, and the lead wraps whole inside its cap (t249: it used to cap mid-word — titles a person must
    read wrap whole, two lines fine — while the File-in chips below name the target whole as before). */
-.w2a-ib-actions .btn.pri { max-width: 320px; height: auto; min-height: 32px; padding-top: 5px; padding-bottom: 5px; }
+.w2a-ib-actions .btn.pri { max-width: 320px; height: auto; min-height: 32px; padding-top: var(--space-1); padding-bottom: var(--space-1); }
 .w2a-ib-leadwords { overflow: visible; white-space: normal; overflow-wrap: break-word; text-align: left; min-width: 0; }
 /* The File-in chips name long targets whole too (t249): they grow to a second line, never cut mid-word. */
-.w2a-ib-filein .chip { white-space: normal; height: auto; min-height: 30px; padding-top: 5px; padding-bottom: 5px; text-align: left; overflow-wrap: break-word; }
+.w2a-ib-filein .chip { white-space: normal; height: auto; min-height: 30px; padding-top: var(--space-1); padding-bottom: var(--space-1); text-align: left; overflow-wrap: break-word; }
 .w2a-ib-actions .btn.pri kbd { flex: none; }
-.w2a-ib-foot { display: flex; align-items: center; gap: 10px; margin-top: 16px; font-size: var(--fs-small); color: var(--text-muted); }
-.w2a-ib-pics { display: flex; gap: 8px; margin-top: 10px; }
+.w2a-ib-foot { display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-4); font-size: var(--fs-small); color: var(--text-muted); }
+.w2a-ib-pics { display: flex; gap: var(--space-2); margin-top: var(--space-2); }
+/* A capture row with room (its list 720 px or wider): one grid, so the actions keep the top right beside the title and
+   its source, and the File in chips and the reason run the row's full width under them, never squeezed into the
+   words' column beside a tall block of buttons. Narrower, the row wraps as above. */
+[aria-label='Waiting to be filed'] { container: inbox-list / inline-size; }
+@container inbox-list (min-width: 720px) {
+  .w2a-ib { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; column-gap: var(--space-3); row-gap: 0; }
+  .w2a-ib > .w2a-tick, .w2a-ib > .gtile { grid-row: 1 / span 2; }
+  .w2a-ib > .w2a-ib-words { display: contents; }
+  .w2a-ib-words > * { grid-column: 3; min-width: 0; }
+  .w2a-ib-words > :is(.w2a-ib-filein, .w2a-ib-pics) { grid-column: 3 / -1; }
+  .w2a-ib > .w2a-ib-actions { grid-column: 4; grid-row: 1 / span 2; align-self: start; }
+}
+/* The chosen capture's homes in the detail, each with its reason (InboxPage.tsx WhereItCouldGo). */
+.w2a-ib-where { display: flex; flex-direction: column; gap: var(--space-2); margin-top: var(--space-5); }
+.w2a-ib-where-head { margin: 0; font-size: var(--fs-small); font-weight: 600; color: var(--text-muted); }
+.w2a-ib-where-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.w2a-ib-where-list > li + li { border-top: 1px solid var(--border); }
+.w2a-ib-where-row { display: flex; align-items: flex-start; gap: var(--space-3); width: 100%; padding: var(--space-3) var(--space-2); border: 0; border-radius: var(--r-2); background: none; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+.w2a-ib-where-row > svg { flex: none; margin-top: var(--space-0); color: var(--text-muted); }
+.w2a-ib-where-row:hover:not(:disabled) { background: var(--bg-hover); }
+.w2a-ib-where-row:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; }
+.w2a-ib-where-row:disabled { cursor: default; opacity: 0.6; }
+.w2a-ib-where-words { display: flex; flex-direction: column; gap: var(--space-0); flex: 1 1 auto; min-width: 0; }
+.w2a-ib-where-name { font-size: var(--fs-body); font-weight: 600; overflow-wrap: break-word; }
+.w2a-ib-where-why { font-size: var(--fs-small); color: var(--text-muted); }
+.w2a-ib-where-go { flex: none; font-size: var(--fs-small); font-weight: 600; color: var(--accent-text); opacity: 0; }
+.w2a-ib-where-row:is(:hover, :focus-visible) .w2a-ib-where-go { opacity: 1; }
 .w2a-ib-pics img { width: 72px; height: 72px; object-fit: cover; border-radius: var(--r-3); border: 1px solid var(--border); cursor: pointer; }
 /* Inbox bulk and spoken keys (10.0 papercuts): a tick per card, one bar for the ticked, the key on its button. */
-.w2a-tick { align-self: flex-start; flex: none; width: 15px; height: 15px; margin: 3px 0 0; accent-color: var(--text); cursor: pointer; }
-.w2a-ib-select { display: flex; justify-content: flex-end; margin-top: 12px; }
-.w2a-ib-bulk { display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 8px 12px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--r-3); }
+.w2a-tick { align-self: flex-start; flex: none; width: 15px; height: 15px; margin: var(--space-1) 0 0; accent-color: var(--text); cursor: pointer; }
+.w2a-ib-select { display: flex; justify-content: flex-end; margin-top: var(--space-3); }
+.w2a-ib-bulk { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--r-3); }
 .w2a-ib-bulk-count { font-size: var(--fs-small); font-weight: 600; color: var(--text-muted); margin-right: auto; }
 kbd.w2a-key { font-family: inherit; font-size: var(--fs-caption); font-weight: 600; color: var(--text-muted); border: 1px solid var(--border); border-bottom-width: 2px; border-radius: var(--r-1); padding: 0 5px; margin-left: 6px; line-height: 16px; }
 
 /* The milestone form and the files drop box. */
-.w2a-mform { display: flex; gap: 8px; margin-top: 12px; }
+.w2a-mform { display: flex; gap: var(--space-2); margin-top: var(--space-3); }
 .w2a-mform .input { flex: 1; }
-.w2a-drop { margin-top: 14px; border-style: dashed; background: none; text-align: center; padding: 16px; font-size: var(--fs-body); color: var(--text-muted); }
+.w2a-drop { margin-top: 14px; border-style: dashed; background: none; text-align: center; padding: var(--space-4); font-size: var(--fs-body); color: var(--text-muted); }
 .w2a-drop.is-over { border-color: var(--coral); color: var(--text); }
 
 /* Card heads and their jump links (extra note cards, callouts, the Timeline view's way down). */
@@ -134,10 +192,10 @@ kbd.w2a-key { font-family: inherit; font-size: var(--fs-caption); font-weight: 6
 .w2a-tworows .trow { align-items: flex-start; }
 .w2a-tworows .trow .t.clip-2 { min-width: 0; flex: 1 1 auto; overflow-wrap: anywhere; }
 /* Offered folders, never silent (5 Nov 2026, u3 moving-in): quiet sections above the projects. */
-.pj-offers { display: grid; gap: 12px; }
-.pj-offer-card { padding: 12px 20px; }
+.pj-offers { display: grid; gap: var(--space-3); }
+.pj-offer-card { padding: var(--space-3) 20px; }
 .pj-offer-title { font-weight: 600; }
-.pj-offer-card > p.meta { margin: 2px 0 4px; }
+.pj-offer-card > p.meta { margin: var(--space-0) 0 var(--space-1); }
 .pj-offer-card .trow .t { min-width: 0; flex: 1 1 auto; overflow-wrap: anywhere; }
 .pj-offer-card .trow .btn { flex: none; }
 
@@ -158,10 +216,10 @@ kbd.w2a-key { font-family: inherit; font-size: var(--fs-caption); font-weight: 6
 @container pj (min-width: 2000px) {
   .vpage.wide.pj-folio { max-width: 1120px; }
 }
-.pj-eyebrow { font-size: var(--fs-small); color: var(--text-faint); margin: 0 0 8px; }
+.pj-eyebrow { font-size: var(--fs-small); color: var(--text-faint); margin: 0 0 var(--space-2); }
 .pj-folio .w2a-title { margin: 0 0 6px; line-height: 1.15; overflow-wrap: break-word; }
-.pj-lede { font-size: var(--fs-body); color: var(--text-muted); margin: 0 0 8px; max-width: 70ch; }
-.pj-statusline { font-size: var(--fs-small); color: var(--text-muted); margin: 0 0 4px; }
+.pj-lede { font-size: var(--fs-body); color: var(--text-muted); margin: 0 0 var(--space-2); max-width: 70ch; }
+.pj-statusline { font-size: var(--fs-small); color: var(--text-muted); margin: 0 0 var(--space-1); }
 .pj-statusbtn { border: 0; background: none; padding: 0; font: inherit; font-weight: 600; color: inherit; cursor: pointer; }
 .pj-statusbtn:hover { color: var(--text-strong); }
 /* The tabs walk the sections now (t255; t267 removed the dead section-line rules with the foot). */
@@ -172,17 +230,17 @@ kbd.w2a-key { font-family: inherit; font-size: var(--fs-caption); font-weight: 6
   content-visibility: auto;
   contain-intrinsic-size: auto 500px;
 }
-.pj-folio-head { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; }
+.pj-folio-head { display: flex; align-items: center; gap: var(--space-3); margin: 0 0 var(--space-3); }
 .pj-folio-head h2 { margin: 0; font-size: var(--fs-section); font-weight: 650; letter-spacing: -0.005em; color: var(--text-strong); }
 .pj-folio-head .btn { margin-left: auto; }
 /* Two head buttons read as one group at the right (t267: each auto margin split the row, stranding Add note
    mid-head beside Choose). */
 .pj-folio-head .btn ~ .btn { margin-left: 0; }
-.pj-showall { border: 0; background: none; padding: 8px 0 4px; font: inherit; font-size: var(--fs-small); font-weight: 600; color: var(--text-muted); cursor: pointer; }
+.pj-showall { border: 0; background: none; padding: var(--space-2) 0 var(--space-1); font: inherit; font-size: var(--fs-small); font-weight: 600; color: var(--text-muted); cursor: pointer; }
 .pj-showall:hover { color: var(--text-strong); }
 /* A date gone by asks on its own row (13 Nov 2026, the picture: the nudge had no row to answer it): the
    question and its one-click answers sit after the mark, wrapping whole with the row. */
-.pj-ask { display: inline-flex; align-items: center; gap: 8px; margin-left: 8px; flex-wrap: wrap; min-width: 0; }
+.pj-ask { display: inline-flex; align-items: center; gap: var(--space-2); margin-left: var(--space-2); flex-wrap: wrap; min-width: 0; }
 .pj-ask-q { font-size: var(--fs-small); color: var(--text-muted); white-space: nowrap; }
 /* A task box inside shown notes reads its state but never toggles (t141, 9 Nov 2026: Your notes and Other notes
    render whole Markdown now, so a box drawn there would flip without saving — the words change as text). */
@@ -215,17 +273,17 @@ kbd.w2a-key { font-family: inherit; font-size: var(--fs-caption); font-weight: 6
    whole list reads at the page's full width below it — one list, no side columns, so the pairing above
    stands aside and no section ever waits for its neighbour (t253's fourth picture falls out with it). */
 .vpage.wide.pj-folio.is-tabs { display: block; }
-.pj-stickhead { position: sticky; top: 0; z-index: 3; background: var(--bg); padding-bottom: 4px; }
+.pj-stickhead { position: sticky; top: 0; z-index: 3; background: var(--bg); padding-bottom: var(--space-1); }
 /* As compact as the content needs (t261, 13 Nov 2026: the head stood ~180px with empty space below the
    summary — the hidden pencil's line, gone now, plus a tall top; the bottom stays 14px, p15's rule). */
-.pj-page .vpage.wide.pj-folio > .pj-stickhead > .nv-hero { margin: 0 0 4px; padding: 18px 18px 14px; border: 1px solid var(--border); border-radius: var(--r-3); }
+.pj-page .vpage.wide.pj-folio > .pj-stickhead > .nv-hero { margin: 0 0 var(--space-1); padding: 18px 18px 14px; border: 1px solid var(--border); border-radius: var(--r-3); }
 @container pj (max-width: 620px) {
-  .pj-page .vpage.wide.pj-folio > .pj-stickhead > .nv-hero { padding: 16px 18px 14px; }
+  .pj-page .vpage.wide.pj-folio > .pj-stickhead > .nv-hero { padding: var(--space-4) 18px 14px; }
 }
 
 /* The ten-second read (t255): compact blocks in columns that share the width, the people as one row of
    names across the bottom. One screen at wide sizes; narrower windows stack and may scroll. */
-.pj-ov { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px 28px; margin: 20px 0 8px; }
+.pj-ov { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px 28px; margin: 20px 0 var(--space-2); }
 @container pj (min-width: 700px) {
   .pj-ov { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .pj-ov-people { grid-column: 1 / -1; }
@@ -236,14 +294,14 @@ kbd.w2a-key { font-family: inherit; font-size: var(--fs-caption); font-weight: 6
   .pj-ov { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 .pj-ov-block { min-width: 0; }
-.pj-ov-block > h2 { margin: 0 0 8px; font-size: var(--fs-caption); font-weight: 600; color: var(--text-muted); }
+.pj-ov-block > h2 { margin: 0 0 var(--space-2); font-size: var(--fs-caption); font-weight: 600; color: var(--text-muted); }
 .pj-ov-block .pj-faint { margin: 0; font-size: var(--fs-small); }
-.pj-ov-all { border: 0; background: none; padding: 8px 0 0; font: inherit; font-size: var(--fs-small); font-weight: 600; color: var(--text-muted); cursor: pointer; }
+.pj-ov-all { border: 0; background: none; padding: var(--space-2) 0 0; font: inherit; font-size: var(--fs-small); font-weight: 600; color: var(--text-muted); cursor: pointer; }
 .pj-ov-all:hover { color: var(--text-strong); }
 .pj-ov-open { border: 0; background: none; font: inherit; color: inherit; cursor: pointer; text-align: left; padding: 0; }
 .pj-ov-wait { width: 100%; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; text-align: left; }
-.pj-ov-names { display: flex; flex-wrap: wrap; gap: 4px 6px; }
-.pj-ov-name { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; padding: 2px 4px 2px 0; font: inherit; font-size: var(--fs-small); color: var(--text); cursor: pointer; }
+.pj-ov-names { display: flex; flex-wrap: wrap; gap: var(--space-1) 6px; }
+.pj-ov-name { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; padding: var(--space-0) var(--space-1) var(--space-0) 0; font: inherit; font-size: var(--fs-small); color: var(--text); cursor: pointer; }
 .pj-ov-name:hover { text-decoration: underline; text-underline-offset: 3px; }
 
 /* The folio's hero is back (v9, 6 Nov 2026: the folio "gone away from looking polished like it use to"): the tabs
@@ -251,23 +309,23 @@ kbd.w2a-key { font-family: inherit; font-size: var(--fs-caption); font-weight: 6
    the waiting bar, the sticky line and the sections. The lead reads two lines at most; one quiet Read more opens
    the whole summary. The card's own box lives with the tabs above (t255: the hero sits in the fixed head now);
    the opener below keeps its v10 sitting (sat too far under its text). */
-.w2a-psub .w2a-readmore { border: 0; background: none; padding: 0; margin: 4px 0 0; font: inherit; font-size: var(--fs-small); color: var(--text-muted); cursor: pointer; white-space: nowrap; }
+.w2a-psub .w2a-readmore { border: 0; background: none; padding: 0; margin: var(--space-1) 0 0; font: inherit; font-size: var(--fs-small); color: var(--text-muted); cursor: pointer; white-space: nowrap; }
 .w2a-psub .w2a-readmore:hover { color: var(--text-strong); text-decoration: underline; }
 .w2a-psub .w2a-readmore { margin-top: 1px; }
 
 /* The standing, worked out from the dates (step 2): two plain lines under the hero, and your own "I say" line
    as yours when you disagree. Wraps whole, never cut. */
-.w2a-standing { margin: 12px 0 0; }
+.w2a-standing { margin: var(--space-3) 0 0; }
 .w2a-standing p { margin: 0; font-size: var(--fs-body); color: var(--text); overflow-wrap: break-word; }
-.w2a-standing .pj-say { margin-top: 2px; color: var(--text-muted); }
+.w2a-standing .pj-say { margin-top: var(--space-0); color: var(--text-muted); }
 .pj-saybtn { border: 0; background: none; padding: 0; font: inherit; font-size: var(--fs-small); color: var(--text-faint); cursor: pointer; white-space: nowrap; }
 .pj-saybtn:hover { color: var(--text-strong); text-decoration: underline; }
 
 /* A brand-new empty project is never a blank page (t12): a short helpful start on the page's own card. */
-.pj-start { margin: 28px 0 8px; padding: 28px 24px; border: 1px solid var(--border); border-radius: var(--r-3); background: var(--bg-raised); }
+.pj-start { margin: 28px 0 var(--space-2); padding: 28px var(--space-5); border: 1px solid var(--border); border-radius: var(--r-3); background: var(--bg-raised); }
 .pj-start h2 { margin: 0 0 6px; font-size: var(--fs-section); font-weight: 650; letter-spacing: -0.005em; color: var(--text-strong); }
-.pj-start p { margin: 0 0 16px; font-size: var(--fs-body); color: var(--text-muted); max-width: 60ch; }
-.pj-start-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.pj-start p { margin: 0 0 var(--space-4); font-size: var(--fs-body); color: var(--text-muted); max-width: 60ch; }
+.pj-start-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 
 /* The readable gantt (n3, 6 Nov 2026): names read whole in a wider wrapping column, the scale is proportional
    segments that thin, bar labels read beside the bar when they will not fit inside, clash dots sit below the

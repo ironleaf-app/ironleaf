@@ -6,27 +6,11 @@
    page never jumps. Light first; the tokens carry dark. The page header bar above belongs to the shell, not here. */
 
 :root {
-  --cover-sand: #efe5d0;
-  --cover-clay: #edd6c7;
-  --cover-sage: #dbe5d3;
-  --cover-sea: #d2e4e1;
-  --cover-sky: #d8e3ef;
-  --cover-dusk: #e2daec;
-  --cover-stone: #e5e2da;
+  /* The cover colours (light and dark) live in styles/palettes.css. */
   --cover-height: 140px;
   /* Polish round 2 (ITEMS 4): one label column wide enough for its words ("Description", "Also mentioned"
      whole, never cut or wrapped mid-word), so every value starts at the same place. */
   --field-label: 180px;
-}
-
-:root[data-theme='dark'] {
-  --cover-sand: #3b3529;
-  --cover-clay: #3f312a;
-  --cover-sage: #2f3a2e;
-  --cover-sea: #2a3a38;
-  --cover-sky: #2b3442;
-  --cover-dusk: #352f41;
-  --cover-stone: #35342f;
 }
 
 /* ── The top: tools on hover, cover, icon, type ─────────────────────────────────────────────────────────────────── */
@@ -38,9 +22,9 @@
 .page-tools {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--space-0);
   height: 28px;
-  margin: -8px 0 6px -8px;
+  margin: calc(-1 * var(--space-2)) 0 var(--space-2) calc(-1 * var(--space-2));
   opacity: 0;
   transition: opacity 0.15s ease;
 }
@@ -54,9 +38,9 @@
 .page-tool {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: 26px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-2);
   font: 500 var(--fs-small) / 1 var(--font-ui);
   color: var(--text-faint);
@@ -73,7 +57,7 @@
   --cover: var(--bg-hover);
   position: relative;
   height: var(--cover-height);
-  margin: 0 0 16px;
+  margin: 0 0 var(--space-4);
   border-radius: var(--r-3);
   overflow: hidden;
   background: linear-gradient(135deg, var(--cover) 0%, color-mix(in srgb, var(--cover) 72%, var(--bg)) 100%);
@@ -111,9 +95,9 @@
   bottom: 10px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: 26px;
-  padding: 0 11px;
+  padding: 0 var(--space-3);
   border-radius: var(--r-1);
   background: color-mix(in srgb, var(--bg-raised) 90%, transparent);
   box-shadow: var(--shadow-small);
@@ -135,19 +119,19 @@
 
 .page-icon-row {
   position: relative;
-  margin: 0 0 8px;
+  margin: 0 0 var(--space-2);
 }
 
 /* With a cover, the icon sits over its lower edge. */
 .page-top.has-cover .page-icon-row {
-  margin-top: calc(-16px - 34px);
-  padding-left: 14px;
+  margin-top: calc(-16px - var(--space-6));
+  padding-left: var(--space-3);
 }
 
 .page-icon {
   display: inline-grid;
   place-items: center;
-  padding: 3px;
+  padding: var(--space-1);
   border-radius: var(--r-3);
   transition: background 0.15s ease;
 }
@@ -175,10 +159,10 @@ button.page-icon:hover {
 .page-type {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: 24px;
-  margin: 0 0 10px;
-  padding: 0 11px 0 9px;
+  margin: 0 0 var(--space-2);
+  padding: 0 var(--space-3) 0 var(--space-2);
   border-radius: var(--r-1);
   background: var(--bg-hover);
   font: 500 var(--fs-caption) / 1 var(--font-ui);
@@ -216,7 +200,7 @@ button.page-type[class*='nt-'].menu-open {
   position: fixed;
   z-index: 60;
   width: 304px;
-  padding: 10px;
+  padding: var(--space-2);
   border-radius: var(--r-3);
   border: 1px solid var(--border);
   background: var(--bg-raised);
@@ -226,20 +210,20 @@ button.page-type[class*='nt-'].menu-open {
 }
 
 .page-picker-label {
-  margin: 2px 4px 6px;
+  margin: var(--space-0) var(--space-1) var(--space-2);
   font-size: var(--fs-caption);
   font-weight: 600;
   color: var(--text-faint);
 }
 
 .page-picker-label + .page-picker-grid {
-  margin-bottom: 10px;
+  margin-bottom: var(--space-2);
 }
 
 .page-picker-grid {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
-  gap: 2px;
+  gap: var(--space-0);
 }
 
 .page-picker-cell {
@@ -264,8 +248,8 @@ button.page-type[class*='nt-'].menu-open {
 .page-picker-foot {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding-top: 8px;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
   border-top: 1px solid var(--border);
 }
 
@@ -273,14 +257,14 @@ button.page-type[class*='nt-'].menu-open {
   flex: 1;
   min-width: 0;
   height: 28px;
-  padding: 3px 8px;
+  padding: var(--space-1) var(--space-2);
   font-size: var(--fs-small);
 }
 
 .page-picker-use,
 .page-picker-remove {
   height: 28px;
-  padding: 0 10px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-2);
   font-size: var(--fs-small);
   color: var(--text-muted);
@@ -299,12 +283,12 @@ button.page-type[class*='nt-'].menu-open {
 .note-fields {
   display: grid;
   gap: 1px;
-  margin: 0 0 18px -25px;
+  margin: 0 0 var(--space-4) -25px;
   font: var(--fs-small) / 1.4 var(--font-ui);
 }
 
 .note-fields.is-empty {
-  margin-bottom: 10px;
+  margin-bottom: var(--space-2);
 }
 
 /* The fold line (t7-note-window, 8 Nov 2026: properties fold to one quiet line, opening in place): the
@@ -312,10 +296,10 @@ button.page-type[class*='nt-'].menu-open {
 .note-fields-fold {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: var(--space-2);
   height: 28px;
-  margin: 0 0 2px;
-  padding: 0 6px;
+  margin: 0 0 var(--space-0);
+  padding: 0 var(--space-2);
   border-radius: var(--r-2);
   font-size: var(--fs-small);
   color: var(--text-faint);
@@ -330,7 +314,7 @@ button.page-type[class*='nt-'].menu-open {
   display: grid;
   grid-template-columns: var(--field-label) minmax(0, 1fr);
   align-items: start;
-  gap: 8px;
+  gap: var(--space-2);
   min-height: 30px;
 }
 
@@ -342,9 +326,9 @@ button.page-type[class*='nt-'].menu-open {
 .field-inline-value {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2);
   min-height: 28px;
-  padding: 0 6px;
+  padding: 0 var(--space-2);
   color: var(--text);
 }
 
@@ -358,11 +342,11 @@ button.page-type[class*='nt-'].menu-open {
 .field-key {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: var(--space-2);
   min-width: 0;
   height: 28px;
   margin-top: 1px;
-  padding: 0 6px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-2);
   text-align: left;
   color: var(--text-faint);
@@ -404,7 +388,7 @@ button.field-key:hover:not(:disabled),
 .field-key-input {
   height: 28px;
   margin-top: 1px;
-  padding: 3px 6px;
+  padding: var(--space-1) var(--space-2);
   min-width: 0;
   width: 100%;
 }
@@ -435,7 +419,7 @@ button.field-key:hover:not(:disabled),
   display: inline-flex;
   align-items: center;
   min-height: 30px;
-  padding: 3px 0 3px 6px;
+  padding: var(--space-1) 0 var(--space-1) var(--space-2);
   border-radius: var(--r-2);
 }
 .field-factbtn {
@@ -486,9 +470,9 @@ button.field-key:hover:not(:disabled),
   display: inline-flex;
   align-items: center;
   justify-self: start;
-  gap: 7px;
+  gap: var(--space-2);
   height: 28px;
-  padding: 0 6px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-2);
   font-size: var(--fs-small);
   color: var(--text-faint);
@@ -513,20 +497,20 @@ button.field-key:hover:not(:disabled),
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   width: 100%;
   min-height: 30px;
-  padding: 3px 0;
+  padding: var(--space-1) 0;
   cursor: text;
 }
 
 .field-link {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: var(--space-1);
   max-width: 100%;
   height: 22px;
-  padding: 0 9px 0 7px;
+  padding: 0 var(--space-2) 0 var(--space-2);
   border-radius: var(--r-1);
   background: var(--bg-hover);
   font-size: var(--fs-small);
@@ -564,7 +548,7 @@ button.field-key:hover:not(:disabled),
 .field-link-wrap {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--space-0);
   max-width: 100%;
 }
 
@@ -575,7 +559,7 @@ button.field-key:hover:not(:disabled),
   text-overflow: clip;
   white-space: nowrap;
   height: 22px;
-  padding: 0 5px;
+  padding: 0 var(--space-1);
   border-radius: var(--r-1);
   color: var(--text-faint);
   font-size: var(--fs-caption);
@@ -597,7 +581,7 @@ button.field-kind:hover {
 
 /* A field's quiet footnote: a link to another type of note than the field wants, named, never blocked. */
 .field-note {
-  padding: 2px 6px 4px;
+  padding: var(--space-0) var(--space-2) var(--space-1);
   color: var(--text-muted);
   font-size: var(--fs-caption);
 }
@@ -627,7 +611,7 @@ button.field-kind:hover {
 .field-list-wrap {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: var(--space-2);
   flex: 1;
   min-width: 0;
 }
@@ -640,10 +624,10 @@ button.field-kind:hover {
 .field-link-pick {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: var(--space-1);
   flex: none;
   height: 26px;
-  padding: 0 10px;
+  padding: 0 var(--space-2);
   border: 1px solid var(--border);
   border-radius: var(--r-2);
   background: var(--bg-raised);
@@ -660,7 +644,7 @@ button.field-kind:hover {
 .field-text {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .field-text > .prop-text {
@@ -670,7 +654,7 @@ button.field-kind:hover {
 /* Lists and chips start where a text value's words do. */
 .note-fields .prop-list,
 .field-links {
-  padding-left: 6px;
+  padding-left: var(--space-2);
 }
 
 /* A link inside a list keeps the list's remove button beside its chip. */
@@ -683,17 +667,17 @@ button.field-kind:hover {
 
 .page-connections {
   display: grid;
-  gap: 14px;
-  margin: 0 0 20px -8px;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-5) calc(-1 * var(--space-2));
   font: var(--fs-small) / 1.4 var(--font-ui);
 }
 
 .page-links-head {
   display: flex;
   align-items: baseline;
-  gap: 8px;
-  margin: 0 0 4px;
-  padding: 0 8px;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-1);
+  padding: 0 var(--space-2);
   font: 600 var(--fs-small) / 1.4 var(--font-ui);
   color: var(--text-muted);
 }
@@ -715,10 +699,10 @@ button.field-kind:hover {
 .page-links-row {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: var(--space-2);
   width: 100%;
   height: 30px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-2);
   text-align: left;
   color: var(--text);
@@ -750,7 +734,7 @@ button.field-kind:hover {
 }
 
 .page-links-more {
-  margin: 2px 0 0 8px;
+  margin: var(--space-0) 0 0 var(--space-2);
   font-size: var(--fs-caption);
   color: var(--text-faint);
 }
@@ -763,12 +747,12 @@ button.field-kind:hover {
   margin-left: -17px;
   display: grid;
   grid-template-columns: var(--field-label) minmax(0, 1fr);
-  gap: 8px;
+  gap: var(--space-2);
   align-items: start;
 }
 
 .page-people-label {
-  padding: 6px 6px 0 25px;
+  padding: var(--space-2) var(--space-2) 0 var(--space-5);
   color: var(--text-faint);
   /* "Also mentioned" stays whole on its line (ITEMS 3 and 4). */
   white-space: nowrap;
@@ -779,8 +763,8 @@ button.field-kind:hover {
 .page-people-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  padding: 4px 0;
+  gap: var(--space-1);
+  padding: var(--space-1) 0;
 }
 
 @keyframes field-offer-in {
@@ -804,4 +788,19 @@ button.field-kind:hover {
   .field-offer {
     animation: none;
   }
+}
+
+/* A person's meetings and projects sit side by side in columns of a readable width: a meeting's day stays near its
+   name (it stood 1,300 px away at 2560). */
+.page-connections {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
+  align-items: start;
+  gap: var(--space-3) var(--space-6);
+  margin: 0 0 var(--space-5) calc(-1 * var(--space-2));
+}
+.page-connections > .page-links {
+  max-width: 560px;
+}
+.page-links-row {
+  gap: var(--space-2);
 }

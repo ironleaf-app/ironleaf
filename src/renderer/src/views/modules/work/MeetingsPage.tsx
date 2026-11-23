@@ -700,10 +700,23 @@ function AfterMeeting({ m, canEdit }: { m: Meet; canEdit: boolean }) {
   const wide = width >= 1180;
   usePanesMark(regions, wide);
   const three = width >= 2100;
+  // No recording at a wide window (23 Nov 2026, the past meeting at 1600 and 2560: a full-height pane that said only
+  // "No recording for this meeting" beside the minutes): the recording's pane gives way to the context region, which
+  // opens with that line and its one way in, then the meeting note's counts and what the meeting connects to.
+  const side = three || (wide && !hasRec);
+  const regionCount = !wide ? 1 : hasRec && three ? 3 : 2;
   const [slot, setSlot] = useState<HTMLElement | null>(null);
+  const noRecording = (
+    <section className="card w2b-card w2b-norec" aria-label="Recording">
+      <span className="vsub">No recording for this meeting.</span>
+      <button type="button" className="button small" disabled={!canEdit} onClick={() => openTranscript(m)}>
+        <Icon name="quote" size={12} /> Bring in a transcript
+      </button>
+    </section>
+  );
   return (
-    <div ref={measure} className={`w2b-after mt-regions${wide ? ' nv-panes-root' : ''}${three ? ' is-three' : ''}`} data-regions={!wide ? 1 : three ? 3 : 2}>
-      <ContextPaneProvider value={three ? slot : null}>
+    <div ref={measure} className={`w2b-after mt-regions${wide ? ' nv-panes-root' : ''}${hasRec && three ? ' is-three' : ''}${wide && !hasRec ? ' is-norec' : ''}`} data-regions={regionCount}>
+      <ContextPaneProvider value={side ? slot : null}>
         <div className="w2b-after-main mt-minutes">
           {/* Minutes ready to send (views/MeetingMinutes.tsx): the one card. */}
           <MeetingMinutesHere path={m.path} canEdit={canEdit} />
@@ -723,31 +736,25 @@ function AfterMeeting({ m, canEdit }: { m: Meet; canEdit: boolean }) {
               <ReadingView className="mt-rest-read" text={rest} path={m.path} interactive={false} onOpenLink={(target, newTab) => void A.openLink(target, m.path, newTab ? 'tab' : 'current')} onOpenTag={(tag) => requestSearch(`tag:#${tag}`)} />
             </section>
           )}
-          {!three && <MeetingNoteCard m={m} />}
-          {!three && (
+          {!side && <MeetingNoteCard m={m} />}
+          {!side && (
             <section className="mt-links" aria-label="What the meeting connects to">
               <RecordConnections refTo={{ path: m.path, type: 'meeting' }} />
             </section>
           )}
         </div>
       </ContextPaneProvider>
-      <aside className="w2b-after-side mt-record" aria-label="Recording and the meeting note">
-        <TranscriptOpen.Provider value={true}>
-          {/* No recording: a section, not a div (t254, 13 Nov 2026), with its one way in. */}
-          {hasRec ? (
-            <MeetingRecorder path={m.path} canEdit={canEdit} />
-          ) : (
-            <section className="card w2b-card w2b-norec" aria-label="Recording">
-              <span className="vsub">No recording for this meeting.</span>
-              <button type="button" className="button small" disabled={!canEdit} onClick={() => openTranscript(m)}>
-                <Icon name="quote" size={12} /> Bring in a transcript
-              </button>
-            </section>
-          )}
-        </TranscriptOpen.Provider>
-      </aside>
-      {three && (
+      {(hasRec || !wide) && (
+        <aside className="w2b-after-side mt-record" aria-label="Recording and the meeting note">
+          <TranscriptOpen.Provider value={true}>
+            {/* No recording: a section, not a div (t254, 13 Nov 2026), with its one way in. */}
+            {hasRec ? <MeetingRecorder path={m.path} canEdit={canEdit} /> : noRecording}
+          </TranscriptOpen.Provider>
+        </aside>
+      )}
+      {side && (
         <aside className="mt-context" aria-label="Words to check, the meeting note and what it connects to">
+          {!hasRec && noRecording}
           <div ref={setSlot} className="mt-words-slot" />
           <MeetingNoteCard m={m} />
           <section className="mt-links" aria-label="What the meeting connects to">

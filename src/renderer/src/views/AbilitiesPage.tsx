@@ -38,7 +38,7 @@ export function AbilitiesPage() {
       <div className="ab-page">
         <PageHead
           icon="sparkle"
-          title="What the Vault can do"
+          title="What Ironleaf can do"
           count={ABILITIES.length}
           lead={query ? `${found.length} ${found.length === 1 ? 'ability matches' : 'abilities match'} “${query}”.` : 'Every ability, grouped. Open goes to the real place.'}
         />

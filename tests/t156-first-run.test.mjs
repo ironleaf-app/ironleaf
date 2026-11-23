@@ -330,7 +330,7 @@ test('person 1 sees the setup steps first, on an honest empty Today', async () =
   assert.ok(await waitFor(h, `document.body.innerText.includes('Packs')`), 'Settings › Packs lands');
   await toToday();
   assert.equal(await clickWords(h, 'Open'), 'CLICKED', 'Open opens');
-  assert.ok(await waitFor(h, `document.body.innerText.includes('What the Vault can do')`, 15000), 'the abilities land (got: ' + (await mainText(h)).slice(0, 150) + ')');
+  assert.ok(await waitFor(h, `document.body.innerText.includes('What Ironleaf can do')`, 15000), 'the abilities land (got: ' + (await mainText(h)).slice(0, 150) + ')');
   await toToday();
   assert.equal(await clickWords(h, 'Start'), 'CLICKED', 'Start opens');
   assert.ok(await waitFor(h, `!!document.querySelector('.overlay, .picker, [role="dialog"]')`, 10000), 'the starter picker opens');

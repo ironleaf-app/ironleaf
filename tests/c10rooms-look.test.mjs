@@ -8,9 +8,10 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { cssPxFor } from './css-px.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const read = (f) => readFileSync(path.join(root, f), 'utf8');
+const read = (f) => cssPxFor(f, readFileSync(path.join(root, f), 'utf8'));
 const noComments = (src) => src.replace(/\/\*[\s\S]*?\*\//g, '');
 const rule = (css, sel) => {
   const esc = sel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

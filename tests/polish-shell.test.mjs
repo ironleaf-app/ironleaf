@@ -12,6 +12,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { after, before, test } from 'node:test';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { cssPxFor } from './css-px.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const work = mkdtempSync(path.join(tmpdir(), 'nv-polish-shell-'));
@@ -30,7 +31,7 @@ before(async () => {
 });
 after(() => rmSync(work, { recursive: true, force: true }));
 
-const read = (rel) => readFileSync(path.join(root, rel), 'utf8');
+const read = (rel) => cssPxFor(rel, readFileSync(path.join(root, rel), 'utf8'));
 
 test('item 5: a snippet never repeats the project its chip already names', () => {
   assert.equal(N.snippetForDisplay('Part of Marlowe Gallery Fit-out (Tessaly Studio). From the survey', 'Marlowe Gallery Fit-out (Tessaly Studio)'), 'From the survey');
@@ -70,8 +71,8 @@ test('items 1, 2, 6, 7 and 8: the polish frame holds the numbers the brief names
   const frame = read('src/renderer/src/styles/page-frame.css');
   assert.match(frame, /--w-content:\s*1160px/, 'one content width, named');
   assert.match(frame, /--page-max: calc\(var\(--w-content\) \+ 2 \* var\(--page-pad-side\)\)/, 'the column is the content width plus its gutters');
-  assert.match(frame, /--page-pad-side: var\(--space-6\)/, 'a 36 px side gutter');
-  assert.match(frame, /--space-6: 36px/, 'which is the scale\u2019s 36');
+  assert.match(frame, /--page-pad-side: 36px/, 'a 36 px side gutter'); // read() gives tokens as their pixels (css-px.mjs)
+  assert.match(read('src/renderer/src/styles.css'), /--space-6: 36px/, 'which is the scale\u2019s 36');
   assert.doesNotMatch(css, /^\s*--page-max:\s*\d+px/m, 'this sheet sets no width of its own');
   assert.match(css, /@media \(max-width: 1000px\)[\s\S]*?--page-pad-side:\s*16px/, '16 px under 1000 px');
   assert.match(css, /\.nv-page-icon\s*\{\s*width:\s*28px;\s*height:\s*28px/, 'the PageHead icon tile is 28 px');

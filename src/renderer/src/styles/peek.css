@@ -84,9 +84,9 @@
 .peek-bar {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--space-0);
   height: 44px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border-bottom: 1px solid var(--border);
   flex: none;
 }
@@ -113,17 +113,17 @@
 .peek-trail {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--space-0);
   min-width: 0;
   flex: 1;
-  margin: 0 4px;
+  margin: 0 var(--space-1);
   overflow: hidden;
 }
 
 .peek-crumb-wrap {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--space-0);
   min-width: 0;
   flex: 0 1 auto;
 }
@@ -159,7 +159,7 @@
 .peek-trail-gap {
   color: var(--text-faint);
   font-size: var(--fs-caption);
-  padding: 0 2px;
+  padding: 0 var(--space-0);
 }
 
 /* ── The record ── */
@@ -171,7 +171,7 @@
 
 .peek-loading {
   height: 120px;
-  margin: 8px 0;
+  margin: var(--space-2) 0;
   border-radius: var(--r-4);
   background: linear-gradient(90deg, var(--bg-hover), var(--bg-side), var(--bg-hover));
   background-size: 200% 100%;
@@ -195,8 +195,8 @@
 .peek-head {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding-bottom: 16px;
+  gap: var(--space-2);
+  padding-bottom: var(--space-4);
 }
 
 .peek-kind {
@@ -257,7 +257,7 @@
 
 .peek-actions {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   margin-top: 6px;
   flex-wrap: wrap;
 }
@@ -267,7 +267,7 @@
   align-items: center;
   gap: 6px;
   height: 30px;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   border-radius: var(--r-3);
   font-size: var(--fs-small);
   font-weight: 500;
@@ -293,7 +293,7 @@
 /* ── Its fields ── */
 .peek-facts {
   margin: 0 0 18px;
-  padding: 12px 0 0;
+  padding: var(--space-3) 0 0;
   border-top: 1px solid var(--border);
   display: grid;
   gap: 9px;
@@ -302,7 +302,7 @@
 .peek-fact {
   display: grid;
   grid-template-columns: 104px 1fr;
-  gap: 12px;
+  gap: var(--space-3);
   align-items: baseline;
   font-size: var(--fs-small);
   line-height: 1.45;
@@ -360,7 +360,7 @@
 }
 
 .peek-lead {
-  margin: 6px 0 12px;
+  margin: 6px 0 var(--space-3);
   font-size: var(--fs-small);
   line-height: 1.6;
   color: var(--text);
@@ -376,28 +376,28 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--space-3);
   padding: 3px 0;
   font-size: var(--fs-small);
   color: var(--text-muted);
 }
 
 .peek-section-head {
-  margin: 0 0 4px;
+  margin: 0 0 var(--space-1);
   font-size: var(--fs-caption);
   font-weight: 600;
   color: var(--text-muted);
 }
 
 .peek-group {
-  margin-top: 12px;
+  margin-top: var(--space-3);
 }
 
 .peek-group-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  margin: 0 0 4px;
+  margin: 0 0 var(--space-1);
   font-size: var(--fs-small);
   font-weight: 600;
   color: var(--text);
@@ -420,7 +420,7 @@
   align-items: flex-start;
   gap: 10px;
   width: 100%;
-  padding: 7px 8px;
+  padding: 7px var(--space-2);
   margin: 0 -8px;
   width: calc(100% + 16px);
   border-radius: var(--r-3);
@@ -447,7 +447,7 @@
 .peek-row-main {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-0);
   min-width: 0;
   flex: 1;
 }
@@ -499,8 +499,8 @@
 }
 
 .peek-more {
-  margin-top: 2px;
-  padding: 4px 0;
+  margin-top: var(--space-0);
+  padding: var(--space-1) 0;
   font-size: var(--fs-small);
   color: var(--accent-text, var(--accent));
 }
@@ -528,7 +528,7 @@
 @container peek (max-width: 360px) {
   .peek-fact {
     grid-template-columns: 1fr;
-    gap: 2px;
+    gap: var(--space-0);
   }
   .peek-scroll {
     padding: 14px 14px 28px;
@@ -580,7 +580,7 @@
 .pj-ed:focus-visible > .rec-pencil {
   display: inline-grid;
   width: 20px;
-  margin: -3px -22px -3px 2px;
+  margin: -3px -22px -3px var(--space-0);
   visibility: visible;
   opacity: 1;
 }
@@ -604,9 +604,9 @@
 .foot-connected {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 4px 32px;
+  gap: var(--space-1) 32px;
   align-items: start;
-  padding: 2px 2px 6px;
+  padding: var(--space-0) var(--space-0) 6px;
 }
 
 .foot-connected .peek-group {
@@ -621,7 +621,7 @@
 .foot-connected-lines {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-0);
   margin: -2px 0 6px 34px;
 }
 

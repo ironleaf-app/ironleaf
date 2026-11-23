@@ -114,23 +114,23 @@
 /* A narrow side (a drawer on a small window, or dragged thin): tighter switches, the model's name gives way first. */
 @container side (max-width: 340px) {
   .chat-bar {
-    gap: 4px;
-    padding-left: 8px;
-    padding-right: 8px;
+    gap: var(--space-1);
+    padding-left: var(--space-2);
+    padding-right: var(--space-2);
   }
 
   .chat-bar .segmented button {
-    padding: 4px 8px;
+    padding: var(--space-1) var(--space-2);
   }
 
   .chat-input {
-    margin-left: 8px;
-    margin-right: 8px;
+    margin-left: var(--space-2);
+    margin-right: var(--space-2);
   }
 
   .chat-modelfoot {
-    margin-left: 8px;
-    margin-right: 8px;
+    margin-left: var(--space-2);
+    margin-right: var(--space-2);
   }
 }
 
@@ -143,8 +143,8 @@
 @media (max-width: 880px) {
   .settings-nav {
     width: 178px;
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-left: var(--space-2);
+    padding-right: var(--space-2);
   }
 }
 
@@ -156,7 +156,7 @@
 
   /* The window's height is the box's: it sits 16 px from the top, not 12% down (its foot off the window). */
   .overlay:has(> .settings) {
-    padding-top: 16px;
+    padding-top: var(--space-4);
   }
 }
 
@@ -164,7 +164,7 @@
 @container settings (max-width: 520px) {
   .setting-row {
     flex-wrap: wrap;
-    gap: 8px 16px;
+    gap: var(--space-2) var(--space-4);
   }
 
   .setting-text {

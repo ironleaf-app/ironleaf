@@ -17,12 +17,13 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
 import { pathToFileURL } from 'node:url';
+import { cssPxFor } from './css-px.mjs';
 
 const require = createRequire(import.meta.url);
 process.env.no_proxy = [process.env.no_proxy, '127.0.0.1,localhost'].filter(Boolean).join(',');
 process.env.NO_PROXY = [process.env.NO_PROXY, '127.0.0.1,localhost'].filter(Boolean).join(',');
 const root = path.join(import.meta.dirname, '..');
-const read = (p) => readFileSync(path.join(root, p), 'utf8');
+const read = (p) => cssPxFor(p, readFileSync(path.join(root, p), 'utf8'));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const SHELL = process.env.HEADLESS_SHELL || (process.env.HOME || '') + '/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell';
 // The window's stylesheets in the order it loads them (main.tsx), so the cascade is the window's.
@@ -46,7 +47,10 @@ test('the fit rules are in their sheets and rows', () => {
   assert.ok(/flex: 1 1 \d+px/.test(words), 'the words keep a readable basis before the actions wrap under');
   const actions = w2a.match(/\.w2a-ib-actions \{([^}]*)\}/s)?.[1] ?? assert.fail('no inbox-actions rule');
   assert.ok(actions.includes('flex-wrap: wrap'), 'wrapped actions wrap among themselves instead of hanging past the card');
-  const lead = w2a.match(/\.w2a-ib-actions \.btn\.pri \{([^}]*)\}/s)?.[1] ?? assert.fail('no lead-button cap');
+  // Anchored at a rule's start (23 Nov 2026, design-language Inbox pass): the quiet colours for a row not chosen,
+  // ".w2a-ib-card:not([aria-current]) .w2a-ib-actions .btn.pri {", now sit above the cap and also end in this
+  // selector, so an unanchored match read the colour rule instead of the cap.
+  const lead = w2a.match(/^\.w2a-ib-actions \.btn\.pri \{([^}]*)\}/ms)?.[1] ?? assert.fail('no lead-button cap');
   assert.ok(/max-width: \d+px/.test(lead), 'the lead File-to button caps instead of taking the whole row');
   const leadwords = w2a.match(/\.w2a-ib-leadwords \{([^}]*)\}/s)?.[1] ?? assert.fail('no lead-words rule');
   assert.ok(leadwords.includes('white-space: normal') && leadwords.includes('overflow-wrap: break-word'), 'capped lead words wrap whole inside the cap (t249: titles a person must read wrap whole)');

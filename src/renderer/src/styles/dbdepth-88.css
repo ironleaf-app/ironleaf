@@ -10,7 +10,7 @@
 }
 
 .sv-rollup-grid .sv-formula-field {
-  margin-bottom: 4px;
+  margin-bottom: var(--space-1);
 }
 
 @media (max-width: 520px) {
@@ -25,7 +25,7 @@
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   max-width: 100%;
 }
 
@@ -33,12 +33,12 @@
   display: inline-flex;
   align-items: center;
   max-width: 180px;
-  padding: 0 2px 0 0;
+  padding: 0 var(--space-0) 0 0;
 }
 
 .sv-pill-open {
   min-width: 0;
-  padding: 1px 2px 1px 8px;
+  padding: 1px var(--space-0) 1px var(--space-2);
   overflow: hidden;
   text-overflow: clip;
   white-space: nowrap;
@@ -81,7 +81,7 @@
   overflow: hidden;
   text-overflow: clip;
   white-space: nowrap;
-  padding: 1px 4px;
+  padding: 1px var(--space-1);
   border-radius: var(--r-1);
   color: var(--text-faint);
   font-size: var(--fs-caption);
@@ -104,8 +104,8 @@ button.sv-kind:hover {
 .sv-relation-add {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
+  gap: var(--space-1);
+  padding: var(--space-0) var(--space-2);
   border-radius: var(--r-1);
   color: var(--text-faint);
   font-size: var(--fs-caption);
@@ -128,7 +128,7 @@ button.sv-relation-add:hover {
 }
 
 .dialog.sv-form-dialog .hint {
-  margin: 0 0 12px;
+  margin: 0 0 var(--space-3);
   flex: none;
   color: var(--text-muted);
   font-size: var(--fs-small);
@@ -140,13 +140,13 @@ button.sv-relation-add:hover {
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
-  padding: 2px 2px 4px;
+  padding: var(--space-0) var(--space-0) var(--space-1);
 }
 
 .dialog.sv-form-dialog .dialog-actions {
   flex: none;
-  margin-top: 12px;
-  padding-top: 12px;
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
   border-top: 1px solid var(--border);
   background: var(--bg-raised);
 }
@@ -154,7 +154,7 @@ button.sv-relation-add:hover {
 .sv-form-date-wrap {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .sv-form-date-wrap input {
@@ -181,7 +181,7 @@ button.sv-relation-add:hover {
   display: inline-flex;
   align-items: center;
   align-self: flex-start;
-  gap: 8px;
+  gap: var(--space-2);
   height: 34px;
   color: var(--text-muted);
   font-size: var(--fs-small);
@@ -224,7 +224,7 @@ button.sv-relation-add:hover {
 }
 
 .sv-form-relation {
-  padding: 2px 0;
+  padding: var(--space-0) 0;
 }
 
 .sv-form-relation .sv-pill-open:hover {
@@ -246,7 +246,7 @@ button.sv-relation-add:hover {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin: 2px 0;
+  margin: var(--space-0) 0;
 }
 
 .sv-form-problem svg {
@@ -257,7 +257,7 @@ button.sv-relation-add:hover {
 .sv-form-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   padding: 6px 0;
   border-top: 1px solid var(--border);
   font-size: var(--fs-small);
@@ -298,7 +298,7 @@ button.sv-relation-add:hover {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--space-3);
   margin-bottom: 6px;
 }
 
@@ -311,7 +311,7 @@ button.sv-relation-add:hover {
 
 .nv-sync-actions {
   display: inline-flex;
-  gap: 12px;
+  gap: var(--space-3);
   font-size: var(--fs-small);
 }
 
@@ -340,8 +340,8 @@ button.sv-relation-add:hover {
 .nv-columns {
   display: grid;
   grid-template-columns: repeat(var(--nv-cols, 2), minmax(0, 1fr));
-  gap: 8px 28px;
-  margin: 12px 0;
+  gap: var(--space-2) 28px;
+  margin: var(--space-3) 0;
 }
 
 .nv-column {
@@ -372,10 +372,10 @@ button.sv-relation-add:hover {
 .cm-nv-column-divider {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   min-height: 26px;
-  margin: 10px 0 2px;
-  padding: 6px 2px 2px;
+  margin: 10px 0 var(--space-0);
+  padding: 6px var(--space-0) var(--space-0);
   border-top: 1px solid var(--border);
   color: var(--text-faint);
   font-size: var(--fs-caption);
@@ -390,12 +390,12 @@ button.sv-relation-add:hover {
 .cm-nv-column-tools {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   margin-left: auto;
 }
 
 .cm-nv-column-tool {
-  padding: 2px 8px;
+  padding: var(--space-0) var(--space-2);
   border-radius: var(--r-2);
   color: var(--text-muted);
   font: inherit;

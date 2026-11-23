@@ -743,7 +743,13 @@ export function TasksView({ tab }: { tab: W.TabState }) {
             Filters{extraFiltered ? ' · on' : ''} <Icon name="chevronDown" size={12} />
           </button>
         </div>
-        <ListFind id="tasks" open always value={filter.text ?? ''} onChange={(text) => set({ text })} match={match} inputRef={findRef} hint="Press / to jump to the find" />
+        {/* The find and Tick all on one row (one toolbar over the list, never two bands). */}
+        <div className="list-tools">
+          <ListFind id="tasks" open always value={filter.text ?? ''} onChange={(text) => set({ text })} match={match} inputRef={findRef} hint="Press / to jump to the find" />
+          {shown.length > 0 && (
+            <button type="button" className="btn quiet list-tools-end" title="Tick every task shown, to change them together" onClick={() => setSelected((s) => (s.length === shown.length ? [] : shown.map((t) => t.key)))}>{selected.length === shown.length ? 'Untick all' : 'Tick all'}</button>
+          )}
+        </div>
         {showFilters && (
           <div className="chips" style={{ marginTop: 10 }}>
             <span className="seg" role="radiogroup" aria-label="Open or done">
@@ -765,13 +771,8 @@ export function TasksView({ tab }: { tab: W.TabState }) {
             )}
           </div>
         )}
-        {/* Tick all, and the ticked rows' bar (5 Nov 2026, the Inbox's bulk, reused: the same words, the
-            same bar, a day and an owner beside done). */}
-        {shown.length > 0 && (
-          <div className="w2a-ib-select">
-            <button type="button" className="btn quiet" title="Tick every task shown, to change them together" onClick={() => setSelected((s) => (s.length === shown.length ? [] : shown.map((t) => t.key)))}>{selected.length === shown.length ? 'Untick all' : 'Tick all'}</button>
-          </div>
-        )}
+        {/* The ticked rows' bar (5 Nov 2026, the Inbox's bulk, reused: the same words, the same bar, a day and an
+            owner beside done). Tick all stands on the find's row above. */}
         {selected.length > 0 && (
           <div className="w2a-ib-bulk" role="toolbar" aria-label={`${plural(selected.length, 'task')} ticked`}>
             <span className="w2a-ib-bulk-count">{plural(selected.length, 'task')} ticked</span>

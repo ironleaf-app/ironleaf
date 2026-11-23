@@ -2,47 +2,8 @@
    (the picker, Settings, the left side), its page's head and empty state, and Settings › Note types. Light first; dark
    comes from the same tokens. Calm: soft tints, no coloured edge bars, circles and pills with corner-shape round. */
 
-:root {
-  --type-stone: #7a766c;
-  --type-clay: #b0603f;
-  --type-slate: #4f6d8f;
-  --type-sky: #3f7ea6;
-  --type-ochre: #a3761f;
-  --type-sage: #5b7f5f;
-  --type-plum: #7e5a86;
-  --type-rose: #a8566a;
-  --type-teal: #3b8580;
-  --type-soft-mix: 12%;
-}
-
-:root[data-theme='dark'] {
-  --type-stone: #b3aea3;
-  --type-clay: #e0987a;
-  --type-slate: #9fb5d1;
-  --type-sky: #8cbfdf;
-  --type-ochre: #dcb76a;
-  --type-sage: #9cc49f;
-  --type-plum: #c6a2cd;
-  --type-rose: #e3a1b1;
-  --type-teal: #86c7c1;
-  --type-soft-mix: 18%;
-}
-
-/* One class per colour sets --type and its soft tint; everything below reads those two. */
-/* The bright palettes (styles/palettes.css) carry the types in clearer colours; Paper keeps the muted ones above. */
-:root[data-theme='light']:not([data-palette='paper']) {
-  --type-stone: #6b7280;
-  --type-clay: #e0623a;
-  --type-slate: #4a6fd1;
-  --type-sky: #1a8bd6;
-  --type-ochre: #cf8a00;
-  --type-sage: #2d9858;
-  --type-plum: #8e50cc;
-  --type-rose: #d8457b;
-  --type-teal: #0e9a90;
-  --type-soft-mix: 13%;
-}
-
+/* The type colours themselves (light, dark, and the bright palettes' clearer set) live in styles/palettes.css.
+   One class per colour sets --type and its soft tint; everything below reads those two. */
 .nt-stone { --type: var(--type-stone); }
 .nt-clay { --type: var(--type-clay); }
 .nt-slate { --type: var(--type-slate); }
@@ -87,7 +48,7 @@
 .nt-head-words {
   display: flex;
   align-items: flex-start;
-  gap: 14px;
+  gap: var(--space-3);
 }
 
 .nt-mark {
@@ -96,7 +57,7 @@
   flex: none;
   width: 42px;
   height: 42px;
-  margin-top: 2px;
+  margin-top: var(--space-0);
   border-radius: var(--r-3);
   background: var(--type-soft);
   color: var(--type);
@@ -109,7 +70,7 @@
 .nt-head h1 {
   display: flex;
   align-items: baseline;
-  gap: 10px;
+  gap: var(--space-2);
 }
 
 .nt-count {
@@ -117,7 +78,7 @@
   place-items: center;
   min-width: 26px;
   height: 22px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-1);
   background: var(--bg-hover);
   color: var(--text-muted);
@@ -155,7 +116,7 @@
 .nt-list {
   display: flex;
   flex-direction: column;
-  margin: 4px 0 18px;
+  margin: var(--space-1) 0 var(--space-4);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised);
@@ -165,9 +126,9 @@
 .nt-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   min-height: 52px;
-  padding: 8px 12px;
+  padding: var(--space-2) var(--space-3);
 }
 
 .nt-item + .nt-item {
@@ -187,13 +148,13 @@
 .nt-item-name {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   color: var(--text);
   font: 550 var(--fs-small)/1.3 var(--font-ui);
 }
 
 .nt-item-meta {
-  margin-top: 2px;
+  margin-top: var(--space-0);
   color: var(--text-faint);
   font-size: var(--fs-caption);
   overflow: hidden;
@@ -205,7 +166,7 @@
   display: inline-flex;
   align-items: center;
   height: 18px;
-  padding: 0 7px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-1);
   background: var(--bg-hover);
   color: var(--text-muted);
@@ -215,7 +176,7 @@
 .nt-item-tools {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--space-0);
 }
 
 .nt-up {
@@ -224,9 +185,9 @@
 
 .nt-form {
   display: grid;
-  gap: 12px;
-  margin: 0 0 18px;
-  padding: 16px;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-4);
+  padding: var(--space-4);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised);
@@ -236,7 +197,7 @@
   display: grid;
   grid-template-columns: 130px 1fr;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .nt-form-row > span {
@@ -255,7 +216,7 @@
 .nt-icons {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .nt-swatch {
@@ -291,24 +252,24 @@
 .nt-field {
   display: grid;
   grid-template-columns: 1fr 170px auto;
-  gap: 6px;
+  gap: var(--space-2);
   align-items: center;
 }
 
 .nt-fields {
   display: grid;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .nt-form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 @container sv (max-width: 560px) {
   .nt-head-words {
-    gap: 10px;
+    gap: var(--space-2);
   }
   .nt-mark {
     width: 34px;
@@ -319,7 +280,7 @@
 @media (max-width: 640px) {
   .nt-form-row {
     grid-template-columns: 1fr;
-    gap: 4px;
+    gap: var(--space-1);
   }
   .nt-field {
     grid-template-columns: 1fr 1fr auto;

@@ -1,0 +1,150 @@
+/* The Locked gate (views/LockedView.tsx SetUp and Unlock; wide-window pass, 23 Nov 2026). It stood as a 460 px card at
+   the top of the page, the rest of a 1,600 or 2,560 px window blank around it. A lock screen has one job, so it now
+   takes the whole room on purpose: what Locked is on a quiet accent-tinted panel at the left, the one thing to do
+   (set up, or unlock) beside it on the page, each centred in its half so the pair reads as one composition at any
+   width. Narrow, the panel stands over the form. Tokens only; the card rules in styles.css stay the narrow default. */
+
+.pv-page.pv-page.pv-gate {
+  display: block;
+  padding: 0;
+  container: gate / inline-size;
+}
+.pv-gate-frame {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 100%;
+}
+
+/* What Locked is: a quiet panel, the mark, the name at page size, the promise at reading size. */
+.pv-gate .pv-card.pv-gate-side {
+  box-sizing: border-box;
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0;
+  padding: var(--space-6);
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--accent-softer);
+  box-shadow: none;
+}
+.pv-gate-words {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: min(34rem, 100%);
+}
+.pv-gate .pv-mark {
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: var(--bg-raised);
+  color: var(--accent-strong, var(--accent));
+  box-shadow: var(--e-1);
+}
+.pv-gate .pv-gate-side h1 {
+  margin: var(--space-2) 0 0;
+  color: var(--text-strong);
+  font-size: var(--fs-page);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.pv-gate .pv-lede {
+  color: var(--text);
+  font-size: var(--fs-reading);
+  line-height: 1.6;
+}
+.pv-gate .pv-points {
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-body);
+  line-height: 1.5;
+}
+.pv-gate .pv-points svg {
+  margin-top: var(--space-1);
+  color: var(--accent-strong, var(--tone-ok));
+}
+
+/* The one thing to do: the form, on the page. */
+.pv-gate-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+}
+.pv-gate-form {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: min(26rem, 100%);
+}
+.pv-gate-ask {
+  margin: 0;
+  color: var(--text-strong);
+  font-size: var(--fs-section);
+  font-weight: 650;
+  line-height: 1.3;
+}
+.pv-gate .pv-field {
+  gap: var(--space-1);
+  font-size: var(--fs-small);
+}
+.pv-gate :is(.pv-field, .pv-password) input {
+  height: 40px;
+  border-radius: var(--r-2);
+  background: var(--bg-raised);
+  font-size: var(--fs-body);
+}
+.pv-gate .pv-warn {
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: var(--r-3);
+}
+.pv-gate .pv-go {
+  height: 40px;
+  margin-top: var(--space-1);
+}
+.pv-gate .pv-password .button {
+  height: 40px;
+}
+.pv-gate-note {
+  margin: 0;
+  color: var(--text-faint);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+
+/* Side by side from about a 1280 window: the panel's words and the form each centred in their half. */
+@container gate (min-width: 880px) {
+  .pv-gate-frame {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .pv-gate .pv-card.pv-gate-side {
+    align-items: center;
+    padding: var(--space-7) var(--space-6);
+    border-bottom: 0;
+    border-right: 1px solid var(--border);
+  }
+  .pv-gate-main {
+    padding: var(--space-7) var(--space-6);
+  }
+}
+/* A big window (2560): the one bold thing on the screen, the name, at display size; the words and the form a step
+   wider, so the pair holds its halves instead of floating small in them. */
+@container gate (min-width: 1500px) {
+  .pv-gate .pv-gate-side h1 {
+    font-size: var(--fs-display);
+  }
+  .pv-gate-words {
+    width: min(38rem, 100%);
+  }
+  .pv-gate-form {
+    width: min(28rem, 100%);
+  }
+}

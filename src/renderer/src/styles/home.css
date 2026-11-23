@@ -1,16 +1,16 @@
 /* Home (views/HomeView.tsx, 8.7 wave 1): the greeting, the Ask box and the cards, on the kit. */
 
-.home-page { padding-bottom: 64px; }
+.home-page { padding-bottom: var(--space-7); }
 .home-top { display: flex; align-items: center; }
 .home-top .btn { margin-left: auto; }
 .home-cards { display: flex; flex-direction: column; gap: 20px; margin-top: 22px; }
-.home-label { margin: 0 0 8px; }
-.card.home-card { padding: 8px 20px; }
+.home-label { margin: 0 0 var(--space-2); }
+.card.home-card { padding: var(--space-2) 20px; }
 /* The morning brief under the hero (10.0): the mock-up's glass, lifted once. */
 .card.home-card.is-glass { background: var(--glass); backdrop-filter: blur(14px); box-shadow: var(--e-2); }
-.home-card.is-wide { padding: 14px 16px; }
-.home-sub { padding-top: 8px; }
-.home-sub:first-child { padding-top: 4px; }
+.home-card.is-wide { padding: 14px var(--space-4); }
+.home-sub { padding-top: var(--space-2); }
+.home-sub:first-child { padding-top: var(--space-1); }
 
 /* A row's words as one opener: title over detail, clipped. */
 .home-open {
@@ -25,29 +25,29 @@ span.home-open { cursor: default; }
 .home-dot::after { content: ""; position: absolute; inset: 6px; border-radius: 50%; background: var(--border-strong); }
 .home-act { height: 28px; flex: none; }
 .home-x { width: 26px; height: 26px; font-size: var(--fs-caption); flex: none; }
-.home-more { padding: 8px 0 10px; }
-.home-seeall { border: 0; background: none; padding: 0; font-size: var(--fs-small); font-weight: 600; color: var(--text-muted); cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 4px; }
+.home-more { padding: var(--space-2) 0 10px; }
+.home-seeall { border: 0; background: none; padding: 0; font-size: var(--fs-small); font-weight: 600; color: var(--text-muted); cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: var(--space-1); }
 /* Home lays out with classes (9.5 polished): the dialog's width, the top actions, the setup card. */
 .dlg.home-change { width: 760px; }
-.home-top-actions { margin-left: auto; display: flex; gap: 4px; }
+.home-top-actions { margin-left: auto; display: flex; gap: var(--space-1); }
 .home-setup-lead { margin-bottom: 14px; }
-.home-setup-card { padding: 8px 20px; margin-bottom: 16px; }
+.home-setup-card { padding: var(--space-2) 20px; margin-bottom: var(--space-4); }
 .home-seeall:hover { color: var(--text); }
-.home-quiet { text-align: center; padding: 24px 16px; }
+.home-quiet { text-align: center; padding: var(--space-5) var(--space-4); }
 .home-quiet b { font-size: var(--fs-body); }
-.home-quiet p { font-size: var(--fs-body); color: var(--text-muted); margin: 4px 0 12px; }
-.home-count { display: flex; align-items: center; gap: 12px; padding: 10px 0; font-size: var(--fs-body); }
+.home-quiet p { font-size: var(--fs-body); color: var(--text-muted); margin: var(--space-1) 0 var(--space-3); }
+.home-count { display: flex; align-items: center; gap: var(--space-3); padding: 10px 0; font-size: var(--fs-body); }
 .home-count b { font-size: var(--fs-section); font-weight: 700; letter-spacing: -0.02em; }
-.home-line { font-size: var(--fs-body); margin: 8px 0 2px; }
+.home-line { font-size: var(--fs-body); margin: var(--space-2) 0 var(--space-0); }
 /* The brief's kind chip is one width, so every title starts on one line (Bill, Project, Meeting). */
 .trow:has(> .home-open) > .tag { flex: none; width: 60px; justify-content: center; text-align: center; }
 .home-when { font-size: var(--fs-small); font-weight: 700; width: 72px; flex: none; }
 
 /* Recently viewed: small cards in a row (8.7 wave 1 polish, 30 Oct 2026: each its own card, as drawn). */
-.home-recent { display: flex; gap: 12px; }
+.home-recent { display: flex; gap: var(--space-3); }
 .home-recent .home-cell {
   flex: 1; min-width: 0; border: 1px solid var(--border); background: var(--bg-raised); border-radius: var(--r-3);
-  padding: 16px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start;
+  padding: var(--space-4); display: flex; flex-direction: column; gap: 10px; align-items: flex-start;
   font: inherit; color: inherit; cursor: pointer; text-align: left;
 }
 .home-recent .home-cell:hover { background: var(--bg-hover); }
@@ -57,15 +57,15 @@ span.home-open { cursor: default; }
 }
 
 /* Change Home: the cards on the left, the offer on the right. */
-.home-change-cols { display: flex; gap: 28px; margin-top: 16px; }
+.home-change-cols { display: flex; gap: 28px; margin-top: var(--space-4); }
 .home-change-cols > div:first-child { flex: 1.2; min-width: 0; }
 .home-change-cols > div:last-child { flex: 1; min-width: 0; }
-.home-change-cols .glabel { margin-bottom: 8px; }
-.home-pick { display: flex; align-items: center; gap: 8px; padding: 10px 12px 10px 16px; margin-bottom: 10px; }
+.home-change-cols .glabel { margin-bottom: var(--space-2); }
+.home-pick { display: flex; align-items: center; gap: var(--space-2); padding: 10px var(--space-3) 10px var(--space-4); margin-bottom: 10px; }
 .home-pick-t { font-weight: 600; min-width: 0; flex: 1; }
-.home-pick-move { display: flex; gap: 2px; margin-left: auto; }
+.home-pick-move { display: flex; gap: var(--space-0); margin-left: auto; }
 .home-pick-move .iconbtn { width: 26px; height: 26px; font-size: var(--fs-small); }
-.home-offer-list { padding: 8px 16px; }
+.home-offer-list { padding: var(--space-2) var(--space-4); }
 
 /* A narrow window: the recent row wraps two by two, Change Home stacks. */
 @media (max-width: 720px) {
@@ -76,7 +76,7 @@ span.home-open { cursor: default; }
 /* An area's next date reads coral when it is past, as late dates do on Today (4 Nov 2026, p15-today-rest). */
 .home-due-bad { color: var(--ns-attention-words); }
 /* Moving in (5 Nov 2026, u3 moving-in): doors into their stuff, the honest adopt button, a quiet hide. */
-.home-doors { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 12px; }
-.home-adopt { margin-top: 12px; }
+.home-doors { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-2); margin-top: var(--space-3); }
+.home-adopt { margin-top: var(--space-3); }
 .home-adopt p { margin: 6px 0 0; }
-.home-quiet .home-adopt .button { margin-top: 4px; }
+.home-quiet .home-adopt .button { margin-top: var(--space-1); }

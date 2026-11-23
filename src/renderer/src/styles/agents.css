@@ -14,8 +14,8 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 12px;
-  margin: 22px 0 8px;
+  gap: var(--space-3);
+  margin: 22px 0 var(--space-2);
 }
 
 .settings-body .ag-section-head h3 {
@@ -66,7 +66,7 @@
   display: flex;
   align-items: center;
   gap: 11px;
-  padding: 9px 2px;
+  padding: 9px var(--space-0);
   border-bottom: 1px solid var(--border);
 }
 
@@ -121,7 +121,7 @@
 
 .ag-act-state {
   flex: none;
-  padding: 2px 8px;
+  padding: var(--space-0) var(--space-2);
   border-radius: var(--r-1);
   background: var(--bg-hover);
   color: var(--text-faint);
@@ -145,7 +145,7 @@
 }
 
 .ag-quiet {
-  margin: 2px 0 0;
+  margin: var(--space-0) 0 0;
   color: var(--text-faint);
   font-size: var(--fs-small);
 }
@@ -167,7 +167,7 @@
 .ag-requests-head {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   color: var(--text-muted);
   font-size: var(--fs-small);
   font-weight: 500;
@@ -183,7 +183,7 @@
 
 /* On Today: under the greeting, the width of the page. */
 .td-view .ag-requests {
-  margin: 4px 0 18px;
+  margin: var(--space-1) 0 18px;
 }
 
 .ag-copy {
@@ -193,12 +193,12 @@
 
 .ag-setup {
   display: grid;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .ag-setup-body {
   display: grid;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .ag-port {
@@ -215,8 +215,8 @@
   position: relative;
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  padding: 10px 10px 10px 12px;
+  gap: var(--space-2);
+  padding: 10px 10px 10px var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-4);
   background: var(--bg-code);

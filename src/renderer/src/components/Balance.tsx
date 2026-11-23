@@ -7,6 +7,13 @@
 // first column, then the second, then the rest. A section is placed once per set of sections and frame width (never
 // re-placed because its own height changed), so a section whose height changes with its column's width never flips back
 // and forth.
+//
+// A tail (wide-window pass, 23 Nov 2026, at 2560 with the chat column open: the work column ran ~600 px past the
+// day's, a dead band under the day): one long block that reads under both columns, across the frame, its own rows
+// flowing in balanced columns inside it (CSS multi-column, so the two halves always end together). The columns above
+// it then only have to balance their shorter blocks, and nothing tall is left to stand alone in one of them. In three
+// columns it spans the first two, the third column running the full height beside both. Narrow, it reads straight
+// after the first column, where it belongs in the one-column order.
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 
 export interface BalanceItem {
@@ -14,7 +21,7 @@ export interface BalanceItem {
   node: ReactNode;
 }
 
-export function Balance({ a, b, rest, foot, min = 1180, min3, onColumns, className = '' }: { a: ReactNode; b: ReactNode; rest: BalanceItem[]; foot?: ReactNode; min?: number; /** From this frame width (round 3, a user's 3440 ultrawide) a third column holds the movable sections, balanced with the second. */ min3?: number; onColumns?(n: 1 | 2 | 3): void; className?: string }) {
+export function Balance({ a, b, rest, foot, tail, min = 1180, min3, onColumns, className = '' }: { a: ReactNode; b: ReactNode; rest: BalanceItem[]; foot?: ReactNode; /** One long block under both columns, across them (see above). */ tail?: ReactNode; min?: number; /** From this frame width (round 3, a user's 3440 ultrawide) a third column holds the movable sections, balanced with the second. */ min3?: number; onColumns?(n: 1 | 2 | 3): void; className?: string }) {
   const box = useRef<HTMLDivElement>(null);
   const [place, setPlace] = useState<Record<string, 'a' | 'b' | 'c'>>({});
   const [two, setTwo] = useState(false);
@@ -38,6 +45,14 @@ export function Balance({ a, b, rest, foot, min = 1180, min3, onColumns, classNa
       const pinB = el.querySelector<HTMLElement>(':scope > .nv-bal-col.is-b > .nv-bal-pin');
       let ha = pinA?.offsetHeight ?? 0;
       let hb = pinB?.offsetHeight ?? 0;
+      // Three columns: the tail spans the first two, so the third balances against the two and the tail together.
+      const tailH = third ? (el.querySelector<HTMLElement>(':scope > .nv-bal-tail')?.offsetHeight ?? 0) : 0;
+      ha += tailH;
+      hb += tailH;
+      // The foot stands at the end of the day's column (the third's, in three): counted, so a short movable block
+      // goes to the other column rather than leaving the work column a foot short (wide-window pass).
+      const footH = el.querySelector<HTMLElement>(':scope > .nv-bal-col > .nv-bal-foot')?.offsetHeight ?? 0;
+      if (!third) hb += footH;
       // A section is placed once for a given set of sections and frame width: moving it changes its own height (its
       // column's width differs) and remounts it, so re-placing on every resize would chase its own tail (seen on the
       // owner's vault: sections flipping columns, their fade-in restarting forever). A new set, a new width bucket,
@@ -51,7 +66,7 @@ export function Balance({ a, b, rest, foot, min = 1180, min3, onColumns, classNa
       // sections go to whichever of the three is shortest (the third starts empty, so it takes them first; a short day
       // of work takes the rest under it, never a blank half-column on a user's 3440).
       const lay = (keep: boolean) => {
-        let a = pinsA, b = pinsB, c = third ? 0 : Infinity;
+        let a = pinsA, b = pinsB, c = third ? footH : Infinity;
         const out: Record<string, 'a' | 'b' | 'c'> = {};
         const free: { k: string; h: number }[] = [];
         const add = (s: 'a' | 'b' | 'c', h: number) => (s === 'a' ? (a += h) : s === 'b' ? (b += h) : (c += h));
@@ -92,13 +107,13 @@ export function Balance({ a, b, rest, foot, min = 1180, min3, onColumns, classNa
     };
     const ro = new ResizeObserver(ask);
     ro.observe(el);
-    for (const c of el.querySelectorAll('.nv-bal-pin, [data-bal-key]')) ro.observe(c);
+    for (const c of el.querySelectorAll('.nv-bal-pin, .nv-bal-tail, .nv-bal-foot, [data-bal-key]')) ro.observe(c);
     ask();
     return () => {
       ro.disconnect();
       if (frame) cancelAnimationFrame(frame);
     };
-  }, [keys, min, min3, place]);
+  }, [keys, min, min3, place, two, three]);
   useLayoutEffect(() => onColumns?.(!two ? 1 : three ? 3 : 2), [two, three, onColumns]);
 
   const side = (s: 'a' | 'b' | 'c') => rest.filter((r) => two && (place[r.key] ?? (three ? 'c' : 'a')) === s && (three || s !== 'c'));
@@ -111,20 +126,22 @@ export function Balance({ a, b, rest, foot, min = 1180, min3, onColumns, classNa
     <div ref={box} className={`nv-bal${two ? ' is-two' : ''}${three ? ' is-three' : ''} ${className}`} data-balance={three ? 'three' : two ? 'two' : 'one'}>
       <div className="nv-bal-col is-a">
         <div className="nv-bal-pin">{a}</div>
+        {!two && tail ? <div className="nv-bal-tail">{tail}</div> : null}
         {side('a').map(wrap)}
       </div>
       <div className="nv-bal-col is-b">
         <div className="nv-bal-pin">{b}</div>
         {side('b').map(wrap)}
         {!two && rest.map(wrap)}
-        {!three && foot}
+        {!three && foot ? <div className="nv-bal-foot">{foot}</div> : null}
       </div>
       {three && (
         <div className="nv-bal-col is-c">
           {side('c').map(wrap)}
-          {foot}
+          {foot ? <div className="nv-bal-foot">{foot}</div> : null}
         </div>
       )}
+      {two && tail ? <div className="nv-bal-tail is-span">{tail}</div> : null}
     </div>
   );
 }

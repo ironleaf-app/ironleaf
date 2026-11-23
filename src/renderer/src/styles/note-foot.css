@@ -7,7 +7,7 @@
    note's name in the page's weight. */
 
 .note-foot-wrap {
-  padding: 56px 0 8px;
+  padding: var(--space-7) 0 var(--space-2);
   white-space: normal;
   font: var(--fs-small) / 1.5 var(--font-ui);
   color: var(--text-muted);
@@ -16,14 +16,14 @@
 
 .note-foot {
   border-top: 1px solid var(--border);
-  padding-top: 10px;
+  padding-top: var(--space-2);
 }
 
 .foot-bar {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-2);
   min-height: 34px;
   user-select: none;
 }
@@ -47,9 +47,9 @@
 .foot-title {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: var(--space-2);
   height: 28px;
-  padding: 0 11px;
+  padding: 0 var(--space-3);
   border-radius: var(--r-1);
   font-size: var(--fs-small);
   font-weight: 500;
@@ -63,15 +63,15 @@
 }
 
 .foot-section + .foot-section {
-  margin-top: 14px;
+  margin-top: var(--space-3);
 }
 
 .foot-section-head {
   display: flex;
   align-items: center;
-  gap: 7px;
-  margin: 0 0 2px;
-  padding: 0 6px;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-0);
+  padding: 0 var(--space-2);
   font-size: var(--fs-caption);
   font-weight: 600;
   color: var(--text-muted);
@@ -80,7 +80,7 @@
 .foot-count {
   min-width: 18px;
   height: 18px;
-  padding: 0 5px;
+  padding: 0 var(--space-1);
   display: inline-grid;
   place-items: center;
   border-radius: var(--r-1);
@@ -98,9 +98,9 @@
   margin-left: auto;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: 28px;
-  padding: 0 10px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-1);
   border: 1px solid var(--border);
   background: var(--bg-raised);
@@ -127,7 +127,7 @@
 }
 
 .foot-body {
-  padding: 8px 0 4px;
+  padding: var(--space-2) 0 var(--space-1);
   animation: foot-open 0.18s ease-out;
 }
 
@@ -136,11 +136,11 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .foot-item {
-  padding: 6px 4px 8px;
+  padding: var(--space-2) var(--space-1) var(--space-2);
 }
 
 .foot-item + .foot-item {
@@ -150,9 +150,9 @@
 .foot-item-head {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: var(--space-2);
   max-width: 100%;
-  padding: 2px 6px;
+  padding: var(--space-0) var(--space-2);
   border-radius: var(--r-2);
   text-align: left;
 }
@@ -195,14 +195,14 @@
 .foot-row {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  margin-top: 2px;
+  gap: var(--space-2);
+  margin-top: var(--space-0);
 }
 
 .foot-snippet {
   flex: 1;
   min-width: 0;
-  padding: 3px 6px;
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--r-2);
   text-align: left;
   font-size: var(--fs-small);
@@ -216,7 +216,7 @@
 }
 
 .foot-snippet mark {
-  padding: 0 2px;
+  padding: 0 var(--space-0);
   border-radius: var(--r-1);
   background: var(--mark);
   color: var(--text-strong);
@@ -234,11 +234,11 @@
 .foot-link-it {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: var(--space-1);
   flex: none;
   height: 24px;
   margin-top: 1px;
-  padding: 0 10px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-1);
   border: 1px solid var(--border);
   background: var(--bg-raised);
@@ -257,7 +257,7 @@
 }
 
 .foot-more {
-  margin: 2px 0 0 6px;
+  margin: var(--space-0) 0 0 var(--space-2);
   font-size: var(--fs-caption);
   color: var(--text-faint);
 }
@@ -267,8 +267,8 @@
 }
 
 .foot-empty {
-  margin: 4px 0;
-  padding: 6px;
+  margin: var(--space-1) 0;
+  padding: var(--space-2);
   color: var(--text-faint);
 }
 
@@ -296,7 +296,7 @@
 /* One list's three sections (5 Nov 2026, v6): a long section shows six notes, then one Show-all. The heads
    live above, next to the bar; sections part with one margin, not padding too. */
 .foot-showall {
-  margin: 4px 0 0 6px;
+  margin: var(--space-1) 0 0 var(--space-2);
   font-size: var(--fs-caption);
   color: var(--text-faint);
 }

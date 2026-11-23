@@ -12,7 +12,7 @@
   align-items: center;
   gap: 6px;
   width: 100%;
-  padding: 6px 6px 4px;
+  padding: 6px 6px var(--space-1);
   text-align: left;
   font-size: var(--fs-caption);
   font-weight: 600;
@@ -31,7 +31,7 @@
 
 .fh-list {
   display: grid;
-  gap: 2px;
+  gap: var(--space-0);
 }
 
 .fh-row {
@@ -40,7 +40,7 @@
   grid-template-columns: 30px minmax(0, 1fr);
   gap: 10px;
   align-items: start;
-  padding: 8px 8px 9px;
+  padding: var(--space-2) var(--space-2) 9px;
   border-radius: var(--r-3);
   cursor: pointer;
   outline: none;
@@ -62,14 +62,14 @@
 
 .fh-words {
   display: grid;
-  gap: 2px;
+  gap: var(--space-0);
   min-width: 0;
 }
 
 .fh-top {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: var(--space-2);
   min-width: 0;
 }
 
@@ -125,7 +125,7 @@
   margin-top: 3px;
   /* The room above and below the words is transparent border, not padding: a clipped box clips at its padding, so
      padding would show the top of the next line under the last one shown. The outline draws the visible edge. */
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border: 5px solid transparent;
   border-left-width: 1px;
   border-right-width: 1px;
@@ -205,7 +205,7 @@
 
 .fh-more {
   justify-self: start;
-  margin: 4px 0 0 46px;
+  margin: var(--space-1) 0 0 46px;
   font-size: var(--fs-caption);
 }
 
@@ -214,7 +214,7 @@
 .fh-progress {
   display: grid;
   gap: 5px;
-  padding: 8px 6px;
+  padding: var(--space-2) 6px;
   font-size: var(--fs-caption);
   color: var(--text-faint);
 }
@@ -226,7 +226,7 @@
 }
 
 .fh-progress.in-files {
-  padding: 0 2px 8px;
+  padding: 0 var(--space-0) var(--space-2);
 }
 
 .fh-progress-bar {
@@ -254,7 +254,7 @@
 .fh-steps {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--space-0);
   margin-left: auto;
 }
 
@@ -288,7 +288,7 @@
   align-items: center;
   gap: 6px;
   margin: 0 0 18px;
-  padding-bottom: 12px;
+  padding-bottom: var(--space-3);
   border-bottom: 1px solid var(--border);
   font-size: var(--fs-caption);
   color: var(--text-faint);
@@ -337,18 +337,18 @@
 /* ── In Open a note and the command list ───────────────────────────────────────────────────────────────────────── */
 
 .picker-heading {
-  padding: 12px 14px 4px;
+  padding: var(--space-3) 14px var(--space-1);
   font-size: var(--fs-caption);
   font-weight: 600;
   color: var(--text-muted);
   border-top: 1px solid var(--border);
-  margin-top: 4px;
+  margin-top: var(--space-1);
 }
 
 .picker-heading:first-child {
   border-top: 0;
   margin-top: 0;
-  padding-top: 8px;
+  padding-top: var(--space-2);
 }
 
 .picker-row.has-sub {
@@ -362,7 +362,7 @@
 
 .picker-two {
   display: grid;
-  gap: 2px;
+  gap: var(--space-0);
   flex: 1;
   min-width: 0;
 }
@@ -449,7 +449,7 @@
 .nav-inside-top {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: var(--space-2);
   min-width: 0;
 }
 
@@ -476,13 +476,13 @@
 .fs-settings {
   display: grid;
   gap: 10px;
-  padding: 12px 0 4px;
+  padding: var(--space-3) 0 var(--space-1);
 }
 
 .fs-summary {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--space-4);
   font-size: var(--fs-small);
   color: var(--text-muted);
 }
@@ -509,7 +509,7 @@
 .fs-project {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--space-4);
   padding: 10px 14px;
 }
 
@@ -543,7 +543,7 @@
 }
 
 .fs-limits {
-  margin: 8px 0 0;
+  margin: var(--space-2) 0 0;
   padding-left: 18px;
   display: grid;
   gap: 6px;

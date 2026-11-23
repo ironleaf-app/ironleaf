@@ -37,13 +37,13 @@ html.qc-box-page #root {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 14px 0 14px;
+  padding: var(--space-3) 14px 0 14px;
 }
 
 .qc-kinds {
   display: inline-flex;
-  gap: 2px;
-  padding: 2px;
+  gap: var(--space-0);
+  padding: var(--space-0);
   border-radius: var(--r-3);
   background: var(--bg-side);
   border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
@@ -92,7 +92,7 @@ html.qc-box-page #root {
 .qc-shell textarea.input.qc-field {
   display: block;
   width: calc(100% - 28px);
-  margin: 12px 14px 0;
+  margin: var(--space-3) 14px 0;
   font-size: var(--fs-body);
   overflow-y: auto;
 }
@@ -124,8 +124,8 @@ html.qc-box-page #root {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-  padding: 0 18px 12px;
+  gap: var(--space-2);
+  padding: 0 18px var(--space-3);
 }
 
 .qc-due {
@@ -133,7 +133,7 @@ html.qc-box-page #root {
   align-items: center;
   gap: 6px;
   height: 26px;
-  padding: 0 4px 0 9px;
+  padding: 0 var(--space-1) 0 9px;
   border-radius: var(--r-1);
   background: var(--accent-soft);
   color: var(--accent-strong);
@@ -222,8 +222,8 @@ html.qc-box-page #root {
 .qc-for {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 12px 14px 12px;
+  gap: var(--space-2);
+  padding: var(--space-3) 14px var(--space-3);
   border-top: 1px solid var(--border);
 }
 
@@ -329,7 +329,7 @@ html.qc-box-page #root {
 
 /* Another project, by its name. */
 .qc-picker {
-  margin: -2px 14px 12px 52px;
+  margin: -2px 14px var(--space-3) 52px;
   border: 1px solid var(--border);
   border-radius: var(--r-4);
   background: var(--bg);
@@ -343,13 +343,13 @@ html.qc-box-page #root {
   border-radius: 0;
   box-shadow: none;
   background: transparent;
-  padding: 9px 12px;
+  padding: 9px var(--space-3);
 }
 
 .qc-picker-list {
   max-height: 200px;
   overflow-y: auto;
-  padding: 4px;
+  padding: var(--space-1);
 }
 
 .qc-picker-row {
@@ -386,7 +386,7 @@ html.qc-box-page #root {
 }
 
 .qc-picker-none {
-  margin: 8px 10px;
+  margin: var(--space-2) 10px;
   color: var(--text-faint);
 }
 
@@ -417,8 +417,8 @@ html.qc-box-page #root {
 }
 
 .qc-said {
-  margin: 0 18px 12px;
-  padding: 8px 12px;
+  margin: 0 18px var(--space-3);
+  padding: var(--space-2) var(--space-3);
   border-radius: var(--r-3);
   background: var(--bg-side);
   color: var(--text-muted);
@@ -430,8 +430,8 @@ html.qc-box-page #root {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 9px 12px;
+  gap: var(--space-3);
+  padding: 9px var(--space-3);
   border-top: 1px solid var(--border);
   background: var(--bg-side);
 }
@@ -440,7 +440,7 @@ html.qc-box-page #root {
   flex: none;
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--space-0);
 }
 
 .qc-tool {
@@ -471,7 +471,7 @@ html.qc-box-page #root {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  margin-left: 8px;
+  margin-left: var(--space-2);
   color: var(--text-muted);
   font-size: var(--fs-small);
   white-space: nowrap;
@@ -488,7 +488,7 @@ html.qc-box-page #root {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 12px;
+  gap: var(--space-3);
   min-width: 0;
 }
 
@@ -538,7 +538,7 @@ html.qc-box-page #root {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 16px 16px 18px 18px;
+  padding: var(--space-4) var(--space-4) 18px 18px;
 }
 
 .qc-saved-mark {
@@ -564,7 +564,7 @@ html.qc-box-page #root {
 }
 
 .qc-saved-detail {
-  margin-top: 2px;
+  margin-top: var(--space-0);
   overflow: hidden;
   text-overflow: clip;
   white-space: nowrap;
@@ -574,7 +574,7 @@ html.qc-box-page #root {
 
 .qc-saved-actions {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   flex: none;
 }
 
@@ -641,7 +641,7 @@ html.qc-snip-page body {
   position: absolute;
   left: -1px;
   top: -27px;
-  padding: 3px 8px;
+  padding: 3px var(--space-2);
   border-radius: var(--r-2);
   background: rgba(24, 24, 22, 0.82);
   color: var(--bg-side);
@@ -654,7 +654,7 @@ html.qc-snip-page body {
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  padding: 9px 16px;
+  padding: 9px var(--space-4);
   border-radius: var(--r-1);
   background: rgba(24, 24, 22, 0.84);
   color: var(--bg-side);

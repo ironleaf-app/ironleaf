@@ -376,11 +376,83 @@
      on all 19 accents, both themes (the nearest fills sit 0.013 away, so the switch is always pure); dark's
      navy words on its lightened fills come from this same token. */
   --on-accent: oklch(from var(--accent) calc(0.22283 + 0.77717 * clamp(0, (0.59 - l) * 1000, 1)) calc(0.04021 * (1 - clamp(0, (0.59 - l) * 1000, 1))) 270.22686);
+  /* A switch's knob (design language, 23 Nov 2026): white on the grey track while off; on the primary fill while on,
+     the primary's own ink, so the knob never vanishes on Dark's light fill. */
+  --switch-knob: #ffffff;
+  --switch-knob-on: var(--on-primary);
+  /* The editor's line with the caret (kit.css .cm-activeLine), only while the note has focus: a breath of ink, 3% on
+     the light page; dark's 2.5% of white reads the same quiet step on its navy page (4% stood out as a band). */
+  --editor-line: color-mix(in srgb, var(--text-strong) 3%, transparent);
 }
 :root[data-theme='dark'] {
+  --editor-line: color-mix(in srgb, var(--text-strong) 2.5%, transparent);
+  --switch-knob: var(--text-muted);
   --accent-text: oklch(from var(--accent-dark, var(--accent-base)) max(l, 0.74) c h);
   --accent-strong: oklch(from var(--accent-dark, var(--accent-base)) max(l, 0.8) c h);
 }
 
 /* Where you are is a soft filled row with weight (10.0 Endless Tech: never an accent tint, never a coral icon at
    rest): the base .place.is-current rule in styles.css carries it, on every palette, in both themes. */
+
+/* ── Note types and covers (moved from types.css and note-page.css, 23 Nov 2026: every colour in one place) ────────
+   A note type's muted colour (src/shared/note-types.ts; types.css reads --type-* through its .nt-* classes), and a
+   page's calm cover bands (note-page.css .page-cover.is-*). Same selectors, same order, same values as before. */
+:root {
+  --type-stone: #7a766c;
+  --type-clay: #b0603f;
+  --type-slate: #4f6d8f;
+  --type-sky: #3f7ea6;
+  --type-ochre: #a3761f;
+  --type-sage: #5b7f5f;
+  --type-plum: #7e5a86;
+  --type-rose: #a8566a;
+  --type-teal: #3b8580;
+  --type-soft-mix: 12%;
+}
+
+:root[data-theme='dark'] {
+  --type-stone: #b3aea3;
+  --type-clay: #e0987a;
+  --type-slate: #9fb5d1;
+  --type-sky: #8cbfdf;
+  --type-ochre: #dcb76a;
+  --type-sage: #9cc49f;
+  --type-plum: #c6a2cd;
+  --type-rose: #e3a1b1;
+  --type-teal: #86c7c1;
+  --type-soft-mix: 18%;
+}
+
+/* The bright palettes carry the types in clearer colours; Paper keeps the muted ones above. */
+:root[data-theme='light']:not([data-palette='paper']) {
+  --type-stone: #6b7280;
+  --type-clay: #e0623a;
+  --type-slate: #4a6fd1;
+  --type-sky: #1a8bd6;
+  --type-ochre: #cf8a00;
+  --type-sage: #2d9858;
+  --type-plum: #8e50cc;
+  --type-rose: #d8457b;
+  --type-teal: #0e9a90;
+  --type-soft-mix: 13%;
+}
+
+:root {
+  --cover-sand: #efe5d0;
+  --cover-clay: #edd6c7;
+  --cover-sage: #dbe5d3;
+  --cover-sea: #d2e4e1;
+  --cover-sky: #d8e3ef;
+  --cover-dusk: #e2daec;
+  --cover-stone: #e5e2da;
+}
+
+:root[data-theme='dark'] {
+  --cover-sand: #3b3529;
+  --cover-clay: #3f312a;
+  --cover-sage: #2f3a2e;
+  --cover-sea: #2a3a38;
+  --cover-sky: #2b3442;
+  --cover-dusk: #352f41;
+  --cover-stone: #35342f;
+}

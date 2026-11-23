@@ -67,7 +67,7 @@
   top: calc(6px * var(--ls, 1));
   bottom: auto;
   left: calc(6px * var(--ls, 1));
-  padding: 1px 8px;
+  padding: 1px var(--space-2);
   border-radius: var(--r-3);
   background: color-mix(in srgb, var(--bg-raised) 94%, transparent);
   box-shadow:
@@ -138,7 +138,7 @@
   flex-direction: column;
   justify-content: center;
   gap: 5px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   overflow: hidden;
   border-radius: inherit;
   pointer-events: none;
@@ -173,7 +173,7 @@
   flex: none;
   display: none;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 .cv-ov-lines i {
   display: block;
@@ -399,7 +399,7 @@
   align-items: center;
   flex-wrap: wrap;
   column-gap: 10px;
-  row-gap: 2px;
+  row-gap: var(--space-0);
   min-width: 0;
 }
 .cv-nav-hint b {

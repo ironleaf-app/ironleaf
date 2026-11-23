@@ -20,6 +20,7 @@ import type * as W from '../state/workspace';
 import { ChangePassword, PrivateNotesPane } from './PrivateView';
 import { ActivityPane, ScanPane, SecretsPane } from './SecretsView';
 import { ViewHeader } from './ViewHeader';
+import '../styles/locked.css';
 
 const MIN = 10;
 
@@ -53,56 +54,68 @@ function SetUp({ status, onOpened }: { status: LockedStatus; onOpened(): void })
       setBusy(false);
     }
   };
+  // The gate (wide-window pass, 23 Nov 2026: a 460 px card stood alone at the top of a 2,000 px page): what Locked is,
+  // on a quiet panel at the left; the one thing to do, the set-up, beside it. Narrow, the two stack.
   return (
-    <div className="pv-page">
-      <form
-        className="pv-card"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (ready && !busy) void go();
-        }}
-      >
-        <Mark />
-        <h1>Locked</h1>
-        <p className="pv-lede">One locked place for private notes and secrets. Unlock once and both open; lock once and both lock. Nothing else reads them: not search, the graph, or any other program.</p>
-        <ul className="pv-points">
-          <li>
-            <Icon name="check" size={13} />
-            {status.hello ? 'Open it with Windows Hello: your PIN, face or fingerprint.' : 'Open it with your recovery password.'}
-          </li>
-          <li>
-            <Icon name="check" size={13} />
-            On another PC, open it with your recovery password.
-          </li>
-          <li>
-            <Icon name="check" size={13} />
-            Once open, it stays open on this PC {unlockedPhrase(prefs.secretsKeepUnlocked, prefs.privateLockMinutes)}.
-          </li>
-        </ul>
-        <label className="pv-field">
-          <span>Recovery password</span>
-          <input type="password" autoComplete="new-password" placeholder={`At least ${MIN} characters`} value={first} onChange={(e) => setFirst(e.target.value)} autoFocus />
-        </label>
-        <label className="pv-field">
-          <span>Type it again</span>
-          <input type="password" autoComplete="new-password" value={again} onChange={(e) => setAgain(e.target.value)} />
-          {again && first !== again && <em className="pv-field-note">The two don’t match yet.</em>}
-        </label>
-        {status.hello && (
-          <label className="pv-check">
-            <input type="checkbox" checked={hello} onChange={(e) => setHello(e.target.checked)} />
-            Also open it with Windows Hello on this PC
-          </label>
-        )}
-        <p className="pv-warn">
-          <Icon name="warning" size={13} />
-          <span>Keep the recovery password somewhere safe (not in a note). Without it{status.hello ? ', and without this PC’s Windows Hello,' : ','} no one can open Locked, not even us.</span>
-        </p>
-        {said && <p className="pv-said">{said}</p>}
-        <button type="submit" className="button primary pv-go" disabled={!canEdit || !ready || busy}>
-          {busy ? 'Setting up…' : 'Set up Locked'}
-        </button>
-      </form>
+    <div className="pv-page pv-gate">
+      <div className="pv-gate-frame">
+        <div className="pv-card pv-gate-side">
+          <div className="pv-gate-words">
+            <Mark />
+            <h1>Locked</h1>
+            <p className="pv-lede">One locked place for private notes and secrets. Unlock once and both open; lock once and both lock. Nothing else reads them: not search, the graph, or any other program.</p>
+            <ul className="pv-points">
+              <li>
+                <Icon name="check" size={13} />
+                {status.hello ? 'Open it with Windows Hello: your PIN, face or fingerprint.' : 'Open it with your recovery password.'}
+              </li>
+              <li>
+                <Icon name="check" size={13} />
+                On another PC, open it with your recovery password.
+              </li>
+              <li>
+                <Icon name="check" size={13} />
+                Once open, it stays open on this PC {unlockedPhrase(prefs.secretsKeepUnlocked, prefs.privateLockMinutes)}.
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div className="pv-gate-main">
+          <form
+            className="pv-gate-form"
+            aria-labelledby="pv-gate-ask"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (ready && !busy) void go();
+            }}
+          >
+            <h2 id="pv-gate-ask" className="pv-gate-ask">Choose a recovery password</h2>
+            <label className="pv-field">
+              <span>Recovery password</span>
+              <input type="password" autoComplete="new-password" placeholder={`At least ${MIN} characters`} value={first} onChange={(e) => setFirst(e.target.value)} autoFocus />
+            </label>
+            <label className="pv-field">
+              <span>Type it again</span>
+              <input type="password" autoComplete="new-password" value={again} onChange={(e) => setAgain(e.target.value)} />
+              {again && first !== again && <em className="pv-field-note">The two don’t match yet.</em>}
+            </label>
+            {status.hello && (
+              <label className="pv-check">
+                <input type="checkbox" checked={hello} onChange={(e) => setHello(e.target.checked)} />
+                Also open it with Windows Hello on this PC
+              </label>
+            )}
+            <p className="pv-warn">
+              <Icon name="warning" size={13} />
+              <span>Keep the recovery password somewhere safe (not in a note). Without it{status.hello ? ', and without this PC’s Windows Hello,' : ','} no one can open Locked, not even us.</span>
+            </p>
+            {said && <p className="pv-said">{said}</p>}
+            <button type="submit" className="button primary pv-go" disabled={!canEdit || !ready || busy}>
+              {busy ? 'Setting up…' : 'Set up Locked'}
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }
@@ -130,31 +143,40 @@ function Unlock({ status, onOpened }: { status: LockedStatus; onOpened(): void }
     ? `${status.notes} ${status.notes === 1 ? 'private note' : 'private notes'} and ${status.secrets} ${status.secrets === 1 ? 'login or key' : 'logins and keys'} are locked on this PC.`
     : 'Your private notes and secrets are locked on this PC.';
   return (
-    <div className="pv-page">
-      <div className="pv-card">
-        <Mark />
-        <h1>Locked</h1>
-        <p className="pv-lede">{counts} Nothing is sent anywhere until you unlock.</p>
-        {withHello && (
-          <button className="button primary pv-go" disabled={!!busy} onClick={() => void open('hello', () => window.nv.private.unlockWithHello())}>
-            <Icon name="lock" size={14} /> {busy === 'hello' ? 'Waiting for Windows Hello…' : 'Unlock with Windows Hello'}
-          </button>
-        )}
-        <form
-          className="pv-password"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (password && !busy) void open('password', () => window.nv.private.unlockWithPassword(password));
-          }}
-        >
-          <input type="password" autoComplete="current-password" placeholder={withHello ? 'Or your recovery password' : 'Your recovery password'} value={password} onChange={(e) => setPassword(e.target.value)} autoFocus={!withHello} />
-          <button type="submit" className={`button${withHello ? '' : ' primary'}`} disabled={!password || !!busy}>
-            {busy === 'password' ? 'Opening…' : 'Unlock'}
-          </button>
-        </form>
-        {status.hello && !status.thisPc && <p className="pv-hint">This PC doesn’t open Locked with Windows Hello yet. Open it with your recovery password, then add this PC from the ⋯ menu.</p>}
-        {said && <p className="pv-said">{said}</p>}
-        <p style={{ fontSize: 13, color: 'var(--text-faint)', marginTop: 18 }}>Once unlocked, Locked stays unlocked on this PC {unlockedPhrase(prefs.secretsKeepUnlocked, prefs.privateLockMinutes)}. Unlock timing lives in Settings › Privacy and secrets.</p>
+    <div className="pv-page pv-gate">
+      <div className="pv-gate-frame">
+        <div className="pv-card pv-gate-side">
+          <div className="pv-gate-words">
+            <Mark />
+            <h1>Locked</h1>
+            <p className="pv-lede">{counts} Nothing is sent anywhere until you unlock.</p>
+          </div>
+        </div>
+        <div className="pv-gate-main">
+          <div className="pv-gate-form">
+            <h2 className="pv-gate-ask">Unlock to open them</h2>
+            {withHello && (
+              <button className="button primary pv-go" disabled={!!busy} onClick={() => void open('hello', () => window.nv.private.unlockWithHello())}>
+                <Icon name="lock" size={14} /> {busy === 'hello' ? 'Waiting for Windows Hello…' : 'Unlock with Windows Hello'}
+              </button>
+            )}
+            <form
+              className="pv-password"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (password && !busy) void open('password', () => window.nv.private.unlockWithPassword(password));
+              }}
+            >
+              <input type="password" aria-label="Recovery password" autoComplete="current-password" placeholder={withHello ? 'Or your recovery password' : 'Your recovery password'} value={password} onChange={(e) => setPassword(e.target.value)} autoFocus={!withHello} />
+              <button type="submit" className={`button${withHello ? '' : ' primary'}`} disabled={!password || !!busy}>
+                {busy === 'password' ? 'Opening…' : 'Unlock'}
+              </button>
+            </form>
+            {status.hello && !status.thisPc && <p className="pv-hint">This PC doesn’t open Locked with Windows Hello yet. Open it with your recovery password, then add this PC from the ⋯ menu.</p>}
+            {said && <p className="pv-said">{said}</p>}
+            <p className="pv-gate-note">Once unlocked, Locked stays unlocked on this PC {unlockedPhrase(prefs.secretsKeepUnlocked, prefs.privateLockMinutes)}. Unlock timing lives in Settings › Privacy and secrets.</p>
+          </div>
+        </div>
       </div>
     </div>
   );

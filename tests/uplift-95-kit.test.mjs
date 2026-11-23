@@ -10,9 +10,10 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { cssPxFor } from './css-px.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const read = (f) => readFileSync(path.join(root, f), 'utf8');
+const read = (f) => cssPxFor(f, readFileSync(path.join(root, f), 'utf8'));
 const norm = (s) => s.replace(/\s+/g, ' ').trim();
 
 test('the premium finish styles .btn as the same scale as .button', () => {
@@ -76,7 +77,8 @@ test('one switch: square and on in primary everywhere, as the host app and Setti
 
 test('one dialog shell, and the form rules live with it', () => {
   const kit = read('src/renderer/src/styles/kit.css');
-  assert.match(kit, /\.dlg, \.dialog \{[^}]*padding: 22px 24px;/, 'kit groups .dlg and .dialog on one shell');
+  // Design language (23 Nov 2026): the shell's inset is one 24px step all round (was 22 above and below).
+  assert.match(kit, /\.dlg, \.dialog \{[^}]*padding: 24px;/, 'kit groups .dlg and .dialog on one shell');
   const css = read('src/renderer/src/styles.css');
   assert.doesNotMatch(css, /^\.dialog \{\s*width: min\(640px/m, 'no styles.css dialog geometry duplicate');
   assert.doesNotMatch(css, /^\.dialog \{\s*padding: 20px 22px;/m, 'no styles.css dialog padding duplicate');

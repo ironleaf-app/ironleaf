@@ -10,12 +10,13 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { after, before, test } from 'node:test';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { cssPxFor } from './css-px.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const work = mkdtempSync(path.join(tmpdir(), 'nv-meaning-rerank-'));
 const modelDir = path.join(root, 'resources', 'models', 'ms-marco-MiniLM-L-6-v2');
 const ortDist = path.join(root, 'node_modules', 'onnxruntime-web', 'dist');
-const read = (f) => readFileSync(path.join(root, f), 'utf8');
+const read = (f) => cssPxFor(f, readFileSync(path.join(root, f), 'utf8'));
 let M;
 let ship;
 let ortMod;

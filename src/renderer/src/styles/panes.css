@@ -125,11 +125,19 @@
     display: block;
   }
 }
-/* A detail with nothing for a third pane (a template's preview, a capture): the list takes more of a wide frame. */
+/* A detail with nothing for a third pane (a template's preview, a capture): the list is the work there, so it takes
+   the larger share (wide-window pass, 23 Nov 2026: at 2560 with the chat open the Inbox's rows wrapped in a 44% list
+   beside a detail mostly blank). */
 @container frame (min-width: 1240px) {
   .nv-split.nv-split.is-panes.no-context {
-    grid-template-columns: clamp(400px, 44%, 1400px) minmax(0, 1fr);
+    grid-template-columns: clamp(440px, 56%, 1400px) minmax(360px, 1fr);
   }
+}
+/* The Inbox's detail is a capture, a line or two and its homes: the pane is as tall as that, never a window-tall slab
+   around a line (it still scrolls inside itself when a capture runs long). */
+.nv-split.is-panes.is-inbox > .nv-split-side {
+  align-self: start;
+  max-height: 100%;
 }
 /* List | detail | context (ListDetail sets .is-three from THREE_PANES of its own width). */
 .nv-split.nv-split.is-panes.is-three {
@@ -152,9 +160,11 @@
 .nv-split.is-panes .nv-detail {
   gap: var(--space-4);
 }
+/* The facts sit two across at most (23 Nov 2026: three narrow columns at 2560 broke "Attendees" over two lines in a
+   300px cell while the row had room to spare), one across when the pane is under two 340px columns. */
 .nv-split.is-panes .nv-detail-facts {
   font-size: var(--fs-body);
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(max(min(100%, 340px), calc((100% - var(--space-5)) / 2)), 1fr));
   gap: var(--space-2) var(--space-5);
 }
 .nv-split.is-panes .nv-detail-fact {
@@ -187,6 +197,26 @@
 }
 .nv-split.is-panes .nv-detail-read .reading-body > :is(p, blockquote, h1, h2, h3, h4) {
   max-width: clamp(60ch, 70%, 96ch);
+}
+/* A record's own headings read under the pane's title on every list page (Notes, People, Meetings, Bookmarks, the
+   Inbox; 23 Nov 2026: a bookmark's "Welcome to Ironleaf" stood at the page step, larger than the note's own name
+   above it): its h1 and h2 at the card step, the rest at the body step, all below h2.nv-detail-title's section step. */
+.nv-detail-read .reading-body > :is(h1, h2) {
+  margin: var(--space-5) 0 var(--space-2);
+  font-size: var(--fs-card);
+  line-height: 1.3;
+}
+.nv-detail-read .reading-body > :is(h3, h4, h5, h6) {
+  margin: var(--space-4) 0 var(--space-1);
+  font-size: var(--fs-body);
+  line-height: 1.35;
+}
+.nv-detail-read .reading-body > :first-child {
+  margin-top: 0;
+}
+/* The Templates page's preview is its detail pane: the template's own first heading under its name, likewise. */
+.tp-preview.in-pane .tp-preview-body.markdown h1 {
+  font-size: var(--fs-card);
 }
 /* The context pane: the connections, one group under another, at the body step. */
 .nv-context {
@@ -247,14 +277,60 @@ h3.nv-context-head {
   flex: 1 1 auto;
   min-height: 0;
   display: grid;
-  grid-template-columns: clamp(480px, 48%, 900px) minmax(0, 1fr);
+  /* The minutes are the page's work, the transcript what they came from (23 Nov 2026, at 1600: a 590 px minutes
+     column stacked decisions over actions beside a wider transcript): the minutes lead, the transcript keeps a
+     readable 400 px at least. */
+  grid-template-columns: minmax(0, 1.15fr) minmax(400px, 1fr);
   grid-template-rows: minmax(0, 1fr);
   gap: var(--pane-gap);
   align-items: stretch;
   margin: var(--space-4) 0 var(--pane-gap);
 }
 .w2b-after.mt-regions.nv-panes-root.is-three {
-  grid-template-columns: clamp(520px, 30%, 900px) minmax(0, 1fr) clamp(340px, 19%, 560px);
+  grid-template-columns: clamp(520px, 34%, 960px) minmax(0, 1fr) clamp(340px, 19%, 560px);
+}
+/* No recording: the minutes and the context region beside them, never a pane that only says there is none. The
+   context takes half the room and lays its groups (actions, people, decisions, projects) in columns. */
+.w2b-after.mt-regions.nv-panes-root.is-norec {
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 1fr);
+}
+.mt-regions.nv-panes-root.is-norec > .mt-context .mt-links .nv-detail-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: var(--space-5) var(--space-6);
+  align-items: start;
+}
+/* A region's sections are spaced by the region's own gap: the page's section margin (w2b.css) doubled it, and a
+   group label's top pad stood its label 8 px under the region's pad. */
+.w2b-meeting .mt-regions.nv-panes-root > * > section,
+.w2b-meeting .mt-regions.nv-panes-root .nv-detail-groups > section {
+  margin-top: 0;
+}
+.mt-regions.nv-panes-root > * > section > .glabel.w2b-group {
+  padding-top: 0;
+  margin-bottom: var(--space-2);
+}
+/* The meeting note's counts and its button share a row while they fit, and the button drops under the counts in a
+   narrow region instead of squeezing them to three lines. */
+.mt-regions.nv-panes-root > * > section > .card.w2b-card > .trow {
+  flex-wrap: wrap;
+  row-gap: var(--space-2);
+}
+.mt-regions.nv-panes-root > * > section > .card.w2b-card > .trow > .t {
+  flex: 1 1 220px;
+}
+.mt-regions.nv-panes-root > .mt-context > .w2b-norec .button {
+  margin-left: 0;
+}
+.mt-regions.nv-panes-root > .mt-context > .w2b-norec {
+  margin: 0;
+  padding: 0 0 var(--space-5);
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  flex-wrap: wrap;
 }
 .mt-regions.nv-panes-root > :is(.mt-minutes, .mt-record, .mt-context) {
   box-sizing: border-box;
@@ -336,7 +412,7 @@ h3.nv-context-head {
   align-items: flex-start;
 }
 :is(.mt-regions, .note-view) .mm-minutes > .mm-min-block {
-  flex: 1 1 300px;
+  flex: 1 1 260px;
   min-width: 0;
 }
 :is(.mt-regions, .note-view) .mm-minutes > p {
@@ -383,6 +459,10 @@ h3.nv-context-head {
   min-height: 0;
   display: flex;
   flex-direction: column;
+  /* The pane is the card: the playback's own card pad and section margin (w2b.css) stood the player 24 px under
+     the pane's top and 18 px in from its rows. */
+  margin: 0;
+  padding: 0;
   border: 0;
   border-radius: 0;
   background: none;
@@ -390,6 +470,7 @@ h3.nv-context-head {
 }
 .mt-regions.nv-panes-root > .mt-record .mr-stack > .mr {
   flex: none;
+  align-items: center;
   padding: var(--pad-row-y) var(--pad-card);
   border-top: 1px solid var(--border);
   border-radius: 0;
@@ -429,7 +510,7 @@ h3.nv-context-head {
 }
 .mt-regions .mp-line {
   font-size: var(--fs-body);
-  padding: 6px var(--space-3);
+  padding: var(--space-2) var(--space-3);
 }
 /* The voices as one compact row of chips above the transcript (the coordinator's review of a user's 3440 shot: a
    voices column beside the transcript stood empty under three rows for the pane's whole height). The transcript
@@ -457,7 +538,7 @@ h3.nv-context-head {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  padding: 2px var(--space-2) 2px var(--space-1);
+  padding: var(--space-0) var(--space-2) var(--space-0) var(--space-1);
   border: 1px solid var(--border);
   border-radius: var(--r-4);
   background: var(--bg);
@@ -493,6 +574,23 @@ h3.nv-context-head {
   gap: var(--space-2);
   padding-top: var(--space-4);
   border-top: 1px solid var(--border);
+}
+/* With no minutes above it, the rest opens the region: no rule over nothing. */
+.mt-minutes > .mt-rest:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+/* The note's own headings read under the page's title and the minutes' heads, not over them (they kept the note's
+   page-size h1 and h2: "Questions" at 26 px under a 13 px "From the meeting note"). */
+.mt-rest-read .reading-body :is(h1, h2) {
+  margin: var(--space-5) 0 var(--space-2);
+  font-size: var(--fs-section);
+  line-height: 1.3;
+}
+.mt-rest-read .reading-body :is(h3, h4, h5, h6) {
+  margin: var(--space-4) 0 var(--space-1);
+  font-size: var(--fs-card);
+  line-height: 1.35;
 }
 .mt-rest-read.reading {
   flex: none;

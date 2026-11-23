@@ -147,7 +147,7 @@
   width: 100%;
   max-width: 100%;
   margin: 0;
-  padding: 8px 10px;
+  padding: var(--space-2) 10px;
   border-radius: var(--r-3);
   min-height: 4.5lh;
   max-height: 60vh;
@@ -201,11 +201,11 @@ input.pj-ed-input:focus {
 
 .pj-summary.pj-ed-empty {
   font: var(--fs-body)/1.6 var(--font-text);
-  padding: 2px 0;
+  padding: var(--space-0) 0;
 }
 
 .pj-ed-wrap.block:has(> textarea.pj-summary) {
-  margin: 4px 0 22px;
+  margin: var(--space-1) 0 22px;
   max-width: 76ch;
 }
 
@@ -223,7 +223,7 @@ input.pj-ed-input:focus {
 
 .pj-notes.pj-ed-empty {
   font-size: var(--fs-small);
-  padding: 2px 0;
+  padding: var(--space-0) 0;
 }
 
 /* The words of a row (a step, an update, a decision, a key date, a risk, a person) take their column and no more: a long
@@ -252,12 +252,12 @@ input.pj-ed-input:focus {
 .pj-date-wrap {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 input.pj-date-input {
   font-size: var(--fs-small);
-  padding: 1px 4px;
+  padding: 1px var(--space-1);
   color-scheme: light dark;
 }
 
@@ -285,7 +285,7 @@ input.pj-date-input {
   display: grid;
   min-width: 230px;
   max-width: 340px;
-  padding: 4px;
+  padding: var(--space-1);
   border: 1px solid var(--border);
   border-radius: var(--r-4);
   background: var(--bg-raised);
@@ -466,7 +466,7 @@ button.pj-tl-status.pj-ed-empty {
 
 .pj-risk-words {
   display: grid;
-  gap: 2px;
+  gap: var(--space-0);
   flex: 1;
   min-width: 0;
 }
@@ -523,8 +523,8 @@ button.pj-level:hover {
   align-items: center;
   gap: 7px;
   width: 100%;
-  margin-top: 4px;
-  padding: 7px 4px;
+  margin-top: var(--space-1);
+  padding: 7px var(--space-1);
   border-radius: var(--r-2);
   font-size: var(--fs-small);
   color: var(--text-faint);
@@ -548,9 +548,9 @@ button.pj-level:hover {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  gap: 4px 6px;
+  gap: var(--space-1) 6px;
   margin-top: 6px;
-  padding: 4px 4px 4px 6px;
+  padding: var(--space-1) var(--space-1) var(--space-1) 6px;
   border: 1px solid var(--accent);
   border-radius: var(--r-3);
   background: var(--bg-raised);
@@ -612,7 +612,7 @@ input.pj-addinput[type='date'] {
 .pj-add-go {
   margin-top: 1px;
   height: 28px;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   border-radius: var(--r-2);
   font-size: var(--fs-small);
   font-weight: 600;
@@ -643,8 +643,8 @@ input.pj-addinput[type='date'] {
 }
 
 .pj-show-all {
-  margin-top: 4px;
-  padding: 4px 8px;
+  margin-top: var(--space-1);
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--r-2);
   font-size: var(--fs-small);
   color: var(--accent-text);
@@ -658,7 +658,7 @@ input.pj-addinput[type='date'] {
 
 .pj-progress-edit {
   position: relative;
-  padding: 6px 4px;
+  padding: 6px var(--space-1);
   margin: -6px -4px;
   border-radius: var(--r-2);
   cursor: pointer;
@@ -730,7 +730,7 @@ input.pj-addinput[type='date'] {
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
-  margin-top: 12px;
+  margin-top: var(--space-3);
 }
 
 .pj-head-tags:not(:has(.pj-tag, .pj-ed-wrap)) {
@@ -745,7 +745,7 @@ input.pj-addinput[type='date'] {
 .pj-tag {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--space-0);
   height: 22px;
   padding: 0 9px;
   border-radius: var(--r-1);
@@ -788,7 +788,7 @@ input.pj-addinput[type='date'] {
 .pj-tag-add {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   height: 22px;
   padding: 0 9px;
   border-radius: var(--r-1);
@@ -811,7 +811,7 @@ input.pj-addinput[type='date'] {
 
 .pj-ed-wrap > textarea.pj-tag-new {
   min-height: 22px;
-  padding: 2px 9px;
+  padding: var(--space-0) 9px;
   font-size: var(--fs-caption);
   line-height: 18px;
   border-radius: var(--r-1);
@@ -844,7 +844,7 @@ button.pj-folder:hover {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   margin-bottom: 14px;
 }
 
@@ -889,7 +889,7 @@ button.pj-folder:hover {
 .pf-kinds {
   display: flex;
   flex-wrap: wrap;
-  gap: 2px;
+  gap: var(--space-0);
   /* The kinds have a line of their own under the find box. */
   order: 5;
   flex-basis: 100%;
@@ -956,8 +956,8 @@ button.pj-folder:hover {
 
 .pf-views {
   display: inline-flex;
-  padding: 2px;
-  gap: 2px;
+  padding: var(--space-0);
+  gap: var(--space-0);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg);
@@ -1006,7 +1006,7 @@ button.pj-folder:hover {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 2px 8px 6px;
+  padding: var(--space-0) var(--space-2) 6px;
   font-size: var(--fs-caption);
   font-weight: 600;
   color: var(--text-muted);
@@ -1029,7 +1029,7 @@ button.pj-folder:hover {
 .pf-group-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   width: 100%;
   min-height: 42px;
   padding: 0 10px 0 6px;
@@ -1123,7 +1123,7 @@ button.pj-folder:hover {
   align-items: center;
   gap: 10px;
   min-height: 42px;
-  padding: 5px 6px 5px 8px;
+  padding: 5px 6px 5px var(--space-2);
   border-radius: var(--r-3);
   cursor: default;
   outline: none;
@@ -1331,7 +1331,7 @@ button.pj-folder:hover {
   flex: 1;
   display: grid;
   align-content: start;
-  gap: 4px;
+  gap: var(--space-1);
   padding: 18% 14% 0;
 }
 
@@ -1429,7 +1429,7 @@ button.pj-folder:hover {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 8px 10px 12px;
+  padding: 10px var(--space-2) 10px var(--space-3);
 }
 
 .pf-preview-head .pj-kind,
@@ -1504,14 +1504,14 @@ button.pj-folder:hover {
   display: grid;
   justify-items: center;
   gap: 14px;
-  padding: 34px 16px;
+  padding: 34px var(--space-4);
   color: var(--text-faint);
 }
 
 .pf-view-text {
   max-height: 460px;
   overflow: auto;
-  padding: 14px 16px;
+  padding: 14px var(--space-4);
   background: var(--bg-raised);
 }
 
@@ -1535,7 +1535,7 @@ button.pj-folder:hover {
 
 .pf-csv th,
 .pf-csv td {
-  padding: 4px 10px 4px 0;
+  padding: var(--space-1) 10px var(--space-1) 0;
   border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
   text-align: left;
   white-space: nowrap;
@@ -1605,7 +1605,7 @@ button.pj-folder:hover {
 }
 
 .pf-desc {
-  padding: 10px 12px 2px;
+  padding: 10px var(--space-3) var(--space-0);
   font-size: var(--fs-small);
   line-height: 1.45;
   color: var(--text-muted);
@@ -1620,7 +1620,7 @@ button.pj-folder:hover {
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
-  padding: 10px 12px 12px;
+  padding: 10px var(--space-3) var(--space-3);
 }
 
 .pf-preview-foot .button {
@@ -1640,7 +1640,7 @@ button.pj-folder:hover {
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
-  padding: 22px 8px;
+  padding: 22px var(--space-2);
   font-size: var(--fs-small);
   color: var(--text-muted);
 }
@@ -1679,7 +1679,7 @@ button.pj-folder:hover {
   align-items: center;
   padding: 3vh 3vw;
   /* Its head holds the Close: never up under the window buttons (8.6.1, 31 Oct 2026). */
-  padding-top: max(3vh, calc(var(--wbtn-h, 40px) + 12px));
+  padding-top: max(3vh, calc(var(--wbtn-h, 40px) + var(--space-3)));
 }
 
 .pf-overlay-box {
@@ -1731,7 +1731,7 @@ button.pj-folder:hover {
 .pf-overlay-body .pf-view-text {
   max-height: none;
   min-height: 100%;
-  padding: 24px 32px;
+  padding: var(--space-5) 32px;
 }
 
 /* A narrow card (between two side panels): the kinds get their own line, the preview opens in the list under the file
@@ -1740,7 +1740,7 @@ button.pj-folder:hover {
 .pf-files.is-narrow .pf-preview {
   position: static;
   max-height: 560px;
-  margin: 6px 0 12px;
+  margin: 6px 0 var(--space-3);
   animation: pj-drop 0.16s ease-out;
 }
 
@@ -1799,6 +1799,6 @@ button.pj-folder:hover {
 .pj-risk-meta .pj-risk-status.pj-pill {
   height: 20px;
   padding: 0 7px;
-  gap: 4px;
+  gap: var(--space-1);
   font-size: var(--fs-caption);
 }

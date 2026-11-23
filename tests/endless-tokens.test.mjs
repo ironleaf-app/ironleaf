@@ -7,9 +7,10 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { cssPxFor } from './css-px.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const read = (f) => readFileSync(path.join(root, f), 'utf8');
+const read = (f) => cssPxFor(f, readFileSync(path.join(root, f), 'utf8'));
 const base = read('src/renderer/src/styles.css').match(/:root \{([^}]*)\}/s)?.[1] ?? assert.fail('no base :root');
 const dark = read('src/renderer/src/styles.css').match(/:root\[data-theme='dark'\] \{([^}]*)\}/s)?.[1] ?? assert.fail('no dark :root');
 const palettes = read('src/renderer/src/styles/palettes.css');
@@ -43,8 +44,9 @@ test('one type scale, one spacing scale, one radius set, one shadow set, one she
   for (const token of [
     '--fs-display: 52px', '--fs-page: 38px', '--fs-section: 20px', '--fs-card: 17px',
     '--fs-reading: 16.5px', '--fs-body: 15px', '--fs-small: 13px', '--fs-caption: 12px',
-    '--sp-1: 4px', '--sp-2: 8px', '--sp-3: 12px', '--sp-4: 16px',
-    '--sp-5: 20px', '--sp-6: 24px', '--sp-7: 32px', '--sp-8: 44px',
+    // The one spacing scale (23 Nov 2026, docs/DESIGN.md): defined once, here, for every window.
+    '--space-0: 2px', '--space-1: 4px', '--space-2: 8px', '--space-3: 12px', '--space-4: 16px',
+    '--space-5: 24px', '--space-6: 36px', '--space-7: 64px',
     '--r-1: 4px', '--r-2: 6px', '--r-3: 8px', '--r-4: 10px',
     '--rail-w: 292px', '--header-h: 56px', '--page-pad: 36px', '--card-pad: 18px',
     '--reading: 920px', '--reading-wide: 1080px',
