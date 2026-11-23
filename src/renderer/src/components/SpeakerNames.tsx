@@ -8,6 +8,7 @@ import { speakerDisplay, speakerSuggestions, type SpeakerMark, type SpeakerNames
 import { useApp } from '../state/store';
 import { Icon } from './Icon';
 import { openMenu } from './Menu';
+import { isEnterKey } from '../lib/enterKey';
 
 /** Who each voice might be: the meeting's own people first, then the vault's People, each once. */
 export function useSpeakerSuggestions(note: string | null, text: string): string[] {
@@ -118,7 +119,7 @@ export function SpeakerNames({
                     aria-label={`Name for ${speakerDisplay(m.id)}`}
                     onChange={(e) => setDraft(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') save(m.id);
+                      if (isEnterKey(e)) save(m.id);
                       else if (e.key === 'Escape') setOpen(null);
                     }}
                   />

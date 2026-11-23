@@ -4,6 +4,7 @@
 // to its source line and column, and the source line maps back (src/shared/layouts.ts
 // tableLineCell/setTableLineCell). The headings are structure, never edited; a single click never
 // edits.
+import { isEnterKey } from './enterKey';
 
 /** The editable cells under `root`: their element with the source line and column each maps to. */
 export function editableCells(root: ParentNode, readCell: (line: number, col: number) => string | null): { td: HTMLTableCellElement; line: number; col: number }[] {
@@ -109,7 +110,7 @@ export function editTableCell(
     open = { td, close };
     input.addEventListener('keydown', (e) => {
       e.stopPropagation();
-      if (e.key === 'Enter') {
+      if (isEnterKey(e)) {
         e.preventDefault();
         close(true);
       } else if (e.key === 'Escape') {

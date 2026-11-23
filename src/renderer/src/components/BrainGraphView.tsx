@@ -30,6 +30,7 @@ import { BrainEngine } from '../lib/brain-engine';
 import { useGraphData } from '../state/graphData';
 import { useApp } from '../state/store';
 import { PageError } from './PageStates';
+import { isEnterKey } from '../lib/enterKey';
 import '../styles/brain-graph.css';
 
 /** The taken view per graph (the living graph's t69 kept views, carried to rings): the taken camera plus
@@ -373,7 +374,7 @@ export function BrainGraphView({ revision, onOpen, designInit = 'rings', onSumma
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && hits.length) {
+              if (isEnterKey(e) && hits.length) {
                 e.preventDefault();
                 go(hits[0].id);
                 setQuery('');

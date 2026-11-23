@@ -40,6 +40,7 @@ import { docs } from '../state/docs';
 import { showError, toast, useApp } from '../state/store';
 import type { TabState } from '../state/workspace';
 import { getWorkspace } from '../state/layout';
+import { isEnterKey } from '../lib/enterKey';
 
 type Tool = 'select' | 'pen' | 'rect' | 'ellipse' | 'arrow' | 'line' | 'text' | 'hand';
 
@@ -638,7 +639,7 @@ export function DrawingView({ tab }: { tab: TabState }) {
               editingRef.current = null;
               setEditing(null);
               svg.current?.focus();
-            } else if (e.key === 'Enter' && !e.shiftKey) {
+            } else if (isEnterKey(e) && !e.shiftKey) {
               e.preventDefault();
               commitText();
               svg.current?.focus();

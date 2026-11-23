@@ -19,6 +19,7 @@ import { pickAsset } from './AssetPicker';
 import { Thumb } from './AssetTile';
 import { SavedText } from './Fields';
 import { setAssets } from './store';
+import { isEnterKey } from '../../lib/enterKey';
 
 const fontOk = (name: string) => /^[\p{L}\p{N} ._-]{1,80}$/u.test(name);
 
@@ -320,7 +321,7 @@ export function BrandKitView({ listing, assets }: { listing: AssetListing; asset
                   placeholder="#1D4E89"
                   onChange={(e) => setNewHex(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') addColour();
+                    if (isEnterKey(e)) addColour();
                   }}
                 />
                 <button className="button" disabled={!cleanHex(newHex)} onClick={addColour}>

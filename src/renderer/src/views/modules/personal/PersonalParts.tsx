@@ -10,6 +10,7 @@ import { fileUrl } from '../../../lib/resolve';
 import * as A from '../../../state/actions';
 import { workCall, workDid } from '../../../state/workModules';
 import { dayText } from '../work/WorkShell';
+import { isEnterKey } from '../../../lib/enterKey';
 
 /** A module's jobs by name. */
 export const caller =
@@ -94,7 +95,7 @@ export function Inline({ value, shown, label, kind = 'text', options, canEdit, p
       onChange={(e) => setText(e.target.value)}
       onBlur={() => void done(text)}
       onKeyDown={(e) => {
-        if (e.key === 'Enter') void done(text);
+        if (isEnterKey(e)) void done(text);
         if (e.key === 'Escape') setEditing(false);
       }}
     />

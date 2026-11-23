@@ -24,6 +24,7 @@ import { showError, toast, useApp, usePrefs } from '../state/store';
 import { newTemplate, startFromTemplate } from '../state/templates';
 import { readTemplateUsed } from '../state/templateUsed';
 import * as W from '../state/workspace';
+import { isEnterKey } from '../lib/enterKey';
 
 const ICONS: Record<string, IconName> = {
   'meeting-notes': 'chat',
@@ -73,7 +74,7 @@ function Row({ t, reportable, onUse, onPreview, onEdit, onReport }: { t: Templat
   const useIt = () => (t.kind === 'report' ? onReport() : onUse());
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.target !== e.currentTarget) return;
-    if (e.key === 'Enter') {
+    if (isEnterKey(e)) {
       e.preventDefault();
       useIt();
     } else if (e.key === ' ') {

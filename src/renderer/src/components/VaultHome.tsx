@@ -20,6 +20,7 @@ import { kindIcon, VaultCards } from './VaultPlace';
 import { BackupToday, VaultSyncSection, VaultSyncToday } from './VaultSync';
 import { LivePairingSection, PairDialog, PairedSourcesSection, SourceChoices } from './PairedSources';
 import type { FileKind as SourceKind } from '../../../shared/pairing/types';
+import { isEnterKey } from '../lib/enterKey';
 import '../styles/vault-home.css';
 
 const api = () => window.nv.home;
@@ -541,7 +542,7 @@ function NewVaultDialog({ status, onClose }: { status: HomeStatus; onClose(): vo
           placeholder="Work"
           onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && name.trim()) void make(false);
+            if (isEnterKey(e) && name.trim()) void make(false);
           }}
         />
       </label>

@@ -16,6 +16,7 @@ import { Icon, type IconName } from './Icon';
 import { openMenu, type MenuItem } from './Menu';
 import { pickFile } from './Pickers';
 import { LevelChip, pickLevel, plainlyOpen, type LiveNote } from './LevelPicker';
+import { isEnterKey } from '../lib/enterKey';
 
 // Checked when the app is built: every icon a note can wear is one the app draws.
 const PAGE_ICONS = LINE_ICONS satisfies readonly IconName[];
@@ -107,7 +108,7 @@ function IconPicker({ anchor, current, onPick, onClose }: { anchor: HTMLElement;
           spellCheck={false}
           onChange={(e) => setTyped(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && typedIcon?.kind === 'emoji') onPick(typedIcon.text);
+            if (isEnterKey(e) && typedIcon?.kind === 'emoji') onPick(typedIcon.text);
           }}
         />
         {typedIcon?.kind === 'emoji' && (

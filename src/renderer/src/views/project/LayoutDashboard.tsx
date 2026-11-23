@@ -37,6 +37,7 @@ import { AddRow, Inline, InlineDate, niceDate, RowAction, RowActions, useEditor 
 import { Words } from './parts';
 import { isoWords, Ring, Spark, TrendChart } from './LayoutCharts';
 import { CheckList, Choice, choicesFrom, DashContext, More, Pct, Popover, same, useDash, type CheckItem, type Dash } from './LayoutEdit';
+import { isEnterKey } from '../../lib/enterKey';
 
 const today = () => new Date();
 const cap = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
@@ -1627,7 +1628,7 @@ function CellField({ initial, select, label, numeric, onDone }: { initial: strin
         if (e.key === 'Escape') {
           e.preventDefault();
           finish(null);
-        } else if (e.key === 'Enter') {
+        } else if (isEnterKey(e)) {
           e.preventDefault();
           finish(text, [e.shiftKey ? -1 : 1, 0]);
         } else if (e.key === 'Tab') {
@@ -1667,7 +1668,7 @@ function NewRow({ head, section, noun, extra, onDone }: { head: string[]; sectio
             onChange={(e) => setValues((x) => ({ ...x, [h]: e.target.value }))}
             onKeyDown={(e) => {
               e.stopPropagation();
-              if (e.key === 'Enter') {
+              if (isEnterKey(e)) {
                 e.preventDefault();
                 void add();
               } else if (e.key === 'Escape') {

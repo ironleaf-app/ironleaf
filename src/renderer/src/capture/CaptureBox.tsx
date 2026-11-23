@@ -9,6 +9,7 @@ import { Icon } from '../components/Icon';
 import { captureApi, dictate, fieldTarget } from '../lib/dictation';
 import { errorMessage } from '../lib/errors';
 import { wordsMatch } from '../lib/fuzzy';
+import { isEnterKey } from '../lib/enterKey';
 
 const api = () => window.nv.capture;
 /** A draft put away longer than this is cleared when the box comes back. */
@@ -356,7 +357,7 @@ export function CaptureBox() {
               onPaste={(e) => void paste(e)}
               onKeyDown={(e) => {
                 // A task is one line: Enter saves it.
-                if (draft.kind === 'task' && e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+                if (draft.kind === 'task' && isEnterKey(e) && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
                   e.preventDefault();
                   void save();
                 }

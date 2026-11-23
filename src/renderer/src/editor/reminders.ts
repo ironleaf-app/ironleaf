@@ -11,6 +11,7 @@ import { iconMarkup } from '../components/Icon';
 import { minPopupTop } from '../lib/windowButtons';
 import { toast } from '../state/store';
 import { exactMoment, formatMark, parseReminderLine, pillWords, repeatText } from '../../../shared/reminders';
+import { isEnterKey } from '../lib/enterKey';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -147,7 +148,7 @@ function showPicker(view: EditorView, pill: HTMLElement, lineFrom: number): void
       e.stopPropagation();
       close();
       view.focus();
-    } else if (e.key === 'Enter') {
+    } else if (isEnterKey(e)) {
       e.preventDefault();
       save();
     }

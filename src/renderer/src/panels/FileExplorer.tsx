@@ -25,6 +25,7 @@ import { activeTab } from '../state/workspace';
 import { rememberExplorer, useExplorerMemory } from './explorer-state';
 import { Navigator } from './Navigator';
 import { newNoteOfType } from '../state/noteTypes';
+import { isEnterKey } from '../lib/enterKey';
 
 type Sort = 'name' | 'name-desc' | 'modified' | 'modified-old';
 
@@ -432,7 +433,7 @@ function FolderTree({ modeSwitch }: { modeSwitch: ReactNode }) {
         onBlur={(e) => void commitRename(path, e.target.value)}
         onKeyDown={(e) => {
           e.stopPropagation();
-          if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+          if (isEnterKey(e)) (e.target as HTMLInputElement).blur();
           if (e.key === 'Escape') setRenaming(null);
         }}
       />

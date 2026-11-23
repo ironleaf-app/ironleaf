@@ -9,6 +9,7 @@ import { Icon } from '../../components/Icon';
 import { fileUrl } from '../../lib/resolve';
 import { minPopupTop } from '../../lib/windowButtons';
 import type { PdfDocument } from './pdfDoc';
+import { isEnterKey } from '../../lib/enterKey';
 
 export const COLOUR_WORDS: Record<PdfColour, string> = { yellow: 'Yellow', green: 'Green', blue: 'Blue', pink: 'Pink' };
 
@@ -218,7 +219,7 @@ export function FindBar({ query, count, at, busy, onQuery, onStep, onClose }: { 
         aria-label="Find in this PDF"
         onChange={(e) => onQuery(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') {
+          if (isEnterKey(e)) {
             e.preventDefault();
             onStep(e.shiftKey ? -1 : 1);
           } else if (e.key === 'Escape') {

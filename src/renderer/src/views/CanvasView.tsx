@@ -68,6 +68,7 @@ import { Minimap } from './canvas/Minimap';
 import { arrowPan, between, clampZoom, easeOut, fitGroupLabels, levels, LABEL_PX, pinchView, styleZoom, wheelIntent, zoomAround, type LabelFit } from './canvas/navigation';
 import { Overview } from './canvas/Overview';
 import { loadPortfolio } from './canvas/projectBoards';
+import { isEnterKey } from '../lib/enterKey';
 
 type CNode = CanvasNode;
 type CEdge = CanvasEdge;
@@ -216,7 +217,7 @@ const Card = memo(function Card({ node, selected, handles, editing, labelEditing
               onBlur={(e) => api.renameGroup(node, e.target.value)}
               onKeyDown={(e) => {
                 e.stopPropagation();
-                if (e.key === 'Enter' || e.key === 'Escape') (e.target as HTMLInputElement).blur();
+                if (isEnterKey(e) || e.key === 'Escape') (e.target as HTMLInputElement).blur();
               }}
             />
           ) : (
@@ -1948,7 +1949,7 @@ export function CanvasView({ tab }: { tab: TabState }) {
                           }}
                           onKeyDown={(e) => {
                             e.stopPropagation();
-                            if (e.key === 'Enter' || e.key === 'Escape') (e.target as HTMLInputElement).blur();
+                            if (isEnterKey(e) || e.key === 'Escape') (e.target as HTMLInputElement).blur();
                           }}
                         />
                       </foreignObject>
@@ -2143,7 +2144,7 @@ export function CanvasView({ tab }: { tab: TabState }) {
               onChange={(e) => setSearch({ query: e.target.value, at: 0 })}
               onKeyDown={(e) => {
                 e.stopPropagation();
-                if (e.key === 'Enter') setSearch((s) => s && { ...s, at: s.at + (e.shiftKey ? -1 : 1) });
+                if (isEnterKey(e)) setSearch((s) => s && { ...s, at: s.at + (e.shiftKey ? -1 : 1) });
                 else if (e.key === 'Escape') {
                   setSearch(null);
                   surface.current?.focus({ preventScroll: true });

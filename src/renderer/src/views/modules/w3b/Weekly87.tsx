@@ -20,6 +20,7 @@ import { TextHost, call, canGatherWeek, edit, exportMenu, flagTone, gatherWeek, 
 import { plural } from '../life/parts';
 import { FillsLine, HomeCard, MoreButton, PackHead, PackPage, PageProps, Section, trashRecord, useCanEdit, EDIT_DETAILS_LABEL, FULL_DETAILS_LABEL } from './W3b';
 import { TAKE_OUT_BUTTON, takeOutAria } from '../../../lib/removeWords';
+import { isEnterKey } from '../../../lib/enterKey';
 
 const MOD = 'weekly';
 const flagTint = (f: string) => (flagTone(f) === 'ok' ? 'green' : flagTone(f) === 'warn' ? 'amber' : flagTone(f) === 'bad' ? 'red' : 'slate') as 'slate' | 'green' | 'amber' | 'red' | 'blue';
@@ -117,7 +118,7 @@ export function WeeklyOverview({ tab }: { tab: W.TabState }) {
             {u.sections.map((w, i) => <WorkstreamRow key={`${w.name}-${i}`} u={u} w={w} index={i} canEdit={canEdit} />)}
             {canEdit && (
               <span style={{ display: 'flex', gap: 6, padding: '9px 0' }}>
-                <input className="input" style={{ height: 32, flex: 1 }} value={sectionName} placeholder="A new workstream…" aria-label="A new workstream" onChange={(e) => setSectionName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && sectionName.trim()) { const n = sectionName.trim(); setSectionName(''); void edit(u.path, { kind: 'add-section', name: n }); } }} />
+                <input className="input" style={{ height: 32, flex: 1 }} value={sectionName} placeholder="A new workstream…" aria-label="A new workstream" onChange={(e) => setSectionName(e.target.value)} onKeyDown={(e) => { if (isEnterKey(e) && sectionName.trim()) { const n = sectionName.trim(); setSectionName(''); void edit(u.path, { kind: 'add-section', name: n }); } }} />
                 <button type="button" className="btn" style={{ height: 32 }} disabled={!sectionName.trim()} onClick={() => { const n = sectionName.trim(); setSectionName(''); void edit(u.path, { kind: 'add-section', name: n }); }}>Add</button>
               </span>
             )}

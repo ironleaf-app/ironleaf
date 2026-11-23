@@ -24,6 +24,7 @@ import type * as W from '../../../state/workspace';
 import { openRecordForm, valueWords } from '../RecordForm';
 import { AskFloat, PackSection, PackShell, Tick, packName, rowContext, rowMenu, shortDay, weekdayOf, type Tint } from '../pack87';
 import { dayText, openDetail, Pill, placeOf, useWorkCtx, WithRecords, WorkViews } from './WorkShell';
+import { isEnterKey } from '../../../lib/enterKey';
 
 /** A site's register page (WorkShell keeps the note's path in the tab without its slashes). */
 const openSite = (rel: string) => openDetail('sites', 'site', rel);
@@ -268,7 +269,7 @@ function Inline({ value, shown, label, kind = 'text', options, canEdit, placehol
       onChange={(e) => setText(e.target.value)}
       onBlur={() => void done(text)}
       onKeyDown={(e) => {
-        if (e.key === 'Enter') void done(text);
+        if (isEnterKey(e)) void done(text);
         if (e.key === 'Escape') setEditing(false);
       }}
     />

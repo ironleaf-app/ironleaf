@@ -39,6 +39,7 @@ import { getAreas } from '../state/areas';
 import { MODULES, moduleFolder } from '../../../shared/module-records';
 import { moduleOn } from '../../../shared/life-modules';
 import type { MachineryCtx } from '../../../shared/fewer-folders';
+import { isEnterKey } from '../lib/enterKey';
 
 const PATHS_MIME = 'application/x-nv-paths';
 const KIND_ICONS: Record<string, IconName> = { logo: 'sparkle', image: 'image', icon: 'diagram', document: 'file', media: 'video', other: 'file' };
@@ -1187,7 +1188,7 @@ export function Navigator({ modeSwitch }: { modeSwitch: ReactNode }) {
         onBlur={(e) => void commitRename(r, e.target.value)}
         onKeyDown={(e) => {
           e.stopPropagation();
-          if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+          if (isEnterKey(e)) (e.target as HTMLInputElement).blur();
           if (e.key === 'Escape') setRenaming(null);
         }}
       />

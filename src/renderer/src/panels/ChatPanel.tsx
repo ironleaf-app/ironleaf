@@ -36,6 +36,7 @@ import { getState, loadNotes, loadSettings, setState, showError, toast, useApp, 
 import { openPassage } from '../state/notebook';
 import type { TabState } from '../state/workspace';
 import { priorUserText } from '../components/plan/plan';
+import { isEnterKey } from '../lib/enterKey';
 import '../styles/search-ask-87.css';
 
 /** An answer's words, with its cited passages and links (4 Nov 2026, p9-one-ask: the floating Ask card is gone, so only the panel shows it). */
@@ -764,7 +765,7 @@ export function ChatPanel({ tab }: { tab: TabState }) {
             attachFiles(files);
           }}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
+            if (isEnterKey(e) && !e.shiftKey) {
               e.preventDefault();
               ask(draft);
             }

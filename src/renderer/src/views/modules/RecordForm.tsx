@@ -9,6 +9,7 @@ import { Icon, type IconName } from '../../components/Icon';
 import { errorMessage } from '../../lib/errors';
 import { useEscape } from '../../lib/useEscape';
 import { closeTours } from '../../state/moduleFills';
+import { isEnterKey } from '../../lib/enterKey';
 
 export type FormKind = 'text' | 'money' | 'number' | 'date' | 'choice' | 'toggle' | 'segment' | 'secret' | 'files' | 'vendor';
 
@@ -171,7 +172,7 @@ function FormDialog({ spec }: { spec: RecordFormSpec }) {
         aria-labelledby="rf-dialog-title"
         onMouseDown={(e) => e.stopPropagation()}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' && (e.target as HTMLElement).tagName === 'INPUT' && (e.target as HTMLInputElement).type !== 'checkbox') {
+          if (isEnterKey(e) && (e.target as HTMLElement).tagName === 'INPUT' && (e.target as HTMLInputElement).type !== 'checkbox') {
             e.preventDefault();
             void go();
           }
