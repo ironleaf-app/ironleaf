@@ -22,9 +22,10 @@ import path from 'node:path';
 import { after, test } from 'node:test';
 import { openSettings, startHarness } from './vault-controls-harness.mjs';
 import { writeT200Vault } from './t200-vault.mjs';
+import { cssPxFor } from './css-px.mjs';
 
 const root = path.join(import.meta.dirname, '..');
-const read = (p) => readFileSync(path.join(root, p), 'utf8');
+const read = (p) => cssPxFor(p, readFileSync(path.join(root, p), 'utf8'));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // ── Static: the shared mechanisms ────────────────────────────────────────────
@@ -266,6 +267,13 @@ const CARDS_JS = `(() => {
     if (card.closest('[data-tour]') || card.closest('.nv-empty') || card.closest('[role="dialog"]')) continue;
     const r = card.getBoundingClientRect();
     if (r.width < 2 || r.height < 2) continue;
+    // Only a card that draws a box can box a line (23 Nov 2026, design-language packs pass): an empty pack section
+    // folds to one quiet row whose card loses its border, fill and shadow, and its words fill the row beside the
+    // 152 px label column on purpose, so that bare card is as wide as the row with nothing drawn around it.
+    const cs0 = getComputedStyle(card);
+    const edge = ['Top', 'Right', 'Bottom', 'Left'].some((k) => parseFloat(cs0['border' + k + 'Width']) > 0 && cs0['border' + k + 'Style'] !== 'none');
+    const fill = cs0.backgroundColor !== 'rgba(0, 0, 0, 0)' && cs0.backgroundColor !== 'transparent';
+    if (!edge && !fill && cs0.boxShadow === 'none' && cs0.backgroundImage === 'none') continue;
     let longest = 0;
     for (const el of [card, ...card.querySelectorAll('*')]) {
       const cs = getComputedStyle(el);

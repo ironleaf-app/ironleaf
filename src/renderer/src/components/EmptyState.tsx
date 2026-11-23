@@ -3,6 +3,10 @@
 // title, one line, and the one next step when there is an obvious one (a quieter second one only where both are real
 // choices, such as setting projects up from a folder or by hand). Lists that are still loading show grey rows in their
 // shape instead of "Loading…". Styles: styles/feel.css.
+//
+// Wide-window pass (23 Nov 2026): the empty place stood as a 340 px centred column on a 2,000 px page, a lonely card in
+// the middle of nothing. It now reads in the page's own frame: the tile at the page's left edge, the words beside it
+// at reading width, the next step under them, as the first lines of the list it stands in for would.
 
 import { useContext, type ReactNode } from 'react';
 import { ModuleFills } from '../state/moduleFills';
@@ -53,28 +57,30 @@ export function EmptyState({
       <span className="nv-empty-tile" aria-hidden="true">
         <Icon name={icon} size={size === 'page' ? 20 : 16} />
       </span>
-      <p className="nv-empty-title">{title}</p>
-      {fills && (
-        <p className="nv-empty-fills">
-          <b>Fills itself.</b> {fills}
-        </p>
-      )}
-      {line && <p className={`nv-empty-line${fills ? ' nv-empty-byhand' : ''}`}>{fills ? <>By hand: {line}</> : line}</p>}
-      {(action || also) && (
-        <div className="nv-empty-actions">
-          {action && (
-            <button type="button" className={`button${size === 'page' ? ' primary' : ''}`} disabled={action.disabled} onClick={action.run}>
-              {action.icon && <Icon name={action.icon} size={14} />} {action.label}
-            </button>
-          )}
-          {also && (
-            <button type="button" className="text-button nv-empty-also" disabled={also.disabled} onClick={also.run}>
-              {also.icon && <Icon name={also.icon} size={13} />} {also.label}
-            </button>
-          )}
-        </div>
-      )}
-      {children}
+      <div className="nv-empty-words">
+        <p className="nv-empty-title">{title}</p>
+        {fills && (
+          <p className="nv-empty-fills">
+            <b>Fills itself.</b> {fills}
+          </p>
+        )}
+        {line && <p className={`nv-empty-line${fills ? ' nv-empty-byhand' : ''}`}>{fills ? <>By hand: {line}</> : line}</p>}
+        {(action || also) && (
+          <div className="nv-empty-actions">
+            {action && (
+              <button type="button" className={`button${size === 'page' ? ' primary' : ''}`} disabled={action.disabled} onClick={action.run}>
+                {action.icon && <Icon name={action.icon} size={14} />} {action.label}
+              </button>
+            )}
+            {also && (
+              <button type="button" className="text-button nv-empty-also" disabled={also.disabled} onClick={also.run}>
+                {also.icon && <Icon name={also.icon} size={13} />} {also.label}
+              </button>
+            )}
+          </div>
+        )}
+        {children}
+      </div>
     </div>
   );
 }

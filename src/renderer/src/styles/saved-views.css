@@ -19,8 +19,8 @@
   flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 12px 24px;
-  padding: 14px 28px 14px;
+  gap: var(--space-3) var(--space-5);
+  padding: var(--space-3) var(--space-5) var(--space-3);
 }
 
 .sv-head-words {
@@ -29,7 +29,7 @@
 }
 
 .sv-head h1 {
-  margin: 0 0 4px;
+  margin: 0 0 var(--space-1);
   font: 650 var(--fs-section)/1.15 var(--font-ui);
   letter-spacing: -0.015em;
   color: var(--text);
@@ -53,15 +53,15 @@
 .sv-tools {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .sv-tool {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: 30px;
-  padding: 0 11px;
+  padding: 0 var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised);
@@ -83,8 +83,8 @@
 .sv-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 10px;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
 }
 
 .sv-chip {
@@ -100,7 +100,7 @@
 
 .sv-chip-words {
   height: 100%;
-  padding: 0 4px 0 10px;
+  padding: 0 var(--space-1) 0 var(--space-2);
   border-radius: var(--r-1);
   color: inherit;
 }
@@ -110,7 +110,7 @@
   place-items: center;
   width: 20px;
   height: 20px;
-  margin-right: 2px;
+  margin-right: var(--space-0);
   border-radius: var(--r-1);
   color: inherit;
   opacity: 0.7;
@@ -124,9 +124,9 @@
 .sv-problem {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 0 28px 10px;
-  padding: 8px 12px;
+  gap: var(--space-2);
+  margin: 0 var(--space-5) var(--space-2);
+  padding: var(--space-2) var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-4);
   background: var(--bg-raised);
@@ -155,10 +155,10 @@
   width: min(372px, calc(100cqw - 32px));
   max-height: min(72vh, 640px);
   overflow-y: auto;
-  padding: 12px;
+  padding: var(--space-3);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--space-2);
   background: var(--bg-raised);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
@@ -178,15 +178,15 @@
   display: grid;
   /* Five layouts in one row (21 Oct 2026: Cards and List joined Table, Board and Calendar). */
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 5px;
+  gap: var(--space-1);
 }
 
 .sv-layouts button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
-  padding: 9px 2px 7px;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-0) var(--space-2);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   color: var(--text-muted);
@@ -213,7 +213,7 @@
   display: grid;
   grid-template-columns: 84px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .sv-row-name {
@@ -224,14 +224,14 @@
 .sv-row select,
 .sv-filter select,
 .sv-filter input {
-  padding: 5px 8px;
+  padding: var(--space-1) var(--space-2);
   font-size: var(--fs-small);
   min-width: 0;
 }
 
 .sv-dir {
   height: 28px;
-  padding: 0 9px;
+  padding: 0 var(--space-2);
   border: 1px solid var(--border);
   border-radius: var(--r-2);
   color: var(--text-muted);
@@ -245,19 +245,19 @@
 }
 
 .sv-section {
-  padding-top: 10px;
+  padding-top: var(--space-2);
   border-top: 1px solid var(--border);
 }
 
 .sv-section h3 {
-  margin: 0 0 6px;
+  margin: 0 0 var(--space-2);
   font-size: var(--fs-caption);
   font-weight: 600;
   color: var(--text);
 }
 
 .sv-hint {
-  margin: 0 0 8px;
+  margin: 0 0 var(--space-2);
   color: var(--text-faint);
   font-size: var(--fs-caption);
   line-height: 1.45;
@@ -266,17 +266,17 @@
 .sv-filter {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr) minmax(0, 1fr) auto;
-  gap: 6px;
+  gap: var(--space-2);
   align-items: center;
-  margin-bottom: 6px;
+  margin-bottom: var(--space-2);
 }
 
 .sv-add {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: 28px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-2);
   color: var(--text-muted);
   font-size: var(--fs-small);
@@ -297,8 +297,8 @@
 .sv-check-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 5px 6px;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--r-2);
   cursor: pointer;
 }
@@ -334,14 +334,14 @@
 .sv-pills {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: var(--space-1);
   white-space: normal;
 }
 
 .sv-pill {
   display: inline-block;
   max-width: 100%;
-  padding: 1px 8px;
+  padding: 1px var(--space-2);
   border-radius: var(--r-1);
   background: var(--bg-hover);
   color: var(--text);
@@ -377,7 +377,7 @@
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 0 28px 24px;
+  padding: 0 var(--space-5) var(--space-5);
   /* The room the columns share (the cells' widest below), whatever the pane's width. */
   container-type: inline-size;
 }
@@ -423,8 +423,8 @@
 .sv-th {
   display: flex;
   align-items: center;
-  gap: 2px;
-  padding: 0 4px 0 2px;
+  gap: var(--space-0);
+  padding: 0 var(--space-1) 0 var(--space-0);
   /* The same share of the room as the column's cells (.sv-cell), up to 120 px; a long heading ends in an ellipsis. */
   min-width: clamp(72px, calc((100cqw - 16px) / var(--sv-cols, 3)), 120px);
 }
@@ -463,9 +463,9 @@
 .sv-th-sort {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: var(--space-1);
   height: 34px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-2);
   color: var(--text-muted);
   font-size: var(--fs-small);
@@ -553,10 +553,10 @@
 .sv-open {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   width: 100%;
   min-height: 36px;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   color: var(--text);
   text-align: left;
 }
@@ -588,7 +588,7 @@
   max-width: clamp(72px, calc((100cqw - 16px) / var(--sv-cols, 3)), 320px);
   min-width: 0;
   overflow: hidden;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   text-align: left;
   color: var(--text);
   cursor: default;
@@ -634,7 +634,7 @@
   min-width: 0;
   height: 36px;
   margin: 0;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   border: 0;
   border-radius: var(--r-2);
   background: var(--bg-raised);
@@ -654,8 +654,8 @@
 .sv-table-foot {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 2px 0;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-0) 0;
   color: var(--text-faint);
   font-size: var(--fs-small);
 }
@@ -665,22 +665,22 @@
 .sv-section-head {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   margin: 0;
   font: 600 var(--fs-small)/1.3 var(--font-ui);
   color: var(--text);
 }
 
 .sv-section-group + .sv-section-group {
-  margin-top: 22px;
+  margin-top: var(--space-5);
 }
 
 .sv-section-group > .sv-section-head {
-  margin: 0 2px 10px;
+  margin: 0 var(--space-0) var(--space-2);
 }
 
 .sv-table tbody tr.sv-section-row > th {
-  padding: 14px 12px 6px;
+  padding: var(--space-3) var(--space-3) var(--space-2);
   background: var(--bg-raised);
   text-align: left;
   font-weight: 600;
@@ -697,13 +697,13 @@
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 2px 28px 24px;
+  padding: var(--space-0) var(--space-5) var(--space-5);
 }
 
 .sv-cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 14px;
+  gap: var(--space-3);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -777,8 +777,8 @@
 .sv-tile-words {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 11px 13px 13px;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-3) var(--space-3);
   min-width: 0;
 }
 
@@ -793,7 +793,7 @@
 .sv-tile-props {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
   font-size: var(--fs-caption);
   color: var(--text-muted);
 }
@@ -802,7 +802,7 @@
   display: grid;
   grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
   align-items: baseline;
-  gap: 8px;
+  gap: var(--space-2);
   min-width: 0;
 }
 
@@ -831,14 +831,14 @@
 
 .sv-more-wide {
   display: block;
-  margin: 12px auto 0;
+  margin: var(--space-3) auto 0;
 }
 
 /* ── List ─────────────────────────────────────────────────────────────────────────────────────────────────────────── */
 
 .sv-list {
   margin: 0;
-  padding: 4px;
+  padding: var(--space-1);
   list-style: none;
   background: var(--bg-raised);
   border: 1px solid var(--border);
@@ -853,11 +853,11 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 2px 10px;
+  gap: var(--space-0) var(--space-2);
   width: 100%;
   min-width: 0;
   min-height: 36px;
-  padding: 4px 10px;
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--r-3);
   text-align: left;
   color: var(--text);
@@ -906,7 +906,7 @@
 /* A quiet dot between the name and each property, as a sentence reads. */
 .sv-line-prop::before {
   content: '·';
-  margin-right: 10px;
+  margin-right: var(--space-2);
   color: var(--text-faint);
 }
 
@@ -917,9 +917,9 @@
   min-height: 0;
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: var(--space-3);
   overflow: auto;
-  padding: 2px 28px 24px;
+  padding: var(--space-0) var(--space-5) var(--space-5);
 }
 
 .sv-column {
@@ -944,8 +944,8 @@
 .sv-column-head {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 8px 6px 6px;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-2);
 }
 
 .sv-column-fold,
@@ -981,7 +981,7 @@
 
 .sv-count {
   min-width: 20px;
-  padding: 0 6px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-1);
   background: var(--bg-hover);
   color: var(--text-muted);
@@ -994,15 +994,15 @@
 .sv-column-cards {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
   min-height: 48px;
-  padding: 2px 8px 8px;
+  padding: var(--space-0) var(--space-2) var(--space-2);
   overflow-y: auto;
 }
 
 .sv-column-empty {
   margin: 0;
-  padding: 14px 8px;
+  padding: var(--space-3) var(--space-2);
   border: 1px dashed var(--border-strong);
   border-radius: var(--r-3);
   color: var(--text-faint);
@@ -1013,9 +1013,9 @@
 .sv-column-new {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin: 0 8px 8px;
-  padding: 6px 8px;
+  gap: var(--space-2);
+  margin: 0 var(--space-2) var(--space-2);
+  padding: var(--space-2) var(--space-2);
   border-radius: var(--r-3);
   color: var(--text-faint);
   font-size: var(--fs-small);
@@ -1034,9 +1034,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   width: 100%;
-  padding: 10px 0 12px;
+  padding: var(--space-2) 0 var(--space-3);
   border-radius: var(--r-3);
   color: var(--text-muted);
 }
@@ -1060,9 +1060,9 @@
   flex: none;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: 30px;
-  padding: 0 11px;
+  padding: 0 var(--space-3);
   border: 1px dashed var(--border-strong);
   border-radius: var(--r-3);
   color: var(--text-muted);
@@ -1076,7 +1076,7 @@
 
 .sv-more,
 .sv-day-more {
-  padding: 4px 6px;
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--r-2);
   color: var(--text-muted);
   font-size: var(--fs-caption);
@@ -1094,9 +1094,9 @@
 .sv-card {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-2);
   width: 100%;
-  padding: 9px 11px;
+  padding: var(--space-2) var(--space-3);
   text-align: left;
   background: var(--bg-raised);
   border: 1px solid var(--border);
@@ -1137,7 +1137,7 @@
 .sv-card-props {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 10px;
+  gap: var(--space-1) var(--space-2);
   color: var(--text-muted);
   font-size: var(--fs-caption);
 }
@@ -1149,8 +1149,8 @@
 }
 
 .sv-card.compact {
-  gap: 2px;
-  padding: 4px 7px;
+  gap: var(--space-0);
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--r-2);
   box-shadow: none;
 }
@@ -1175,8 +1175,8 @@
   min-height: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 240px;
-  gap: 16px;
-  padding: 0 28px 24px;
+  gap: var(--space-4);
+  padding: 0 var(--space-5) var(--space-5);
   overflow: auto;
 }
 
@@ -1189,8 +1189,8 @@
 .sv-month-head {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
 }
 
 .sv-month-name {
@@ -1206,7 +1206,7 @@
 .sv-month-nav {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .sv-grid {
@@ -1225,7 +1225,7 @@
 }
 
 .sv-weekdays span {
-  padding: 8px 10px 6px;
+  padding: var(--space-2) var(--space-2) var(--space-2);
   color: var(--text-faint);
   font-size: var(--fs-caption);
   font-weight: 500;
@@ -1238,8 +1238,8 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 6px;
+  gap: var(--space-1);
+  padding: var(--space-2);
   border-right: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
   border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
   transition: background 0.12s;
@@ -1279,7 +1279,7 @@
   place-items: center;
   min-width: 22px;
   height: 22px;
-  padding: 0 5px;
+  padding: 0 var(--space-1);
   border-radius: var(--r-1);
   color: var(--text-muted);
   font-size: var(--fs-caption);
@@ -1324,8 +1324,8 @@
   display: flex;
   flex-direction: column;
   max-height: 100%;
-  margin-top: 42px;
-  padding: 10px;
+  margin-top: var(--space-6);
+  padding: var(--space-2);
   background: var(--bg-side);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
@@ -1348,7 +1348,7 @@
 }
 
 .sv-tray-hint {
-  margin: 4px 0 8px;
+  margin: var(--space-1) 0 var(--space-2);
   color: var(--text-faint);
   font-size: var(--fs-caption);
   line-height: 1.4;
@@ -1357,7 +1357,7 @@
 .sv-tray-cards {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-2);
   overflow-y: auto;
 }
 
@@ -1366,27 +1366,27 @@
 .sv-empty {
   margin: 8vh auto 0;
   max-width: 480px;
-  padding: 0 24px;
+  padding: 0 var(--space-5);
   text-align: center;
   color: var(--text-muted);
 }
 
 .sv-empty > svg {
   box-sizing: content-box;
-  padding: 14px;
+  padding: var(--space-3);
   border-radius: var(--r-1);
   background: var(--accent-softer);
   color: var(--accent-text);
 }
 
 .sv-empty h2 {
-  margin: 14px 0 6px;
+  margin: var(--space-3) 0 var(--space-2);
   font: 600 var(--fs-section)/1.3 var(--font-ui);
   color: var(--text);
 }
 
 .sv-empty p {
-  margin: 0 0 16px;
+  margin: 0 0 var(--space-4);
   font-size: var(--fs-small);
   line-height: 1.55;
 }
@@ -1395,7 +1395,7 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 /* ── Narrow tabs: the tray goes under the month, the gutters tighten ─────────────────────────────────────────────── */
@@ -1407,8 +1407,8 @@
   .sv-list-wrap,
   .sv-board,
   .sv-calendar {
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
   }
 
   .sv-calendar {
@@ -1422,7 +1422,7 @@
 
   .sv-day {
     min-height: 84px;
-    padding: 4px;
+    padding: var(--space-1);
   }
 
   .sv-card.compact .sv-card-props {
@@ -1457,8 +1457,8 @@
   top: 50%;
   transform: translateY(-50%);
   display: flex;
-  gap: 2px;
-  padding: 2px 2px 2px 14px;
+  gap: var(--space-0);
+  padding: var(--space-0) var(--space-0) var(--space-0) var(--space-3);
   background: linear-gradient(90deg, transparent, var(--sv-row-bg, var(--bg-raised)) 12px);
   opacity: 0;
   pointer-events: none;
@@ -1505,7 +1505,7 @@
   /* Margin, not padding (21 Oct 2026, the Docs table): padding sits inside the clamped box, so half of a third line
      showed through under the second. Two lines exactly, never a sliver of a third. */
   padding: 0;
-  margin: 7px 0;
+  margin: var(--space-2) 0;
   max-height: calc(1.35em * 2);
 }
 
@@ -1539,7 +1539,7 @@
 }
 
 .sv-formula-list {
-  margin: 0 0 4px;
+  margin: 0 0 var(--space-1);
   padding: 0;
   list-style: none;
 }
@@ -1548,9 +1548,9 @@
   display: grid;
   grid-template-columns: auto auto minmax(0, 1fr);
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   width: 100%;
-  padding: 5px 6px;
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--r-2);
   text-align: left;
   color: var(--text);
@@ -1581,7 +1581,7 @@
 }
 
 .sv-formula-dialog .hint {
-  margin: 0 0 12px;
+  margin: 0 0 var(--space-3);
   color: var(--text-muted);
   font-size: var(--fs-small);
   line-height: 1.5;
@@ -1590,8 +1590,8 @@
 .sv-formula-field {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  margin-bottom: 12px;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
   font-size: var(--fs-small);
   color: var(--text-muted);
 }
@@ -1603,7 +1603,7 @@
 .sv-formula-dialog textarea {
   width: 100%;
   min-height: 72px;
-  padding: 8px 10px;
+  padding: var(--space-2) var(--space-2);
   resize: vertical;
   line-height: 1.5;
   color: var(--text);
@@ -1615,13 +1615,13 @@
 
 .sv-formula-result {
   min-height: 34px;
-  margin: -4px 0 10px;
+  margin: calc(-1 * var(--space-1)) 0 var(--space-2);
   font-size: var(--fs-small);
 }
 
 .sv-formula-result ul {
   margin: 0;
-  padding: 6px 10px;
+  padding: var(--space-2) var(--space-2);
   list-style: none;
   border: 1px solid var(--border);
   border-radius: var(--r-3);
@@ -1631,8 +1631,8 @@
 .sv-formula-result li {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
-  gap: 12px;
-  padding: 2px 0;
+  gap: var(--space-3);
+  padding: var(--space-0) 0;
 }
 
 .sv-formula-note {
@@ -1656,7 +1656,7 @@
 .sv-formula-problem {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   margin: 0;
 }
 
@@ -1667,7 +1667,7 @@
 
 .sv-formula-help {
   border-top: 1px solid var(--border);
-  padding-top: 10px;
+  padding-top: var(--space-2);
   font-size: var(--fs-small);
 }
 
@@ -1684,8 +1684,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 5px;
-  margin-top: 10px;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
 }
 
 .sv-formula-group-name {
@@ -1695,7 +1695,7 @@
 
 .sv-formula-chip {
   height: 24px;
-  padding: 0 9px;
+  padding: 0 var(--space-2);
   border: 1px solid var(--border);
   border-radius: var(--r-1);
   background: var(--bg-raised);
@@ -1710,7 +1710,7 @@
  outline: 2px solid var(--focus); outline-offset: 2px;}
 
 .sv-formula-help .sv-hint {
-  margin-top: 10px;
+  margin-top: var(--space-2);
 }
 
 .sv-formula-remove {
@@ -1746,11 +1746,11 @@
   display: flex;
   align-items: baseline;
   justify-content: flex-start;
-  gap: 6px;
+  gap: var(--space-2);
   width: 100%;
   min-height: 32px;
   max-width: clamp(72px, calc((100cqw - 16px) / var(--sv-cols, 3)), 320px);
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   color: var(--text-muted);
   font-size: var(--fs-caption);
   white-space: nowrap;
@@ -1825,8 +1825,8 @@
 .nv-view-embed-head {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
   color: var(--text-faint);
   font-size: var(--fs-small);
 }
@@ -1848,9 +1848,9 @@
 .nv-view-embed-more {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: var(--space-1);
   height: 26px;
-  padding: 0 10px;
+  padding: 0 var(--space-2);
   border: 1px solid var(--border);
   border-radius: var(--r-2);
   background: var(--bg-raised);
@@ -1865,12 +1865,12 @@
 }
 
 .nv-view-embed-more {
-  margin-top: 8px;
+  margin-top: var(--space-2);
 }
 
 .nv-view-embed-empty {
   margin: 0;
-  padding: 14px 16px;
+  padding: var(--space-3) var(--space-4);
   border: 1px dashed var(--border-strong);
   border-radius: var(--r-4);
   color: var(--text-faint);
@@ -1933,7 +1933,7 @@
 
 .sv-th-static {
   display: block;
-  padding: 8px 12px;
+  padding: var(--space-2) var(--space-3);
   color: var(--text-muted);
   font-size: var(--fs-small);
   font-weight: 500;
@@ -1949,7 +1949,7 @@
 }
 
 .nv-view-embed .sv-list {
-  padding: 4px;
+  padding: var(--space-1);
 }
 
 .nv-view-embed li {
@@ -1966,14 +1966,14 @@
   display: inline-block;
   width: auto;
   max-width: 260px;
-  margin-right: 8px;
-  padding: 2px 24px 2px 8px;
+  margin-right: var(--space-2);
+  padding: var(--space-0) var(--space-5) var(--space-0) var(--space-2);
   font-size: var(--fs-small);
   vertical-align: baseline;
 }
 
 .sv-file-notes {
-  margin: 0 28px 10px;
+  margin: 0 var(--space-5) var(--space-2);
   color: var(--text-faint);
   font-size: var(--fs-caption);
 }
@@ -1981,7 +1981,7 @@
 .sv-file-notes summary {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   cursor: pointer;
   list-style: none;
 }
@@ -1995,8 +1995,8 @@
 }
 
 .sv-file-notes ul {
-  margin: 6px 0 0;
-  padding-left: 26px;
+  margin: var(--space-2) 0 0;
+  padding-left: var(--space-5);
   color: var(--text-muted);
   line-height: 1.5;
 }
@@ -2007,13 +2007,13 @@
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 2px 28px 24px;
+  padding: var(--space-0) var(--space-5) var(--space-5);
 }
 
 .sv-gallery {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
-  gap: 14px;
+  gap: var(--space-3);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -2086,8 +2086,8 @@
 .sv-gtile-words {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 11px 13px 13px;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-3) var(--space-3);
   min-width: 0;
 }
 
@@ -2102,7 +2102,7 @@
 .sv-gtile-props {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
   font-size: var(--fs-caption);
   color: var(--text-muted);
 }
@@ -2110,7 +2110,7 @@
 .sv-gtile-prop {
   display: grid;
   grid-template-columns: 86px minmax(0, 1fr);
-  gap: 8px;
+  gap: var(--space-2);
   min-width: 0;
 }
 
@@ -2127,15 +2127,15 @@
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 10px 0 12px;
+  padding: var(--space-2) 0 var(--space-3);
 }
 
 .sv-timeline-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 44px 28px;
+  gap: var(--space-2);
+  padding: var(--space-6) var(--space-5);
   text-align: center;
   color: var(--text-muted);
   font-size: var(--fs-small);
@@ -2144,8 +2144,8 @@
 .sv-tl-tools {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 28px 10px;
+  gap: var(--space-2);
+  padding: 0 var(--space-5) var(--space-2);
 }
 
 .sv-tl-seg {
@@ -2157,7 +2157,7 @@
 }
 
 .sv-tl-seg button {
-  padding: 5px 12px;
+  padding: var(--space-1) var(--space-3);
   font-size: var(--fs-small);
   color: var(--text-muted);
 }
@@ -2170,13 +2170,13 @@
 
 .sv-tl-scroll {
   overflow-x: auto;
-  padding: 0 0 6px;
+  padding: 0 0 var(--space-2);
 }
 
 .sv-tl-canvas {
   position: relative;
   min-height: 80px;
-  padding: 30px 0 8px;
+  padding: var(--space-6) 0 var(--space-2);
 }
 
 .sv-tl-ticks {
@@ -2190,7 +2190,7 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  padding: 4px 0 0 6px;
+  padding: var(--space-1) 0 0 var(--space-2);
   border-left: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
   font-size: var(--fs-caption);
   color: var(--text-faint);
@@ -2216,7 +2216,7 @@
   position: absolute;
   top: 2px;
   left: 4px;
-  padding: 0 6px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-1);
   font-size: var(--fs-caption);
   font-weight: 650;
@@ -2226,7 +2226,7 @@
 
 .sv-tl-lane {
   position: relative;
-  padding: 4px 0 6px;
+  padding: var(--space-1) 0 var(--space-2);
 }
 
 .sv-tl-lane + .sv-tl-lane {
@@ -2237,8 +2237,8 @@
   position: sticky;
   left: 0;
   display: inline-block;
-  margin: 2px 0 2px 10px;
-  padding: 1px 8px;
+  margin: var(--space-0) 0 var(--space-0) var(--space-2);
+  padding: 1px var(--space-2);
   border-radius: var(--r-2);
   font-size: var(--fs-caption);
   font-weight: 650;
@@ -2257,11 +2257,11 @@
   top: 3px;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: var(--space-2);
   height: 22px;
   max-width: 420px;
-  padding: 0 9px 0 0;
-  margin-left: -6px;
+  padding: 0 var(--space-2) 0 0;
+  margin-left: calc(-1 * var(--space-2));
   border-radius: var(--r-1);
   font-size: var(--fs-small);
   color: var(--text);
@@ -2283,7 +2283,7 @@
 .sv-tl-mark.is-range {
   background: color-mix(in srgb, var(--bg-active) 70%, transparent);
   border: 1px solid var(--border-strong);
-  padding-left: 8px;
+  padding-left: var(--space-2);
 }
 
 .sv-tl-dot {
@@ -2311,8 +2311,8 @@
 }
 
 .sv-tl-tray {
-  margin: 8px 28px 0;
-  padding: 10px 14px 12px;
+  margin: var(--space-2) var(--space-5) 0;
+  padding: var(--space-2) var(--space-3) var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised);
@@ -2321,7 +2321,7 @@
 .sv-tl-undated {
   display: block;
   width: 100%;
-  padding: 3px 6px;
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--r-2);
   text-align: left;
   font-size: var(--fs-small);
@@ -2339,15 +2339,15 @@
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 14px 28px 18px;
+  padding: var(--space-3) var(--space-5) var(--space-4);
 }
 
 .sv-chart-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 44px 28px;
+  gap: var(--space-2);
+  padding: var(--space-6) var(--space-5);
   text-align: center;
   color: var(--text-muted);
   font-size: var(--fs-small);
@@ -2357,8 +2357,8 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
 }
 
 .sv-chart-caption {
@@ -2376,15 +2376,15 @@
 .sv-bars {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .sv-bar {
   display: grid;
   grid-template-columns: minmax(90px, 200px) minmax(0, 1fr) 70px;
   align-items: center;
-  gap: 12px;
-  padding: 4px 6px;
+  gap: var(--space-3);
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--r-3);
   font-size: var(--fs-small);
   text-align: left;
@@ -2445,7 +2445,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 18px 34px;
+  gap: var(--space-4) var(--space-6);
 }
 
 .sv-donut-n {
@@ -2470,7 +2470,7 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-0);
   min-width: 200px;
 }
 
@@ -2478,9 +2478,9 @@
   display: grid;
   grid-template-columns: 12px minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   width: 100%;
-  padding: 4px 8px;
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--r-2);
   font-size: var(--fs-small);
   text-align: left;
@@ -2531,18 +2531,18 @@
 }
 
 .sv-chart-pick {
-  margin-top: 14px;
+  margin-top: var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised);
-  padding: 10px 14px 12px;
+  padding: var(--space-2) var(--space-3) var(--space-3);
 }
 
 .sv-chart-pick-head {
   display: flex;
   align-items: baseline;
-  gap: 12px;
-  margin-bottom: 6px;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
   font-size: var(--fs-small);
 }
 
@@ -2560,11 +2560,11 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-0);
 }
 
 .sv-chart-pick li button {
-  padding: 3px 6px;
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--r-2);
   font-size: var(--fs-small);
   color: var(--text-muted);
@@ -2587,7 +2587,7 @@
 }
 
 .sv-chart-seg button {
-  padding: 4px 12px;
+  padding: var(--space-1) var(--space-3);
   font-size: var(--fs-small);
   color: var(--text-muted);
 }

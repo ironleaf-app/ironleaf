@@ -64,16 +64,16 @@
   display: flex;
   flex-direction: column;
   gap: 1px;
-  margin: 1px 0 4px 22px;
-  padding-left: 8px;
+  margin: 1px 0 var(--space-1) 22px;
+  padding-left: var(--space-2);
   border-left: 1px solid var(--border);
 }
 
 .place.la-kind {
   height: 26px;
   font-size: var(--fs-small);
-  gap: 8px;
-  padding: 0 4px 0 8px;
+  gap: var(--space-2);
+  padding: 0 var(--space-1) 0 var(--space-2);
 }
 
 .place.la-kind > span:not(.calm-kind-count) {
@@ -98,8 +98,8 @@
 }
 
 .la-invite {
-  margin: 0 2px;
-  padding: 10px 12px 12px;
+  margin: 0 var(--space-0);
+  padding: 10px var(--space-3) var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-4);
   background: var(--bg-raised);
@@ -108,7 +108,7 @@
 .la-invite-head {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   font-size: var(--fs-small);
   color: var(--text);
 }
@@ -154,7 +154,7 @@
 
 .life-page .life-body {
   overflow-y: auto;
-  padding: 4px 28px 40px;
+  padding: var(--space-1) 28px 40px;
   display: block;
 }
 
@@ -162,7 +162,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  padding: 0 24px 12px;
+  padding: 0 var(--space-5) var(--space-3);
 }
 .ar-module {
   display: inline-flex;
@@ -188,8 +188,8 @@
 .ar-kinds {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  padding: 0 24px 10px;
+  gap: var(--space-1);
+  padding: 0 var(--space-5) 10px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -198,7 +198,7 @@
   align-items: center;
   gap: 7px;
   height: 32px;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   border-radius: var(--r-3);
   color: var(--text-muted);
   font-size: var(--fs-small);
@@ -241,7 +241,7 @@
   padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .ar-projects > li {
@@ -253,8 +253,8 @@
   min-height: 108px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 14px 16px;
+  gap: var(--space-2);
+  padding: 14px var(--space-4);
   text-align: left;
   border: 1px solid var(--border);
   border-radius: var(--r-3);
@@ -287,7 +287,7 @@
 .ar-pill {
   flex: none;
   height: 20px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   display: inline-flex;
   align-items: center;
   border-radius: var(--r-1);
@@ -324,7 +324,7 @@
   margin-top: auto;
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 12px;
+  gap: var(--space-1) var(--space-3);
   font-size: var(--fs-caption);
   color: var(--text-muted);
 }
@@ -348,7 +348,7 @@
 .ar-done > summary {
   cursor: pointer;
   width: fit-content;
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
   font-size: var(--fs-small);
   font-weight: 600;
   color: var(--text-muted);
@@ -377,7 +377,7 @@
 .ar-group-head {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   margin: 0 0 6px;
   font: 600 var(--fs-small) var(--font-ui);
   color: var(--text-muted);
@@ -407,7 +407,7 @@
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   min-height: 38px;
   padding: 0 14px;
   text-align: left;
@@ -488,7 +488,7 @@
   padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .ar-asset {
@@ -543,8 +543,8 @@
 .pc-banners {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
 }
 
 /* A quiet slate banner (sweep-vault-b F-B11): these are FYIs with an action, not errors, so never the accent's
@@ -552,8 +552,8 @@
 .pc-banner {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px 10px 14px;
+  gap: var(--space-3);
+  padding: 10px var(--space-3) 10px 14px;
   border: 0;
   border-radius: var(--r-4);
   background: var(--slate-bg);
@@ -571,9 +571,9 @@
 }
 /* Merge from the list (10.0 papercuts): each pair with its own Merge, the Review kept for the full story. */
 .pc-banner.is-pairs { align-items: flex-start; }
-.pc-banner.is-pairs > svg { margin-top: 2px; }
-.pc-banner.is-pairs > .button { flex: none; margin-top: 2px; }
-.pc-pairs { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.pc-banner.is-pairs > svg { margin-top: var(--space-0); }
+.pc-banner.is-pairs > .button { flex: none; margin-top: var(--space-0); }
+.pc-pairs { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--space-2); }
 .pc-pairs ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .pc-pairs li { display: flex; align-items: center; gap: 10px; }
 .pc-pair-names { flex: 1; min-width: 0; }
@@ -589,7 +589,7 @@
 .seg {
   display: inline-flex;
   padding: 3px;
-  gap: 2px;
+  gap: var(--space-0);
   border-radius: var(--r-3);
   background: var(--bg-hover);
 }
@@ -661,8 +661,8 @@
   height: 100%;
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  padding: 12px 14px;
+  gap: var(--space-3);
+  padding: var(--space-3) 14px;
   text-align: left;
 }
 
@@ -732,8 +732,8 @@
 .pc-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 2px 10px;
-  margin-top: 2px;
+  gap: var(--space-0) 10px;
+  margin-top: var(--space-0);
   font-size: var(--fs-caption);
   color: var(--text-faint);
 }
@@ -766,14 +766,14 @@
   max-width: 860px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .ib-item {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  padding: 12px 14px;
+  gap: var(--space-3);
+  padding: var(--space-3) 14px;
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised);
@@ -813,8 +813,8 @@
 
 .ib-pictures {
   display: flex;
-  gap: 8px;
-  margin-top: 8px;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
 }
 
 .ib-pictures img {
@@ -836,7 +836,7 @@
 .ib-file {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   font-size: var(--fs-caption);
   color: var(--text-muted);
 }
@@ -845,14 +845,14 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 8px;
-  margin-top: 8px;
+  gap: 6px var(--space-2);
+  margin-top: var(--space-2);
   font-size: var(--fs-caption);
 }
 
 .ib-sugg-label {
   color: var(--text-faint);
-  margin-left: 4px;
+  margin-left: var(--space-1);
 }
 
 .ib-sugg {
@@ -881,7 +881,7 @@
   flex: none;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .ib-act {
@@ -889,7 +889,7 @@
   min-width: 28px;
   display: inline-grid;
   place-items: center;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-2);
   color: var(--text-muted);
   font-size: var(--fs-small);
@@ -950,7 +950,7 @@
 }
 
 .ld-words h2 {
-  margin: 0 0 4px;
+  margin: 0 0 var(--space-1);
   font: 650 var(--fs-card)/1.25 var(--font-ui);
   letter-spacing: -0.01em;
 }
@@ -966,15 +966,15 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 16px 22px 18px;
+  padding: var(--space-4) 22px 18px;
 }
 
 .ld-foot {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
-  padding: 12px 22px;
+  gap: var(--space-2);
+  padding: var(--space-3) 22px;
   border-top: 1px solid var(--border);
   background: var(--bg);
 }
@@ -1004,8 +1004,8 @@
 .ma-area {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 8px;
+  gap: var(--space-2);
+  padding: 6px var(--space-2);
   border: 1px solid var(--border);
   border-radius: var(--r-4);
   background: var(--bg-raised);
@@ -1024,7 +1024,7 @@
   flex: 0 0 190px;
   min-width: 0;
   height: 30px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border: 1px solid transparent;
   border-radius: var(--r-2);
   background: transparent;
@@ -1057,7 +1057,7 @@
   flex: 1;
   min-width: 0;
   height: 30px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border: 1px solid transparent;
   border-radius: var(--r-2);
   background: transparent;
@@ -1069,7 +1069,7 @@
 .ma-quiet {
   font-size: var(--fs-caption);
   color: var(--text-faint);
-  padding: 2px 7px;
+  padding: var(--space-0) 7px;
   border-radius: var(--r-1);
   background: var(--bg-hover);
 }
@@ -1077,7 +1077,7 @@
 .ma-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   font-size: var(--fs-caption);
   color: var(--text-muted);
   white-space: nowrap;
@@ -1094,9 +1094,9 @@
 .ma-add {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   margin-top: 10px;
-  padding: 6px 8px 6px 12px;
+  padding: 6px var(--space-2) 6px var(--space-3);
   border: 1px dashed var(--border-strong);
   border-radius: var(--r-4);
   color: var(--text-faint);
@@ -1124,17 +1124,17 @@
 .ma-summary {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
 }
 
 .ma-sum {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 2px;
+  gap: var(--space-0);
   min-width: 96px;
-  padding: 9px 12px;
+  padding: 9px var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-4);
   background: var(--bg-raised);
@@ -1150,7 +1150,7 @@
 .ma-sum span {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   font-size: var(--fs-caption);
   color: var(--text-muted);
 }
@@ -1173,7 +1173,7 @@
 }
 
 .ma-group.is-unsure {
-  padding: 12px 12px 4px;
+  padding: var(--space-3) var(--space-3) var(--space-1);
   border-radius: var(--r-3);
   background: color-mix(in srgb, var(--tone-warn) 7%, transparent);
 }
@@ -1182,8 +1182,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-  margin: 0 0 8px;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-2);
   font: 600 var(--fs-small) var(--font-ui);
   color: var(--text);
 }
@@ -1222,8 +1222,8 @@
 .ma-unit {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 9px 12px;
+  gap: var(--space-3);
+  padding: 9px var(--space-3);
 }
 
 .ma-unit + .ma-unit {
@@ -1246,7 +1246,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-0);
 }
 
 .ma-unit-title {
@@ -1314,7 +1314,7 @@
   flex: none;
   width: 168px;
   height: 30px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg);
@@ -1324,7 +1324,7 @@
 }
 
 .ma-stays {
-  margin-top: 8px;
+  margin-top: var(--space-2);
   font-size: var(--fs-small);
   color: var(--text-muted);
 }
@@ -1335,7 +1335,7 @@
 }
 
 .ma-stays ul {
-  margin: 8px 0 0;
+  margin: var(--space-2) 0 0;
   padding-left: 18px;
   line-height: 1.7;
 }
@@ -1349,7 +1349,7 @@
 }
 
 .ma-kinds-note {
-  margin: 12px 0 0;
+  margin: var(--space-3) 0 0;
   font-size: var(--fs-caption);
   color: var(--text-faint);
 }
@@ -1357,8 +1357,8 @@
 .ma-moving {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 28px 8px;
+  gap: var(--space-4);
+  padding: 28px var(--space-2);
 }
 
 .ma-spinner {
@@ -1380,7 +1380,7 @@
 .ma-stat {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
   padding: 14px;
   border: 1px solid var(--border);
   border-radius: var(--r-3);
@@ -1412,19 +1412,21 @@
   font-size: var(--fs-small);
 }
 
-/* The tag manager. */
+/* The tag manager (23 Nov 2026, on the one design language): the tags as a flat list down the left, the chosen
+   one's name, its rename field and its notes on the right, a hairline between; controls 32px on the scale, rings
+   from --focus, nothing cut off (a long tag or note name wraps). */
 .tm-wrap {
   display: grid;
-  grid-template-columns: minmax(240px, 320px) 1fr;
-  gap: 18px;
+  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
   min-height: 380px;
 }
 
 .tm-list-side {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--space-3);
   min-width: 0;
+  padding-right: var(--space-4);
 }
 
 .tm-list-side .pc-find {
@@ -1432,20 +1434,26 @@
   flex: none;
 }
 
+.tm-wrap .pc-find input {
+  margin: 0;
+  height: 100%;
+}
+
 .tm-similar {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .tm-sim {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 8px 10px;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
   border-radius: var(--r-3);
-  background: var(--accent-softer, var(--accent-soft));
-  font-size: var(--fs-caption);
+  background: var(--bg-soft);
+  font-size: var(--fs-small);
+  color: var(--text-muted);
 }
 
 .tm-sim .button {
@@ -1454,11 +1462,8 @@
 
 .tm-list {
   list-style: none;
-  margin: 0;
-  padding: 4px;
-  border: 1px solid var(--border);
-  border-radius: var(--r-4);
-  background: var(--bg-raised);
+  margin: 0 calc(-1 * var(--space-1));
+  padding: var(--space-1);
   max-height: 46vh;
   overflow-y: auto;
 }
@@ -1466,18 +1471,24 @@
 .tm-tag {
   width: 100%;
   display: flex;
-  align-items: center;
-  gap: 2px;
-  height: 30px;
-  padding: 0 8px;
+  align-items: baseline;
+  gap: var(--space-0);
+  min-height: 32px;
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--r-2);
-  font-size: var(--fs-small);
+  font-size: var(--fs-md);
+  line-height: 1.5;
   color: var(--text);
   text-align: left;
 }
 
 .tm-tag:hover {
   background: var(--bg-hover);
+}
+
+.tm-tag:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
 }
 
 .tm-tag.on {
@@ -1493,12 +1504,12 @@
 .tm-name {
   flex: 1;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: clip;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .tm-count {
+  flex: none;
   font-size: var(--fs-caption);
   color: var(--text-faint);
   font-variant-numeric: tabular-nums;
@@ -1506,7 +1517,8 @@
 
 .tm-detail {
   min-width: 0;
-  padding: 4px 2px;
+  padding: var(--space-1) 0 var(--space-1) var(--space-5);
+  border-left: 1px solid var(--border);
 }
 
 .tm-none {
@@ -1515,52 +1527,86 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--space-2);
   color: var(--text-faint);
   text-align: center;
   font-size: var(--fs-small);
 }
 
+.tm-none p {
+  margin: 0;
+  max-width: 36ch;
+  color: var(--text-muted);
+}
+
 .tm-title {
-  margin: 0 0 14px;
-  font: 650 var(--fs-card) var(--font-ui);
+  margin: 0 0 var(--space-4);
+  font: 650 var(--fs-section) / 1.25 var(--font-ui);
+  letter-spacing: -0.01em;
+  color: var(--text-strong);
+  overflow-wrap: anywhere;
+}
+
+.tm-title .ma-faint {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--text-muted);
 }
 
 .tm-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  max-width: 380px;
-  font-size: var(--fs-caption);
+  gap: var(--space-1);
+  max-width: 400px;
+  font-size: var(--fs-small);
+  font-weight: 500;
   color: var(--text-muted);
 }
 
 .tm-field input {
-  height: 34px;
-  padding: 0 10px;
+  height: 32px;
+  margin: 0;
+  padding: 0 var(--space-3);
   border: 1px solid var(--border);
-  border-radius: var(--r-3);
-  background: var(--bg);
+  border-radius: var(--r-2);
+  background: var(--bg-raised);
   color: var(--text);
   font: inherit;
-  font-size: var(--fs-small);
+  font-size: var(--fs-md);
+  font-weight: 400;
+}
+
+.tm-field input:hover {
+  border-color: var(--border-strong);
+}
+
+.tm-field input:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-color: var(--border-strong);
 }
 
 .tm-buttons {
   display: flex;
-  gap: 8px;
-  margin: 12px 0 8px;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 var(--space-2);
+}
+
+.tm-detail > .ld-line {
+  margin: 0 0 var(--space-2);
 }
 
 .tm-sub {
-  margin: 18px 0 6px;
-  font: 600 var(--fs-caption) var(--font-ui);
+  margin: var(--space-5) 0 var(--space-2);
+  font: 600 var(--fs-small) var(--font-ui);
   color: var(--text-muted);
 }
 
 .tm-notes {
   list-style: none;
-  margin: 0;
+  margin: 0 calc(-1 * var(--space-2));
   padding: 0;
   max-height: 30vh;
   overflow-y: auto;
@@ -1568,21 +1614,27 @@
 
 .tm-note {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  column-gap: var(--space-2);
   width: 100%;
-  height: 28px;
-  padding: 0 6px;
+  min-height: 32px;
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--r-2);
-  font-size: var(--fs-small);
+  font-size: var(--fs-md);
+  line-height: 1.5;
   color: var(--text);
   text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
+  overflow-wrap: anywhere;
 }
 
 .tm-note:hover {
   background: var(--bg-hover);
+}
+
+.tm-note:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
 }
 
 /* Cards to make, and two names for one person. */
@@ -1600,8 +1652,8 @@
 .sp-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 12px;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
 }
 
 .mc-row + .mc-row,
@@ -1617,7 +1669,7 @@
   flex: 0 0 220px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   min-width: 0;
 }
 
@@ -1644,7 +1696,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 8px;
+  gap: var(--space-1) var(--space-2);
   font-size: var(--fs-small);
 }
 
@@ -1666,11 +1718,11 @@
 
 @container sv (max-width: 640px) {
   .life-page .life-body {
-    padding: 4px 16px 32px;
+    padding: var(--space-1) var(--space-4) 32px;
   }
 
   .ar-kinds {
-    padding: 0 12px 10px;
+    padding: 0 var(--space-3) 10px;
   }
 
   .ar-row-where,
@@ -1691,6 +1743,16 @@
 @media (max-width: 760px) {
   .tm-wrap {
     grid-template-columns: 1fr;
+  }
+
+  .tm-list-side {
+    padding-right: 0;
+  }
+
+  .tm-detail {
+    border-left: 0;
+    border-top: 1px solid var(--border);
+    padding: var(--space-4) 0 0;
   }
 
   .ma-unit {
@@ -1780,7 +1842,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
-  padding: 0 2px 6px;
+  padding: 0 var(--space-0) 6px;
 }
 
 .search-area-pick,
@@ -1789,7 +1851,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border: 1px solid var(--border);
   border-radius: var(--r-2);
   background: var(--bg-raised);
@@ -1811,10 +1873,10 @@
 /* ── A person's card in the peek ───────────────────────────────────────────────────────────────────────────────── */
 
 .ps-card {
-  margin: 2px 0 12px;
+  margin: var(--space-0) 0 var(--space-3);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .ps-chips {
@@ -1828,7 +1890,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-1);
   background: var(--bg-hover);
   color: var(--text-muted);
@@ -1880,7 +1942,7 @@
 .ps-link {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   color: var(--text-strong);
   text-decoration: none;
   font: inherit;
@@ -1896,7 +1958,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   margin-top: 10px;
   font-size: var(--fs-small);
   color: var(--text-muted);
@@ -1907,7 +1969,7 @@
   align-items: flex-start;
   gap: 10px;
   margin-top: 14px;
-  padding: 10px 12px;
+  padding: 10px var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-4);
   background: var(--bg-raised);
@@ -1922,10 +1984,11 @@
 
 .tm-note svg {
   flex: none;
+  align-self: center;
+  color: var(--text-faint);
 }
 
 .tm-note .ma-faint {
   min-width: 0;
-  overflow: hidden;
-  text-overflow: clip;
+  font-size: var(--fs-small);
 }

@@ -119,7 +119,8 @@ function ItemCard({ item, suggestions, busy, active, ticked, onTick, onFile, onD
   const tint = item.kind === 'file' || pictures.length ? 'amber' : item.task ? 'blue' : item.kind === 'note' ? 'blue' : 'slate';
   const sub = [item.kind === 'file' ? 'File' : item.kind === 'note' ? 'Note' : item.task ? 'Task' : 'Captured', item.stamp, item.kind !== 'line' ? 'In the Inbox folder' : '', files.length ? `${files.length} file${files.length === 1 ? '' : 's'}` : ''].filter(Boolean).join(' · ');
   return (
-    <div className="card" style={{ padding: '14px 20px', marginTop: 12, ...(active ? { borderColor: 'var(--border-strong)' } : {}) }} onMouseEnter={onHover} aria-current={active || undefined}>
+    // One row per capture (wide-window pass, 23 Nov 2026: each stood in a card of its own, nine boxes down the pane).
+    <div className="w2a-ib-card" onMouseEnter={onHover} aria-current={active || undefined}>
       <div className="w2a-ib">
         <input type="checkbox" className="w2a-tick" checked={ticked} onChange={onTick} aria-label={`Tick “${item.words || 'a picture'}” to act on it with others`} title="Tick to act on it with others" />
         <span className={`gtile sm ${tint}`} aria-hidden="true">
@@ -147,7 +148,7 @@ function ItemCard({ item, suggestions, busy, active, ticked, onTick, onFile, onD
           )}
           {suggestions.length > 0 && (
             <div className="w2a-ib-filein">
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-faint)' }}>File in</span>
+              <span className="w2a-ib-filein-label">File in</span>
               {suggestions.map((s, i) => (
                 <button key={`${s.target.kind}:${s.target.path ?? s.target.area}`} type="button" className={`chip${i === 0 ? ' on' : ''}`} disabled={!canEdit || busy} title={`${s.why}\nFile it here in one click`} onClick={() => onFile(s.target)}>
                   <Icon name={suggIcon(s)} size={12} />
@@ -202,6 +203,33 @@ function ItemCard({ item, suggestions, busy, active, ticked, onTick, onFile, onD
         </div>
       </div>
     </div>
+  );
+}
+
+/** The chosen capture's homes, each with its reason, in the detail beside the list (wide-window pass, 23 Nov 2026:
+ *  the detail stood a near-empty slab beside a one-line capture). The row's chips name them; here each says why,
+ *  and files it there in one click as the chip does. */
+function WhereItCouldGo({ suggestions, busy, onFile }: { suggestions: InboxSuggestion[]; busy: boolean; onFile(t: FilingTarget): void }) {
+  const canEdit = useApp((s) => s.canEdit);
+  if (!suggestions.length) return null;
+  return (
+    <section className="w2a-ib-where" aria-labelledby="w2a-ib-where-h">
+      <h3 id="w2a-ib-where-h" className="w2a-ib-where-head">Where it could go</h3>
+      <ul className="w2a-ib-where-list">
+        {suggestions.map((s) => (
+          <li key={`${s.target.kind}:${s.target.path ?? s.target.area}`}>
+            <button type="button" className="w2a-ib-where-row" disabled={!canEdit || busy} title="File it here in one click" onClick={() => onFile(s.target)}>
+              <Icon name={suggIcon(s)} size={14} />
+              <span className="w2a-ib-where-words">
+                <span className="w2a-ib-where-name">{suggWords(s)}</span>
+                <span className="w2a-ib-where-why">{s.why}</span>
+              </span>
+              <span className="w2a-ib-where-go">File here</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
@@ -307,6 +335,7 @@ export function InboxPage({ tab }: { tab: W.TabState }) {
   const needle = find.trim().toLowerCase();
   const items = useMemo(() => sortInbox(data?.items ?? [], sort, (id) => (data?.suggestions[id]?.length ?? 0) > 0 || (fallback[id]?.length ?? 0) > 0), [data, sort, fallback]);
   const shownItems = useMemo(() => (needle ? items.filter((it) => `${it.words} ${it.stamp ?? ''} ${it.kind} ${it.embeds.join(' ')}`.toLowerCase().includes(needle)) : items), [items, needle]);
+  const chosen = shownItems[active] ?? shownItems[0];
   const match = !needle ? null : { n: shownItems.length, m: items.length };
   // Ticked items that filtered or cleared away untick themselves, so the bar never acts on what isn't shown.
   useEffect(() => {
@@ -494,11 +523,13 @@ export function InboxPage({ tab }: { tab: W.TabState }) {
           <EmptyState icon="inbox" title="Nothing waiting" line="Things you capture with nowhere to go land here. Capture from anywhere with Ctrl+Alt+N, send a voice note or a photo, or share from your other apps." action={{ label: 'Capture', icon: 'plus', run: () => void window.nv.capture.show().catch(showError) }} />
         ) : (
           <>
-            {shownItems.length > 0 && (
-              <div className="w2a-ib-select">
-                <button type="button" className="btn quiet" onClick={() => setSelected((s) => (s.length === shownItems.length ? [] : shownItems.map((it) => it.id)))}>{selected.length === shownItems.length ? 'Untick all' : 'Tick all'}</button>
-              </div>
-            )}
+            {/* The find and Tick all on one row (one toolbar over the list, never two bands). */}
+            <div className="list-tools">
+              <ListFind id="inbox" open value={find} onChange={setFind} match={match} scope={listRef} inputRef={findRef} hint="Press / to jump to the find" />
+              {shownItems.length > 0 && (
+                <button type="button" className="btn quiet list-tools-end" onClick={() => setSelected((s) => (s.length === shownItems.length ? [] : shownItems.map((it) => it.id)))}>{selected.length === shownItems.length ? 'Untick all' : 'Tick all'}</button>
+              )}
+            </div>
             {selected.length > 0 && (
               <div className="w2a-ib-bulk" role="toolbar" aria-label={`${plural(selected.length, 'capture', 'captures')} ticked`}>
                 {/* The ticked count reads right aloud too (3 Nov 2026, fourth-round G7): "1 capture ticked", never "1 captures ticked". */}
@@ -509,7 +540,6 @@ export function InboxPage({ tab }: { tab: W.TabState }) {
                 <button type="button" className="btn quiet" onClick={() => setSelected([])}>Clear</button>
               </div>
             )}
-            <ListFind id="inbox" open value={find} onChange={setFind} match={match} scope={listRef} inputRef={findRef} hint="Press / to jump to the find" />
             {/* List and detail (round 3, at 3440x1400): the captures in a pane that scrolls inside itself, the one the pointer or
                 the keys are on read whole beside it, so the Inbox fills the window. */}
             <ListDetail
@@ -548,7 +578,15 @@ export function InboxPage({ tab }: { tab: W.TabState }) {
                 )}
                 </>
               }
-              detail={shownItems[active] ?? shownItems[0] ? <RecordDetail refTo={{ path: (shownItems[active] ?? shownItems[0]).path }} /> : null}
+              className="is-inbox"
+              detail={
+                chosen ? (
+                  <RecordDetail
+                    refTo={{ path: chosen.path }}
+                    extra={<WhereItCouldGo suggestions={suggestionsFor(chosen)} busy={busy === chosen.id || busy === '__bulk__'} onFile={(t) => void file(chosen, t)} />}
+                  />
+                ) : null
+              }
             />
           </>
         )}

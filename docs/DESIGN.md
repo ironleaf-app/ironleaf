@@ -34,16 +34,16 @@ Use tokens, never raw values. They live in `src/renderer/src/styles.css` (scales
 |---|---|---|
 | Colour | role tokens: `--bg`, `--bg-soft`, `--bg-raised`, `--bg-hover`, `--border`, `--text`, `--text-strong`, `--text-muted`, `--text-faint`, `--accent-*`, `--focus-ring` | a hex or `rgb()` outside `palettes.css` |
 | Type | `--fs-display` 52, `--fs-page` 38, `--fs-section` 20, `--fs-card` 17, `--fs-reading` 16.5, `--fs-body` 15, `--fs-md` 14, `--fs-small` 13, `--fs-caption` 12, `--fs-xs` 11 | a pixel font size |
-| Spacing | the spacing scale (below) | a raw pixel padding, margin or gap |
+| Spacing | `--space-0…7` (below) | a raw pixel padding, margin or gap |
 | Radius | `--r-1` 4, `--r-2` 6, `--r-3` 8, `--r-4` 10 | a raw radius |
 | Elevation | `--e-1` resting hairline, `--e-2` lifted (menus, popovers), `--e-3` dialog | a hand-made `box-shadow` |
 | Fonts | `--font-ui`, `--font-text` | a font family name in a rule |
 
-**Spacing, today and the target.** Ironleaf has three overlapping spacing scales that disagree: `--sp-1…8`
-(styles.css, unused), `--space-1…7` in page-frame.css (4 to 64) and `--space-1…4` again in app-shell.css (8 to 32),
-which wins for those four. The target is one 4 px-based scale, **4, 8, 12, 16, 24, 32, 48, 64**, as `--space-1…8`;
-folding the three into it is phase 2 of the design work. Until then, new code uses the existing `--space-*` tokens
-and adds no raw pixels; the UI ratchet holds the line.
+**The spacing scale** (styles.css): `--space-0` 2, `--space-1` 4, `--space-2` 8, `--space-3` 12, `--space-4` 16,
+`--space-5` 24, `--space-6` 36, `--space-7` 64. Pick by relationship, not by eye: 2 and 4 inside a control, 8 and 12
+between related items, 16 and 24 between groups, 36 and 64 around a page. Many older rules still use off-scale pixels
+(6, 10, 14, 18, 20 px); move each onto the nearest step when you touch it, and look at the result. The UI ratchet
+holds the line.
 
 ## 3. Layout and density
 

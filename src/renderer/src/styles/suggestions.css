@@ -8,8 +8,8 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 6px;
-  margin: 2px 14px 4px;
-  padding: 5px 6px 5px 12px;
+  margin: var(--space-0) 14px var(--space-1);
+  padding: 5px 6px 5px var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-4);
   background: var(--bg-raised);
@@ -106,8 +106,8 @@
 
 /* Lines coming, as a block below. */
 .cm-nv-sg-block {
-  margin: 2px 0 8px;
-  padding: 4px 0 4px;
+  margin: var(--space-0) 0 var(--space-2);
+  padding: var(--space-1) 0 var(--space-1);
   border-radius: var(--r-3);
   background: color-mix(in srgb, var(--ok) 10%, transparent);
   font-family: var(--font-text);
@@ -124,7 +124,7 @@
 }
 
 .cm-nv-sg-block-head {
-  padding: 0 10px 2px;
+  padding: 0 10px var(--space-0);
   font-family: var(--font-ui);
   font-size: var(--fs-caption);
   font-weight: 600;
@@ -149,8 +149,8 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
-  padding: 2px 6px 0 10px;
+  gap: var(--space-2);
+  padding: var(--space-0) 6px 0 10px;
 }
 
 .cm-nv-sg-block-said {
@@ -180,7 +180,7 @@
 
 .cm-nv-sg-actions button {
   height: 20px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border: 1px solid var(--border);
   border-radius: var(--r-2);
   background: var(--bg-raised);
@@ -207,7 +207,7 @@
 }
 
 .cm-nv-sg-stale {
-  padding: 0 4px;
+  padding: 0 var(--space-1);
   color: var(--text-faint);
   font-style: italic;
 }
@@ -269,7 +269,7 @@
 
 .recovery-preview-head {
   flex-wrap: wrap;
-  row-gap: 8px;
+  row-gap: var(--space-2);
 }
 
 .recovery-preview-title {
@@ -362,7 +362,7 @@
 }
 
 .recovery-same {
-  margin-top: 4px;
+  margin-top: var(--space-1);
 }
 
 @media (prefers-reduced-motion: reduce) {

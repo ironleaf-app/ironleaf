@@ -57,9 +57,9 @@ button.lv-chip.menu-open {
 .lv-mark {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   height: 20px;
-  padding: 0 8px 0 6px;
+  padding: 0 var(--space-2) 0 6px;
   border-radius: var(--r-1);
   background: var(--lv-soft);
   color: var(--lv-ink);
@@ -96,7 +96,7 @@ button.lv-chip.menu-open {
   display: flex;
   flex-direction: column;
   gap: 1px;
-  padding: 8px 10px 8px;
+  padding: var(--space-2) 10px var(--space-2);
 }
 .lp-head strong {
   font-size: var(--fs-small);
@@ -108,7 +108,7 @@ button.lv-chip.menu-open {
 .lp-options {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-0);
 }
 .lp-option {
   display: grid;
@@ -116,7 +116,7 @@ button.lv-chip.menu-open {
   align-items: start;
   gap: 10px;
   width: 100%;
-  padding: 8px 10px;
+  padding: var(--space-2) 10px;
   border: 0;
   border-radius: var(--r-4);
   background: transparent;
@@ -148,7 +148,7 @@ button.lv-chip.menu-open {
 .lp-words {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-0);
   min-width: 0;
 }
 .lp-name {
@@ -180,9 +180,9 @@ button.lv-chip.menu-open {
 .lp-foot {
   display: flex;
   justify-content: space-between;
-  gap: 8px;
-  margin-top: 4px;
-  padding: 8px 10px 6px;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+  padding: var(--space-2) 10px 6px;
   border-top: 1px solid var(--border);
 }
 .lp-link {
@@ -206,8 +206,8 @@ a[href^='secret:'],
 .cm-editor .cm-nv-link[data-href^='secret:'] {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 0 8px 0 6px;
+  gap: var(--space-1);
+  padding: 0 var(--space-2) 0 6px;
   border-radius: var(--r-1);
   background: color-mix(in srgb, var(--type-slate) 12%, transparent);
   color: color-mix(in srgb, var(--type-slate) 82%, var(--text));
@@ -241,7 +241,7 @@ a[href^='secret:']:hover,
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 12px 14px;
+  padding: var(--space-3) 14px;
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg);
@@ -265,7 +265,7 @@ a[href^='secret:']:hover,
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: 4px;
+  margin-top: var(--space-1);
 }
 .sl-value {
   flex: 1;
@@ -318,7 +318,7 @@ a[href^='secret:']:hover,
   max-width: 980px;
 }
 .sx-parts {
-  margin: 2px 0 18px;
+  margin: var(--space-0) 0 18px;
 }
 .sx-parts button em {
   font-style: normal;
@@ -329,7 +329,7 @@ a[href^='secret:']:hover,
 .sx-part {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
 }
 .sx-faint {
   color: var(--text-faint);
@@ -339,7 +339,7 @@ a[href^='secret:']:hover,
 .sx-tools {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 .sx-search {
   flex: 1;
@@ -400,7 +400,7 @@ a[href^='secret:']:hover,
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 .sx-row {
   border: 1px solid var(--border);
@@ -416,8 +416,8 @@ a[href^='secret:']:hover,
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) minmax(120px, auto) auto;
   align-items: center;
-  gap: 12px;
-  padding: 11px 12px 11px 14px;
+  gap: var(--space-3);
+  padding: 11px var(--space-3) 11px 14px;
   cursor: pointer;
   border-radius: var(--r-3);
 }
@@ -449,7 +449,7 @@ a[href^='secret:']:hover,
 .sx-row-words {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-0);
   min-width: 0;
 }
 .sx-row-name {
@@ -484,11 +484,11 @@ a[href^='secret:']:hover,
 .sx-row-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
 }
 .sx-row-open {
   border-top: 1px solid var(--border);
-  padding: 14px 16px 16px;
+  padding: 14px var(--space-4) var(--space-4);
   display: grid;
   grid-template-columns: minmax(0, 1fr) 240px;
   gap: 20px;
@@ -511,7 +511,7 @@ a[href^='secret:']:hover,
   gap: 5px;
   border: 0;
   background: none;
-  padding: 2px 0;
+  padding: var(--space-0) 0;
   color: var(--text);
   font: inherit;
   cursor: pointer;
@@ -525,19 +525,19 @@ a[href^='secret:']:hover,
   border-radius: var(--r-3);
   background: var(--bg-raised);
   box-shadow: var(--shadow-card);
-  padding: 16px;
+  padding: var(--space-4);
 }
 
 /* The editor: name, kind, value, username, where, notes. */
 .sx-editor {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
 }
 .sx-editor-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 10px 12px;
+  gap: 10px var(--space-3);
 }
 .sx-field {
   display: flex;
@@ -559,7 +559,7 @@ a[href^='secret:']:hover,
 .sx-field textarea,
 .sx-masked-input {
   min-height: 36px;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg);
@@ -567,7 +567,7 @@ a[href^='secret:']:hover,
   font: 400 var(--fs-small) var(--font-ui);
 }
 .sx-field textarea {
-  padding: 8px 12px;
+  padding: var(--space-2) var(--space-3);
   resize: vertical;
   line-height: 1.45;
 }
@@ -608,7 +608,7 @@ a[href^='secret:']:hover,
 .sx-editor-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .sx-empty {
@@ -617,7 +617,7 @@ a[href^='secret:']:hover,
   align-items: center;
   text-align: center;
   gap: 10px;
-  padding: 36px 20px;
+  padding: var(--space-6) 20px;
   border: 1px dashed var(--border-strong);
   border-radius: var(--r-3);
   color: var(--text-muted);
@@ -632,7 +632,7 @@ a[href^='secret:']:hover,
 }
 .sx-empty-actions {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   flex-wrap: wrap;
   justify-content: center;
 }
@@ -661,13 +661,13 @@ a[href^='secret:']:hover,
 .sx-locked-more {
   display: flex;
   justify-content: center;
-  gap: 8px;
+  gap: var(--space-2);
   color: var(--text-faint);
   font-size: var(--fs-small);
   padding-bottom: 40px;
 }
 .sx-back {
-  margin: 18px 0 0 24px;
+  margin: 18px 0 0 var(--space-5);
 }
 
 /* The scanner. */
@@ -675,7 +675,7 @@ a[href^='secret:']:hover,
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 30px 4px;
+  padding: 30px var(--space-1);
   color: var(--text-muted);
 }
 .sx-spinner {
@@ -691,8 +691,8 @@ a[href^='secret:']:hover,
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
-  padding: 14px 16px;
+  gap: var(--space-4);
+  padding: 14px var(--space-4);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised);
@@ -708,7 +708,7 @@ a[href^='secret:']:hover,
 }
 .sx-scan-actions {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   flex: none;
 }
 .sx-unlock-hint {
@@ -725,7 +725,7 @@ a[href^='secret:']:hover,
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px 10px;
+  gap: var(--space-2) 10px;
   padding: 10px 14px;
   border-bottom: 1px solid var(--border);
   background: color-mix(in srgb, var(--bg-side) 60%, transparent);
@@ -736,7 +736,7 @@ a[href^='secret:']:hover,
 .sx-files .sx-note-head {
   flex-direction: column;
   align-items: flex-start;
-  gap: 2px;
+  gap: var(--space-0);
 }
 .sx-note-title {
   display: inline-flex;
@@ -760,7 +760,7 @@ a[href^='secret:']:hover,
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   padding: 10px 14px;
 }
 .sx-find + .sx-find {
@@ -774,7 +774,7 @@ a[href^='secret:']:hover,
 }
 .sx-find-name {
   height: 30px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   margin-left: -8px;
   border: 1px solid transparent;
   border-radius: var(--r-2);
@@ -803,7 +803,7 @@ a[href^='secret:']:hover,
 .sx-line {
   font-family: var(--font-ui);
   color: var(--text-faint);
-  margin-right: 4px;
+  margin-right: var(--space-1);
 }
 .sx-sure {
   font-size: var(--fs-caption);
@@ -839,7 +839,7 @@ a[href^='secret:']:hover,
 .sx-audit-row {
   display: grid;
   grid-template-columns: 150px 150px 130px minmax(0, 1fr);
-  gap: 12px;
+  gap: var(--space-3);
   align-items: baseline;
   padding: 9px 14px;
   font-size: var(--fs-small);
@@ -881,7 +881,7 @@ a[href^='secret:']:hover,
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 8px;
+  gap: var(--space-1) var(--space-2);
   min-width: 0;
 }
 .sx-item-name {
@@ -958,7 +958,7 @@ a[href^='secret:']:hover,
   container-type: inline-size;
 }
 .ps-lede {
-  margin: -4px 0 14px;
+  margin: -4px 0 var(--space-3);
   color: var(--text-muted);
   font-size: var(--fs-small);
   line-height: 1.55;
@@ -968,15 +968,15 @@ a[href^='secret:']:hover,
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 6px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
 }
 .ps-count {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: var(--space-1);
   height: 26px;
-  padding: 0 10px 0 8px;
+  padding: 0 var(--space-3) 0 var(--space-2);
   border-radius: var(--r-1);
   background: var(--lv-soft);
   color: var(--lv-ink);
@@ -988,15 +988,15 @@ a[href^='secret:']:hover,
 }
 .ps-count strong {
   font-variant-numeric: tabular-nums;
-  margin-left: 2px;
+  margin-left: var(--space-0);
 }
 .ps-count-total {
   color: var(--text-faint);
   font-size: var(--fs-caption);
-  margin-left: 4px;
+  margin-left: var(--space-1);
 }
 .ps-under {
-  margin: 6px 0 10px;
+  margin: var(--space-1) 0 var(--space-2);
 }
 
 .ps-access {
@@ -1009,16 +1009,16 @@ a[href^='secret:']:hover,
   display: grid;
   grid-template-columns: minmax(170px, 1fr) repeat(5, 64px);
   align-items: center;
-  gap: 0 4px;
-  padding: 9px 12px 9px 14px;
+  gap: 0 var(--space-1);
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-4);
 }
 .ps-access-row + .ps-access-row {
   border-top: 1px solid var(--border);
 }
 .ps-access-row.head {
   background: color-mix(in srgb, var(--bg-side) 60%, transparent);
-  padding-top: 8px;
-  padding-bottom: 8px;
+  padding-top: var(--space-2);
+  padding-bottom: var(--space-2);
 }
 .ps-who-head {
   font-size: var(--fs-caption);
@@ -1029,7 +1029,7 @@ a[href^='secret:']:hover,
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: var(--space-1);
   font-size: var(--fs-caption);
   font-weight: 600;
   color: var(--lv-ink);
@@ -1040,7 +1040,7 @@ a[href^='secret:']:hover,
 .ps-who {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-0);
   min-width: 0;
   font-size: var(--fs-small);
 }
@@ -1050,11 +1050,11 @@ a[href^='secret:']:hover,
   line-height: 1.4;
 }
 .ps-who-words .ps-link {
-  margin-left: 6px;
+  margin-left: var(--space-1);
   font-size: var(--fs-caption);
 }
 .ps-access-row.is-member .ps-who {
-  padding-left: 18px;
+  padding-left: var(--space-4);
   position: relative;
 }
 .ps-access-row.is-member .ps-who::before {
@@ -1092,9 +1092,9 @@ a[href^='secret:']:hover,
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin: 0 0 10px;
-  padding: 9px 12px;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-2);
+  padding: var(--space-2) var(--space-3);
   border-radius: var(--r-4);
   background: var(--bg-side);
   font-size: var(--fs-small);
@@ -1103,7 +1103,7 @@ a[href^='secret:']:hover,
 .ps-suggest span {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
 }
 .ps-suggest svg {
   color: var(--text-muted);
@@ -1115,14 +1115,14 @@ a[href^='secret:']:hover,
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised);
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
 }
 .ps-folder {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 7px 10px 7px 14px;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-4);
 }
 .ps-folder + .ps-folder {
   border-top: 1px solid var(--border);
@@ -1130,7 +1130,7 @@ a[href^='secret:']:hover,
 .ps-folder-name {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: var(--space-2);
   font-size: var(--fs-small);
   min-width: 0;
 }
@@ -1155,9 +1155,9 @@ a[href^='secret:']:hover,
 .ps-migrate {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin: 4px 0 14px;
-  padding: 14px 16px;
+  gap: var(--space-3);
+  margin: var(--space-1) 0 var(--space-3);
+  padding: var(--space-4) var(--space-4);
   border: 1px solid var(--border-strong);
   border-radius: var(--r-3);
   background: var(--bg-raised);
@@ -1168,12 +1168,12 @@ a[href^='secret:']:hover,
 .ps-migrate-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-2);
 }
 .ps-migrate-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 170px minmax(0, 1.2fr);
-  gap: 8px;
+  gap: var(--space-2);
   align-items: center;
 }
 .ps-migrate-row .ps-select {
@@ -1183,7 +1183,7 @@ a[href^='secret:']:hover,
 .ps-migrate-name {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   font-size: var(--fs-small);
   font-weight: 550;
   min-width: 0;
@@ -1206,14 +1206,14 @@ a[href^='secret:']:hover,
 .ps-migrate-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: var(--space-2);
 }
 .ps-done {
   align-self: flex-start;
 }
 .ps-migrate-done {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   margin: 0;
   font-size: var(--fs-small);
   line-height: 1.5;
@@ -1221,7 +1221,7 @@ a[href^='secret:']:hover,
 .ps-migrate-done svg {
   color: var(--tone-ok);
   flex: none;
-  margin-top: 3px;
+  margin-top: var(--space-0);
 }
 .ps-placed {
   list-style: none;
@@ -1229,12 +1229,12 @@ a[href^='secret:']:hover,
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 .ps-placed li {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   font-size: var(--fs-small);
 }
 
@@ -1242,7 +1242,7 @@ a[href^='secret:']:hover,
 @container (max-width: 560px) {
   .ps-access-row {
     grid-template-columns: repeat(5, 1fr);
-    row-gap: 8px;
+    row-gap: var(--space-2);
   }
   .ps-access-row .ps-who {
     grid-column: 1 / -1;
@@ -1254,7 +1254,7 @@ a[href^='secret:']:hover,
     content: attr(data-level);
     font-size: var(--fs-caption);
     color: var(--text-faint);
-    margin-top: 2px;
+    margin-top: var(--space-0);
   }
   .ps-access-row.head .ps-level-head {
     display: none;

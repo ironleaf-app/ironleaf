@@ -48,10 +48,10 @@ export function PackHead({ glyph, tint, title, lead, actions, icon, sharePath }:
 /** A section: its small grey label, then its content. No divider lines inside pages. */
 export function Section({ label, action, children }: { label: string; action?: ReactNode; children: ReactNode }) {
   return (
-    <section style={{ marginTop: 14 }}>
-      <div className="glabel" style={{ display: 'flex', alignItems: 'center', margin: '0 0 8px' }}>
+    <section className="w3b-sec">
+      <div className="glabel w3b-sec-head">
         <span>{label}</span>
-        {action && <span style={{ marginLeft: 'auto' }}>{action}</span>}
+        {action && <span className="w3b-sec-act">{action}</span>}
       </div>
       {children}
     </section>

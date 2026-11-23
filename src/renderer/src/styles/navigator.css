@@ -5,8 +5,8 @@
 /* ── The top: the switch, the buttons, the find box ──────────────────────────────────────────────────────────────────── */
 
 .nav-toolbar {
-  gap: 2px;
-  padding: 2px 8px 6px;
+  gap: var(--space-0);
+  padding: var(--space-0) var(--space-2) 6px;
   min-width: 0;
   overflow: hidden;
 }
@@ -14,8 +14,8 @@
 .nav-mode {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
-  padding: 2px;
+  gap: var(--space-0);
+  padding: var(--space-0);
   border-radius: var(--r-3);
   background: color-mix(in srgb, var(--bg-active) 70%, transparent);
   flex: none;
@@ -104,7 +104,7 @@
 /* ── The list ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 
 .nav-body {
-  padding: 0 8px 28px;
+  padding: 0 var(--space-2) 28px;
   position: relative;
 }
 
@@ -114,7 +114,7 @@
   align-items: center;
   gap: 6px;
   min-height: 28px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-2);
   color: var(--text-muted);
   font-size: var(--fs-small);
@@ -150,11 +150,16 @@
   box-shadow: inset 0 0 0 1px var(--accent-line);
 }
 
+/* A long name wraps to a second line and the row grows, as the folder tree's do (23 Nov 2026: "The Fernhill
+   Quarterly, winter e" stopped mid-word at the panel's edge). */
 .nav-name {
   flex: 1;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: break-word;
+  line-height: 1.35;
+  /* Room above and below only shows on a name long enough to wrap: a one-line row stays 28px. */
+  padding: var(--space-1) 0;
 }
 
 /* The slot before a name: a chevron for rows that open, a file's kind, or nothing (notes), so names line up. */
@@ -229,8 +234,8 @@
   z-index: 2;
   gap: 5px;
   min-height: 30px;
-  margin-top: 8px;
-  padding: 0 4px 0 6px;
+  margin-top: var(--space-2);
+  padding: 0 var(--space-1) 0 6px;
   background: var(--bg-side);
   color: var(--text-faint);
   font-size: var(--fs-caption);
@@ -322,7 +327,7 @@
 
 .nav-section.is-finding {
   cursor: default;
-  padding-left: 8px;
+  padding-left: var(--space-2);
 }
 
 /* ── Projects ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
@@ -394,7 +399,7 @@
   border-radius: 50%;
   corner-shape: round;
   background: var(--tone);
-  margin-right: 2px;
+  margin-right: var(--space-0);
 }
 
 .nav-group {
@@ -424,7 +429,7 @@
 }
 
 .nav-row .tree-ext {
-  margin-left: 2px;
+  margin-left: var(--space-0);
 }
 
 .nav-kind {
@@ -453,20 +458,19 @@
 .nav-note {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   min-height: 26px;
-  padding-right: 8px;
+  padding-right: var(--space-2);
   font-size: var(--fs-caption);
   color: var(--text-faint);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 .nav-note.has-hint {
   flex-wrap: wrap;
-  row-gap: 2px;
-  padding-top: 4px;
+  row-gap: var(--space-0);
+  padding-top: var(--space-1);
   padding-bottom: 6px;
 }
 
@@ -483,7 +487,7 @@
   font-size: var(--fs-caption);
   font-weight: 500;
   color: var(--accent-text);
-  padding: 2px 4px;
+  padding: var(--space-0) var(--space-1);
   border-radius: var(--r-2);
 }
 
@@ -513,8 +517,8 @@
 .nav-where {
   flex: 1 1 0;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: break-word;
   text-align: right;
   font-size: var(--fs-caption);
   color: var(--text-faint);
@@ -530,7 +534,7 @@
 }
 
 .nav-nothing {
-  margin: 16px 10px;
+  margin: var(--space-4) 10px;
   font-size: var(--fs-small);
   color: var(--text-faint);
 }

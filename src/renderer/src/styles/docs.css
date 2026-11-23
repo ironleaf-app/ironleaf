@@ -44,7 +44,7 @@
   gap: 5px;
   position: relative;
   top: -1px;
-  padding: 2px 8px 2px 6px;
+  padding: var(--space-0) var(--space-2) var(--space-0) 6px;
   border-radius: var(--r-1);
   font-size: var(--fs-caption);
   font-weight: 650;
@@ -83,7 +83,7 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 6px 12px;
+  gap: 6px var(--space-3);
   font-size: var(--fs-caption);
   color: var(--text-faint);
 }
@@ -112,21 +112,21 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 2px 2px;
+  gap: var(--space-0) var(--space-0);
   padding-top: 9px;
   border-top: 1px solid var(--border);
   font-size: var(--fs-small);
 }
 
 .doc-toc-label {
-  margin-right: 8px;
+  margin-right: var(--space-2);
   font-size: var(--fs-caption);
   font-weight: 650;
   color: var(--text-faint);
 }
 
 .doc-toc-link {
-  padding: 3px 8px;
+  padding: 3px var(--space-2);
   border: 0;
   border-radius: var(--r-2);
   background: none;
@@ -208,7 +208,7 @@
 .cv-doc-face {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
   height: 100%;
   overflow: hidden;
 }
@@ -240,7 +240,7 @@
   margin-top: auto;
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .cv-doc-sections span {
@@ -254,7 +254,7 @@
 .cv-section-face {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
   height: 100%;
   overflow: hidden;
 }
@@ -294,7 +294,7 @@
 }
 
 .canvas-card-title .cv-title-of {
-  margin-left: 2px;
+  margin-left: var(--space-0);
   font-weight: 400;
   color: var(--text-faint);
   overflow: hidden;
@@ -346,7 +346,7 @@
 }
 
 .td-doc-change {
-  margin: 2px 0 0 21px;
+  margin: var(--space-0) 0 0 21px;
   font-size: var(--fs-small);
   line-height: 1.45;
   color: var(--text-muted);
@@ -359,7 +359,7 @@
   gap: 6px;
   height: 28px;
   padding: 0 10px;
-  margin-right: 2px;
+  margin-right: var(--space-0);
   border-radius: var(--r-2);
   color: var(--text-muted);
   font-size: var(--fs-small);

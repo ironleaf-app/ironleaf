@@ -7,9 +7,10 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { after, before, test } from 'node:test';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { cssPxFor } from './css-px.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const read = (p) => readFileSync(path.join(root, p), 'utf8');
+const read = (p) => cssPxFor(p, readFileSync(path.join(root, p), 'utf8'));
 const work = mkdtempSync(path.join(tmpdir(), 'nv-polish-'));
 let L, P;
 before(async () => {

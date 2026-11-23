@@ -10,7 +10,7 @@
   gap: 6px;
   flex: none;
   max-width: 180px;
-  padding: 2px 8px 2px 2px;
+  padding: var(--space-0) var(--space-2) var(--space-0) var(--space-0);
   border: 1px solid var(--border);
   border-radius: var(--r-1);
   background: var(--bg-raised);
@@ -24,7 +24,7 @@ button.plan-chip:hover { background: var(--bg-hover); }
 .plan-chip.is-small {
   gap: 5px;
   max-width: none;
-  padding: 1px 7px 1px 2px;
+  padding: 1px 7px 1px var(--space-0);
   border: none;
   background: var(--bg-hover);
   color: var(--text-muted);
@@ -39,7 +39,7 @@ button.plan-chip.is-small:hover { color: var(--text); background: var(--border);
 /* ── Date and status pills ────────────────────────────────────────────────────────────────────────────────── */
 .plan-pill {
   flex: none;
-  padding: 2px 8px;
+  padding: var(--space-0) var(--space-2);
   border-radius: var(--r-1);
   background: var(--bg-hover);
   color: var(--text-muted);
@@ -72,7 +72,7 @@ button.plan-chip.is-small:hover { color: var(--text); background: var(--border);
   position: relative;
   display: grid;
   grid-template-columns: 20px minmax(0, 1fr) var(--who-w) var(--when-w);
-  gap: 12px;
+  gap: var(--space-3);
   align-items: center;
   /* Rows past the fold skip layout and paint (t102, 9 Nov 2026, as the picker's): a hundred task rows. */
   content-visibility: auto;
@@ -119,6 +119,14 @@ button.plan-chip.is-small:hover { color: var(--text); background: var(--border);
 /* A task list is a query container: where there is no room (a narrow card), who keeps its x with the
    avatar alone (the full name stays on hover) and when tightens. The columns never move, only narrow. */
 .tklist { container: tklist / inline-size; }
+/* A list of middling width (Today's left column at 1600, a project card) narrows who and when before the title: at the
+   full 148/170 the title kept 230px and wrapped "Confirm the floor plan with the / site team" while 300px stood empty
+   (design language, 23 Nov 2026). The name keeps its face; a long name shows whole on hover, as at 640. */
+/* Today's lists measure their own card, not the whole two-column page under them. */
+.td-inner .td-section { container: tklist / inline-size; }
+@container tklist (max-width: 900px) {
+  .trow.tkrow, .td-row.tkrow, .mt-row.tkrow { --who-w: 96px; --when-w: 128px; }
+}
 @container tklist (max-width: 640px) {
   .trow.tkrow, .td-row.tkrow, .mt-row.tkrow { --who-w: 30px; --when-w: 118px; }
   .tkrow-name { display: none; }
@@ -129,20 +137,20 @@ button.plan-chip.is-small:hover { color: var(--text); background: var(--border);
   .tkrow-name { display: none; }
 }
 /* ── One task section head (Next steps, Waiting): words with weight, the count quiet, room above ────────── */
-.tksec { display: flex; align-items: baseline; gap: 8px; margin: 20px 0 2px; font-size: var(--fs-small); font-weight: 650; color: var(--text-strong); }
-.tksec:first-child, .tksec.is-first { margin-top: 8px; }
+.tksec { display: flex; align-items: baseline; gap: var(--space-2); margin: 20px 0 var(--space-0); font-size: var(--fs-small); font-weight: 650; color: var(--text-strong); }
+.tksec:first-child, .tksec.is-first { margin-top: var(--space-2); }
 .tksec .n { font-weight: 500; color: var(--text-muted); font-variant-numeric: tabular-nums; }
 .tkdone { margin-top: 20px; }
-.tkdone > summary { cursor: pointer; font-size: var(--fs-small); font-weight: 650; color: var(--text-muted); list-style: none; display: flex; align-items: baseline; gap: 8px; }
+.tkdone > summary { cursor: pointer; font-size: var(--fs-small); font-weight: 650; color: var(--text-muted); list-style: none; display: flex; align-items: baseline; gap: var(--space-2); }
 .tkdone > summary::-webkit-details-marker { display: none; }
 .tkdone > summary .n { font-weight: 500; color: var(--text-muted); font-variant-numeric: tabular-nums; }
 
 /* ── Plan row, the project page's list shape (Today's shape keeps its .td-row styles in today.css) ───────── */
-.plan-row--list { display: flex; align-items: flex-start; gap: 2px; list-style: none; }
-.plan-tick { display: inline-grid; place-items: center; flex: none; width: 17px; height: 17px; margin: 9px 0 0 8px; padding: 0; border: 1.5px solid var(--border-strong); border-radius: var(--r-2); background: var(--bg-raised); color: var(--on-primary); cursor: pointer; }
+.plan-row--list { display: flex; align-items: flex-start; gap: var(--space-0); list-style: none; }
+.plan-tick { display: inline-grid; place-items: center; flex: none; width: 17px; height: 17px; margin: 9px 0 0 var(--space-2); padding: 0; border: 1.5px solid var(--border-strong); border-radius: var(--r-2); background: var(--bg-raised); color: var(--on-primary); cursor: pointer; }
 .plan-tick:hover:not(:disabled) { border-color: var(--accent); }
 .plan-tick[aria-checked='true'] { border-color: var(--accent); background: var(--accent); }
-.plan-row-main { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; padding: 7px 8px; border: 0; border-radius: var(--r-3); background: none; color: var(--text); font: inherit; font-size: var(--fs-small); line-height: 1.4; text-align: left; cursor: pointer; }
+.plan-row-main { display: flex; align-items: center; gap: var(--space-2); flex: 1; min-width: 0; padding: 7px var(--space-2); border: 0; border-radius: var(--r-3); background: none; color: var(--text); font: inherit; font-size: var(--fs-small); line-height: 1.4; text-align: left; cursor: pointer; }
 .plan-row-main:hover { background: var(--bg-hover); }
 .plan-row-main:focus-visible { outline: 2px solid var(--focus); outline-offset: -1px; }
 .plan-row--list.is-done .plan-row-title { color: var(--text-faint); text-decoration: line-through; }

@@ -94,8 +94,8 @@ export function overflowMenuItems(hidden: string[], defs: OverflowDefs): MenuIte
 }
 
 /** A side is crowded when its content is wider than its own cell: any child's rectangle past the cell's
-content box (the window-buttons gap is padding, inside the cell, so it only pushes the buttons left; a pixel
-of breath for fractional edges). The right side's children never shrink (kit.css flex:none: nowrap buttons
+content box (the window-buttons gap is padding, inside the cell, so it only pushes the buttons left; half a
+pixel of breath for fractional edges: a whole pixel let a button 0.5px too wide sit inside the 12px gap, 23 Nov 2026). The right side's children never shrink (kit.css flex:none: nowrap buttons
 and short spans), so they overflow honestly instead of crushing; the crumb shortens with … by itself. */
 function cellCrowded(cell: HTMLElement | null, skip?: ReadonlySet<HTMLElement>): boolean {
   if (!cell) return false;
@@ -110,7 +110,7 @@ function cellCrowded(cell: HTMLElement | null, skip?: ReadonlySet<HTMLElement>):
     if (skip?.has(kid) || getComputedStyle(kid).display === 'none') continue;
     const b = kid.getBoundingClientRect();
     if (b.width <= 0) continue;
-    if (b.left < contentL - 1 || b.right > contentR + 1) return true;
+    if (b.left < contentL - 0.5 || b.right > contentR + 0.5) return true;
   }
   return false;
 }

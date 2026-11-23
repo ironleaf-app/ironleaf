@@ -1506,13 +1506,6 @@ export function TodayView({ tab, home }: { tab: TabState; home?: { tab: TabState
                     {openQuestions.map((q) => questionRow(q))}
                   </Section>
                 )}
-                {/* The rest of the one list, when Late or Next shows its top: the dated groups capped at five, the
-                    undated as one count row (never 108 rows down the page). */}
-                {(next.length > 0 || late.length > 0) && on('today:due') && restAny && (
-                  <section className="td-section td-rest" data-section="rest" aria-label="The rest of your work">
-                    <div className="td-rest-groups">{restGroupsBlock}</div>
-                  </section>
-                )}
                 {/* Nothing on you yet (29 Oct 2026, ITEMS: an empty vault's first look): one calm block where the
                     lists will be, with the ways to start that already exist. Never beside the setup steps (t156). */}
                 {welcomeOn && !fresh && (
@@ -1697,6 +1690,17 @@ export function TodayView({ tab, home }: { tab: TabState; home?: { tab: TabState
                 ) }] : []),
               ...(elseOpen ? moreForToday : []),
             ]}
+            // The rest of the one list, when Late or Next shows its top: the dated groups capped, the undated as one
+            // count row (never 108 rows down the page). Wide, it reads across both columns under them, its rows in
+            // two balanced columns of their own (wide-window pass, 23 Nov 2026: in the work column it ran ~600 px
+            // past the day's, a dead band under the day at 2560 with the chat open); narrow, straight after Next.
+            tail={
+              (next.length > 0 || late.length > 0) && on('today:due') && restAny ? (
+                <section className="td-section td-rest" data-section="rest" aria-label="The rest of your work">
+                  <div className="td-rest-groups">{restGroupsBlock}</div>
+                </section>
+              ) : undefined
+            }
             foot={
               /* The vault's own line (sync, the folder's health) at the foot of the day, one line. */
               <div className="td-foot" data-section="vault">

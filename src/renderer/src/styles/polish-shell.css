@@ -44,8 +44,8 @@
    never flush against the rail. */
 .as-main > .nv-page-head,
 .as-main > .as-scroll > .as-scroll-inner {
-  padding-left: 24px;
-  padding-right: 24px;
+  padding-left: var(--space-5);
+  padding-right: var(--space-5);
 }
 
 /* Today: the hub sits in the one page frame, like every other page. */
@@ -105,7 +105,7 @@
 
 .nv-page-actions {
   align-self: flex-start;
-  padding-top: 2px;
+  padding-top: var(--space-0);
 }
 
 .nv-page-lead.nv-page-lead {
@@ -142,7 +142,7 @@
 .nj-row-line2 {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   min-width: 0;
   color: var(--text-muted);
   font-size: var(--fs-small);

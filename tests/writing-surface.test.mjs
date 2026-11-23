@@ -72,7 +72,11 @@ test('the line being worked on, bracket pairs and indenting are micro-polished',
   for (const ext of ['bracketMatching(', 'indentOnInput(', 'highlightActiveLine(']) assert.ok(src.includes(ext), `${ext}) installed`);
   const kit = read('src/renderer/src/styles/kit.css');
   assert.ok(kit.includes('.cm-editor .cm-content .cm-activeLine'), 'the working line’s wash is ours, not the stock light blue');
-  assert.ok(kit.includes('color-mix(in srgb, var(--text-strong) 4%, transparent)'), 'a breath of neutral ink');
+  // 23 Nov 2026: the breath is a palette token, quieter (3% light, 2.5% dark; 4% read as a band in dark), and shows
+  // only while the note has focus.
+  assert.ok(kit.includes('.cm-editor.cm-focused .cm-content .cm-activeLine') && kit.includes('var(--editor-line)'), 'only while the note has focus');
+  const pal = read('src/renderer/src/styles/palettes.css');
+  assert.ok(pal.includes('--editor-line: color-mix(in srgb, var(--text-strong) 3%, transparent)'), 'a breath of neutral ink');
 });
 
 test('a note’s links arrive even when one read fails, and once only', async () => {

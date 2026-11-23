@@ -32,7 +32,7 @@ function RefList({ title, refs, onOpen, dated }: { title: string; refs: PageRef[
           return (
             <li key={r.path}>
               <button className="page-links-row" title="Open (Ctrl+click: in a new tab)" onClick={(e) => onOpen(r.path, e.ctrlKey || e.metaKey)}>
-                <Icon name={dated ? 'people' : 'layers'} size={13} />
+                <Icon name={dated ? 'calendar' : 'layers'} size={13} />
                 <span className="page-links-name">{r.title}</span>
                 {when !== null && <span className="page-links-when">{shortDate(when)}</span>}
               </button>

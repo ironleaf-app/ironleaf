@@ -68,6 +68,27 @@
 .nv-bal-item {
   min-width: 0;
 }
+/* The tail (Balance.tsx): one long block under both columns, across them. In three columns it spans the first two
+   and the third runs the full height beside both: the second row is a flexible track, so a tall third column grows
+   that row instead of opening a gap between the first two columns and the tail. */
+.nv-bal-tail {
+  min-width: 0;
+}
+.nv-bal.is-two > .nv-bal-tail {
+  grid-column: 1 / -1;
+  container: baltail / inline-size;
+}
+.nv-bal.is-two.is-three {
+  grid-template-rows: auto 1fr;
+}
+.nv-bal.is-two.is-three > .nv-bal-tail {
+  grid-column: 1 / 3;
+  grid-row: 2;
+}
+.nv-bal.is-two.is-three > .nv-bal-col.is-c {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+}
 
 /* ---------- Today: the work at the left, the day at the right ---------- */
 @container today (min-width: 1800px) {
@@ -114,6 +135,26 @@
 .td-compose .td-rest {
   padding-top: var(--space-1);
 }
+/* Across both columns (Balance's tail), the rest of the work flows in two balanced columns of rows once the band is
+   wide enough for two rows of a task's words, source and date side by side: Today, This week and Later read down
+   the first and on into the second, ending together. A group's heading never ends a column; the undated count and
+   the add row span both, under them. */
+@container baltail (min-width: 1280px) {
+  .td-compose .td-rest-groups {
+    columns: 2;
+    column-gap: var(--space-6);
+  }
+  .td-compose .td-rest-groups .td-group h3 {
+    break-after: avoid;
+  }
+  .td-compose .td-rest-groups .td-row,
+  .td-compose .td-rest-groups .td-more {
+    break-inside: avoid;
+  }
+  .td-compose .td-rest-groups > :is(.td-count-row, .td-add-row) {
+    column-span: all;
+  }
+}
 /* The undated work, one count row (never 108 rows). */
 .td-count-row {
   display: flex;
@@ -141,7 +182,7 @@
 .td-count-row-go {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--space-0);
   margin-left: auto;
   color: var(--text);
   font-weight: 500;
@@ -255,13 +296,8 @@
   gap: var(--space-2);
   flex: none;
 }
-.w4b-fstrip-menus::before {
-  content: '';
-  width: 1px;
-  height: 20px;
-  margin-right: var(--space-1);
-  background: var(--border);
-}
+/* No rule between the kinds and the dropdowns: when the strip wraps, it stood alone at the start of the second line
+   (design language, 23 Nov 2026); the gap carries the grouping. */
 .w4b-fstrip-sum {
   margin-left: auto;
   padding-top: 0;
@@ -452,7 +488,7 @@
   grid-template-columns: 52px minmax(0, 1fr);
   align-items: baseline;
   min-height: 0;
-  padding: 6px var(--space-2);
+  padding: var(--space-2);
   border: 0;
   border-left: 2px solid var(--accent-line, var(--border));
   border-radius: 0;
@@ -460,7 +496,7 @@
   box-shadow: none;
 }
 .td-compose .th-meetings .th-meeting + .th-meeting {
-  margin-top: 2px;
+  margin-top: var(--space-0);
 }
 .td-compose .th-meetings .th-meeting:hover {
   background: var(--bg-hover);
@@ -735,7 +771,7 @@ div[aria-label='Waiting to be filed'] > * {
 .th-meetings-actions .th-new-meeting,
 .td-compose .th-meetings .th-meetings-actions .th-new-meeting {
   margin: 0;
-  padding: 2px var(--space-1);
+  padding: var(--space-0) var(--space-1);
   font-size: var(--fs-caption);
 }
 .th-meetings-after:empty {
@@ -757,7 +793,7 @@ div[aria-label='Waiting to be filed'] > * {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-0);
   text-align: left;
 }
 

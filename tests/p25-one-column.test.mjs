@@ -19,9 +19,10 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { after, test } from 'node:test';
 import { openSettings, startHarness } from './vault-controls-harness.mjs';
+import { cssPxFor } from './css-px.mjs';
 
 const root = path.join(import.meta.dirname, '..');
-const read = (p) => readFileSync(path.join(root, p), 'utf8');
+const read = (p) => cssPxFor(p, readFileSync(path.join(root, p), 'utf8'));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // ── Static: the mechanism the live walk proves ───────────────────────────────────────────────────────────────
@@ -246,12 +247,17 @@ function check(rows, size) {
   // does — 170-character lines are why. Such bodies still start at the edge and share one capped end among
   // themselves; every other first body ends at the column edge as before, and below 1700px the old contract
   // stands whole.
-  const capped = size[0] >= 1700;
+  // 23 Nov 2026 (design language, packs: one reading order): the pack's "Fills itself" line became the lead's quiet
+  // follow-on at 14 px, held to 80ch at every width (w3b-packs.css .w3b-page > p.vsub), not only past 1700px. So a
+  // prose first body is capped at every size: it still starts at the column edge, the capped lines share one end
+  // among themselves, and none runs past the column; past 1700px the cap still stops well short of the edge.
+  const capped = true;
   const full = bodied.filter((r) => !(capped && r.isVsub));
   const prose = bodied.filter((r) => capped && r.isVsub);
   assert.ok(spread(full, 'bodyR') <= 1, `first bodies end at one edge ${tag} (spread ${spread(full, 'bodyR').toFixed(1)})`);
   if (prose.length > 1) assert.ok(spread(prose, 'bodyR') <= 1, `capped prose ends at one edge ${tag} (spread ${spread(prose, 'bodyR').toFixed(1)})`);
-  for (const r of prose) assert.ok(r.bodyR < r.boxR - 100, `${r.room}'s prose holds at its cap, short of the column edge ${tag}`);
+  for (const r of prose) assert.ok(r.bodyR <= r.boxR + 1, `${r.room}'s prose never runs past the column edge ${tag}`);
+  if (size[0] >= 1700) for (const r of prose) assert.ok(r.bodyR < r.boxR - 100, `${r.room}'s prose holds at its cap, short of the column edge ${tag}`);
   const settings = rows.filter((r) => r.room.startsWith('Settings/'));
   assert.ok(spread(settings, 'titleTop') <= 1, `Settings titles stay put among themselves ${tag}`);
 }

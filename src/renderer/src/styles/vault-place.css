@@ -14,7 +14,7 @@
 .vp-card {
   container-type: inline-size;
   margin: 10px 0 0;
-  padding: 16px 16px 14px;
+  padding: var(--space-4) var(--space-4) 14px;
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised);
@@ -70,7 +70,7 @@
 }
 
 .vp-path {
-  margin-top: 2px;
+  margin-top: var(--space-0);
   font-size: var(--fs-small);
   color: var(--text-faint);
   overflow-wrap: anywhere;
@@ -81,15 +81,15 @@
   flex: none;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .vp-status {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  margin: 12px 0 0;
-  padding-top: 12px;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+  padding-top: var(--space-3);
   border-top: 1px solid var(--border);
   font-size: var(--fs-small);
   line-height: 1.5;
@@ -120,7 +120,7 @@
 }
 
 .vp-tip {
-  margin: 8px 2px 4px;
+  margin: var(--space-2) var(--space-0) var(--space-1);
   font-size: var(--fs-caption);
   line-height: 1.5;
   color: var(--text-faint);
@@ -147,7 +147,7 @@
 .vp-dialog-head {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   margin-bottom: 6px;
 }
 
@@ -175,10 +175,10 @@
 .vp-target {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   width: 100%;
   min-width: 0;
-  padding: 10px 12px;
+  padding: 10px var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-4);
   background: var(--bg-raised);
@@ -244,7 +244,7 @@
 
 .vp-note > svg {
   flex: none;
-  margin-top: 2px;
+  margin-top: var(--space-0);
   color: var(--text-faint);
 }
 
@@ -253,7 +253,7 @@
   grid-template-columns: auto minmax(0, 1fr);
   gap: 6px 14px;
   margin: 14px 0 0;
-  padding: 12px 14px;
+  padding: var(--space-3) 14px;
   border: 1px solid var(--border);
   border-radius: var(--r-4);
   background: var(--bg-side);
@@ -272,12 +272,12 @@
 }
 
 .vp-progress {
-  padding-top: 2px;
+  padding-top: var(--space-0);
 }
 
 .vp-bar {
   height: 8px;
-  margin: 16px 0 10px;
+  margin: var(--space-4) 0 10px;
   border-radius: var(--r-2);
   background: var(--bg-active);
   overflow: hidden;
@@ -307,9 +307,9 @@
 .vp-today {
   display: grid;
   grid-template-columns: 38px minmax(0, 1fr);
-  gap: 12px;
+  gap: var(--space-3);
   margin-bottom: var(--td-gap, 18px);
-  padding: 16px;
+  padding: var(--space-4);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised);
@@ -345,7 +345,7 @@
 }
 
 .vp-today-words h2 {
-  margin: 1px 0 4px;
+  margin: 1px 0 var(--space-1);
   font-size: var(--fs-body);
   font-weight: 650;
   line-height: 1.35;
@@ -369,8 +369,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 16px;
-  margin-top: 12px;
+  gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-3);
 }
 
 .home-view .vp-today {

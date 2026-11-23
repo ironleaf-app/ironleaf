@@ -522,7 +522,10 @@ export function ChatPanel({ tab }: { tab: TabState }) {
         ? `Ask about “${told.chat.title}”…`
         : chat.scope === 'chat'
           ? 'Ask about this chat…'
-          : 'Ask about your notes, or ask for something done…';
+          : 'Ask about your notes…';
+  // The box's full words on hover: the short hint fits the column whole (design language, 23 Nov 2026: the longer
+  // hint was cut mid-word, "or ask for so", in the side column).
+  const boxTitle = boxHint === 'Ask about your notes…' ? 'Ask about your notes, or ask for something done' : boxHint;
 
   return (
     <div
@@ -747,7 +750,7 @@ export function ChatPanel({ tab }: { tab: TabState }) {
           rows={1}
           disabled={!!notReady || !canEdit}
           placeholder={boxHint}
-          title={boxHint}
+          title={boxTitle}
           onFocus={() => {
             if (!pinnedTell && liveTold.split) setPinnedTell(liveTold);
           }}

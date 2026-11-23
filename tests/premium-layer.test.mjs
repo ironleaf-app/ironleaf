@@ -34,7 +34,9 @@ test('every named surface is in the premium card, row or focus lists', () => {
     'publications panels': '.pb-panel',
     'automations rows': '.au-row',
     'automations panel': '.au-panel',
-    'weekly review': '.wr-block',
+    // Design language (23 Nov 2026): a weekly review project is the one card; its changed / slipped / to chase
+    // columns sit inside it as columns, no longer three more cards inside the card.
+    'weekly review': '.wr-project',
     'weekly rows': '.wr-item',
     'settings rows': '.setting-row',
     'settings cards': '.nt-item',

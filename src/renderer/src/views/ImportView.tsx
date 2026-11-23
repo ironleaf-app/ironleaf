@@ -13,7 +13,7 @@ import { PairDialog } from '../components/PairedSources';
 import * as A from '../state/actions';
 import type * as W from '../state/workspace';
 import { showError, toast, useApp } from '../state/store';
-import { ViewHeader } from './ViewHeader';
+import { Crumbs, ViewHeader } from './ViewHeader';
 import { importMarkdownFiles, loadLastImport, saveLastImport, undoLastImport, type LastImport } from '../state/imports';
 import { importCsv } from '../state/importCsv';
 import { landFiles, pasteEmail, pdfFromProjectFolder, saveFromMail } from '../state/intake';
@@ -90,7 +90,7 @@ export function ImportView({ tab }: { tab: W.TabState }) {
   };
   return (
     <>
-      <ViewHeader tab={tab} crumb={<><button className="crumb-folder" onClick={() => A.openSettings('backups')}>Settings</button><span> / </span><b>Import</b></>} />
+      <ViewHeader tab={tab} crumb={<Crumbs trail={[{ key: 'settings', label: 'Settings', onClick: () => A.openSettings('backups') }]} here={<b>Import</b>} />} />
       <div className="nv-page-scroll">
         <div className="nv-page im-page">
           <h1 className="w4a-title">Import</h1>
@@ -112,7 +112,7 @@ export function ImportView({ tab }: { tab: W.TabState }) {
         </div>
         <div className="glabel" style={{ margin: '16px 0 2px' }}>How each arrives</div>
         <div className="irow">
-          <span className="gtile sm blue" aria-hidden="true">✉</span>
+          <span className="gtile sm slate" aria-hidden="true"><Icon name="mail" size={15} /></span>
           <div><div className="nm">Email</div><div className="ds">A saved email, pasted text, or one from Gmail or Outlook. Lands with who sent it and what it carries.</div></div>
           <span className="ctl">
             <button className="btn" style={{ height: 32 }} disabled={!canEdit} onClick={() => mailPick.current?.click()}>Bring a file in</button>
@@ -121,7 +121,7 @@ export function ImportView({ tab }: { tab: W.TabState }) {
           </span>
         </div>
         <div className="irow">
-          <span className="gtile sm slate" aria-hidden="true">❏</span>
+          <span className="gtile sm slate" aria-hidden="true"><Icon name="pdf" size={15} /></span>
           <div><div className="nm">PDF</div><div className="ds">Drop it, or keep one from a project’s folder. A newer copy becomes its next version.</div></div>
           <span className="ctl">
             <button className="btn" style={{ height: 32 }} disabled={!canEdit} onClick={() => pdfPick.current?.click()}>Bring one in</button>
@@ -129,17 +129,17 @@ export function ImportView({ tab }: { tab: W.TabState }) {
           </span>
         </div>
         <div className="irow">
-          <span className="gtile sm green" aria-hidden="true">▦</span>
+          <span className="gtile sm slate" aria-hidden="true"><Icon name="table" size={15} /></span>
           <div><div className="nm">Spreadsheet (CSV)</div><div className="ds">Each row becomes a note in a folder you pick, plus a table of them.</div></div>
           <span className="ctl"><button className="btn" style={{ height: 32 }} disabled={!canEdit} onClick={() => csv()}>Bring one in</button></span>
         </div>
         <div className="irow">
-          <span className="gtile sm blue" aria-hidden="true">✎</span>
+          <span className="gtile sm slate" aria-hidden="true"><Icon name="file" size={15} /></span>
           <div><div className="nm">Markdown files</div><div className="ds">Kept as notes, filed where you say. Links keep working.</div></div>
           <span className="ctl"><button className="btn" style={{ height: 32 }} disabled={!canEdit} onClick={() => mdPick.current?.click()}>Bring files in</button></span>
         </div>
         <div className="irow">
-          <span className="gtile sm slate" aria-hidden="true">▤</span>
+          <span className="gtile sm slate" aria-hidden="true"><Icon name="folder" size={15} /></span>
           <div><div className="nm">Folder of notes</div><div className="ds">Note or Word files, Apple Notes or OneNote pages. Read where it is, or copied in.</div></div>
           <span className="ctl">
             <button className="btn" style={{ height: 32 }} onClick={() => void window.nv.vault.pick().catch(showError)}>Read where it is</button>
@@ -147,7 +147,7 @@ export function ImportView({ tab }: { tab: W.TabState }) {
           </span>
         </div>
         <div className="irow" style={{ borderBottom: 0 }}>
-          <span className="gtile sm amber" aria-hidden="true">◈</span>
+          <span className="gtile sm slate" aria-hidden="true"><Icon name="download" size={15} /></span>
           <div><div className="nm">From another app</div><div className="ds">Evernote, Notion, Google Keep, Readwise, Logseq or Roam, each keeping where it came from.</div></div>
           <span className="ctl"><button className="btn" style={{ height: 32 }} disabled={!canEdit} onClick={() => setDialog('apps')}>Choose…</button></span>
         </div>

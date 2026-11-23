@@ -7,14 +7,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import { plural } from '../../../shared/words';
 import { EmptyState } from '../components/EmptyState';
-import { Icon } from '../components/Icon';
+import { Icon, type IconName } from '../components/Icon';
 import { openMenu } from '../components/Menu';
 import { errorMessage } from '../lib/errors';
 import { headerOverflowHidden, overflowMenuItems } from '../lib/headerOverflow';
 import * as A from '../state/actions';
 import type * as W from '../state/workspace';
 import { showError, toast } from '../state/store';
-import { ViewHeader } from './ViewHeader';
+import { Crumbs, ViewHeader } from './ViewHeader';
 
 interface Gone {
   type: 'conversation' | 'bin' | 'vault';
@@ -39,8 +39,9 @@ const GROUPS: readonly (readonly [Group, string])[] = [
 const groupOf = (g: Gone): Group =>
   g.type === 'conversation' ? 'conversations' : g.type === 'vault' || g.app === 'vault' || ['note', 'file', 'folder', 'health', 'record'].includes(g.kind) ? 'vault' : ['automation', 'routine'].includes(g.kind) ? 'automations' : 'agents';
 const BIN_EMPTY: Record<Group, string> = { all: 'Nothing here.', vault: 'No notes here.', conversations: 'No conversations here.', automations: 'No automations here.', agents: 'No agents or skills here.' };
-const TILES: Record<string, [string, string]> = { note: ['slate', '◧'], file: ['blue', '◧'], folder: ['slate', '▤'], conversation: ['green', '✎'], automation: ['amber', '⚡'], routine: ['amber', '⚡'], agent: ['blue', '◧'], skill: ['slate', '◧'], health: ['red', '♥'], record: ['green', '▦'] };
-const tileOf = (kind: string): [string, string] => TILES[kind] ?? ['slate', '◧'];
+// What each kept item is, as the app's own icon on one quiet tile (phase 2, 23 Nov 2026: was a tinted glyph per kind).
+const TILES: Record<string, IconName> = { note: 'file', file: 'file', folder: 'folder', conversation: 'chat', automation: 'bolt', routine: 'bolt', agent: 'agent', skill: 'spark', health: 'heart', record: 'table' };
+const tileOf = (kind: string): IconName => TILES[kind] ?? 'file';
 const when = (at: number) => {
   const m = Math.round((Date.now() - at) / 60000);
   if (m < 1) return 'just now';
@@ -112,7 +113,7 @@ export function BinView({ tab }: { tab: W.TabState }) {
     <>
       <ViewHeader
         tab={tab}
-        crumb={<><button className="crumb-folder" onClick={() => A.openSettings('backups')}>Settings</button><span> / </span><b>Bin</b></>}
+        crumb={<Crumbs trail={[{ key: 'settings', label: 'Settings', onClick: () => A.openSettings('backups') }]} here={<b>Bin</b>} />}
       >
         {/* The header contract (Round 2, 4 Nov 2026, the reviewer: nothing may ever overlap the centred
             search): Empty all yields into the ⋯ beside it when measured within 12px of the bar. */}
@@ -130,7 +131,7 @@ export function BinView({ tab }: { tab: W.TabState }) {
       <div className="nv-page-scroll bin-page">
         <div className="nv-page">
           <h1 className="w4a-title">Bin</h1>
-          <p className="vsub" style={{ margin: '4px 0 8px' }}>One bin for your notes. What you or another app delete stays here for 30 days, with Restore. After that it’s gone for good.</p>
+          <p className="vsub bin-lead">One bin for your notes. What you or another app delete stays here for 30 days, with Restore. After that it’s gone for good.</p>
         {asking === 'empty' && (
           <div className="bin-ask" role="alertdialog" aria-label="Remove everything from the Bin?">
             {/* The one item reads as itself (3 Nov 2026, fourth-round G6): "Remove the 1 item", never "Remove all 1". */}
@@ -144,7 +145,7 @@ export function BinView({ tab }: { tab: W.TabState }) {
           </div>
         )}
         {present.length > 2 && (
-          <div className="chips" role="group" aria-label="What to show" style={{ marginBottom: 6 }}>
+          <div className="chips bin-chips" role="group" aria-label="What to show">
             {present.map(([id, w]) => (
               <button key={id} className={`chip${group === id ? ' on' : ''}`} onClick={() => setGroup(id)}>
                 {w} <span className="n">{id === 'all' ? all.length : all.filter((g) => groupOf(g) === id).length}</span>
@@ -159,15 +160,15 @@ export function BinView({ tab }: { tab: W.TabState }) {
           <EmptyState icon="trash" title="Nothing here" line="What you delete stays here for 30 days, so it can come back." />
         ) : (
           <>
-            <div className="glabel" style={{ margin: '14px 0 2px' }}>{plural(all.length, 'item')} · Newest first</div>
+            <div className="glabel bin-count">{plural(all.length, 'item')} · Newest first</div>
             <ul className="bin-list-87" aria-label="Bin">
               {shown.map((g) => {
                 const back = restored[g.id];
                 const title = g.title || g.kindWords || 'Untitled';
-                const [tint, glyph] = tileOf(g.kind);
+                const glyph = tileOf(g.kind);
                 return (
                   <li key={g.type + g.id} className={`drow2${back ? ' is-back' : ''}`} data-kind={g.kind}>
-                    <span className={`gtile xs ${tint}`} aria-hidden="true">{glyph}</span>
+                    <span className="gtile xs slate" aria-hidden="true"><Icon name={glyph} size={13} /></span>
                     <div>
                       <div className="t clip">{title}</div>
                       <div className="p clip">
@@ -191,7 +192,7 @@ export function BinView({ tab }: { tab: W.TabState }) {
                         <button type="button" className="delnow" disabled={!!busy} onClick={() => setAsking(g.id)}>
                           Delete now
                         </button>
-                        <button type="button" className="btn" style={{ height: 32 }} disabled={!!busy} onClick={() => void act(g, 'restore')}>
+                        <button type="button" className="btn" disabled={!!busy} onClick={() => void act(g, 'restore')}>
                           {busy === g.id ? 'Restoring…' : 'Restore'}
                         </button>
                       </span>
@@ -201,7 +202,7 @@ export function BinView({ tab }: { tab: W.TabState }) {
               })}
               {!shown.length && <li className="bin-none">{BIN_EMPTY[group]}</li>}
             </ul>
-            <p style={{ fontSize: 13, color: 'var(--text-faint)', marginTop: 12 }}>Delete now and Remove all ask first, here on the page, never in a pop-up.</p>
+            <p className="bin-foot">Delete now and Remove all ask first, here on the page, never in a pop-up.</p>
           </>
         )}
         </div>

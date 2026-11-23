@@ -24,7 +24,7 @@
   row-gap: var(--space-2);
 }
 .w4b-fstrip-sum {
-  padding-top: 8px;
+  padding-top: var(--space-2);
 }
 .as-brand {
   max-width: none;

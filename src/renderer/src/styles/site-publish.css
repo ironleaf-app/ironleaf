@@ -4,14 +4,14 @@
   width: min(860px, calc(100vw - 32px));
   display: flex;
   flex-direction: column;
-  padding: 20px 24px 16px;
+  padding: 20px var(--space-5) var(--space-4);
 }
 
 .publish-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .publish-head h2 {
@@ -21,15 +21,15 @@
 
 .publish-steps {
   display: flex;
-  gap: 4px;
-  margin: 12px 0 4px;
+  gap: var(--space-1);
+  margin: var(--space-3) 0 var(--space-1);
   border-bottom: 1px solid var(--border);
 }
 
 .publish-step {
   background: none;
   border: 0;
-  padding: 8px 12px;
+  padding: var(--space-2) var(--space-3);
   font: inherit;
   font-size: var(--fs-body);
   color: var(--text-muted);
@@ -45,12 +45,12 @@
 }
 
 .publish-body {
-  padding: 14px 2px 4px;
+  padding: 14px var(--space-0) var(--space-1);
   overflow-y: auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .publish-field {
@@ -71,7 +71,7 @@
 .publish-field select {
   font: inherit;
   font-size: var(--fs-body);
-  padding: 8px 11px;
+  padding: var(--space-2) 11px;
   border: 1px solid var(--border-strong);
   border-radius: var(--r-3);
   background: var(--bg);
@@ -83,7 +83,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: 8px;
+  margin-top: var(--space-2);
 }
 
 .publish-choice-words {
@@ -96,11 +96,11 @@
 
 .publish-list {
   list-style: none;
-  margin: 8px 0 0;
+  margin: var(--space-2) 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
   max-width: 560px;
 }
 
@@ -120,9 +120,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding-top: 8px;
-  margin-top: 2px;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+  margin-top: var(--space-0);
   border-top: 1px solid var(--border);
   font-size: var(--fs-body);
   color: var(--text-muted);
@@ -130,7 +130,7 @@
 
 .publish-foot-actions {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   margin-left: auto;
 }
 
@@ -185,7 +185,7 @@
   display: flex;
   gap: 10px;
   align-items: flex-start;
-  padding: 9px 12px;
+  padding: 9px var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-4);
   cursor: pointer;
@@ -218,7 +218,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 12px;
+  padding: var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-4);
   background: var(--bg);
@@ -227,14 +227,14 @@
 .publish-ask p,
 .publish-done p {
   font-size: var(--fs-body);
-  margin: 0 0 8px;
+  margin: 0 0 var(--space-2);
 }
 
 /* The Published line in a page's head. */
 .published-mark {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   margin: 0 56px;
   padding: 6px 0;
   font-size: var(--fs-small);
@@ -260,7 +260,7 @@
    site a full-width card whose actions wrap). */
 .site-list {
   list-style: none;
-  margin: 4px 0 0;
+  margin: var(--space-1) 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -274,7 +274,7 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 14px;
-  padding: 12px 14px;
+  padding: var(--space-3) 14px;
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg);
@@ -316,6 +316,6 @@
 
 @media (max-width: 900px) {
   .published-mark {
-    margin: 0 24px;
+    margin: 0 var(--space-5);
   }
 }

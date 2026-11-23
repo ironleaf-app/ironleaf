@@ -8,9 +8,9 @@
 .vh-warn {
   display: grid;
   grid-template-columns: 38px minmax(0, 1fr);
-  gap: 12px;
+  gap: var(--space-3);
   margin: 10px 0 var(--td-gap, 18px);
-  padding: 16px;
+  padding: var(--space-4);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised);
@@ -32,7 +32,7 @@
 }
 
 .vh-warn-words h2 {
-  margin: 1px 0 4px;
+  margin: 1px 0 var(--space-1);
   font-size: var(--fs-body);
   font-weight: 650;
   line-height: 1.35;
@@ -49,7 +49,7 @@
 
 .vh-warn-pcs {
   display: grid;
-  gap: 4px;
+  gap: var(--space-1);
   margin: 10px 0 0;
   padding: 0;
   list-style: none;
@@ -79,11 +79,11 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .vh-warn .vh-actions {
-  margin-top: 12px;
+  margin-top: var(--space-3);
 }
 
 .vh-faint {
@@ -93,14 +93,14 @@
 .vh-ok-text {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   color: var(--vp-ok);
 }
 
 .vh-warn-text {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   color: var(--amber-tx);
 }
 
@@ -116,9 +116,9 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px 12px;
-  margin: 12px 0 0;
-  padding: 12px 14px;
+  gap: 10px var(--space-3);
+  margin: var(--space-3) 0 0;
+  padding: var(--space-3) 14px;
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised);
@@ -132,7 +132,7 @@
 .vh-old-words {
   display: grid;
   flex: 1 1 260px;
-  gap: 2px;
+  gap: var(--space-0);
   min-width: 0;
   font-size: var(--fs-small);
   line-height: 1.45;
@@ -154,7 +154,7 @@
 
 .vh-lead {
   max-width: 76ch;
-  margin: 4px 0 10px;
+  margin: var(--space-1) 0 10px;
   font-size: var(--fs-small);
   line-height: 1.5;
   color: var(--text-muted);
@@ -179,7 +179,7 @@
 }
 
 .vh-empty {
-  padding: 16px;
+  padding: var(--space-4);
   font-size: var(--fs-small);
   color: var(--text-faint);
 }
@@ -188,7 +188,7 @@
   display: grid;
   grid-template-columns: 36px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   padding: 13px 14px;
 }
 
@@ -217,7 +217,7 @@
 
 .vh-vault-words {
   display: grid;
-  gap: 2px;
+  gap: var(--space-0);
   min-width: 0;
 }
 
@@ -232,7 +232,7 @@
 }
 
 .vh-pill {
-  padding: 1px 8px;
+  padding: 1px var(--space-2);
   border-radius: var(--r-1);
   font-size: var(--fs-caption);
   font-weight: 550;
@@ -260,22 +260,22 @@
 .vh-vault-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 12px;
-  margin-top: 2px;
+  gap: var(--space-1) var(--space-3);
+  margin-top: var(--space-0);
   font-size: var(--fs-caption);
 }
 
 .vh-vault-meta > span {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .vh-tools {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin: 12px 0 4px;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 var(--space-1);
 }
 
 @container (max-width: 520px) {
@@ -302,7 +302,7 @@
   display: grid;
   grid-template-columns: minmax(150px, 1.1fr) minmax(0, 1.4fr) minmax(0, 1fr);
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   padding: 11px 14px;
   font-size: var(--fs-small);
   color: var(--text);
@@ -313,7 +313,7 @@
 }
 
 .vh-pc.head {
-  padding-block: 8px;
+  padding-block: var(--space-2);
   font-size: var(--fs-caption);
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -416,30 +416,30 @@
 }
 
 .vh-summary ul {
-  margin: 4px 0 0;
+  margin: var(--space-1) 0 0;
   padding-left: 18px;
   overflow-wrap: anywhere;
 }
 
 /* Notes from another app (V9, 28 Oct 2026; components/PairedSources.tsx). */
 .pair-head {
-  margin: 18px 0 2px;
+  margin: 18px 0 var(--space-0);
   font-size: 0.95em;
 }
 
 .pair-apps {
-  margin-top: 8px;
+  margin-top: var(--space-2);
 }
 
 .pair-sample {
   list-style: none;
-  margin: 4px 0 10px;
-  padding: 8px 12px;
+  margin: var(--space-1) 0 10px;
+  padding: var(--space-2) var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-4);
   background: var(--bg-hover);
   display: grid;
-  gap: 4px;
+  gap: var(--space-1);
   max-height: 180px;
   overflow: auto;
 }
@@ -447,7 +447,7 @@
 .pair-sample li {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   overflow-wrap: anywhere;
 }
 
@@ -458,7 +458,7 @@
 
 .pair-conflicts {
   display: grid;
-  gap: 8px;
+  gap: var(--space-2);
   margin: 6px 0 10px;
   max-height: 340px;
   overflow: auto;
@@ -467,13 +467,13 @@
 .pair-conflict {
   border: 1px solid var(--border);
   border-radius: var(--r-4);
-  padding: 8px 12px;
+  padding: var(--space-2) var(--space-3);
 }
 
 .pair-conflict-head {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .pair-conflict-head .pair-diff-toggle {
@@ -490,7 +490,7 @@
 
 .pair-skip {
   display: grid;
-  gap: 2px;
+  gap: var(--space-0);
   border-top: 1px solid var(--border);
   padding-top: 6px;
 }
@@ -506,8 +506,8 @@
 
 .pair-token {
   display: grid;
-  gap: 4px;
-  margin-top: 8px;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
   font-size: 0.9em;
 }
 

@@ -13,7 +13,7 @@ import { setWorkspace, useWorkspace } from '../state/layout';
 import { openTypePage } from '../state/noteTypes';
 import * as W from '../state/workspace';
 import { getState, loadFiles, loadNotes, showError, toast, useApp, usePrefs } from '../state/store';
-import { ViewHeader } from '../views/ViewHeader';
+import { Crumbs, ViewHeader } from '../views/ViewHeader';
 import { confirm } from './Dialogs';
 import { Icon } from './Icon';
 import { EmptyState, LoadingRows } from './EmptyState';
@@ -63,6 +63,8 @@ export function VersionsPage({ tab }: { tab: W.TabState }) {
   const [files, setFiles] = useState<SnapshotFile[] | null>(null);
   const [chosen, setChosen] = useState<string | undefined>(fromNote);
   const [versions, setVersions] = useState<Snapshot[]>([]);
+  // Which note's copies `versions` holds (none read yet shows the loading rows, never "no copies" for a moment).
+  const [versionsOf, setVersionsOf] = useState<string | null>(null);
   const [version, setVersion] = useState<string | null>(null);
   const [text, setText] = useState('');
   const [current, setCurrent] = useState('');
@@ -83,8 +85,9 @@ export function VersionsPage({ tab }: { tab: W.TabState }) {
     setTexts({});
     void window.nv.recovery.versions(chosen).then((v) => {
       setVersions(v);
+      setVersionsOf(chosen);
       if (v[0]) setVersion(v[0].id);
-    });
+    }, () => (setVersions([]), setVersionsOf(chosen)));
   }, [chosen]);
   // The version shown, against the current copy (the newest one).
   const shownVersion = useMemo(() => versions.find((v) => v.id === version), [versions, version]);
@@ -114,7 +117,12 @@ export function VersionsPage({ tab }: { tab: W.TabState }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chosen, versions]);
   const changesShown = show === 'changes' && !isCurrent && !!current;
-  const html = useMemo(() => renderMarkdown(text, { from: chosen }), [text, chosen]);
+  // The preview's name sits above it, so a first heading that only repeats the note's name is not shown twice.
+  const html = useMemo(() => {
+    const h = /^\s*#\s+(.+?)\s*(?:\r?\n|$)/.exec(text);
+    const same = !!h && !!chosen && h[1].trim().toLowerCase() === A.titleOf(chosen).trim().toLowerCase();
+    return renderMarkdown(same ? text.slice(h![0].length) : text, { from: chosen });
+  }, [text, chosen]);
   useEffect(() => {
     if (body.current && !changesShown) void hydrate(body.current, 1);
   }, [html, changesShown]);
@@ -163,33 +171,31 @@ export function VersionsPage({ tab }: { tab: W.TabState }) {
     <>
       <ViewHeader
         tab={tab}
-        crumb={chosen ? (
-          <>
-            <button className="crumb-folder" onClick={() => openTypePage('note')}>Notes</button>
-            <span> / </span>
-            <button className="crumb-folder" onClick={() => A.openPath(chosen)}>{A.titleOf(chosen)}</button>
-            <span> / </span>
-            <b>Earlier versions</b>
-          </>
-        ) : (
-          <>
-            <button className="crumb-folder" onClick={() => A.openSettings('backups')}>Settings</button>
-            <span> / </span>
-            <b>Earlier versions</b>
-          </>
-        )}
+        crumb={
+          <Crumbs
+            trail={
+              chosen
+                ? [
+                    { key: 'notes', label: 'Notes', onClick: () => openTypePage('note') },
+                    { key: 'note', label: A.titleOf(chosen), onClick: () => A.openPath(chosen) },
+                  ]
+                : [{ key: 'settings', label: 'Settings', onClick: () => A.openSettings('backups') }]
+            }
+            here={<b>Earlier versions</b>}
+          />
+        }
       />
       <div className="nv-page-scroll">
         {/* versions-dialog kept as an alias: the smoke check finds the note picker through it. */}
         <div className="nv-page full versions-page versions-dialog">
           <h1 className="w4a-title">Earlier versions</h1>
-          <p className="vsub" style={{ marginTop: 4 }}>
+          <p className="vsub versions-lead">
             {prefs.recoveryMinutes ? `A copy is kept every ${prefs.recoveryMinutes} minutes, for ${prefs.recoveryDays} days, on this PC.` : `Copies are kept for ${prefs.recoveryDays} days, on this PC.`} Pick one to read it. Put it back only if you say so.
           </p>
           {!fromNote && (
-            <div className="field" style={{ maxWidth: 420 }}>
-              <label>Note</label>
-              <select className="setting-input" style={{ width: '100%' }} value={chosen ?? ''} onChange={(e) => setChosen(e.target.value || undefined)}>
+            <div className="field versions-pick">
+              <label htmlFor="versions-note">Note</label>
+              <select id="versions-note" className="setting-input" value={chosen ?? ''} onChange={(e) => setChosen(e.target.value || undefined)}>
                 {!chosen && <option value="">Pick a note…</option>}
                 {(files ?? []).map((f) => (
                   <option key={f.path} value={f.path}>
@@ -203,27 +209,45 @@ export function VersionsPage({ tab }: { tab: W.TabState }) {
             <LoadingRows rows={5} label="Looking for copies" />
           ) : !files.length ? (
             <EmptyState icon="history" title="No copies yet" line="Ironleaf keeps one as notes change (Settings › Backups and sync › Recovery)." />
-          ) : !chosen || !versions.length ? (
-            <EmptyState icon="history" title="Pick a note" line="Its copies show here, newest first." />
+          ) : !chosen ? (
+            <EmptyState icon="history" title="Pick a note" line="Choose it above: its copies show here, newest first." />
+          ) : versionsOf !== chosen ? (
+            <LoadingRows rows={5} label="Looking for copies" />
+          ) : !versions.length ? (
+            // Opened from a note that has no copy yet (wide-window pass: it said "Pick a note" with nothing to pick).
+            <EmptyState
+              icon="history"
+              title="No earlier copies of this note yet"
+              line={prefs.recoveryMinutes ? `A copy is kept every ${prefs.recoveryMinutes} minutes while it changes.` : 'A copy is kept as it changes.'}
+              action={{ label: 'Back to the note', run: () => A.openPath(chosen) }}
+              also={{ label: 'Recovery settings', icon: 'settings', run: () => A.openSettings('backups') }}
+            />
           ) : (
             <div className="vwrap">
               <div className="vlist">
-                <div className="glabel" style={{ marginBottom: 8 }}>{versions.length} {versions.length === 1 ? 'copy' : 'copies'}</div>
-                {versions.map((v) => (
-                  <VersionRow key={v.id} v={v} words={texts[v.id]} newest={newestText} active={version === v.id} isCurrent={versions[0]?.id === v.id} onPick={() => setVersion(v.id)} onPutBack={() => putBackRow(v.id)} />
-                ))}
+                <h2 className="glabel vlist-head">{versions.length} {versions.length === 1 ? 'copy' : 'copies'}</h2>
+                <ul className="vlist-rows" role="list">
+                  {versions.map((v) => (
+                    <VersionRow key={v.id} v={v} words={texts[v.id]} newest={newestText} active={version === v.id} isCurrent={versions[0]?.id === v.id} onPick={() => setVersion(v.id)} onPutBack={() => putBackRow(v.id)} />
+                  ))}
+                </ul>
               </div>
               <div className="vprev">
-                <div className="glabel">
-                  {shownVersion ? `${new Date(shownVersion.time).toLocaleString('en-AU', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })} · ${byWords(shownVersion)}` : ''}{!isCurrent && current ? ' · Against current' : isCurrent ? ' · Current' : ''}
+                <div className="vprev-head">
+                  <h2 className="vprev-title">{chosen ? A.titleOf(chosen) : ''}</h2>
+                  {/* When and who, then where it stands, as separate words rather than one dotted string. */}
+                  <p className="vprev-meta">
+                    {shownVersion && <span>{new Date(shownVersion.time).toLocaleString('en-AU', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })}</span>}
+                    {shownVersion && <span>{byWords(shownVersion)}</span>}
+                    {!isCurrent && current ? <span className="tag">Against current</span> : isCurrent ? <span className="tag">Current</span> : null}
+                  </p>
                 </div>
                 {!isCurrent && (
-                  <div className="seg small" style={{ margin: '8px 0' }}>
-                    <button className={show === 'changes' ? 'on' : ''} onClick={() => setShow('changes')}>What changed</button>
-                    <button className={show === 'page' ? 'on' : ''} onClick={() => setShow('page')}>As it reads</button>
+                  <div className="seg small vprev-seg">
+                    <button className={show === 'changes' ? 'on' : ''} aria-pressed={show === 'changes'} onClick={() => setShow('changes')}>What changed</button>
+                    <button className={show === 'page' ? 'on' : ''} aria-pressed={show === 'page'} onClick={() => setShow('page')}>As it reads</button>
                   </div>
                 )}
-                <p><b>{chosen ? A.titleOf(chosen) : ''}</b></p>
                 {changesShown ? (
                   <VersionCompare before={current} after={text} />
                 ) : (
@@ -235,14 +259,14 @@ export function VersionsPage({ tab }: { tab: W.TabState }) {
                     {wordsOf(text)} words · {counts.added + counts.removed} {counts.added + counts.removed === 1 ? 'word' : 'words'} differ from current
                   </p>
                 ) : null}
-                <div style={{ marginTop: 16, display: 'flex', gap: 8, alignItems: 'center' }}>
+                <div className="vprev-actions">
                   {!isCurrent && (
                     <>
-                      <button className="btn pri" style={{ height: 34 }} disabled={!text || !canEdit} onClick={() => void restore(version ?? '', text)}>Put this one back</button>
-                      <button className="btn" style={{ height: 34 }} onClick={() => setVersion(versions[0].id)}>Back to current</button>
+                      <button className="btn pri" disabled={!text || !canEdit} onClick={() => void restore(version ?? '', text)}>Put this one back</button>
+                      <button className="btn" onClick={() => setVersion(versions[0].id)}>Back to current</button>
                     </>
                   )}
-                  <button className="btn quiet" style={{ height: 34 }} disabled={!text} onClick={() => void navigator.clipboard.writeText(text).then(() => toast('Copied.'))}>
+                  <button className="btn quiet" disabled={!text} onClick={() => void navigator.clipboard.writeText(text).then(() => toast('Copied.'))}>
                     <Icon name="copy" size={13} /> Copy
                   </button>
                 </div>
@@ -260,11 +284,11 @@ function VersionRow({ v, words, newest, active, isCurrent, onPick, onPutBack }: 
   const diff = !isCurrent && words !== undefined && newest ? changeCounts(newest, words) : null;
   const changed = diff ? diff.added + diff.removed : null;
   return (
-    <div className={`vrow${active ? ' sel' : ''}`}>
-      <button className="vrow-pick" onClick={onPick} aria-label={`Read the copy from ${when(v.time)}`}>
+    <li className={`vrow${active ? ' sel' : ''}`}>
+      <button className="vrow-pick" onClick={onPick} aria-current={active ? true : undefined} aria-label={`Read the copy from ${when(v.time)}`}>
         <span className="w">{when(v.time)}</span>
         <span className="m">
-          {words === undefined ? `${byWords(v)}` : `${wordsOf(words)} words${isCurrent ? ' · current' : changed === null ? '' : changed === 0 ? ' · same as current' : ` · ${changed} ${changed === 1 ? 'word' : 'words'} changed`}`}
+          {words === undefined ? `${byWords(v)}` : `${wordsOf(words)} words${isCurrent ? ', current' : changed === null ? '' : changed === 0 ? ', same as current' : `, ${changed} ${changed === 1 ? 'word' : 'words'} changed`}`}
         </span>
       </button>
       {!isCurrent && (
@@ -273,7 +297,7 @@ function VersionRow({ v, words, newest, active, isCurrent, onPick, onPutBack }: 
           <button className="mini" onClick={onPutBack}>Put back</button>
         </span>
       )}
-    </div>
+    </li>
   );
 }
 

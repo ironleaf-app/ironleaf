@@ -4,7 +4,7 @@
 /* ── The delivered-file card ── */
 .dv-card {
   position: relative;
-  padding: 12px 14px;
+  padding: var(--space-3) 14px;
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised);
@@ -32,7 +32,7 @@
     'thumb actions';
   grid-template-rows: auto 1fr;
   column-gap: 14px;
-  row-gap: 8px;
+  row-gap: var(--space-2);
   align-items: start;
 }
 
@@ -50,7 +50,7 @@
 
 /* The put-away ✕ sits in the corner: the words beside it keep clear of it. */
 .dv-card.has-away .dv-main {
-  padding-right: 24px;
+  padding-right: var(--space-5);
 }
 
 .dv-thumb-button {
@@ -121,7 +121,7 @@
   font-size: var(--fs-small);
   line-height: 1.4;
   color: var(--text-muted);
-  margin-bottom: 2px;
+  margin-bottom: var(--space-0);
   min-width: 0;
 }
 
@@ -209,7 +209,7 @@
     flex: 1 1 auto;
     min-width: 0;
     justify-content: center;
-    padding: 0 8px;
+    padding: 0 var(--space-2);
   }
 }
 
@@ -228,13 +228,13 @@
 
 /* Compact: in a list (What agents did, the top of Updates). */
 .dv-card.is-compact {
-  padding: 10px 12px;
+  padding: 10px var(--space-3);
   box-shadow: none;
   background: var(--bg);
 }
 
 .dv-card.is-compact .dv-grid {
-  column-gap: 12px;
+  column-gap: var(--space-3);
   row-gap: 6px;
 }
 
@@ -263,11 +263,11 @@
 }
 
 .dv-updates {
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
 }
 
 .ag-act-file {
-  margin-top: 8px;
+  margin-top: var(--space-2);
   max-width: 560px;
 }
 
@@ -283,7 +283,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 9px 12px;
+  padding: 9px var(--space-3);
   font-size: var(--fs-small);
   font-weight: 600;
   color: var(--text);
@@ -305,7 +305,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 7px 12px;
+  padding: 7px var(--space-3);
 }
 
 .pf-saved-row + .pf-saved-row {
@@ -350,7 +350,7 @@
 .pj-named-file {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   margin-left: 6px;
 }
 

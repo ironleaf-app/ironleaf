@@ -219,12 +219,33 @@ test('Tasks page: who and when share one x on every row', async () => {
   await assertColumns(h, 'main', 6);
 }, { timeout: 120000 });
 
+// Today (23 Nov 2026, the design-language pass): on a wide frame the rest of the work is Balance's tail, one block
+// under both columns (and, once the band is wide enough, two balanced CSS columns of rows inside it), so Next's rows
+// in the work column and the tail's rows stand in boxes of different widths by design. One x per list still holds:
+// every row standing in the same box (same left and right edge, i.e. the same column of the page) puts who and when
+// at one x, and the tail is one such box (or two, in its two columns), never a scatter row by row.
 test('Today: who and when share one x on every row', async () => {
   const h = await harness();
   await clickWords(h, 'Today', '.side');
   await waitFor(h, `!!document.querySelector('.td-view')`);
   await sleep(1000);
-  await assertColumns(h, '.td-view', 4);
+  const rows = await h.browser.ev(`[...document.querySelectorAll('.td-view .tkrow')].filter((r) => r.getBoundingClientRect().width > 2).map((r) => {
+    const b = r.getBoundingClientRect();
+    const x = (sel) => { const el = r.querySelector(sel); const e = el && el.getBoundingClientRect(); return e && e.width > 2 ? Math.round(e.x) : null; };
+    return { box: Math.round(b.x) + '..' + Math.round(b.right), who: x('.tkrow-who'), when: x('.tkrow-when') };
+  })`);
+  assert.ok(rows.filter((r) => r.who != null).length >= 4, `.td-view: ${rows.length} rows with who, want 4`);
+  assert.ok(rows.filter((r) => r.when != null).length >= 4, `.td-view: ${rows.length} rows with when, want 4`);
+  const boxes = new Map();
+  for (const r of rows) boxes.set(r.box, [...(boxes.get(r.box) ?? []), r]);
+  // The work column, the day column and the tail (two inside it at most): never a box per row.
+  assert.ok(boxes.size <= 4, `.td-view: rows stand in ${boxes.size} different boxes (${[...boxes.keys()].join(', ')})`);
+  for (const [box, list] of boxes) {
+    for (const k of ['who', 'when']) {
+      const xs = list.map((r) => r[k]).filter((v) => v != null);
+      if (xs.length) assert.ok(Math.max(...xs) - Math.min(...xs) <= 1, `.td-view rows at ${box}: ${k} scatters ${Math.min(...xs)}..${Math.max(...xs)}`);
+    }
+  }
 }, { timeout: 120000 });
 
 test('meeting actions: who and when share one x on every row', async () => {

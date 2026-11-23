@@ -1,11 +1,11 @@
 /* What the Vault can do and Start from a template (8.8): the abilities page and the starter picker, on the kit's
    tokens (light and dark follow the theme; the light page is white and cool, never cream). */
 
-.ab-page { max-width: 880px; margin: 0 auto; padding: 24px 32px 64px; }
-.ab-search { margin: 14px 0 4px; }
-.ab-group { margin-top: 20px; }
-.ab-group .glabel { margin-bottom: 8px; }
-.card.ab-card { padding: 6px 20px; }
+.ab-page { max-width: 880px; margin: 0 auto; padding: var(--space-5) var(--space-6) var(--space-7); }
+.ab-search { margin: var(--space-3) 0 var(--space-1); }
+.ab-group { margin-top: var(--space-4); }
+.ab-group .glabel { margin-bottom: var(--space-2); }
+.card.ab-card { padding: var(--space-2) var(--space-5); }
 .ab-row .ab-open { display: flex; flex-direction: column; min-width: 0; flex: 1; }
 .ab-row .ab-open .t { font-weight: 600; }
 .btn.ab-show { flex: none; }
@@ -13,14 +13,41 @@
 
 /* The starter picker: the ten starters as picked rows, then the folder name. */
 .dlg.st-picker { max-height: min(84vh, 760px); display: flex; flex-direction: column; }
-.st-list { overflow-y: auto; min-height: 0; border: 1px solid var(--border); border-radius: var(--r-3); background: var(--bg-raised); padding: 4px 16px; margin: 12px 0; }
+.st-list { overflow-y: auto; min-height: 0; border: 1px solid var(--border); border-radius: var(--r-3); background: var(--bg-raised); padding: var(--space-1) var(--space-4); margin: var(--space-3) 0; }
 .st-row { width: 100%; text-align: left; background: none; border: none; border-radius: var(--r-3); cursor: pointer; color: inherit; font: inherit; }
 .st-row + .st-row { border-top: 1px solid var(--border); }
 .st-row.is-picked { background: var(--bg-active); }
 .st-row .ab-open { display: flex; flex-direction: column; min-width: 0; flex: 1; }
-.st-folder { display: flex; align-items: center; gap: 12px; }
+.st-folder { display: flex; align-items: center; gap: var(--space-3); }
 .st-folder span { font-size: var(--fs-body); font-weight: 600; color: var(--text); }
-.st-folder input { flex: 1; height: 36px; border: 1px solid var(--border-strong); border-radius: var(--r-4); background: var(--bg-raised); color: var(--text); padding: 0 12px; font-size: var(--fs-body); }
+.st-folder input { flex: 1; height: 36px; border: 1px solid var(--border-strong); border-radius: var(--r-4); background: var(--bg-raised); color: var(--text); padding: 0 var(--space-3); font-size: var(--fs-body); }
 
-/* The ten starters are fixed content: at a tall window the dialog fits all ten instead of scrolling the list (small windows still scroll; 84vh binds there). */
+/* Phase 2 (23 Nov 2026): a group's abilities in as many columns as fit, each name a hand's width from its Open (was
+   one row 2,100 px from name to Open at 2560). The last line's rule is clipped by the card. */
+.card.ab-card {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr));
+  column-gap: var(--space-6);
+  padding: 0 var(--space-5);
+  overflow: hidden;
+}
+.ab-card .trow {
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: -1px;
+}
+.ab-card .trow + .trow {
+  border-top: 0;
+}
+.ab-group .glabel {
+  margin-bottom: var(--space-2);
+}
+/* A long line wraps whole, never cut at the column's edge. */
+.ab-row .ab-open .clip {
+  white-space: normal;
+  overflow: visible;
+}
+
+/* The ten starters are fixed content: at a tall window the dialog fits all ten instead of scrolling the list (small windows still scroll; 84vh binds there).
+   It stays the sheet's last rule so it outranks the 760 px cap above (p15). */
 .dlg.st-picker { max-height: min(84vh, 920px); }

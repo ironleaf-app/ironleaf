@@ -6,9 +6,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { test } from 'node:test';
+import { cssPxFor } from './css-px.mjs';
 
 const root = path.join(import.meta.dirname, '..');
-const read = (p) => readFileSync(path.join(root, p), 'utf8');
+const read = (p) => cssPxFor(p, readFileSync(path.join(root, p), 'utf8'));
 
 test('the top bar over every page: back, forward, New, the crumb, actions right', () => {
   const bar = read('src/renderer/src/views/ViewHeader.tsx');
@@ -42,7 +43,7 @@ test('reading pages read at 920, boards and calendars run full width, one left e
   assert.match(frame, /\.nv-page\.full \{\s*max-width: none/, 'boards and calendars run full width');
   // p27 title air supersedes the 24 px pad (it sat Today's date 4 px under the header's line, cramped): 36 px
   // above the title, as the spec's --page-pad and the kit's .vpage already say, every title at 92.
-  assert.ok(frame.includes('--page-pad-top: var(--space-6)') && frame.includes('--space-6: 36px'), '36 px above the title');
+  assert.ok(frame.includes('--page-pad-top: 36px') && read('src/renderer/src/styles.css').includes('--space-6: 36px'), '36 px above the title'); // the scale lives in styles.css
   assert.ok(read('src/renderer/src/views/PersonPage.tsx').includes('nv-page read'), 'a reading page in the column');
   // One left edge: the column's sides come from the one gutter on every page.
   assert.ok(frame.includes('padding-left: var(--page-pad-side)') && frame.includes('padding-right: var(--page-pad-side)'), 'the one gutter');

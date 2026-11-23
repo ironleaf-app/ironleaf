@@ -9,7 +9,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   grid-auto-flow: row dense;
-  gap: 16px;
+  gap: var(--space-4);
   align-items: start;
   margin: 0 0 18px;
 }
@@ -24,7 +24,7 @@
 
 .ly-block {
   min-width: 0;
-  padding: 16px 18px 18px;
+  padding: var(--space-4) 18px 18px;
   background: var(--bg-raised);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
@@ -63,7 +63,7 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
   color: var(--text-faint);
   min-height: 22px;
 }
@@ -111,7 +111,7 @@
 .ly-link {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   color: var(--text-strong);
   text-decoration: none;
   overflow-wrap: anywhere;
@@ -151,7 +151,7 @@
   display: inline-flex;
   align-items: center;
   height: 20px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-1);
   font-size: var(--fs-caption);
   font-weight: 600;
@@ -173,7 +173,7 @@
 }
 
 .ly-empty p {
-  margin: 0 0 12px;
+  margin: 0 0 var(--space-3);
   max-width: 62ch;
   font-size: var(--fs-small);
   line-height: 1.55;
@@ -187,7 +187,7 @@
 }
 
 .ly-form {
-  margin-top: 12px;
+  margin-top: var(--space-3);
   padding: 14px;
   border: 1px solid var(--border);
   border-radius: var(--r-4);
@@ -201,7 +201,7 @@
 .ly-form-fields {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  gap: 10px 12px;
+  gap: 10px var(--space-3);
 }
 
 .ly-field {
@@ -263,8 +263,8 @@
 
 .ly-form-foot {
   display: flex;
-  gap: 8px;
-  margin-top: 12px;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
 }
 
 /* ── Status ───────────────────────────────────────────────────────────────────────────────────────────────────────── */
@@ -283,14 +283,14 @@
   flex: 1;
   min-width: 0;
   display: grid;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .ly-status-top {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 14px;
+  gap: var(--space-2) 14px;
   font-size: var(--fs-small);
 }
 
@@ -325,7 +325,7 @@
   font-size: var(--fs-caption);
   font-weight: 600;
   color: var(--text-faint);
-  margin-bottom: 2px;
+  margin-bottom: var(--space-0);
 }
 
 .ly-facts dd {
@@ -456,7 +456,7 @@
 .ly-ring-small {
   font-size: var(--fs-caption);
   font-weight: 600;
-  margin-bottom: 2px;
+  margin-bottom: var(--space-0);
 }
 
 .ly-b-streak .ly-ring-words strong {
@@ -492,7 +492,7 @@
 }
 
 .ly-count-words {
-  margin: 6px 0 2px;
+  margin: 6px 0 var(--space-0);
   font-size: var(--fs-body);
   font-weight: 550;
   color: var(--text);
@@ -504,7 +504,7 @@
 }
 
 .ly-period {
-  margin-top: 16px;
+  margin-top: var(--space-4);
   display: grid;
   gap: 7px;
 }
@@ -514,7 +514,7 @@
 }
 
 .ly-grid-total {
-  margin-left: 4px;
+  margin-left: var(--space-1);
 }
 
 .ly-period-words {
@@ -539,7 +539,7 @@
 .ly-b-countdown.wide .ly-count:not(.has-period) {
   grid-template-areas: 'figure words' 'figure date';
   column-gap: 20px;
-  row-gap: 2px;
+  row-gap: var(--space-0);
   justify-content: start;
 }
 
@@ -567,7 +567,7 @@
 .ly-b-countdown.wide .ly-period {
   grid-area: period;
   align-self: end;
-  margin: 0 0 4px;
+  margin: 0 0 var(--space-1);
 }
 
 /* ── Progress ─────────────────────────────────────────────────────────────────────────────────────────────────────── */
@@ -589,7 +589,7 @@
 }
 
 .ly-bar.wide {
-  margin-left: 8px;
+  margin-left: var(--space-2);
 }
 
 .ly-streams {
@@ -605,7 +605,7 @@
   display: grid;
   gap: 10px;
   align-content: start;
-  padding: 12px 14px;
+  padding: var(--space-3) 14px;
   border: 1px solid var(--border);
   border-radius: var(--r-4);
   background: var(--bg);
@@ -616,7 +616,7 @@
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 6px 8px;
+  gap: 6px var(--space-2);
 }
 
 /* The name keeps a readable width: a long status ("Drafted (out of date)") goes under it rather than squeezing it. */
@@ -642,7 +642,7 @@
 .ly-stream .pj-pill {
   height: 21px;
   font-size: var(--fs-caption);
-  padding: 0 8px;
+  padding: 0 var(--space-2);
 }
 
 .ly-stream-bar {
@@ -682,7 +682,7 @@
 .ly-phases {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 8px;
+  gap: var(--space-2);
   margin: 0 0 14px;
   padding: 0;
   list-style: none;
@@ -691,9 +691,9 @@
 .ly-phases button {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 8px 6px;
+  gap: var(--space-2) 6px;
   width: 100%;
-  padding: 10px 12px;
+  padding: 10px var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-4);
   background: var(--bg);
@@ -743,7 +743,7 @@
 
 .ly-checks {
   display: grid;
-  gap: 2px;
+  gap: var(--space-0);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -753,7 +753,7 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 6px 4px;
+  padding: 6px var(--space-1);
   border-radius: var(--r-2);
   font-size: var(--fs-body);
   line-height: 1.45;
@@ -778,7 +778,7 @@
 }
 
 .ly-more-note {
-  margin: 8px 4px 0;
+  margin: var(--space-2) var(--space-1) 0;
   font-size: var(--fs-small);
 }
 
@@ -787,7 +787,7 @@
 .ly-track {
   position: relative;
   height: 46px;
-  margin: 2px 0 10px;
+  margin: var(--space-0) 0 10px;
 }
 
 .ly-track-line,
@@ -849,7 +849,7 @@
   font-weight: 600;
   color: var(--text-faint);
   background: var(--bg-raised);
-  padding: 0 4px;
+  padding: 0 var(--space-1);
 }
 
 .ly-dates {
@@ -863,8 +863,8 @@
   display: grid;
   grid-template-columns: 76px minmax(0, 1fr) auto auto;
   align-items: baseline;
-  gap: 12px;
-  padding: 8px 4px;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-1);
   border-top: 1px solid var(--border);
   font-size: var(--fs-small);
 }
@@ -919,13 +919,13 @@
   grid-auto-columns: minmax(210px, 1fr);
   gap: 10px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  padding-bottom: var(--space-1);
 }
 
 .ly-col {
   display: grid;
   align-content: start;
-  gap: 8px;
+  gap: var(--space-2);
   min-width: 0;
   padding: 10px;
   border-radius: var(--r-4);
@@ -937,7 +937,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2px 2px;
+  padding: 0 var(--space-0) var(--space-0);
   font-size: var(--fs-small);
   font-weight: 650;
   color: var(--text-muted);
@@ -945,7 +945,7 @@
 
 .ly-col ul {
   display: grid;
-  gap: 8px;
+  gap: var(--space-2);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -954,7 +954,7 @@
 .ly-card {
   display: grid;
   gap: 6px;
-  padding: 10px 12px;
+  padding: 10px var(--space-3);
   border-radius: var(--r-3);
   background: var(--bg-raised);
   border: 1px solid var(--border);
@@ -995,7 +995,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 12px;
+  gap: var(--space-2) var(--space-3);
   margin-bottom: 10px;
 }
 
@@ -1086,9 +1086,9 @@
 .ly-table th button {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   width: 100%;
-  padding: 8px 12px;
+  padding: var(--space-2) var(--space-3);
   border: 0;
   background: none;
   color: var(--text-muted);
@@ -1116,7 +1116,7 @@
 }
 
 .ly-table td {
-  padding: 8px 12px;
+  padding: var(--space-2) var(--space-3);
   border-bottom: 1px solid var(--border);
   color: var(--text);
   vertical-align: top;
@@ -1160,8 +1160,8 @@
 .ly-trend-figures {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 28px;
-  margin-bottom: 8px;
+  gap: var(--space-2) 28px;
+  margin-bottom: var(--space-2);
 }
 
 .ly-trend-figures strong {
@@ -1248,7 +1248,7 @@
 }
 
 .ly-trend-chart + .ly-sparks {
-  margin-top: 12px;
+  margin-top: var(--space-3);
 }
 
 .ly-sparks {
@@ -1263,7 +1263,7 @@
 .ly-sparks li {
   display: grid;
   gap: 6px;
-  padding: 10px 12px;
+  padding: 10px var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-4);
   background: var(--bg);
@@ -1273,7 +1273,7 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .ly-spark-top strong .ly-faint {
@@ -1310,7 +1310,7 @@
 
 .ly-streak-body {
   display: grid;
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .ly-streak-top {
@@ -1334,13 +1334,13 @@
 .ly-days {
   display: grid;
   grid-template-columns: repeat(14, minmax(0, 1fr));
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .ly-day {
   display: grid;
   justify-items: center;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .ly-day i {
@@ -1381,7 +1381,7 @@
 .ly-week-words {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: var(--space-2);
   font-size: var(--fs-small);
 }
 
@@ -1427,7 +1427,7 @@
 .ly-marks li {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   height: 24px;
   padding: 0 10px;
   border-radius: var(--r-1);
@@ -1460,12 +1460,12 @@
 .ly-entry-values {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 8px;
+  gap: var(--space-2);
   margin: 0 0 10px;
 }
 
 .ly-entry-values div {
-  padding: 8px 10px;
+  padding: var(--space-2) 10px;
   border-radius: var(--r-3);
   background: var(--bg);
   border: 1px solid var(--border);
@@ -1480,7 +1480,7 @@
 }
 
 .ly-entry-values dd {
-  margin: 2px 0 0;
+  margin: var(--space-0) 0 0;
   font-size: var(--fs-body);
   font-weight: 650;
   color: var(--text);
@@ -1509,7 +1509,7 @@
 }
 
 .ly-entry-notes {
-  margin: 0 0 8px;
+  margin: 0 0 var(--space-2);
   padding-left: 18px;
   font-size: var(--fs-small);
   line-height: 1.5;
@@ -1536,7 +1536,7 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 12px;
+  padding: var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-4);
   background: var(--bg);
@@ -1548,7 +1548,7 @@
 }
 
 .ly-contact p {
-  margin: 0 0 2px;
+  margin: 0 0 var(--space-0);
   font-size: var(--fs-small);
   line-height: 1.4;
 }
@@ -1580,7 +1580,7 @@
   align-items: center;
   gap: 10px;
   margin: -6px 0 18px;
-  padding: 10px 12px 10px 14px;
+  padding: 10px var(--space-3) 10px 14px;
   border: 1px solid var(--border);
   border-radius: var(--r-4);
   background: var(--bg-raised);
@@ -1603,7 +1603,7 @@
 .ly-suggest-acts {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   flex: none;
 }
 
@@ -1628,7 +1628,7 @@
 
 .ly-glance ul {
   display: grid;
-  gap: 2px;
+  gap: var(--space-0);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1641,7 +1641,7 @@
   align-items: baseline;
   gap: 10px;
   width: 100%;
-  padding: 7px 8px;
+  padding: 7px var(--space-2);
   border: 0;
   border-radius: var(--r-3);
   background: none;
@@ -1687,7 +1687,7 @@
 
   .pj-page .ly-status-band {
     align-items: flex-start;
-    gap: 16px;
+    gap: var(--space-4);
   }
 
   .pj-page .ly-count-figure strong {
@@ -1706,7 +1706,7 @@
   }
 
   .pj-page .ly-b-countdown.wide .ly-period {
-    margin-top: 16px;
+    margin-top: var(--space-4);
   }
 }
 
@@ -1733,7 +1733,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: 0 0 12px;
+  margin: 0 0 var(--space-3);
 }
 
 /* Who and when after a tick box's words. */
@@ -1747,7 +1747,7 @@
 
 .ly-col-more {
   margin: 0;
-  padding: 6px 8px;
+  padding: 6px var(--space-2);
   width: 100%;
   border: 1px dashed var(--border);
   border-radius: var(--r-3);
@@ -1828,7 +1828,7 @@
   display: inline-flex;
   align-items: center;
   height: 21px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border: 1px dashed var(--border-strong);
   border-radius: var(--r-1);
   background: transparent;
@@ -1904,7 +1904,7 @@ button.pj-pill.ly-choice:focus-visible {
 .ly-date-chip.pj-pill {
   height: 20px;
   padding: 0 7px;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .ly-date-chip.pj-pill.tone-accent {
@@ -2108,7 +2108,7 @@ button.pj-pill.ly-choice:focus-visible {
   display: grid;
   gap: 10px;
   width: 268px;
-  padding: 14px 14px 12px;
+  padding: 14px 14px var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised);
@@ -2141,7 +2141,7 @@ button.pj-pill.ly-choice:focus-visible {
 
 .ly-pop-clear {
   justify-self: start;
-  padding: 2px 0;
+  padding: var(--space-0) 0;
   font-size: var(--fs-caption);
   color: var(--text-faint);
 }
@@ -2170,7 +2170,7 @@ button.pj-pill.ly-choice:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 2px 4px;
+  padding: var(--space-0) var(--space-1);
   margin: -2px -4px;
   border-radius: var(--r-2);
   font: inherit;
@@ -2214,7 +2214,7 @@ button.pj-pill.ly-choice:focus-visible {
 .ly-add-detail > .pj-addrow {
   width: auto;
   margin: 0;
-  padding: 2px 6px;
+  padding: var(--space-0) 6px;
   font-size: var(--fs-small);
   opacity: 0;
   transition: opacity 0.12s ease;
@@ -2228,7 +2228,7 @@ button.pj-pill.ly-choice:focus-visible {
 .ly-link-fact {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   min-width: 0;
 }
 
@@ -2307,7 +2307,7 @@ button.ly-count-kind:hover svg {
 .ly-stream-acts {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--space-0);
   flex: none;
   max-width: 100%;
   margin: -1px -6px 0 0;
@@ -2324,7 +2324,7 @@ button.ly-count-kind:hover svg {
 .ly-stream .ly-form,
 .ly-contact .ly-form,
 .ly-board-edit .ly-form {
-  margin-top: 4px;
+  margin-top: var(--space-1);
 }
 
 /* ── Tick boxes ── */
@@ -2333,7 +2333,7 @@ button.ly-count-kind:hover svg {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 6px 4px;
+  padding: 6px var(--space-1);
   border-radius: var(--r-2);
   font-size: var(--fs-body);
   line-height: 1.45;
@@ -2345,7 +2345,7 @@ button.ly-count-kind:hover svg {
 }
 
 .ly-check > input {
-  margin-top: 4px;
+  margin-top: var(--space-1);
   accent-color: var(--accent);
   flex: none;
   cursor: pointer;
@@ -2355,7 +2355,7 @@ button.ly-count-kind:hover svg {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 3px 8px;
+  gap: 3px var(--space-2);
   flex: 1;
   min-width: 0;
   overflow-wrap: anywhere;
@@ -2391,13 +2391,13 @@ button.ly-count-kind:hover svg {
 }
 
 .ly-check-none {
-  padding: 6px 4px;
+  padding: 6px var(--space-1);
   font-size: var(--fs-small);
 }
 
 .ly-b-progress [role='tabpanel'] > .pj-addrow,
 .ly-b-actions .pj-addrow {
-  margin-top: 2px;
+  margin-top: var(--space-0);
 }
 
 /* Renaming a phase: its tab, as a field. */
@@ -2420,7 +2420,7 @@ button.ly-count-kind:hover svg {
 .ly-date-state {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .ly-date-in {
@@ -2463,7 +2463,7 @@ button.ly-count-kind:hover svg {
 .ly-card-top {
   display: flex;
   align-items: flex-start;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .ly-card-top .ly-card-title {
@@ -2481,7 +2481,7 @@ button.ly-count-kind:hover svg {
 
 .ly-col-add .pj-addrow {
   margin-top: 0;
-  padding: 5px 4px;
+  padding: 5px var(--space-1);
   font-size: var(--fs-small);
 }
 
@@ -2490,15 +2490,15 @@ button.ly-count-kind:hover svg {
 }
 
 .ly-board-edit {
-  margin-top: 12px;
-  padding: 12px 14px;
+  margin-top: var(--space-3);
+  padding: var(--space-3) 14px;
   border: 1px solid var(--accent-line);
   border-radius: var(--r-4);
   background: var(--bg);
 }
 
 .ly-board-edit .ly-label {
-  margin: 0 0 4px;
+  margin: 0 0 var(--space-1);
 }
 
 /* ── The register as a spreadsheet ── */
@@ -2534,7 +2534,7 @@ button.ly-count-kind:hover svg {
   min-width: 6ch;
   height: 100%;
   margin: 0;
-  padding: 8px 12px;
+  padding: var(--space-2) var(--space-3);
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -2557,7 +2557,7 @@ button.ly-count-kind:hover svg {
 .ly-table th.ly-row-acts,
 .ly-table td.ly-row-acts {
   width: 34px;
-  padding: 4px 6px 0 0;
+  padding: var(--space-1) 6px 0 0;
   text-align: right;
 }
 
@@ -2636,12 +2636,12 @@ button.ly-count-kind:hover svg {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .ly-entry-nav {
   display: inline-flex;
-  gap: 2px;
+  gap: var(--space-0);
   flex: none;
 }
 
@@ -2763,7 +2763,7 @@ button.ly-day:focus-visible i {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: var(--space-2);
   min-width: 0;
 }
 

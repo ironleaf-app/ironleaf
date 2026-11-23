@@ -11,11 +11,12 @@ import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { cssPxFor } from './css-px.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const sparkRoot = path.join(root, '..', 'ns');
 const sparkHere = existsSync(path.join(sparkRoot, 'native-runtime', 'plugins', 'desktop', 'theme.css'));
-const read = (f) => readFileSync(path.join(root, f), 'utf8');
+const read = (f) => cssPxFor(f, readFileSync(path.join(root, f), 'utf8'));
 const readSpark = (f) => readFileSync(path.join(sparkRoot, f), 'utf8');
 const vault = {
   base: read('src/renderer/src/styles.css'),
@@ -136,9 +137,11 @@ test('menus match the host app’s measures and behaviour', () => {
   const kit = vault.kit;
   assert.ok(/\.menu \{[^}]*min-width: 218px/s.test(kit), 'menu min 218px');
   const rows = kit.match(/\.menu > button, \.menu \.menu-row \{([^}]*)\}/s)?.[1] ?? assert.fail('no menu rows');
-  for (const bit of ['min-height: 40px', 'font-size: var(--fs-md)', 'line-height: 22px', 'font-weight: 400', 'color: var(--text-ink)', 'padding: 8px 10px', 'gap: 8px', 'border-radius: var(--r-3)']) assert.ok(rows.includes(bit), `menu rows ${bit}`);
+  // Design language (23 Nov 2026): rows at a desktop menu's 32px with 4/8 insets on the scale (the 40px rows read
+  // loose and pushed More past a 1000px window); a group's heading is a 600 label over its rows. Type and ink stay.
+  for (const bit of ['min-height: 32px', 'font-size: var(--fs-md)', 'line-height: 22px', 'font-weight: 400', 'color: var(--text-ink)', 'padding: 4px 8px', 'gap: 8px', 'border-radius: var(--r-2)']) assert.ok(rows.includes(bit), `menu rows ${bit}`);
   const head = kit.match(/\.menu \.mlab, \.menu \.menu-heading \{([^}]*)\}/)?.[1] ?? assert.fail('no menu headings');
-  for (const bit of ['font-weight: 400', 'color: var(--text-muted)', 'padding: 8px 10px']) assert.ok(head.includes(bit), `menu headings ${bit}`);
+  for (const bit of ['font-weight: 600', 'color: var(--text-muted)', 'padding: 8px 8px 4px']) assert.ok(head.includes(bit), `menu headings ${bit}`);
   assert.ok(/\.menu \.msep, \.menu \.menu-separator \{[^}]*margin: 4px 2px/s.test(kit), 'separators 4/2');
   assert.ok(vault.menu.includes('size={16}'), 'menu glyphs 16px');
   assert.ok(vault.menu.includes("e.key === 'Home'") && vault.menu.includes("e.key === 'End'"), 'Home/End move');
@@ -173,8 +176,10 @@ test('dialogs match the host app\'s one confirm', () => {
   // width, 24 line, 600 weight and actions 20 down, all still pinned here.)
   for (const bit of ['font-size: var(--fs-reading)', 'line-height: 24px', 'font-weight: 600', 'color: var(--text-strong)']) assert.ok(smallH2.includes(bit), `confirm titles ${bit}`);
   assert.ok(/\.dlg h2, \.dialog h2 \{ font-size: var\(--fs-section\)/.test(kit), 'big dialogs keep the 20px title');
-  assert.ok(/\.dialog-actions \{ display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; justify-content: flex-end; \}/.test(kit), 'actions sit 20px under the words');
-  assert.ok(/\.dlgback, \.overlay \{\s*position: fixed; inset: 0; background: rgba\(20, 26, 46, \.28\);/.test(kit), 'one dim, the host app\'s depth');
+  // Design language (23 Nov 2026): the actions sit one group step (24px) under the words, on the scale, and the dim
+  // is the palette's own --overlay role (the host app's navy at .24 in light, a deeper dim in dark), never a literal.
+  assert.ok(/\.dialog-actions \{ display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; justify-content: flex-end; \}/.test(kit), 'actions sit 24px under the words');
+  assert.ok(/\.dlgback, \.overlay \{\s*position: fixed; inset: 0; background: var\(--overlay\);/.test(kit), 'one dim, the palette\'s overlay');
   if (spark) {
     assert.ok(/dialog\.ns-kit-confirm\{[^}]*width:min\(440px,calc\(100vw - 32px\)\)[^}]*padding:var\(--ns-space-6,24px\) var\(--ns-space-6,24px\) var\(--ns-space-5,20px\)/s.test(spark.look), 'the host app confirm still 440 with 24/24/20');
     assert.ok(/dialog\.ns-kit-confirm::backdrop\{background:rgba\(20,26,46,\.28\)\}/.test(spark.look), 'the host app dim still .28');

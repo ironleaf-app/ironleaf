@@ -48,7 +48,7 @@
   gap: 0 var(--space-2);
   font-size: var(--fs-md);
   color: var(--text);
-  margin-top: 2px;
+  margin-top: var(--space-0);
 }
 .about-ver > span + span::before {
   content: '·';
@@ -58,13 +58,13 @@
 .about-sub {
   font-size: var(--fs-small);
   color: var(--text-muted);
-  margin-top: 2px;
+  margin-top: var(--space-0);
 }
 .about-links .link-button,
 .about-history-head .link-button {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   white-space: nowrap;
 }
 
@@ -132,7 +132,7 @@
 .about-update-detail {
   font-size: var(--fs-small);
   color: var(--text-muted);
-  margin-top: 2px;
+  margin-top: var(--space-0);
 }
 .about-update[data-tone='error'] .about-update-detail {
   color: var(--text);
@@ -208,13 +208,13 @@
 /* Notes: one change a line. */
 .about-notes {
   margin: 0;
-  padding: 0 0 0 18px;
+  padding: 0 0 0 var(--space-4);
   font-size: var(--fs-md);
   line-height: 1.5;
   color: var(--text);
 }
 .about-notes li + li {
-  margin-top: 4px;
+  margin-top: var(--space-1);
 }
 .about-notes li::marker {
   color: var(--accent);
@@ -259,7 +259,7 @@
   grid-template-columns: auto auto minmax(0, 1fr) auto;
   grid-template-areas: 'ver chip date icon' 'first first first first';
   align-items: center;
-  gap: 2px var(--space-2);
+  gap: var(--space-0) var(--space-2);
   width: 100%;
   padding: var(--space-2) var(--space-1);
   border: 0;
@@ -286,7 +286,7 @@
   grid-area: chip;
   font-size: var(--fs-xs);
   font-weight: 600;
-  padding: 1px 7px;
+  padding: var(--space-0) var(--space-2);
   border-radius: var(--r-2);
   background: var(--accent-soft);
   color: var(--accent);
@@ -313,7 +313,7 @@
   display: none;
 }
 .about-hist-notes {
-  padding: 0 var(--space-1) var(--space-3) 22px;
+  padding: 0 var(--space-1) var(--space-3) var(--space-5);
   font-size: var(--fs-small);
 }
 .about-history-foot {

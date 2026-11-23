@@ -11,12 +11,13 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
 import { pathToFileURL } from 'node:url';
+import { cssPxFor } from './css-px.mjs';
 
 const require = createRequire(import.meta.url);
 process.env.no_proxy = [process.env.no_proxy, '127.0.0.1,localhost'].filter(Boolean).join(',');
 process.env.NO_PROXY = [process.env.NO_PROXY, '127.0.0.1,localhost'].filter(Boolean).join(',');
 const root = path.join(import.meta.dirname, '..');
-const read = (p) => readFileSync(path.join(root, p), 'utf8');
+const read = (p) => cssPxFor(p, readFileSync(path.join(root, p), 'utf8'));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const SHELL = process.env.HEADLESS_SHELL || (process.env.HOME || '') + '/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell';
 // The window's stylesheets in the order it loads them (main.tsx), so the cascade is the window's.
@@ -139,7 +140,11 @@ test('round 2: the composer fits, the hint stays one line, the box grows up', ()
   assert.ok(ph.includes('text-overflow: clip'), 'it clips without dots when long (t207 pass 2)');
   const shown = resp.match(/\.chat-input textarea:placeholder-shown\s*\{([^}]*)\}/s)?.[1] ?? assert.fail('no empty-box rule');
   assert.ok(shown.includes('white-space: nowrap') && shown.includes('text-overflow: clip'), 'the empty box stays one line and clips without dots (typed words wrap)');
-  assert.ok(panel.includes('placeholder={boxHint}') && panel.includes('title={boxHint}'), 'the box carries its full hint as its title');
+  // 23 Nov 2026, design-language pass: the notes-wide hint is shortened to "Ask about your notes…" so it fits the
+  // side column whole (the longer one was cut mid-word), and the title says the longer words; every other hint is
+  // its own title as before. So the title is boxTitle, which falls back to the hint itself.
+  assert.ok(panel.includes('placeholder={boxHint}') && panel.includes('title={boxTitle}'), 'the box carries its full hint as its title');
+  assert.ok(/const boxTitle = boxHint === 'Ask about your notes…' \? 'Ask about your notes, or ask for something done' : boxHint;/.test(panel), 'the title is the hint, or the longer words for the short notes-wide hint');
   assert.match(css, /\.chat \{[^}]*padding-bottom: 10px/, 'the panel keeps its own bottom padding');
   assert.match(css, /\.chat-modelfoot \{[^}]*margin: 0 10px 0/, 'the foot sits inside it, not on a margin');
   assert.ok(panel.includes('Math.min(160, el.scrollHeight)'), 'the box grows with the words, up to its max');

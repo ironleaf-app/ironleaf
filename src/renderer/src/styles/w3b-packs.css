@@ -13,28 +13,28 @@
 .w3b-ava { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-size: var(--fs-body); font-weight: 700; }
 
 /* The family week: seven day columns with their happenings as small tinted blocks. */
-.w3b-week { display: flex; gap: 8px; }
-.w3b-day { flex: 1; min-width: 0; background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--r-4); padding: 8px; min-height: 118px; }
+.w3b-week { display: flex; gap: var(--space-2); }
+.w3b-day { flex: 1; min-width: 0; background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--r-4); padding: var(--space-2); min-height: 118px; }
 .w3b-day > b { font-size: var(--fs-caption); display: block; margin-bottom: 6px; }
 .w3b-day.is-today { border-color: var(--coral); }
 .w3b-day.is-today > b { color: var(--accent-text); }
-.w3b-evt { display: block; font-size: var(--fs-caption); font-weight: 600; border-radius: var(--r-2); padding: 2px 6px; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: clip; border: 0; width: 100%; text-align: left; cursor: pointer; font-family: inherit; }
-.w3b-free { display: block; font-size: var(--fs-caption); color: var(--text-faint); margin-top: 4px; }
-.w3b-cols { display: flex; gap: 12px; margin-top: 14px; }
+.w3b-evt { display: block; font-size: var(--fs-caption); font-weight: 600; border-radius: var(--r-2); padding: var(--space-0) 6px; margin-top: var(--space-1); white-space: nowrap; overflow: hidden; text-overflow: clip; border: 0; width: 100%; text-align: left; cursor: pointer; font-family: inherit; }
+.w3b-free { display: block; font-size: var(--fs-caption); color: var(--text-faint); margin-top: var(--space-1); }
+.w3b-cols { display: flex; gap: var(--space-3); margin-top: 14px; }
 .w3b-cols > * { flex: 1; min-width: 0; }
 @media (max-width: 900px) { .w3b-cols { flex-direction: column; } .w3b-week { flex-wrap: wrap; } .w3b-day { flex: 1 1 120px; } }
 
 /* Photo tiles (memories): square glyph tiles with a caption line under each. */
-.w3b-photos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.w3b-photos { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-3); }
 @media (max-width: 900px) { .w3b-photos { grid-template-columns: repeat(2, 1fr); } }
 .w3b-photo { border: 1px solid var(--border); border-radius: var(--r-3); overflow: hidden; background: var(--bg-raised); padding: 0; cursor: pointer; font: inherit; color: var(--text); text-align: left; }
 .w3b-photo .ph { aspect-ratio: 4 / 3; display: grid; place-items: center; font-size: var(--fs-section); }
-.w3b-photo .cap { display: block; font-size: var(--fs-small); font-weight: 600; padding: 8px 12px; white-space: nowrap; overflow: hidden; text-overflow: clip; }
-.w3b-photo .sub { display: block; font-size: var(--fs-caption); color: var(--text-muted); padding: 0 12px 10px; white-space: nowrap; overflow: hidden; text-overflow: clip; }
+.w3b-photo .cap { display: block; font-size: var(--fs-small); font-weight: 600; padding: var(--space-2) var(--space-3); white-space: nowrap; overflow: hidden; text-overflow: clip; }
+.w3b-photo .sub { display: block; font-size: var(--fs-caption); color: var(--text-muted); padding: 0 var(--space-3) 10px; white-space: nowrap; overflow: hidden; text-overflow: clip; }
 
 /* Budget meters: one bar per envelope with spent against budget. */
 .w3b-meter { margin: 10px 0; }
-.w3b-meter .top { display: flex; align-items: baseline; gap: 8px; font-size: var(--fs-body); }
+.w3b-meter .top { display: flex; align-items: baseline; gap: var(--space-2); font-size: var(--fs-body); }
 .w3b-meter .top b { font-weight: 600; }
 .w3b-meter .top span { margin-left: auto; font-size: var(--fs-small); color: var(--text-muted); }
 .w3b-meter .bar { height: 8px; border-radius: var(--r-2); background: var(--bg-side); margin-top: 6px; overflow: hidden; }
@@ -43,19 +43,19 @@
 .w3b-meter.is-near .bar i { background: var(--amber-tx); }
 
 /* The home-card strip: what Home shows for this pack, opening Home. */
-.w3b-home { display: flex; align-items: center; gap: 12px; padding: 12px 20px; width: 100%; text-align: left; cursor: pointer; font: inherit; color: var(--text); }
+.w3b-home { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) 20px; width: 100%; text-align: left; cursor: pointer; font: inherit; color: var(--text); }
 .w3b-home .t { font-size: var(--fs-body); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: clip; }
 .w3b-home .meta { margin-left: auto; font-size: var(--fs-small); color: var(--text-muted); flex: none; }
 
 /* Tick rows: a round checkbox, a title and a right tag, as one button. */
-.w3b-tick { display: flex; align-items: center; gap: 12px; padding: 9px 0; width: 100%; background: none; border: 0; font: inherit; color: var(--text); cursor: pointer; text-align: left; }
+.w3b-tick { display: flex; align-items: center; gap: var(--space-3); padding: 9px 0; width: 100%; background: none; border: 0; font: inherit; color: var(--text); cursor: pointer; text-align: left; }
 .w3b-tick + .w3b-tick { border-top: 1px solid var(--border); }
 .w3b-tick .t { font-size: var(--fs-body); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: clip; }
 .w3b-tick .meta { margin-left: auto; font-size: var(--fs-small); color: var(--text-muted); flex: none; }
 
 /* Small stat tiles in a row (visits, counts). */
-.w3b-stats { display: flex; gap: 12px; flex-wrap: wrap; }
-.w3b-stat { flex: 1; min-width: 140px; background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--r-3); padding: 12px 16px; }
+.w3b-stats { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+.w3b-stat { flex: 1; min-width: 140px; background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--r-3); padding: var(--space-3) var(--space-4); }
 .w3b-stat b { display: block; font-size: var(--fs-section); font-weight: 700; }
 .w3b-stat span { font-size: var(--fs-caption); font-weight: 600; color: var(--text-faint); }
 
@@ -65,11 +65,11 @@
 .w3b-bare { padding: 9px 0; }
 
 /* A quiet disclosure holding the previous layout's extras, so nothing is lost. */
-.w3b-more { margin-top: 24px; }
+.w3b-more { margin-top: var(--space-5); }
 .w3b-more > summary { font-size: var(--fs-small); font-weight: 600; color: var(--text-muted); cursor: pointer; list-style: none; }
 .w3b-more > summary::-webkit-details-marker { display: none; }
 .w3b-more > summary:hover { color: var(--text); }
-.w3b-more .body { margin-top: 12px; }
+.w3b-more .body { margin-top: var(--space-3); }
 
 /* Numbered source rows (the weekly draft's sources). */
 .w3b-src { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: var(--fs-body); font-weight: 500; min-width: 0; }
@@ -78,7 +78,7 @@
 
 /* The draft's edited lines: each with its source chips at the end. */
 .w3b-draft p { font-size: var(--fs-body); margin: 10px 0; }
-.w3b-draft p .cite { margin-left: 4px; cursor: pointer; }
+.w3b-draft p .cite { margin-left: var(--space-1); cursor: pointer; }
 
 /* p15-packs-work (Nov 2026): one left edge, and quiet empty lines, for Weekly and Memories. Scoped under each page's
    own module class. The sub and the facts start at the column edge with the title's tile, like every other page; a
@@ -90,7 +90,7 @@
 .wm-memories .w3b-page .nv-page-lead,
 .wm-memories .w3b-page .page-props { margin-left: 0; }
 .wm-weekly .w3b-page .card:has(> .vsub):not(:has(> .trow)):not(:has(.btn.pri)),
-.wm-memories .w3b-page .card:has(> .vsub):not(:has(> .trow)):not(:has(.btn.pri)) { background: none; border: 0; box-shadow: none; padding: 2px 0 !important; }
+.wm-memories .w3b-page .card:has(> .vsub):not(:has(> .trow)):not(:has(.btn.pri)) { background: none; border: 0; box-shadow: none; padding: var(--space-0) 0 !important; }
 
 /* One left edge (p25 one column): the body starts at the column edge with the title's tile, as every other
    page (was, p15 packs-life: 50 px in, off the title, as the p87 pages did). */
@@ -139,3 +139,56 @@
     max-width: 320px;
   }
 }
+
+/* A pack section: its small label with its action at the line's end, then its content (the rhythm the views set
+   inline before, on the scale: 12 above, 8 under the label). */
+.w3b-sec { margin-top: var(--space-3); }
+.w3b-sec-head { display: flex; align-items: center; margin: 0 0 var(--space-2); }
+.w3b-sec-act { margin-left: auto; }
+
+/* ── One reading order on every pack page (design language, 23 Nov 2026) ─────────────────────────────────────────
+   The owner called the packs out. Three things made them read as unfinished: the "Fills itself" line stood bigger
+   than the page's own lead; an empty section's words (16.5 px) stood bigger than the section's label (12 px), so
+   the hierarchy read upside down; and each quiet line started its words wherever its label ended, so no two lines
+   shared an edge (Health's week sat 440 px wide beside 700 px of nothing). Now the fills line is the lead's quiet
+   follow-on, the words read at 14 px under the label's weight, and every quiet line is one row: the label in a
+   152 px column (the facts' own key column, so "Streak" and "Visits" share the edge), its content filling the
+   rest, its action at the row's end. Shared by the life packs (.w3b-page) and the work packs (.p87-body). */
+.w3b-page > p.vsub,
+.p87 > p.vsub {
+  font-size: var(--fs-md);
+  line-height: 22px;
+  max-width: 80ch;
+  margin-top: var(--space-3);
+}
+.w3b-page > p.vsub > b,
+.p87 > p.vsub > b { color: var(--text-strong); font-weight: 600; }
+.w3b-page > [data-quiet="1"] > .glabel,
+.p87-body > [data-quiet="1"] > .glabel { display: contents; }
+.w3b-page > [data-quiet="1"] > .glabel > span:first-child,
+.p87-body > [data-quiet="1"] > .glabel > span:first-child { flex: none; width: 152px; }
+.w3b-page > [data-quiet="1"] > .glabel > span + span,
+.p87-body > [data-quiet="1"] > .glabel > span + span { order: 2; }
+.w3b-page > [data-quiet="1"] > :not(.glabel),
+.p87-body > [data-quiet="1"] > :not(.glabel) { order: 1; flex: 1 1 0; min-width: 0; }
+.w3b-page > [data-quiet="1"] :is(.vsub, .w3b-bare),
+.p87-body > [data-quiet="1"] :is(.vsub, .p87-bare) { font-size: var(--fs-md); line-height: 22px; padding: 0; }
+/* An empty line inside a section (Family's people and milestones side by side) reads at the same quiet size. */
+.w3b-page section .vsub,
+.w3b-page .w3b-cols .vsub,
+.p87-body .vsub { font-size: var(--fs-md); line-height: 22px; margin: 0; }
+.w3b-page > [data-quiet="1"] > .glabel > .w3b-sec-act { margin-left: auto; }
+.w3b-page > [data-quiet="1"],
+.p87-body > [data-quiet="1"] { align-items: baseline; column-gap: var(--space-4); padding: var(--space-2) 0; }
+/* The week and the figures in a quiet line take the line (the ≥2400 px rule above, at every width): seven day
+   columns of 60 px wrapped "Wed / 18". */
+.w3b-page > [data-quiet="1"] > :is(.w3b-week, .w3b-stats) { align-self: start; }
+.w3b-page > [data-quiet="1"] > .w3b-stats > .w3b-stat { max-width: 320px; }
+.w3b-day > b { margin-bottom: var(--space-1); }
+.w3b-evt { padding: var(--space-0) var(--space-2); }
+.w3b-cols { margin-top: var(--space-3); }
+.w3b-home { padding: var(--space-3) var(--space-4); }
+.w3b-tick { padding: var(--space-2) 0; }
+.w3b-bare { padding: var(--space-2) 0; }
+.w3b-src { gap: var(--space-2); padding: var(--space-2) 0; }
+.w3b-draft p { margin: var(--space-2) 0; }

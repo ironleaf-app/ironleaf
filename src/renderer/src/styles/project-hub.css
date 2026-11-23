@@ -6,8 +6,8 @@
 
 .ph-tabs {
   display: flex;
-  gap: 2px;
-  margin: 2px 0 18px;
+  gap: var(--space-0);
+  margin: var(--space-0) 0 18px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -15,7 +15,7 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 9px 12px 10px;
+  padding: 9px var(--space-3) 10px;
   margin-bottom: -1px;
   border: 0;
   border-bottom: 2px solid transparent;
@@ -48,14 +48,14 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .ph-grid {
   min-width: 0;
   display: grid;
   grid-template-columns: minmax(0, 1.42fr) minmax(0, 1fr);
-  gap: 16px;
+  gap: var(--space-4);
   align-items: start;
 }
 
@@ -66,7 +66,7 @@
 .ph-col {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-4);
   min-width: 0;
 }
 
@@ -74,7 +74,7 @@
   background: var(--bg-raised);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
-  padding: 14px 14px 12px;
+  padding: 14px 14px var(--space-3);
   min-width: 0;
   box-shadow: var(--shadow-card);
 }
@@ -83,7 +83,7 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  margin: 0 2px 8px;
+  margin: 0 var(--space-0) var(--space-2);
   color: var(--text-faint);
 }
 
@@ -136,7 +136,7 @@
 }
 
 .ph-sub {
-  margin: 10px 8px 2px;
+  margin: 10px var(--space-2) var(--space-0);
   font-size: var(--fs-caption);
   font-weight: 600;
   color: var(--text-muted);
@@ -148,7 +148,7 @@
 }
 
 .ph-indent {
-  margin: 4px 0 0 10px;
+  margin: var(--space-1) 0 0 10px;
 }
 
 .ph-list {
@@ -164,7 +164,7 @@
   gap: 10px;
   width: 100%;
   min-width: 0;
-  padding: 7px 8px;
+  padding: 7px var(--space-2);
   border: 0;
   border-radius: var(--r-3);
   background: none;
@@ -192,7 +192,7 @@
 .ph-row-words {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-0);
   flex: 1;
   min-width: 0;
 }
@@ -211,7 +211,7 @@
 
 .ph-date {
   flex: none;
-  padding: 2px 7px;
+  padding: var(--space-0) 7px;
   border-radius: var(--r-2);
   background: var(--bg-hover);
   color: var(--text-muted);
@@ -232,7 +232,7 @@
 }
 
 .ph-more {
-  margin: 4px 0 0 8px;
+  margin: var(--space-1) 0 0 var(--space-2);
   padding: 3px 6px;
   border: 0;
   border-radius: var(--r-2);
@@ -266,7 +266,7 @@
   gap: 1px;
   flex: 1 1 120px;
   min-width: 0;
-  padding: 11px 16px 12px;
+  padding: 11px var(--space-4) var(--space-3);
   border: 0;
   border-right: 1px solid var(--border);
   background: none;
@@ -329,7 +329,7 @@ button.ph-stat:hover {
 
 /* The summary: two lines, the rest on More. */
 .ph-summary {
-  margin: 0 2px;
+  margin: 0 var(--space-0);
 }
 
 .ph-summary p {
@@ -355,7 +355,7 @@ button.ph-stat:hover {
   gap: 10px;
   width: 100%;
   min-width: 0;
-  padding: 7px 8px;
+  padding: 7px var(--space-2);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--surface, var(--bg-raised));
@@ -399,14 +399,14 @@ button.ph-stat:hover {
 }
 
 .ph-plan-group h4 {
-  margin: 10px 8px 2px;
+  margin: 10px var(--space-2) var(--space-0);
   font-size: var(--fs-caption);
   font-weight: 600;
   color: var(--text-muted);
 }
 
 .ph-plan-group:first-child h4 {
-  margin-top: 2px;
+  margin-top: var(--space-0);
 }
 
 /* Dates to confirm: gone-by dates, folded until the person opens it. */
@@ -414,7 +414,7 @@ button.ph-stat:hover {
   background: var(--bg-raised);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
-  padding: 14px 14px 12px;
+  padding: 14px 14px var(--space-3);
   min-width: 0;
   box-shadow: var(--shadow-card);
 }
@@ -423,7 +423,7 @@ button.ph-stat:hover {
   display: flex;
   align-items: center;
   gap: 7px;
-  margin: 0 2px 8px;
+  margin: 0 var(--space-0) var(--space-2);
   color: var(--text-muted);
   font-size: var(--fs-caption);
   font-weight: 600;
@@ -431,12 +431,12 @@ button.ph-stat:hover {
 }
 
 /* The key figures in one subtitle line, and More about this project folded (29 Oct 2026, redesign). */
-.ph-figures { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 0; margin: 0 2px; color: var(--text-muted); font-size: var(--fs-small); }
+.ph-figures { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 0; margin: 0 var(--space-0); color: var(--text-muted); font-size: var(--fs-small); }
 .ph-sep { margin: 0 6px; }
 .ph-figure { padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
 .ph-figure:hover { color: var(--text); text-decoration: underline; }
 .ph-figures strong.is-bad { color: var(--ns-attention-words); }
-.ph-more-fold summary { margin: 4px 2px 10px; font-size: var(--fs-small); font-weight: 650; color: var(--text-muted); cursor: pointer; }
+.ph-more-fold summary { margin: var(--space-1) var(--space-0) 10px; font-size: var(--fs-small); font-weight: 650; color: var(--text-muted); cursor: pointer; }
 
 /* Needs attention. */
 .ph-att-icon {
@@ -480,7 +480,7 @@ button.ph-stat:hover {
 .ph-action {
   display: flex;
   align-items: flex-start;
-  gap: 2px;
+  gap: var(--space-0);
 }
 
 .ph-action .ph-row {
@@ -493,7 +493,7 @@ button.ph-stat:hover {
   flex: none;
   width: 17px;
   height: 17px;
-  margin: 9px 0 0 8px;
+  margin: 9px 0 0 var(--space-2);
   padding: 0;
   border: 1.5px solid var(--border-strong);
   border-radius: var(--r-2);
@@ -548,27 +548,27 @@ button.ph-stat:hover {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .ph-wait-group + .ph-wait-group {
-  padding-top: 8px;
+  padding-top: var(--space-2);
   border-top: 1px solid var(--border);
 }
 
 .ph-wait-head {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 4px 0 2px;
+  gap: var(--space-2);
+  padding: 0 var(--space-1) 0 var(--space-0);
 }
 
 .ph-person-chip {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   min-width: 0;
-  padding: 4px 8px 4px 4px;
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-1);
   border: 0;
   border-radius: var(--r-3);
   background: none;
@@ -610,7 +610,7 @@ button.ph-stat:hover {
   align-items: center;
   gap: 5px;
   flex: none;
-  padding: 4px 10px;
+  padding: var(--space-1) 10px;
   border: 1px solid var(--border-strong);
   border-radius: var(--r-2);
   background: var(--bg-raised);
@@ -627,7 +627,7 @@ button.ph-stat:hover {
 }
 
 .ph-wait-items .ph-row {
-  padding: 5px 8px 5px 38px;
+  padding: 5px var(--space-2) 5px 38px;
   font-size: var(--fs-small);
   color: var(--text-muted);
 }
@@ -636,7 +636,7 @@ button.ph-stat:hover {
 .ph-mini {
   position: relative;
   height: 44px;
-  margin: 0 8px 4px;
+  margin: 0 var(--space-2) var(--space-1);
 }
 
 .ph-mini-line {
@@ -734,7 +734,7 @@ button.ph-stat:hover {
 }
 
 .ph-file-group:first-child .ph-sub {
-  margin-top: 2px;
+  margin-top: var(--space-0);
 }
 
 .ph-glyph {
@@ -793,7 +793,7 @@ button.ph-stat:hover {
 .ph-activity {
   list-style: none;
   margin: 0;
-  padding: 0 4px;
+  padding: 0 var(--space-1);
 }
 
 .ph-act {
@@ -835,7 +835,7 @@ button.ph-stat:hover {
   flex-direction: column;
   gap: 1px;
   min-width: 0;
-  padding-top: 2px;
+  padding-top: var(--space-0);
 }
 
 .ph-act-words {
@@ -873,7 +873,7 @@ button.ph-act-words:hover {
   padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 2px 6px;
+  gap: var(--space-0) 6px;
 }
 
 .ph-person {
@@ -882,7 +882,7 @@ button.ph-act-words:hover {
   gap: 9px;
   width: 100%;
   min-width: 0;
-  padding: 6px 8px 6px 6px;
+  padding: 6px var(--space-2) 6px 6px;
   border: 0;
   border-radius: var(--r-3);
   background: none;
@@ -955,7 +955,7 @@ button.ph-act-words:hover {
 }
 
 .ph-empty-hub p {
-  margin: 2px 0 0;
+  margin: var(--space-0) 0 0;
   font-size: var(--fs-small);
 }
 
@@ -981,7 +981,7 @@ button.ph-act-words:hover {
 }
 
 .ph-life.is-thin .ph-life-row {
-  padding: 2px 2px;
+  padding: var(--space-0) var(--space-0);
 }
 
 .ph-life.is-thin .ph-step-dot {
@@ -992,7 +992,7 @@ button.ph-act-words:hover {
 
 .ph-life.is-thin .ph-step-button {
   font-size: var(--fs-caption);
-  padding: 2px 4px;
+  padding: var(--space-0) var(--space-1);
 }
 
 .ph-life.is-thin .ph-life-panel {
@@ -1002,7 +1002,7 @@ button.ph-act-words:hover {
 .ph-life-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--space-4);
   padding: 5px 14px;
 }
 
@@ -1044,7 +1044,7 @@ button.ph-act-words:hover {
   justify-content: center;
   gap: 7px;
   width: 100%;
-  padding: 3px 4px;
+  padding: 3px var(--space-1);
   border: 0;
   border-radius: var(--r-3);
   background: none;
@@ -1121,7 +1121,7 @@ button.ph-act-words:hover {
 }
 
 .ph-life-panel {
-  padding: 4px 18px 16px;
+  padding: var(--space-1) 18px var(--space-4);
   border-top: 1px solid var(--border);
 }
 
@@ -1129,7 +1129,7 @@ button.ph-act-words:hover {
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  padding: 12px 0 6px;
+  padding: var(--space-3) 0 6px;
 }
 
 .ph-life-head > div:first-child {
@@ -1140,14 +1140,14 @@ button.ph-act-words:hover {
 .ph-life-head h4 {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   margin: 0;
   font-size: var(--fs-body);
   font-weight: 650;
 }
 
 .ph-life-head p {
-  margin: 2px 0 0;
+  margin: var(--space-0) 0 0;
   color: var(--text-muted);
   font-size: var(--fs-small);
 }
@@ -1163,17 +1163,17 @@ button.ph-act-words:hover {
 
 .ph-life-actions {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   flex-wrap: wrap;
   justify-content: flex-end;
 }
 
 .ph-check {
   list-style: none;
-  margin: 4px 0 0;
+  margin: var(--space-1) 0 0;
   padding: 0;
   columns: 2 300px;
-  column-gap: 24px;
+  column-gap: var(--space-5);
 }
 
 .ph-check-row {
@@ -1186,7 +1186,7 @@ button.ph-act-words:hover {
 }
 
 .ph-check-row .ph-box {
-  margin: 2px 0 0;
+  margin: var(--space-0) 0 0;
 }
 
 .ph-check-words {
@@ -1202,7 +1202,7 @@ button.ph-act-words:hover {
 
 .ph-row-tools {
   display: inline-flex;
-  gap: 2px;
+  gap: var(--space-0);
   opacity: 0;
 }
 
@@ -1233,7 +1233,7 @@ button.ph-act-words:hover {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  margin: 4px 0 0;
+  margin: var(--space-1) 0 0;
   padding: 3px 6px 3px 0;
   border: 0;
   background: none;
@@ -1266,9 +1266,9 @@ button.ph-act-words:hover {
 .ph-closeout {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   margin-top: 14px;
-  padding: 12px 14px;
+  padding: var(--space-3) 14px;
   border-radius: var(--r-4);
   background: var(--bg-side);
   color: var(--text-muted);
@@ -1312,14 +1312,14 @@ button.ph-act-words:hover {
 }
 
 .pt-empty p {
-  margin: 2px 0 0;
+  margin: var(--space-0) 0 0;
   font-size: var(--fs-small);
 }
 
 .pt-bar {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   flex-wrap: wrap;
   padding: 10px 14px;
   border-bottom: 1px solid var(--border);
@@ -1348,7 +1348,7 @@ button.ph-act-words:hover {
 .pt-tools {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 /* Narrow pages (p18, 4 Nov 2026, the 1219 walk: the legend crushed into an eight-line rail beside its
@@ -1364,13 +1364,13 @@ button.ph-act-words:hover {
 
 .pt-zoom {
   display: inline-flex;
-  padding: 2px;
+  padding: var(--space-0);
   border-radius: var(--r-3);
   background: var(--bg-hover);
 }
 
 .pt-zoom button {
-  padding: 4px 11px;
+  padding: var(--space-1) 11px;
   border: 0;
   border-radius: var(--r-2);
   background: none;
@@ -1416,7 +1416,7 @@ button.ph-act-words:hover {
   z-index: 2;
   flex: none;
   width: var(--pt-label);
-  padding: 26px 16px 0;
+  padding: 26px var(--space-4) 0;
   border-right: 1px solid var(--border);
   background: var(--bg-raised);
   color: var(--text-muted);
@@ -1529,7 +1529,7 @@ button.ph-act-words:hover {
   z-index: 7;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   flex: none;
   width: var(--pt-label);
   padding: 0 10px 0 6px;
@@ -1566,7 +1566,7 @@ button.ph-act-words:hover {
   overflow: hidden;
   text-overflow: clip;
   white-space: nowrap;
-  padding: 3px 4px;
+  padding: 3px var(--space-1);
   border: 0;
   border-radius: var(--r-2);
   background: none;
@@ -1676,7 +1676,7 @@ button.ph-act-words:hover {
   gap: 9px;
   flex: none;
   width: var(--pt-label);
-  padding: 0 12px 0 36px;
+  padding: 0 var(--space-3) 0 var(--space-6);
   border: 0;
   border-right: 1px solid var(--border);
   background: var(--bg-raised);
@@ -1949,7 +1949,7 @@ button.ph-act-words:hover {
   .ph-life-row {
     flex-direction: column;
     align-items: stretch;
-    gap: 4px;
+    gap: var(--space-1);
   }
 
   .ph-step-button {
@@ -1969,7 +1969,7 @@ button.ph-act-words:hover {
 
   .ph-stat {
     flex-basis: 30%;
-    padding: 8px 12px 9px;
+    padding: var(--space-2) var(--space-3) 9px;
   }
 
   .ph-stat-n {
@@ -2019,7 +2019,7 @@ button.ph-act-words:hover {
   overflow: auto;
 }
 .tidy-dialog h3 {
-  margin: 16px 0 6px;
+  margin: var(--space-4) 0 6px;
   font-size: var(--fs-small);
   color: var(--text);
 }
@@ -2045,13 +2045,13 @@ button.ph-act-words:hover {
 }
 .tidy-all {
   list-style: none;
-  margin: 8px 0;
+  margin: var(--space-2) 0;
   padding: 0;
 }
 .tidy-all li {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--space-4);
   padding: 7px 0;
   border-bottom: 1px solid var(--border);
 }
@@ -2065,7 +2065,7 @@ button.ph-act-words:hover {
 .td-tidy {
   width: 100%;
   text-align: left;
-  margin-top: 8px;
+  margin-top: var(--space-2);
 }
 
 /* Closing with open tasks (p12-close-and-noise A, 4 Nov 2026): the shared dialog, and the quiet line on a finished
@@ -2078,7 +2078,7 @@ button.ph-act-words:hover {
 }
 .close-tasks {
   list-style: none;
-  margin: 12px 0 0;
+  margin: var(--space-3) 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -2086,7 +2086,7 @@ button.ph-act-words:hover {
 .close-task {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   padding: 9px 0;
   border-bottom: 1px solid var(--border);
 }
@@ -2109,14 +2109,14 @@ button.ph-act-words:hover {
 }
 .pj-loose {
   display: block;
-  margin: 2px auto 10px;
+  margin: var(--space-0) auto 10px;
   border: 0;
   background: none;
   color: var(--text-faint);
   font: inherit;
   font-size: var(--fs-small);
   cursor: pointer;
-  padding: 4px 10px;
+  padding: var(--space-1) 10px;
   border-radius: var(--r-1);
 }
 .pj-loose:hover {
@@ -2126,7 +2126,7 @@ button.ph-act-words:hover {
 
 /* Projects home, list view and finished fold (29 Oct 2026, redesign Job B). */
 .pj-next-label { flex: none; color: var(--text-muted); font-size: var(--fs-caption); font-weight: 600; }
-.pj-late-count { flex: none; padding: 2px 8px; border-radius: var(--r-1); color: var(--ns-attention-words); background: color-mix(in srgb, var(--ns-attention) 12%, transparent); font-size: var(--fs-caption); font-weight: 600; white-space: nowrap; }
+.pj-late-count { flex: none; padding: var(--space-0) var(--space-2); border-radius: var(--r-1); color: var(--ns-attention-words); background: color-mix(in srgb, var(--ns-attention) 12%, transparent); font-size: var(--fs-caption); font-weight: 600; white-space: nowrap; }
 .pj-prows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .pj-prow-main { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border: 0; border-bottom: 1px solid var(--border); background: none; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
 .pj-prow-main:hover { background: var(--bg-hover); }
@@ -2134,7 +2134,7 @@ button.ph-act-words:hover {
 .pj-prow-name { font-weight: 600; overflow: hidden; text-overflow: clip; white-space: nowrap; }
 .pj-prow-meta { color: var(--text-faint); font-size: var(--fs-small); overflow: hidden; text-overflow: clip; white-space: nowrap; }
 .pj-done-fold { margin-top: 18px; }
-.pj-done-fold summary { color: var(--text-muted); font-size: var(--fs-small); font-weight: 600; cursor: pointer; padding: 6px 2px; }
+.pj-done-fold summary { color: var(--text-muted); font-size: var(--fs-small); font-weight: 600; cursor: pointer; padding: 6px var(--space-0); }
 .pj-view-link.active { color: var(--text); background: var(--bg-hover); }
-.pj-other-notes { margin-top: 4px; }
-.pj-other-notes > summary { color: var(--text-muted); font-size: var(--fs-small); font-weight: 650; cursor: pointer; padding: 6px 2px; }
+.pj-other-notes { margin-top: var(--space-1); }
+.pj-other-notes > summary { color: var(--text-muted); font-size: var(--fs-small); font-weight: 650; cursor: pointer; padding: 6px var(--space-0); }

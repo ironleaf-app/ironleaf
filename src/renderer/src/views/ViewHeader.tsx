@@ -49,6 +49,63 @@ interface Props {
   hideName?: boolean;
 }
 
+/** One step of a crumb's trail: a folder or a place, usually a button back to it ('…' stands for folders left out). */
+export interface CrumbStep {
+  key: string;
+  label: ReactNode;
+  onClick?: () => void;
+  title?: string;
+}
+
+/**
+ * The crumb's words (23 Nov 2026, nothing cut off): the trail of folders, then the place, bold. When the bar is short of
+ * room the farthest folders drop out whole, one by one (fitCrumb, measured with the header's own layout), and only then
+ * may the place itself wrap to a second line; never a folder or a name cut through. The whole path stays on the crumb's
+ * hover.
+ */
+/** `here` is the place itself, in a <b> (the bar's one bold word). */
+export function Crumbs({ trail, here }: { trail: CrumbStep[]; here?: ReactNode }) {
+  return (
+    <>
+      {trail.length > 0 && (
+        <span className="crumb-trail">
+          {trail.map((s) => (
+            <span key={s.key} className="crumb-step">
+              {s.onClick ? (
+                <button type="button" className="crumb-folder" onClick={s.onClick} title={s.title}>
+                  {s.label}
+                </button>
+              ) : (
+                <span className="crumb-folder" aria-hidden={s.label === '…' ? true : undefined}>{s.label}</span>
+              )}
+              <span className="crumb-sep" aria-hidden="true">/</span>
+            </span>
+          ))}
+        </span>
+      )}
+      {here}
+    </>
+  );
+}
+
+/** Fits the crumb to its room: every step back, then the farthest dropped one at a time while the words still run past
+ *  the crumb's edge; with every step gone and the place still too long, the place wraps (.is-tight). */
+export function fitCrumb(bar: HTMLElement): void {
+  const crumb = bar.querySelector<HTMLElement>('.crumb');
+  if (!crumb) return;
+  const steps = [...crumb.querySelectorAll<HTMLElement>('.crumb-step')];
+  crumb.classList.remove('is-tight');
+  for (const s of steps) s.classList.remove('is-dropped');
+  // A hidden crumb (a narrow bar) measures nothing: it is fitted again when it shows.
+  if (!crumb.getClientRects().length) return;
+  const over = () => crumb.scrollWidth > crumb.clientWidth + 1;
+  for (const s of steps) {
+    if (!over()) return;
+    s.classList.add('is-dropped');
+  }
+  if (over()) crumb.classList.add('is-tight');
+}
+
 export function ViewHeader({ tab, title, children, menu, crumb, hideName }: Props) {
   const band = useContext(PageBand);
   const fit = useFit();
@@ -59,7 +116,10 @@ export function ViewHeader({ tab, title, children, menu, crumb, hideName }: Prop
   // shortens with … by itself, full text in its title) while the bar keeps its exact centre.
   const barRef = useRef<HTMLDivElement | null>(null);
   useLayoutEffect(() => {
-    if (barRef.current) layoutHeaderOverflow(barRef.current, tab.id);
+    if (barRef.current) {
+      fitCrumb(barRef.current);
+      layoutHeaderOverflow(barRef.current, tab.id);
+    }
   });
   useLayoutEffect(() => {
     const bar = barRef.current;
@@ -78,13 +138,20 @@ export function ViewHeader({ tab, title, children, menu, crumb, hideName }: Prop
       }
       cancelAnimationFrame(raf);
       // Forced (t102, 9 Nov 2026): the widths moved but the words did not, so the settled check would skip it.
-      raf = requestAnimationFrame(() => layoutHeaderOverflow(bar, tab.id, true));
+      raf = requestAnimationFrame(() => {
+        fitCrumb(bar);
+        layoutHeaderOverflow(bar, tab.id, true);
+      });
     };
     window.addEventListener('resize', relayout);
     const ro = 'ResizeObserver' in window ? new ResizeObserver(relayout) : null;
     ro?.observe(bar);
     // ... and fonts already loaded force nothing either (t146): the bar above measured them as they are.
-    if (document.fonts?.status === 'loading') void document.fonts.ready.then(() => layoutHeaderOverflow(bar, tab.id, true));
+    if (document.fonts?.status === 'loading')
+      void document.fonts.ready.then(() => {
+        fitCrumb(bar);
+        layoutHeaderOverflow(bar, tab.id, true);
+      });
     return () => {
       window.removeEventListener('resize', relayout);
       ro?.disconnect();
@@ -135,44 +202,26 @@ export function ViewHeader({ tab, title, children, menu, crumb, hideName }: Prop
     }
   })();
   const crumbNode = crumb ?? (info ? (
-    <>
-      <span>
-        <button className="crumb-folder" onClick={() => openModal({ kind: 'settings', section: 'modules' })}>
-          Packs
-        </button>
-        <span> / </span>
-      </span>
-      {packDetail ? (
-        <span>
-          <button className="crumb-folder" onClick={() => openModule(mod!)}>
-            {info.name}
-          </button>
-          <span> / </span>
-        </span>
-      ) : (
-        <b>{info.name}</b>
-      )}
-      {packDetail && <b>{packDetail}</b>}
-    </>
+    <Crumbs
+      trail={[
+        { key: 'packs', label: 'Packs', onClick: () => openModal({ kind: 'settings', section: 'modules' }) },
+        ...(packDetail ? [{ key: 'pack', label: info.name, onClick: () => openModule(mod!) }] : []),
+      ]}
+      here={<b>{packDetail ?? info.name}</b>}
+    />
   ) : (
-    <>
-      {shownParts.map((f, i) =>
-        f === '…' ? (
-          <span key="ellipsis">
-            <span aria-hidden="true">…</span>
-            <span> / </span>
-          </span>
-        ) : (
-          <span key={`${firstShown}-${i}`}>
-            <button className="crumb-folder" onClick={() => (isPrivatePath(folders[0]) ? openPrivate() : revealInExplorer(folders.slice(0, firstShown + (shownParts[0] === '…' ? i : i + 1)).join('/')))}>
-              {f}
-            </button>
-            <span> / </span>
-          </span>
-        ),
+    <Crumbs
+      trail={shownParts.map((f, i) =>
+        f === '…'
+          ? { key: 'ellipsis', label: '…' }
+          : {
+              key: `${firstShown}-${i}`,
+              label: f,
+              onClick: () => (isPrivatePath(folders[0]) ? openPrivate() : revealInExplorer(folders.slice(0, firstShown + (shownParts[0] === '…' ? i : i + 1)).join('/'))),
+            },
       )}
-      {!repeatsTitle && !hideName && <b>{name}</b>}
-    </>
+      here={!repeatsTitle && !hideName && <b>{name}</b>}
+    />
   ));
   // In the former host app's window (one window, 9 Nov 2026: two searches and two account
   // circles on screen): Vault's header goes — back, forward, +, the centred search, the panel toggle and

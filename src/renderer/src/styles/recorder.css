@@ -6,9 +6,9 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 12px;
-  margin: 10px 0 4px;
-  padding: 8px 12px;
+  gap: var(--space-2) var(--space-3);
+  margin: var(--space-2) 0 var(--space-1);
+  padding: var(--space-2) var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised);
@@ -17,7 +17,7 @@
 }
 
 .mr.is-idle {
-  padding: 6px 10px;
+  padding: var(--space-2) var(--space-2);
   border-style: dashed;
   background: transparent;
 }
@@ -67,8 +67,8 @@
 .mr-record {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 4px 10px;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
   border: 1px solid var(--border-strong);
   border-radius: var(--r-1);
   background: var(--bg-raised);
@@ -106,7 +106,7 @@
 .mr-pc {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   color: var(--text-muted);
   font-size: var(--fs-small);
   white-space: nowrap;
@@ -124,7 +124,7 @@
   /* One column (a wrapping column would size each line to its longest content and spill past the card). */
   flex-wrap: nowrap;
   align-items: stretch;
-  gap: 4px;
+  gap: var(--space-1);
   border-color: color-mix(in srgb, var(--danger) 35%, var(--border));
   background: color-mix(in srgb, var(--danger) 4%, var(--bg-raised));
   box-shadow: var(--shadow-card);
@@ -139,7 +139,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 10px;
+  gap: var(--space-2) var(--space-2);
   min-width: 0;
 }
 
@@ -166,15 +166,15 @@
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   margin-left: auto;
 }
 
 .mr-acts .button {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 11px;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
   font-size: var(--fs-small);
 }
 
@@ -194,7 +194,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 8px;
+  gap: var(--space-1) var(--space-2);
   margin: 0;
   color: var(--text-muted);
   font-size: var(--fs-small);
@@ -256,9 +256,9 @@
   left: 50%;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   max-width: min(560px, calc(100% - 32px));
-  padding: 5px 6px 5px 12px;
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-3);
   border: 1px solid color-mix(in srgb, var(--danger) 30%, var(--border));
   border-radius: var(--r-1);
   background: var(--bg-raised);
@@ -321,8 +321,8 @@
   container: mr-stack / inline-size;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin: 10px 0 6px;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 var(--space-2);
 }
 
 .mr-stack > .mr,
@@ -333,20 +333,20 @@
 .mr.is-idle.is-again {
   border-style: solid;
   border-color: transparent;
-  padding-left: 2px;
+  padding-left: var(--space-0);
 }
 
 .mr-hint.is-warn {
   display: inline-flex;
   align-items: flex-start;
-  gap: 6px;
+  gap: var(--space-2);
   color: var(--text-muted);
   line-height: 1.45;
 }
 
 .mr-hint.is-warn svg {
   flex: none;
-  margin-top: 2px;
+  margin-top: var(--space-0);
   color: var(--tone-warn, var(--danger));
 }
 
@@ -354,7 +354,7 @@
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 12px;
+  gap: var(--space-2) var(--space-3);
   margin-left: auto;
 }
 
@@ -363,7 +363,7 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   min-width: 0;
   max-width: 260px;
   color: var(--text-muted);
@@ -379,7 +379,7 @@
   min-width: 0;
   max-width: 100%;
   overflow: hidden;
-  padding: 3px 22px 3px 8px;
+  padding: var(--space-1) var(--space-5) var(--space-1) var(--space-2);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M2 4l3 3 3-3' fill='none' stroke='%23999' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 7px center;
@@ -410,15 +410,15 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 16px;
+  gap: var(--space-2) var(--space-4);
   min-width: 0;
-  padding-left: 20px;
+  padding-left: var(--space-5);
 }
 
 .mr-meter {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: var(--space-2);
   color: var(--text-muted);
   font-size: var(--fs-caption);
 }
@@ -459,9 +459,9 @@
 .mr-warn {
   display: flex;
   align-items: flex-start;
-  gap: 7px;
-  margin: 2px 0 0;
-  padding: 7px 10px;
+  gap: var(--space-2);
+  margin: var(--space-0) 0 0;
+  padding: var(--space-2) var(--space-2);
   border-radius: var(--r-3);
   background: color-mix(in srgb, var(--tone-warn, var(--danger)) 12%, var(--bg-raised));
   color: var(--text);
@@ -471,27 +471,27 @@
 
 .mr-warn svg {
   flex: none;
-  margin-top: 2px;
+  margin-top: var(--space-0);
   color: var(--tone-warn, var(--danger));
 }
 
 .mr.is-live .mr-consent,
 .mr.is-live .mr-line {
-  padding-left: 20px;
+  padding-left: var(--space-5);
 }
 
 /* The transcript as it grows */
 .mr-live-transcript {
-  margin: 4px 0 2px 20px;
-  padding-top: 8px;
+  margin: var(--space-1) 0 var(--space-0) var(--space-5);
+  padding-top: var(--space-2);
   border-top: 1px solid var(--border);
 }
 
 .mr-live-transcript ol {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin: 0 0 4px;
+  gap: var(--space-1);
+  margin: 0 0 var(--space-1);
   padding: 0;
   list-style: none;
 }
@@ -499,7 +499,7 @@
 .mr-live-transcript li {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: var(--space-2);
   min-width: 0;
   color: var(--text);
   font-size: var(--fs-small);
@@ -531,7 +531,7 @@
   overflow: hidden;
   flex: 1 0 100%;
   height: 4px;
-  margin-left: 26px;
+  margin-left: var(--space-5);
   border-radius: var(--r-1);
   background: color-mix(in srgb, var(--text-faint) 20%, transparent);
 }
@@ -570,15 +570,15 @@
 
 .mp-parts {
   display: flex;
-  gap: 2px;
+  gap: var(--space-0);
   overflow-x: auto;
-  padding: 6px 8px 0;
+  padding: var(--space-2) var(--space-2) 0;
   border-bottom: 1px solid var(--border);
 }
 
 .mp-parts button {
   flex: none;
-  padding: 5px 10px 7px;
+  padding: var(--space-1) var(--space-2) var(--space-2);
   border-bottom: 2px solid transparent;
   color: var(--text-muted);
   font-size: var(--fs-small);
@@ -594,9 +594,9 @@
 .mp-player {
   display: flex;
   align-items: center;
-  gap: 6px 8px;
+  gap: var(--space-2) var(--space-2);
   min-width: 0;
-  padding: 8px 10px;
+  padding: var(--space-2) var(--space-2);
 }
 
 .mp-play {
@@ -627,7 +627,7 @@
   width: auto;
   min-width: 30px;
   height: 26px;
-  padding: 0 4px;
+  padding: 0 var(--space-1);
   color: var(--text-muted);
   font-size: var(--fs-caption);
   font-weight: 600;
@@ -667,7 +667,7 @@
 .mp-seek::-webkit-slider-thumb {
   width: 12px;
   height: 12px;
-  margin-top: -4px;
+  margin-top: calc(-1 * var(--space-1));
   border: 2px solid var(--bg-raised);
   border-radius: 50%;
   background: var(--accent);
@@ -684,7 +684,7 @@
 }
 
 .mp-speed select {
-  padding: 3px 6px;
+  padding: var(--space-1) var(--space-2);
   border: 1px solid var(--border);
   border-radius: var(--r-2);
   background: var(--bg-raised);
@@ -704,9 +704,9 @@
 .mp-gone {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   margin: 0;
-  padding: 10px 12px;
+  padding: var(--space-2) var(--space-3);
   color: var(--text-muted);
   font-size: var(--fs-small);
 }
@@ -719,15 +719,15 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 10px;
-  padding: 6px 10px;
+  gap: var(--space-2) var(--space-2);
+  padding: var(--space-2) var(--space-2);
 }
 
 .mp-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 2px 0;
+  gap: var(--space-2);
+  padding: var(--space-0) 0;
   color: var(--text);
   font-size: var(--fs-small);
   font-weight: 600;
@@ -751,11 +751,11 @@
   display: inline-flex;
   flex: 1 1 200px;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   min-width: 0;
   max-width: 340px;
   margin-left: auto;
-  padding: 3px 8px;
+  padding: var(--space-1) var(--space-2);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg);
@@ -787,16 +787,16 @@
   overflow-y: auto;
   max-height: 340px;
   margin: 0;
-  padding: 0 4px 6px;
+  padding: 0 var(--space-1) var(--space-2);
   list-style: none;
 }
 
 .mp-line {
   display: flex;
   align-items: baseline;
-  gap: 10px;
+  gap: var(--space-2);
   width: 100%;
-  padding: 5px 6px;
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--r-3);
   color: var(--text);
   line-height: 1.5;
@@ -830,7 +830,7 @@
 
 .mp-who {
   flex: none;
-  padding: 0 6px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-1);
   font-size: var(--fs-caption);
   font-weight: 600;
@@ -873,7 +873,7 @@
 .mr-pill.is-working,
 .mr-pill.is-interrupted {
   border-color: var(--border-strong);
-  padding-right: 6px;
+  padding-right: var(--space-2);
 }
 
 /* More than one meeting unfinished (9.2 uplift F121): its pills stack at the foot of the window. */
@@ -886,7 +886,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   max-width: min(560px, calc(100% - 32px));
 }
 
@@ -897,7 +897,7 @@
 }
 
 .mr-pill.is-working {
-  padding-right: 14px;
+  padding-right: var(--space-3);
 }
 
 .mr-pill-warn {
@@ -907,7 +907,7 @@
 
 .mr-pill-go {
   flex: none;
-  padding: 3px 10px;
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--r-1);
   font-size: var(--fs-caption);
 }
@@ -947,7 +947,7 @@
 .mr.is-idle {
   flex-wrap: nowrap;
   align-items: flex-start;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .mr.is-idle .mr-record {
@@ -959,13 +959,13 @@
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-2);
   min-width: 0;
 }
 
 .mr-idle-body .mr-hint {
   flex: none;
-  padding-top: 4px;
+  padding-top: var(--space-1);
   line-height: 1.45;
 }
 
@@ -986,14 +986,14 @@
 .mr.is-live .mr-notice {
   display: flex;
   align-items: flex-start;
-  gap: 7px;
+  gap: var(--space-2);
   color: var(--text-muted);
   line-height: 1.45;
 }
 
 .mr.is-live .mr-notice svg {
   flex: none;
-  margin-top: 2px;
+  margin-top: var(--space-0);
   color: var(--tone-warn, var(--danger));
 }
 
@@ -1021,8 +1021,8 @@
 
 /* Minutes ready to send (5 Nov 2026, p3-minutes-right): one action, the word check, thin stretches, the finish. */
 .mm {
-  margin: 10px 0 4px;
-  padding: 10px 12px;
+  margin: var(--space-2) 0 var(--space-1);
+  padding: var(--space-2) var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised);
@@ -1032,7 +1032,7 @@
 .mm-make {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: var(--space-3);
 }
 .mm-make .button {
   flex: none;
@@ -1042,25 +1042,25 @@
   line-height: 1.45;
 }
 .mm-said {
-  margin: 8px 0 0;
+  margin: var(--space-2) 0 0;
   line-height: 1.45;
   color: var(--tone-warn, var(--danger));
 }
 .mm-done {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--space-2);
 }
 .mm-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--space-3);
 }
 .mm-title {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: var(--space-2);
   color: var(--text);
 }
 .mm-title strong {
@@ -1069,14 +1069,14 @@
 .mm-check {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 /* The minutes themselves on the card (t301, 18 Nov 2026): after Minutes made, the summary, decisions and
    actions read here — not only the check card and Save as PDF. Plain stacked lines, capped to a reading width. */
 .mm-minutes {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-2);
   max-width: 76ch;
 }
 .mm-minutes p {
@@ -1089,13 +1089,13 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: var(--space-1);
 }
 .mm-minutes li {
   line-height: 1.45;
 }
 .mm-minutes .mm-faint {
-  margin-top: 2px;
+  margin-top: var(--space-0);
 }
 .mm-list {
   list-style: none;
@@ -1103,7 +1103,7 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: var(--space-3);
   max-width: 76ch;
 }
 /* One check reads as its own calm stack (t301, 18 Nov 2026: the shared grid read as cramped tiny text): the word
@@ -1113,14 +1113,14 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 4px;
-  padding: 2px 0;
+  gap: var(--space-1);
+  padding: var(--space-0) 0;
 }
 .mm-word {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
-  gap: 4px 8px;
+  gap: var(--space-1) var(--space-2);
   color: var(--text);
 }
 .mm-faint {
@@ -1134,7 +1134,7 @@
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
-  gap: 4px 8px;
+  gap: var(--space-1) var(--space-2);
   min-width: 0;
 }
 .mm-quote {
@@ -1146,7 +1146,7 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--space-2);
 }
 /* The correction box caps at a word or so, also inside a page (compose.css lets a page's text fields take the row). */
 .mm-fix input,
@@ -1158,7 +1158,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 12px;
+  gap: var(--space-2) var(--space-3);
 }
 .mm-gaps .mm-words {
   flex: 1 1 320px;
@@ -1166,13 +1166,13 @@
 .mm-acts {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 .mm-finish {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 12px;
+  gap: var(--space-2) var(--space-3);
 }
 .mm-finish .mm-words {
   flex: 1 1 200px;
@@ -1191,7 +1191,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 12px;
+  gap: var(--space-2) var(--space-3);
 }
 .mm-error .mm-said {
   margin: 0;
@@ -1203,19 +1203,19 @@
 .spk {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-top: 8px;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
 }
 .spk-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: var(--space-2);
 }
 .spk-title {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   font-size: var(--fs-caption);
   font-weight: 600;
   color: var(--text-muted);
@@ -1223,12 +1223,12 @@
 .spk-undo {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
 }
 .spk-rows {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1237,7 +1237,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   min-width: 0;
 }
 .spk-play {
@@ -1246,7 +1246,7 @@
 .spk-name {
   display: inline-flex;
   align-items: baseline;
-  gap: 6px;
+  gap: var(--space-2);
   min-width: 0;
   text-align: left;
 }
@@ -1268,7 +1268,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   flex: 1 1 auto;
   min-width: 0;
 }
@@ -1279,7 +1279,7 @@
 .spk-suggest {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: 2px 8px;
+  gap: var(--space-0) var(--space-2);
   flex-basis: 100%;
 }
 .spk-pick {
@@ -1304,13 +1304,13 @@
 .mp-rerun {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-top: 8px;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
 }
 .mp-rerun-acts {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
 }
 .mp-rerun .mp-words {
   font-size: var(--fs-caption);
@@ -1328,21 +1328,21 @@
  * own (only the player row had), so the voices and the re-listen button sat against the card's left edge. */
 .mp-part > .spk,
 .mp-part > .mp-rerun {
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: var(--space-2);
+  padding-right: var(--space-2);
 }
 .mp-part > .mp-rerun {
-  padding-bottom: 10px;
+  padding-bottom: var(--space-2);
 }
 .mp-rerun-acts {
-  gap: 8px;
+  gap: var(--space-2);
 }
 /* Each voice row hugs its name (t275, 13 Nov 2026: the choice floated mid-row past short names): the name
    takes what it needs, the clear and the choice sit right after it, the way the other row actions sit. */
 .spk-row {
   display: grid;
   grid-template-columns: 28px minmax(0, max-content) max-content max-content;
-  column-gap: 6px;
+  column-gap: var(--space-2);
   align-items: center;
 }
 .spk-play { grid-column: 1; }

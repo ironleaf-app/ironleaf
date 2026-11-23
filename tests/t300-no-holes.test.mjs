@@ -31,9 +31,10 @@ import path from 'node:path';
 import { after, test } from 'node:test';
 import { openSettings, startHarness } from './vault-controls-harness.mjs';
 import { writeT200Vault } from './t200-vault.mjs';
+import { cssPxFor } from './css-px.mjs';
 
 const root = path.join(import.meta.dirname, '..');
-const read = (p) => readFileSync(path.join(root, p), 'utf8');
+const read = (p) => cssPxFor(p, readFileSync(path.join(root, p), 'utf8'));
 const exists = (p) => {
   try {
     readFileSync(path.join(root, p));
@@ -102,7 +103,11 @@ test('one width system: reading, content, full, with a side column; rows never s
   const frame = read('src/renderer/src/styles/page-frame.css');
   for (const v of ['--w-reading: 720px', '--w-content: 1160px', '--w-full: 100%', '--w-side: 360px', '--w-wide: 1900px']) assert.ok(frame.includes(v), `the frame names ${v}`);
   assert.ok(frame.includes('--page-max: calc(var(--w-content) + 2 * var(--page-pad-side))'), 'the rooms\u2019 column is the content width');
-  for (const sp of ['--space-1: 4px', '--space-2: 8px', '--space-3: 12px', '--space-4: 16px', '--space-5: 24px', '--space-6: 36px', '--space-7: 64px']) assert.ok(frame.includes(sp), `one spacing scale (${sp})`);
+  // 23 Nov 2026 (design language): the spacing scale moved from the frame to styles.css, defined once for every window
+  // (--space-0…7); the frame says so and uses it. Still one scale, read where it now lives.
+  const scale = read('src/renderer/src/styles.css');
+  for (const sp of ['--space-0: 2px', '--space-1: 4px', '--space-2: 8px', '--space-3: 12px', '--space-4: 16px', '--space-5: 24px', '--space-6: 36px', '--space-7: 64px']) assert.ok(scale.includes(sp), `one spacing scale (${sp})`);
+  assert.ok(!/--space-[0-7]:/.test(frame), 'the frame defines no second spacing scale of its own');
   const shell = read('src/renderer/src/styles/polish-shell.css');
   assert.ok(!/--page-max:\s*(1280|2400)px/.test(shell), 'no wide-window rule stretches the column (rows of 2,176 px)');
   // A wide window adds a column: list and detail, centred.
@@ -127,7 +132,7 @@ test('composition: one left edge, balanced columns, controls capped, one row of 
   assert.ok(/--page-max: 100%;/.test(css) && /margin-left: 0;/.test(css), 'every frame starts at one left edge and takes the room');
   assert.ok(css.includes('--w-field: 420px'), 'a text field is capped at 420 px');
   assert.ok(/\.w4b-fstrip-chips \{[^}]*flex-wrap: nowrap;/s.test(css), 'the filter chips keep to one row');
-  for (const v of ['--pad-card: var(--space-5)', '--pad-row-x: var(--space-4)', '--pad-row-y: var(--space-3)']) assert.ok(css.includes(v), `inner padding from the scale (${v})`);
+  for (const v of ['--pad-card: 24px', '--pad-row-x: 16px', '--pad-row-y: 12px']) assert.ok(css.includes(v), `inner padding from the scale (${v})`);
   const bal = read('src/renderer/src/components/Balance.tsx');
   assert.ok(bal.includes('export function Balance') && bal.includes('a <= b ? '), 'one balancing mechanism: each movable section to the shorter column, measured');
   const today = read('src/renderer/src/views/TodayView.tsx');
@@ -788,12 +793,18 @@ const SHAPE_JS = `(() => {
 async function meetingShape(h) {
   return h.browser.ev(SHAPE_JS);
 }
-// The wide shape holds: side 400px, prep within the main or one window, Record on screen, whole
+// The wide shape holds: side 400px (growing to 600px on a wide page since 23 Nov 2026), prep within the main or one window, Record on screen, whole
 // items behind Show all never cut with an ellipsis.
 function shapeFails(id, s) {
   if (s.layout !== 'meeting-main') return `the meeting is not main plus side (layout=${s.layout}, pair=${s.pair})`;
   if (s.prepW === null) return 'no prep section beside the main';
-  if (!(s.prepW >= 360 && s.prepW <= 470)) return `the prep side is not about 400px (stood ${s.prepW}px)`;
+  // 23 Nov 2026 (design language, the meeting page): from a 1700px frame the agenda and the recording share the main
+  // row and prep takes a side that grows with the window, clamp(400px, 26%, 600px) (t300-no-holes.css), instead of a
+  // fixed 400px beside a 1,750px Record card. So: about 400px on a narrower page, never past about 600px on a wide one,
+  // and at the wide shape about a quarter of the page (the clamp, measured).
+  const wideShape = s.pageW !== null && s.pageW >= 1500;
+  const want = wideShape ? Math.min(600, Math.max(400, 0.26 * s.pageW)) : 400;
+  if (!(s.prepW >= 360 && s.prepW <= (wideShape ? 630 : 470) && Math.abs(s.prepW - want) <= 40)) return `the prep side is not about ${Math.round(want)}px (stood ${s.prepW}px on a ${s.pageW}px page)`;
   if (s.prepH !== null && s.mainH !== null) {
     const limit = Math.min(Math.max(280, s.mainH), s.viewportH) + 60;
     if (s.prepH > limit) return `the prep runs past the main (stood ${s.prepH}px, main ${s.mainH}px, window ${s.viewportH}px)`;
@@ -1267,7 +1278,19 @@ const PANES_JS = `(() => {
   const H = window.innerHeight;
   const vis = (e) => { const r = e.getBoundingClientRect(); return r.width > 2 && r.height > 2; };
   const panes = [...document.querySelectorAll('.nv-split.is-panes > .nv-pane, .mt-regions.nv-panes-root > *, .pj-ov-more.nv-panes-root > *')].filter(vis);
-  const short = panes.filter((e) => H - e.getBoundingClientRect().bottom > 80).map((e) => e.className.split(' ')[0] + ' ends ' + Math.round(H - e.getBoundingClientRect().bottom) + ' above the foot');
+  // 23 Nov 2026 (design language, Inbox): the Inbox's detail is a capture, a line or two and its homes, so its pane
+  // is as tall as that (panes.css .is-inbox > .nv-split-side, align-self: start), never a window-tall slab around a
+  // line. That one pane is exempt from reaching the foot, and judged instead on hugging: no blank band inside it
+  // past its last content (it scrolls inside itself when a capture runs long). Its list pane still reaches the foot.
+  const hugs = (e) => e.matches('.nv-split.is-inbox > .nv-split-side');
+  const short = panes.filter((e) => !hugs(e) && H - e.getBoundingClientRect().bottom > 80).map((e) => e.className.split(' ')[0] + ' ends ' + Math.round(H - e.getBoundingClientRect().bottom) + ' above the foot');
+  for (const e of panes.filter(hugs)) {
+    const kids = [...e.querySelectorAll('*')].filter(vis);
+    const end = kids.length ? Math.max(...kids.map((k) => k.getBoundingClientRect().bottom)) : e.getBoundingClientRect().top;
+    const slack = e.getBoundingClientRect().bottom - end;
+    if (slack > 64) short.push(e.className.split(' ')[0] + ' holds ' + Math.round(slack) + ' blank under its capture (it should hug it)');
+    if (!kids.length) short.push(e.className.split(' ')[0] + ' stands empty');
+  }
   const small = [...document.querySelectorAll('.nv-pane .peek-row-title, .mt-regions .mm-minutes li, .mt-regions .mp-words, .nv-detail-title, .td-compose .td-row-what')]
     .filter(vis).filter((e) => parseFloat(getComputedStyle(e).fontSize) < 15).map((e) => e.className + ' ' + getComputedStyle(e).fontSize).slice(0, 3);
   const split = document.querySelector('.nv-split.is-panes');

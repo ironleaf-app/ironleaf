@@ -53,7 +53,7 @@
 }
 .acct-purpose li > svg {
   flex: none;
-  margin-top: 2px;
+  margin-top: var(--space-0);
   color: var(--accent);
 }
 .acct-purpose b {
@@ -65,7 +65,7 @@
   display: block;
   font-size: var(--fs-small);
   color: var(--text-muted);
-  margin-top: 2px;
+  margin-top: var(--space-0);
 }
 .acct-actions {
   display: flex;
@@ -159,13 +159,13 @@
 .acct-offer .button {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
 }
 .acct-who .button,
 .acct-page .setting-control .button {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
 }
 .acct-foot {
   display: flex;
@@ -183,9 +183,9 @@
 .acct-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   height: 20px;
-  padding: 0 7px;
+  padding: 0 var(--space-2);
   border: 0;
   border-radius: var(--r-1);
   background: var(--accent-soft);
@@ -293,7 +293,7 @@ button.acct-badge:hover {
   height: auto;
   min-height: 44px;
   padding: var(--space-1) var(--space-2);
-  gap: 10px;
+  gap: var(--space-3);
   align-items: center;
 }
 .places-profile .acct-chip.menu-open,
@@ -360,13 +360,13 @@ button.acct-badge:hover {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-2) 10px var(--space-2);
+  padding: var(--space-2) var(--space-3) var(--space-2);
 }
 .acct-menu-id {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  gap: 1px;
+  gap: var(--space-0);
 }
 .acct-menu-name {
   font-weight: 600;
@@ -387,12 +387,12 @@ button.acct-badge:hover {
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-2);
-  margin-top: 3px;
+  margin-top: var(--space-0);
   font-size: var(--fs-caption);
   color: var(--text);
 }
 .acct-menu-note {
-  padding: var(--space-2) 10px;
+  padding: var(--space-2) var(--space-3);
   font-size: var(--fs-caption);
   line-height: 16px;
   color: var(--text-muted);

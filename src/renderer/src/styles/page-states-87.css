@@ -11,7 +11,7 @@
 }
 .w4b-ering.is-bad { background: var(--red-bg); color: var(--red-tx); }
 .w4b-empty h3 { font-size: var(--fs-reading); font-weight: 700; }
-.w4b-empty p { font-size: var(--fs-body); color: var(--text-muted); margin: 4px 0 14px; }
+.w4b-empty p { font-size: var(--fs-body); color: var(--text-muted); margin: var(--space-1) 0 14px; }
 .w4b-empty-actions { display: flex; gap: 10px; justify-content: center; align-items: center; }
 .w4b-empty-go { height: 38px; }
 .w4b-err { text-align: center; padding: 44px 30px; max-width: 520px; margin: 30px auto 0; }
@@ -19,7 +19,7 @@
 .w4b-err p { font-size: var(--fs-body); color: var(--text-muted); margin: 6px 0 18px; }
 .w4b-err code {
   font-family: var(--font-mono); font-size: var(--fs-caption); background: var(--bg-side);
-  border-radius: var(--r-2); padding: 2px 8px; color: var(--text);
+  border-radius: var(--r-2); padding: var(--space-0) var(--space-2); color: var(--text);
 }
 
 .w4b-loading { min-width: 0; }
@@ -29,14 +29,14 @@
   .w4b-skel { animation: nv-pulse var(--nv-pulse) ease-in-out infinite; }
 }
 .w4b-skrows { display: flex; flex-direction: column; }
-.w4b-skrow { display: flex; align-items: center; gap: 12px; padding: 11px 0; }
+.w4b-skrow { display: flex; align-items: center; gap: var(--space-3); padding: 11px 0; }
 .w4b-skrow + .w4b-skrow { border-top: 1px solid var(--border); }
 .w4b-skrow .w4b-skel:nth-child(2) { flex: 1 1 auto; }
-.w4b-skcards { display: flex; gap: 12px; }
+.w4b-skcards { display: flex; gap: var(--space-3); }
 .w4b-skcard { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
 .w4b-skcard .w4b-skel { display: block; }
 .w4b-sktable { display: flex; flex-direction: column; }
-.w4b-skthrow { display: flex; align-items: center; gap: 12px; padding: 8px 10px; }
+.w4b-skthrow { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) 10px; }
 .w4b-skthrow.is-row { border-top: 1px solid var(--border); padding: 9px 10px; }
 .w4b-skcell { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; }
 .w4b-skcell.is-main { flex: 2.2; }
@@ -45,31 +45,41 @@
 /* ── The w4b pages in the one page shape (design C mock-ups) ─────────────────────────────── */
 
 /* Bookmarks: kept rows with a grip, a glyph tile, words, a kind tag and a quiet remove. */
-.w4b-bm-page { max-width: 880px; margin: 0 auto; padding: 24px 32px 48px; }
+.w4b-bm-page { max-width: 880px; margin: 0 auto; padding: var(--space-5) 32px 48px; }
 .w4b-bm-row {
-  display: flex; align-items: center; gap: 12px; padding: 11px 0;
+  display: flex; align-items: center; gap: var(--space-3); padding: 11px 0;
   border-bottom: 1px solid var(--border); min-width: 0;
 }
 .w4b-bm-row:last-child { border-bottom: 0; }
 .w4b-bm-main {
   border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer;
-  display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; text-align: left;
+  display: flex; align-items: center; gap: var(--space-3); flex: 1; min-width: 0; text-align: left;
 }
 .w4b-bm-grip { color: var(--text-faint); font-size: var(--fs-small); letter-spacing: 1px; cursor: grab; flex: none; }
 .w4b-bm-row.is-drop { background: var(--sel); border-radius: var(--r-3); }
 .w4b-bm-t { font-size: var(--fs-body); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: clip; }
 .w4b-bm-p { font-size: var(--fs-small); color: var(--text-faint); white-space: nowrap; overflow: hidden; text-overflow: clip; }
 .w4b-bm-row.is-missing .w4b-bm-t { color: var(--text-faint); text-decoration: line-through; }
-.w4b-bm-x { background: none; border: 0; color: var(--text-faint); font-size: var(--fs-body); cursor: pointer; padding: 4px 6px; border-radius: var(--r-3); flex: none; }
+.w4b-bm-x { background: none; border: 0; color: var(--text-faint); font-size: var(--fs-body); cursor: pointer; padding: var(--space-1) 6px; border-radius: var(--r-3); flex: none; }
 .w4b-bm-x:hover { background: var(--bg-hover); color: var(--text); }
 .w4b-bm-group { border: 0; background: none; font: inherit; padding: 0; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-.w4b-bm-foot { margin-top: 18px; display: flex; gap: 12px; align-items: center; }
+.w4b-bm-foot { margin-top: 18px; display: flex; gap: var(--space-3); align-items: center; }
 .w4b-bm-foot .t { font-size: var(--fs-body); font-weight: 600; }
 .w4b-bm-foot .s { font-size: var(--fs-small); color: var(--text-muted); }
+/* With bookmarks kept, the hint under them is a quiet line in the list, not a second card wider than the rows
+   (23 Nov 2026, at 1600: a 1,200 px card under a 590 px row). */
+.w4b-bm-page .nv-split .card.w4b-bm-foot {
+  margin-top: var(--space-5);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
 
 /* Templates: one row per template under its group, Use plus the dot menu at right. */
 .w4b-tp-row {
-  display: flex; align-items: center; gap: 14px; padding: 12px 0;
+  display: flex; align-items: center; gap: 14px; padding: var(--space-3) 0;
   border-bottom: 1px solid var(--border); min-width: 0;
 }
 .w4b-tp-row:last-child { border-bottom: 0; }
@@ -81,14 +91,14 @@
 .w4b-tp-name { border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer; text-align: left; }
 .w4b-tp-name:hover { text-decoration: underline; text-decoration-color: var(--border-strong); text-underline-offset: 3px; }
 .w4b-tp-ds { font-size: var(--fs-small); color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: clip; }
-.w4b-tp-ctl { margin-left: auto; flex: none; display: flex; align-items: center; gap: 8px; }
+.w4b-tp-ctl { margin-left: auto; flex: none; display: flex; align-items: center; gap: var(--space-2); }
 /* The "Yours" marker is a quiet slate tag, never a blue chip (sweep-vault-b F-B9, DECISIONS 3). */
 .w4b-tp-own {
   display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: var(--r-2);
-  font-size: var(--fs-caption); font-weight: 700; background: var(--slate-bg); color: var(--slate-tx); margin-left: 8px;
+  font-size: var(--fs-caption); font-weight: 700; background: var(--slate-bg); color: var(--slate-tx); margin-left: var(--space-2);
   vertical-align: 2px;
 }
-.w4b-tp-foot { font-size: var(--fs-small); color: var(--text-faint); margin-top: 12px; }
+.w4b-tp-foot { font-size: var(--fs-small); color: var(--text-faint); margin-top: var(--space-3); }
 
 /* Automations: one row per automation or flow, the schedule tag and switch at right. */
 .w4b-au-row {
@@ -112,35 +122,35 @@
 /* Files and assets: the files table, asset tiles, the brand kit. */
 .w4b-file-name { display: flex; align-items: center; gap: 10px; font-weight: 500; min-width: 0; }
 .w4b-file-name .w { white-space: nowrap; overflow: hidden; text-overflow: clip; }
-.w4b-tiles { display: flex; gap: 12px; margin-top: 8px; }
+.w4b-tiles { display: flex; gap: var(--space-3); margin-top: var(--space-2); }
 .w4b-tile { flex: 1; min-width: 0; border: 1px solid var(--border); border-radius: var(--r-3); overflow: hidden; background: var(--bg-raised); }
 .w4b-tile .art { height: 96px; display: grid; place-items: center; font-size: var(--fs-caption); font-weight: 700; }
-.w4b-tile .cap { padding: 10px 12px; font-size: var(--fs-small); font-weight: 600; }
+.w4b-tile .cap { padding: 10px var(--space-3); font-size: var(--fs-small); font-weight: 600; }
 .w4b-tile .cap small { display: block; font-weight: 400; color: var(--text-muted); }
 button.w4b-tile { font: inherit; color: inherit; cursor: pointer; text-align: left; padding: 0; }
-.w4b-kit { display: flex; gap: 20px; margin-top: 8px; }
+.w4b-kit { display: flex; gap: 20px; margin-top: var(--space-2); }
 .w4b-kitcol { flex: 1; min-width: 0; }
 .w4b-logo {
   height: 64px; border: 1px solid var(--border); border-radius: var(--r-4); display: flex; align-items: center;
-  gap: 10px; padding: 0 14px; margin-bottom: 8px; font-size: var(--fs-small); font-weight: 600;
+  gap: 10px; padding: 0 14px; margin-bottom: var(--space-2); font-size: var(--fs-small); font-weight: 600;
 }
 .w4b-logo small { display: block; font-weight: 400; color: var(--text-muted); }
 .w4b-logo.is-dark { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
 .w4b-logo.is-dark small { color: inherit; opacity: .75; }
-.w4b-csw { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: var(--fs-small); font-weight: 500; }
+.w4b-csw { display: flex; align-items: center; gap: 10px; margin-bottom: var(--space-2); font-size: var(--fs-small); font-weight: 500; }
 .w4b-csw i { width: 30px; height: 30px; border-radius: var(--r-3); flex: none; }
 .w4b-csw code { margin-left: auto; font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--text-muted); }
 
 /* Files and assets: the filter strip above the table (round 2 replaces the rail; 4 Nov 2026 polish: the kit chips). */
-.w4b-fstrip { display: flex; align-items: center; gap: 10px; padding: 12px 24px 0; min-width: 0; }
-.w4b-fstrip-chips { display: flex; align-items: center; gap: 6px; overflow-x: auto; flex: 1; min-width: 0; padding-bottom: 2px; scrollbar-width: thin; }
+.w4b-fstrip { display: flex; align-items: center; gap: 10px; padding: var(--space-3) var(--space-5) 0; min-width: 0; }
+.w4b-fstrip-chips { display: flex; align-items: center; gap: 6px; overflow-x: auto; flex: 1; min-width: 0; padding-bottom: var(--space-0); scrollbar-width: thin; }
 .w4b-fstrip-chips .chip { flex: none; }
 .chip.is-add { border-style: dashed; }
 .w4b-fstrip-sum { flex: none; font-size: var(--fs-caption); color: var(--text-faint); font-variant-numeric: tabular-nums; }
 @media (max-width: 700px) { .w4b-fstrip-sum { display: none; } }
 
 /* The timeline's bar: zoom words, the group dropdown, the hint at right. */
-.w4b-tl-bar { display: flex; align-items: center; gap: 8px; margin: 14px 0; flex-wrap: wrap; }
+.w4b-tl-bar { display: flex; align-items: center; gap: var(--space-2); margin: 14px 0; flex-wrap: wrap; }
 .w4b-tl-hint { font-size: var(--fs-small); color: var(--text-faint); margin-left: auto; }
 /* Round 3: the bar sits under the shared head now, not inside it: it keeps the head's inset, tight under the
    title as drawn (the head's own 24 px steps aside only while the bar follows it). */
@@ -152,8 +162,11 @@ button.w4b-tile { font: inherit; color: inherit; cursor: pointer; text-align: le
 .tl-page > .nv-page-head.tl-head:has(+ .w4b-tl-bar) { margin-bottom: 0; }
 
 /* The canvas page: add buttons in the kit, the count and saved words at right. */
-.w4b-cv-bar { display: flex; align-items: center; gap: 8px; padding: 12px 20px 0; flex-wrap: wrap; }
-.w4b-cv-title { padding: 0 20px; }
+/* The title and the count start on the page's own column edge (design language, 23 Nov 2026: 20 px in, the board's
+   name stood 15 px left of every other page's title), and the count and saved words sit at the title row's right,
+   not on a band of their own under it. */
+.w4b-cv-bar { display: flex; align-items: center; gap: var(--space-2); padding: 0 var(--page-pad-side); margin-top: calc(-1 * var(--space-5)); min-height: var(--space-5); flex-wrap: wrap; }
+.w4b-cv-title { padding: 0 var(--page-pad-side); }
 /* The add bar sits tight under the shared head, as drawn (round 3: the head's own 24 px would double the gap). */
 .w4b-cv-title > .nv-page-head.nv-page-head { margin-bottom: 0; }
 .w4b-cv-status { font-size: var(--fs-small); color: var(--text-faint); margin-left: auto; }

@@ -25,7 +25,7 @@ export const SETTINGS_GROUPS: { id: SettingsSectionId; label: string; words: str
   { id: 'keys', label: 'Keyboard shortcuts', words: 'Choose any keys to change them. Changed ones can go back to the default.' },
   { id: 'models', label: 'AI', words: 'Your own AI connections: which model answers, your keys, and how careful it is with your notes.' },
   { id: 'privacy', label: 'Privacy and secrets', words: 'Who may read what. Logins and ID numbers stay locked, never in plain notes.' },
-  { id: 'agents', label: 'Connect an AI', words: 'Connect an AI: Claude, ChatGPT, Cursor, VS Code and other AI apps through MCP, and what each may do here.' },
+  { id: 'agents', label: 'Connect an AI', words: 'Claude, ChatGPT, Cursor, VS Code and other AI apps use your notes through MCP, as far as you allow.' },
   { id: 'plugins', label: 'Plugins', words: 'Small add-ons with a command and a Home card each, off until you switch them on.' },
   { id: 'publish', label: 'Publish', words: 'Your notes as websites: what goes in each, where each goes.' },
   { id: 'about', label: 'About and updates', words: 'The version you have, updates, and what changed in each version.' },

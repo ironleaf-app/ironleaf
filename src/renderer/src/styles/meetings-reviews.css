@@ -4,7 +4,7 @@
 /* ── A meeting's "Actions found" panel, under the note's title and properties ─────────────────────────────────────── */
 
 .mt-panel {
-  margin: 14px 0 10px;
+  margin: var(--space-3) 0 var(--space-2);
   font: 400 var(--fs-small)/1.45 var(--font-ui);
   color: var(--text);
   overflow: hidden;
@@ -18,9 +18,9 @@
 .mt-head {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2);
   width: 100%;
-  padding: 9px 12px 9px 10px;
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2);
   text-align: left;
   color: var(--text);
   background: transparent;
@@ -90,15 +90,15 @@
 .mt-list {
   list-style: none;
   margin: 0;
-  padding: 6px 0;
+  padding: var(--space-2) 0;
 }
 
 .mt-row {
   display: grid;
   grid-template-columns: 22px minmax(0, 1fr);
   align-items: start;
-  gap: 8px;
-  padding: 6px 14px 6px 12px;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-3);
   transition: background-color 0.12s ease;
 }
 
@@ -110,7 +110,7 @@
 .wr-prop input[type='checkbox'] {
   width: 15px;
   height: 15px;
-  margin: 3px 0 0 3px;
+  margin: var(--space-1) 0 0 var(--space-1);
   accent-color: var(--accent);
   flex: none;
 }
@@ -119,7 +119,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 4px 10px;
+  gap: var(--space-1) var(--space-2);
   min-width: 0;
 }
 
@@ -138,7 +138,7 @@
   flex-basis: 100%;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .mt-meta:empty {
@@ -148,7 +148,7 @@
 .mt-chip {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   font-size: var(--fs-caption);
 }
 
@@ -166,8 +166,8 @@
 .wr-ai {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  padding: 1px 7px;
+  gap: var(--space-1);
+  padding: 1px var(--space-2);
   border-radius: var(--r-1);
   font-size: var(--fs-caption);
   font-weight: 500;
@@ -176,27 +176,27 @@
 }
 
 .mt-more {
-  margin: 0 0 6px 42px;
+  margin: 0 0 var(--space-2) var(--space-6);
   font-size: var(--fs-small);
 }
 
 .mt-filed {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  margin: 0 14px 8px 15px;
+  gap: var(--space-2);
+  margin: 0 var(--space-3) var(--space-2) var(--space-4);
   font-size: var(--fs-small);
   color: var(--text-faint);
 }
 
 .mt-filed svg {
   flex: none;
-  margin-top: 3px;
+  margin-top: var(--space-1);
   color: var(--tone-ok, var(--ok));
 }
 
 .mt-said {
-  margin: 0 14px 8px 42px;
+  margin: 0 var(--space-3) var(--space-2) var(--space-6);
   font-size: var(--fs-small);
   color: var(--text-muted);
 }
@@ -205,8 +205,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-  padding: 9px 12px 10px 14px;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-3);
   border-top: 1px solid var(--border);
   background: color-mix(in srgb, var(--bg) 55%, var(--bg-raised));
 }
@@ -214,7 +214,7 @@
 .mt-ask {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: var(--space-1);
   font-size: var(--fs-small);
 }
 
@@ -259,7 +259,7 @@
 }
 
 .wr-said {
-  margin: -6px 0 16px;
+  margin: calc(-1 * var(--space-2)) 0 var(--space-4);
   font-size: var(--fs-small);
   color: var(--text-muted);
 }
@@ -268,10 +268,10 @@
 .wr-tidy {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   width: 100%;
-  margin: -8px 0 16px;
-  padding: 7px 8px;
+  margin: calc(-1 * var(--space-2)) 0 var(--space-4);
+  padding: var(--space-2) var(--space-2);
   border: 0;
   border-radius: var(--r-3);
   background: none;
@@ -288,8 +288,8 @@
 .wr-loading {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 48px 0;
+  gap: var(--space-2);
+  padding: var(--space-6) 0;
   color: var(--text-muted);
 }
 
@@ -304,8 +304,8 @@
 }
 
 .wr-project {
-  margin-bottom: 16px;
-  padding: 16px 20px 18px;
+  margin-bottom: var(--space-4);
+  padding: var(--space-4) var(--space-5) var(--space-4);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised);
@@ -316,8 +316,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 10px;
-  margin-bottom: 12px;
+  gap: var(--space-2) var(--space-2);
+  margin-bottom: var(--space-3);
 }
 
 .wr-project-name {
@@ -353,15 +353,15 @@
 .wr-columns {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 6px 24px;
+  gap: var(--space-2) var(--space-5);
 }
 
 .wr-block h3,
 .wr-props h3 {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin: 4px 0 6px;
+  gap: var(--space-2);
+  margin: var(--space-1) 0 var(--space-2);
   font: 600 var(--fs-small)/1.3 var(--font-ui);
   color: var(--text-muted);
 }
@@ -372,7 +372,7 @@
 
 .wr-count {
   min-width: 18px;
-  padding: 0 6px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-1);
   font-size: var(--fs-caption);
   line-height: 17px;
@@ -384,7 +384,7 @@
 .wr-block ul,
 .wr-props ul {
   list-style: none;
-  margin: 0 0 8px;
+  margin: 0 0 var(--space-2);
   padding: 0;
 }
 
@@ -392,8 +392,8 @@
   display: grid;
   grid-template-columns: 12px minmax(0, 1fr) 22px;
   align-items: start;
-  gap: 6px;
-  padding: 4px 4px 4px 2px;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-0);
   border-radius: var(--r-2);
 }
 
@@ -404,7 +404,7 @@
 .wr-dot {
   width: 6px;
   height: 6px;
-  margin: 8px 0 0 3px;
+  margin: var(--space-2) 0 0 var(--space-1);
   border-radius: 50%;
   corner-shape: round;
   background: color-mix(in srgb, var(--tone) 70%, transparent);
@@ -465,16 +465,16 @@
 }
 
 .wr-props {
-  margin-top: 8px;
-  padding-top: 12px;
+  margin-top: var(--space-2);
+  padding-top: var(--space-3);
   border-top: 1px solid var(--border);
 }
 
 .wr-prop {
   display: grid;
   grid-template-columns: 22px minmax(0, 1fr);
-  gap: 8px;
-  padding: 7px 8px 7px 4px;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-1);
   border-radius: var(--r-3);
 }
 
@@ -490,7 +490,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 8px;
+  gap: var(--space-2) var(--space-2);
   font-size: var(--fs-small);
   min-height: 24px;
 }
@@ -502,7 +502,7 @@
 .wr-choices {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .wr-choices .pj-pill {
@@ -520,7 +520,7 @@
 .wr-prop-update {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: var(--space-1);
 }
 
 .wr-prop-label {
@@ -537,8 +537,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  margin-top: 2px;
+  gap: var(--space-2);
+  margin-top: var(--space-0);
   font-size: var(--fs-small);
   color: var(--text-faint);
 }
@@ -547,15 +547,15 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 8px;
-  margin: 6px 0 16px;
-  padding: 10px 4px;
+  gap: var(--space-2) var(--space-2);
+  margin: var(--space-2) 0 var(--space-4);
+  padding: var(--space-2) var(--space-1);
   font-size: var(--fs-small);
   color: var(--text-muted);
 }
 
 .wr-quiet-label {
-  margin-right: 4px;
+  margin-right: var(--space-1);
   font-weight: 600;
   color: var(--text-faint);
 }
@@ -563,8 +563,8 @@
 .wr-quiet-name {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 3px 10px;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
   border: 1px solid var(--border);
   border-radius: var(--r-1);
   background: var(--bg-raised);
@@ -586,9 +586,9 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 10px 16px;
-  margin: 8px -20px 0;
-  padding: 14px 20px 18px;
+  gap: var(--space-2) var(--space-4);
+  margin: var(--space-2) -20px 0;
+  padding: var(--space-3) var(--space-5) var(--space-4);
   border-top: 1px solid var(--border);
   background: color-mix(in srgb, var(--bg) 90%, transparent);
   backdrop-filter: blur(8px);
@@ -603,9 +603,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  margin: 24px auto 48px;
-  padding: 36px 28px 30px;
+  gap: var(--space-2);
+  margin: var(--space-5) auto var(--space-6);
+  padding: var(--space-6) var(--space-5) var(--space-6);
   max-width: 560px;
   text-align: center;
   border: 1px solid var(--border);
@@ -615,12 +615,12 @@
 }
 
 .wr-done h2 {
-  margin: 6px 0 0;
+  margin: var(--space-2) 0 0;
   font: 640 var(--fs-section)/1.25 var(--font-ui);
 }
 
 .wr-done p {
-  margin: 0 0 14px;
+  margin: 0 0 var(--space-3);
   color: var(--text-muted);
 }
 
@@ -649,10 +649,10 @@
   z-index: 30;
   display: grid;
   grid-template-columns: 32px minmax(0, 1fr) 24px;
-  gap: 10px;
+  gap: var(--space-2);
   width: min(360px, calc(100% - 32px));
   transition: bottom 0.16s ease-out;
-  padding: 14px 12px 14px 14px;
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised);
@@ -683,7 +683,7 @@
 .wr-notice-words {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: var(--space-1);
 }
 
 .wr-notice-words strong {
@@ -697,8 +697,8 @@
 .wr-notice-actions {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-top: 8px;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
 }
 
 .wr-notice-close {
@@ -739,7 +739,7 @@
 @media (max-width: 1100px) {
   .wr-notice {
     width: min(320px, calc(100% - 32px));
-    padding: 12px 10px 12px 12px;
+    padding: var(--space-3) var(--space-2) var(--space-3) var(--space-3);
   }
 
   .wr-notice-words > span:not(.wr-notice-actions) {
@@ -747,15 +747,37 @@
   }
 
   .wr-notice-actions {
-    margin-top: 6px;
+    margin-top: var(--space-2);
   }
 }
 
 .wr-notice-actions {
   flex-wrap: wrap;
-  row-gap: 6px;
+  row-gap: var(--space-2);
 }
 
 .wr-notice-actions > * {
   white-space: nowrap;
+}
+
+/* A meeting note in a wide column (23 Nov 2026, at 2560: Decisions and Questions each a full-width card, two short
+   lists a column wide with 1,400 px of nothing to their right): the two share a row, Tasks keeps the full width.
+   Only when both are there; everything else in the head spans the row as before. */
+@container nvnote (min-width: 1500px) {
+  .note-head:has(> .mt-panel[aria-label='Decisions in this note'] + .mt-panel[aria-label='Questions in this note']) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: var(--space-4);
+    align-items: start;
+  }
+  .note-head:has(> .mt-panel[aria-label='Decisions in this note'] + .mt-panel[aria-label='Questions in this note']) > * {
+    grid-column: 1 / -1;
+    min-width: 0;
+  }
+  .note-head > .mt-panel[aria-label='Decisions in this note']:has(+ .mt-panel[aria-label='Questions in this note']) {
+    grid-column: 1;
+  }
+  .note-head > .mt-panel[aria-label='Decisions in this note'] + .mt-panel[aria-label='Questions in this note'] {
+    grid-column: 2;
+  }
 }

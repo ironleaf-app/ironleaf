@@ -23,7 +23,7 @@ import * as A from '../state/actions';
 import { takeFileQuery } from '../state/fileSearch';
 import { getState, showError, toast, useApp } from '../state/store';
 import type { TabState } from '../state/workspace';
-import { ViewHeader } from './ViewHeader';
+import { Crumbs, ViewHeader } from './ViewHeader';
 import { FileView } from './project/FilePreview';
 import { kindWords } from './project/FileArt';
 import { relKey, viewerFor } from './project/fileModel';
@@ -165,17 +165,7 @@ export function FolderFileView({ tab }: { tab: TabState }) {
         tab={tab}
         title={name}
         menu={menu}
-        crumb={
-          <>
-            <span>
-              <button className="crumb-folder" onClick={() => A.openPath(split.project)} title={split.project}>
-                {view?.project.name ?? A.titleOf(split.project)}
-              </button>
-              <span> / </span>
-            </span>
-            <b>{name}</b>
-          </>
-        }
+        crumb={<Crumbs trail={[{ key: 'project', label: view?.project.name ?? A.titleOf(split.project), onClick: () => A.openPath(split.project), title: split.project }]} here={<b>{name}</b>} />}
       >
         {!remote && (
           <button className="icon-button" data-overflow="open-default" data-overflow-order={1} title="Open in its program" onClick={openDefault}>

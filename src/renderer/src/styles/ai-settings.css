@@ -3,13 +3,13 @@
 .ai-privacy {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .ai-conn-name {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   padding: 0;
   border: 0;
   background: none;
@@ -45,7 +45,7 @@
 
 .ai-field {
   display: grid;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .ai-field > span:first-child {
@@ -59,7 +59,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .ai-field .setting-input {
@@ -70,7 +70,7 @@
 .ai-models {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-2);
   align-items: center;
   min-height: 24px;
 }
@@ -78,8 +78,8 @@
 .ai-model-chip {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 2px 4px 2px 8px;
+  gap: var(--space-1);
+  padding: var(--space-0) var(--space-1) var(--space-0) var(--space-2);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   font-size: var(--fs-small);
@@ -106,25 +106,25 @@
 
 .ai-remote {
   display: grid;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .ai-remote-list {
   list-style: none;
   margin: 0;
-  padding: 6px 8px;
+  padding: var(--space-2) var(--space-2);
   max-height: 220px;
   overflow-y: auto;
   border: 1px solid var(--border);
   border-radius: var(--r-2);
   display: grid;
-  gap: 2px;
+  gap: var(--space-0);
 }
 
 .ai-remote-list label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   font-size: var(--fs-small);
   cursor: pointer;
 }
@@ -149,7 +149,7 @@
 .ai-said {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   margin: 0;
   font-size: var(--fs-small);
 }
@@ -163,24 +163,24 @@
 }
 
 .ai-add {
-  margin: 10px 0 18px;
+  margin: var(--space-2) 0 var(--space-4);
 }
 
 .ai-add-lead {
-  margin: 0 0 8px;
+  margin: 0 0 var(--space-2);
   font-weight: 600;
 }
 
 .ai-presets {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .ai-preset {
   display: grid;
-  gap: 4px;
-  padding: 10px 12px;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised);
@@ -198,7 +198,7 @@
 .ai-preset strong {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .ai-preset span {
@@ -208,9 +208,9 @@
 
 .ai-add-form {
   display: grid;
-  gap: 10px;
+  gap: var(--space-3);
   max-width: 520px;
-  padding: 12px;
+  padding: var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
 }

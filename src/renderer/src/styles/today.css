@@ -13,7 +13,7 @@
      centred column half its width off the header search's middle; with both gutters the two middles are
      one, scrollbar or not, and the page never jumps when the bar appears. */
   scrollbar-gutter: stable both-edges;
-  --td-gap: 18px;
+  --td-gap: var(--space-4);
   --td-row-h: 46px;
 }
 
@@ -26,7 +26,7 @@
 .td-inner {
   max-width: 1080px;
   margin: 0 auto;
-  padding: clamp(26px, 5vh, 56px) 36px 56px;
+  padding: clamp(26px, 5vh, 56px) var(--space-6) 56px;
 }
 
 /* ── The head: the day, a greeting, the compact line ────────────────────────────────────────────────────────────── */
@@ -43,7 +43,7 @@
 .nv-today-head.nv-hero {
   position: relative;
   overflow: hidden;
-  margin: 0 calc(var(--page-pad-side) * -1) 24px;
+  margin: 0 calc(var(--page-pad-side) * -1) var(--space-5);
   padding: 44px var(--page-pad-side) 34px;
   background: linear-gradient(180deg, var(--hero-1), var(--hero-2));
   border-bottom: 1px solid var(--border);
@@ -55,7 +55,7 @@
 .td-head-top {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .td-new {
@@ -79,7 +79,7 @@
 }
 
 .td-date {
-  margin: 0 0 12px;
+  margin: 0 0 var(--space-3);
   font-size: var(--fs-small);
   font-weight: 500;
   color: var(--text-muted);
@@ -97,8 +97,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 2px 0;
-  margin: 12px 0 0;
+  gap: var(--space-0) 0;
+  margin: var(--space-3) 0 0;
   /* No width cap (p28-today-line, 5 Nov 2026): the 620px cap from the first Today wrapped the line while the
      column still had room; it uses the column's width now. */
   font-size: var(--fs-reading);
@@ -106,12 +106,12 @@
 }
 
 .td-sep {
-  margin: 0 8px;
+  margin: 0 var(--space-2);
   color: var(--text-faint);
 }
 
 .td-line-item {
-  padding: 2px 0;
+  padding: var(--space-0) 0;
   border-bottom: 1px solid transparent;
   color: var(--text-muted);
   font-weight: 550;
@@ -202,7 +202,7 @@
   /* The band shrinks rather than pushing the first task off the screen; the art stands down. The column's gutter
      is the frame's token (polish-shell owns .td-inner's padding); the band's breakout follows it in the base rule. */
   .nv-today-head.nv-hero {
-    margin-bottom: 16px;
+    margin-bottom: var(--space-4);
     padding-top: 32px;
     padding-bottom: 26px;
   }
@@ -215,25 +215,25 @@
 
 .td-section {
   min-width: 0;
-  padding: 14px 8px 8px;
+  padding: 14px var(--space-2) var(--space-2);
   border: 1px solid var(--border);
   border-radius: var(--r-3);
   background: var(--bg-raised);
   box-shadow: var(--shadow-card);
-  scroll-margin-top: 16px;
+  scroll-margin-top: var(--space-4);
 }
 
 .td-section-head {
   display: flex;
   align-items: baseline;
-  gap: 10px;
-  padding: 0 10px 8px;
+  gap: var(--space-2);
+  padding: 0 var(--space-2) var(--space-2);
 }
 
 .td-section-head h2 {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   margin: 0;
   font-size: var(--fs-body);
   font-weight: 650;
@@ -257,15 +257,15 @@
 }
 
 .td-group + .td-group {
-  margin-top: 6px;
+  margin-top: var(--space-2);
 }
 
 .td-group h3,
 .td-day-group h3 {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin: 6px 10px 2px;
+  gap: var(--space-1);
+  margin: var(--space-2) var(--space-2) var(--space-0);
   font-size: var(--fs-caption);
   font-weight: 600;
   color: var(--text-muted);
@@ -296,8 +296,8 @@
 .td-group.passed > summary {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin: 6px 10px 2px;
+  gap: var(--space-1);
+  margin: var(--space-2) var(--space-2) var(--space-0);
   font-size: var(--fs-caption);
   font-weight: 600;
   color: var(--text-muted);
@@ -307,8 +307,8 @@
   letter-spacing: 0;
 }
 .td-fold-project > summary {
-  margin: 2px 10px;
-  padding: 6px 8px;
+  margin: var(--space-0) var(--space-2);
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--r-3);
   font-size: var(--fs-small);
   color: var(--text-muted);
@@ -321,7 +321,7 @@
 }
 
 .td-none {
-  margin: 2px 10px 8px;
+  margin: var(--space-0) var(--space-2) var(--space-2);
   font-size: var(--fs-small);
   color: var(--text-faint);
 }
@@ -329,9 +329,9 @@
 .td-more {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  margin: 2px 4px 4px;
-  padding: 5px 6px;
+  gap: var(--space-1);
+  margin: var(--space-0) var(--space-1) var(--space-1);
+  padding: var(--space-1);
   border-radius: var(--r-2);
   font-size: var(--fs-small);
   font-weight: 550;
@@ -355,10 +355,11 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: 11px;
+  gap: var(--space-3);
   min-height: var(--td-row-h);
-  /* The one row rhythm (t218): 12px up and down, the kit's own; the card sides stay 10px. */
-  padding: 12px 10px;
+  /* The one row rhythm (t218): 12px up and down, the kit's own; the card sides 8px, on the scale with the section's
+     own head (design language, 23 Nov 2026: 10 and 11 px before). */
+  padding: var(--space-3) var(--space-2);
   border-radius: var(--r-3);
   cursor: pointer;
   outline: none;
@@ -380,13 +381,13 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-0);
 }
 
 .td-row-what {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   min-width: 0;
   overflow: hidden;
   color: var(--text);
@@ -582,7 +583,7 @@
   top: 50%;
   right: 6px;
   display: flex;
-  gap: 2px;
+  gap: var(--space-0);
   padding-left: 22px;
   transform: translateY(-50%);
   background: linear-gradient(to right, transparent, var(--bg-hover) 18px);
@@ -715,7 +716,7 @@
   align-items: baseline;
   gap: 10px;
   width: 100%;
-  padding: 4px 10px 2px;
+  padding: var(--space-1) 10px var(--space-0);
   border-radius: var(--r-2);
   text-align: left;
 }
@@ -744,8 +745,8 @@
 
 .td-row.td-change-line {
   min-height: 34px;
-  padding-top: 4px;
-  padding-bottom: 4px;
+  padding-top: var(--space-1);
+  padding-bottom: var(--space-1);
   gap: 9px;
 }
 
@@ -794,13 +795,13 @@
 /* ── The day: today's note, meetings, automations ───────────────────────────────────────────────────────────────── */
 
 .td-day {
-  padding: 8px;
+  padding: var(--space-2);
 }
 
 .td-day-note {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   width: 100%;
   padding: 10px;
   border-radius: var(--r-4);
@@ -825,7 +826,7 @@
 }
 
 .td-day-group {
-  margin-top: 4px;
+  margin-top: var(--space-1);
   padding-top: 6px;
   border-top: 1px solid var(--border);
 }
@@ -837,7 +838,7 @@
   flex: none;
   min-width: 58px;
   height: 22px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-1);
   font-size: var(--fs-caption);
   font-weight: 600;
@@ -871,7 +872,7 @@
 }
 
 .td-clear h2 {
-  margin: 0 0 2px;
+  margin: 0 0 var(--space-0);
   font: 400 var(--fs-section)/1.2 var(--font-display);
   color: var(--text);
 }
@@ -897,7 +898,7 @@
 }
 
 .td-welcome {
-  padding: 26px 24px 24px;
+  padding: 26px var(--space-5) var(--space-5);
 }
 
 .td-welcome-icon {
@@ -913,7 +914,7 @@
 
 .td-welcome p {
   max-width: 54ch;
-  margin: 0 0 16px;
+  margin: 0 0 var(--space-4);
   font-size: var(--fs-body);
   line-height: 1.6;
   color: var(--text-muted);
@@ -922,7 +923,7 @@
 .td-welcome-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .td-error {
@@ -972,8 +973,8 @@
 .td-review {
   display: grid;
   grid-template-columns: 38px minmax(0, 1fr);
-  gap: 12px;
-  padding: 16px;
+  gap: var(--space-3);
+  padding: var(--space-4);
   border-color: color-mix(in srgb, var(--accent) 34%, var(--border));
   background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 7%, var(--bg-raised)), var(--bg-raised) 70%);
 }
@@ -989,7 +990,7 @@
 }
 
 .td-review-words h2 {
-  margin: 1px 0 4px;
+  margin: 1px 0 var(--space-1);
   font-size: var(--fs-body);
   font-weight: 650;
   line-height: 1.35;
@@ -1007,8 +1008,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 16px;
-  margin-top: 12px;
+  gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-3);
 }
 
 .td-day-icon.quiet {
@@ -1017,7 +1018,7 @@
 }
 
 .td-day-note + .td-day-review {
-  margin-top: 2px;
+  margin-top: var(--space-0);
 }
 
 /* A way on from a section (Due and overdue › Timeline): quiet until the pointer rests on it. */
@@ -1026,7 +1027,7 @@
   align-items: center;
   gap: 5px;
   margin-left: auto;
-  padding: 3px 8px;
+  padding: 3px var(--space-2);
   border-radius: var(--r-2);
   font-size: var(--fs-small);
   font-weight: 500;
@@ -1035,7 +1036,7 @@
 }
 
 .td-section-hint + .td-section-link {
-  margin-left: 4px;
+  margin-left: var(--space-1);
 }
 
 .td-section-link:hover {
@@ -1059,13 +1060,13 @@
    11 Nov 2026: at 1219x709 one wrapped title put "N things need a look" 14px past the fold; the rows and
    their wraps stay exactly as t208 and t207 drew them). */
 @media (max-height: 800px) {
-  .td-view .td-head { margin-bottom: 16px; }
+  .td-view .td-head { margin-bottom: var(--space-4); }
   .td-view .td-areas { margin-top: 10px; }
   .td-section.td-next { padding-top: 14px; padding-bottom: 14px; }
   /* Short windows wear the kit's named compact rhythm on the Next card (t225, 11 Nov 2026: t218's 12px
      rhythm stood the five Next rows ~40px taller and the quiet line fell 24px past the fold at 1219x709).
      Tall windows keep the standard 12px untouched; no words hidden, no rows folded, fonts unchanged. */
-  .td-section.td-next .td-row { padding-top: 8px; padding-bottom: 8px; }
+  .td-section.td-next .td-row { padding-top: var(--space-2); padding-bottom: var(--space-2); }
 }
 /* Next for you's rows are the one task row (tick, title, who, when), so their hover buttons overlay the title's end and
  * never take a line of their own or cover who and when, which stay clickable (4 Nov 2026, seen at their 3456 window). */
@@ -1075,37 +1076,37 @@
 /* The rest past Next for you under one quiet line, and Waiting folded (4 Nov 2026, p12-today-focus). */
 .td-rest, .td-wait-fold { margin-bottom: var(--td-gap); }
 /* The fold's line belongs to the list it continues, right under it. */
-.td-next + .td-rest { margin-top: calc(10px - var(--td-gap)); padding: 0 2px; }
+.td-next + .td-rest { margin-top: calc(10px - var(--td-gap)); padding: 0 var(--space-0); }
 .td-rest-line, .td-wait-line { color: var(--text-faint); font-weight: 500; }
 /* Round 4: the fold's quiet line with the All tasks link beside it (the Due card is gone). */
-.td-rest-line-row { display: flex; align-items: center; gap: 12px; }
+.td-rest-line-row { display: flex; align-items: center; gap: var(--space-3); }
 .td-rest-line-row .th-all-tasks { margin-left: auto; }
-.td-rest-groups { margin-top: 4px; }
-.td-wait-fold .td-section { margin-top: 4px; margin-bottom: 0; }
-.td-wait-group + .td-wait-group { margin-top: 8px; }
+.td-rest-groups { margin-top: var(--space-1); }
+.td-wait-fold .td-section { margin-top: var(--space-1); margin-bottom: 0; }
+.td-wait-group + .td-wait-group { margin-top: var(--space-2); }
 .td-wait-head {
-  display: flex; align-items: center; gap: 8px; padding: 6px 10px 2px;
+  display: flex; align-items: center; gap: var(--space-2); padding: 6px 10px var(--space-0);
 }
 .td-chase {
-  margin-left: auto; display: inline-flex; align-items: center; gap: 4px;
-  padding: 3px 8px; border-radius: var(--r-2); font-size: var(--fs-caption); font-weight: 550; color: var(--text-muted);
+  margin-left: auto; display: inline-flex; align-items: center; gap: var(--space-1);
+  padding: 3px var(--space-2); border-radius: var(--r-2); font-size: var(--fs-caption); font-weight: 550; color: var(--text-muted);
 }
 .td-chase:hover { color: var(--text); background: var(--bg-hover); }
-.td-passed-end { margin-top: var(--td-gap); padding: 10px 8px; border: 1px solid var(--border); border-radius: var(--r-3); background: var(--bg-raised); }
+.td-passed-end { margin-top: var(--td-gap); padding: 10px var(--space-2); border: 1px solid var(--border); border-radius: var(--r-3); background: var(--bg-raised); }
 .td-setup-line {
   display: inline-flex; align-items: center; gap: 7px; margin-top: 10px;
-  padding: 4px 2px; font-size: var(--fs-small); color: var(--text-faint);
+  padding: var(--space-1) var(--space-0); font-size: var(--fs-small); color: var(--text-faint);
 }
 .td-setup-line:hover { color: var(--text); }
 .td-setup-overlay {
   position: fixed; inset: 0; z-index: 60; display: grid; place-items: start center;
-  padding: 8vh 16px 16px; background: rgba(0, 0, 0, 0.28); overflow: auto;
+  padding: 8vh var(--space-4) var(--space-4); background: rgba(0, 0, 0, 0.28); overflow: auto;
 }
 .td-setup-dialog {
   width: min(680px, 100%); max-height: 82vh; overflow: auto; padding: 14px;
   border-radius: var(--r-4); background: var(--bg-raised); box-shadow: var(--shadow-card);
 }
-.td-setup-close { margin-top: 8px; }
+.td-setup-close { margin-top: var(--space-2); }
 /* A quiet button's second line wraps instead of cutting off with "…" (4 Nov 2026, p15-today-rest: the tidy
    button's words were clipped in the side column; nothing is ever cut off). */
 .td-day-note .td-row-sub, .td-day-note .td-row-sub > * { white-space: normal; overflow: visible; }
@@ -1138,47 +1139,47 @@
 
 /* Today's meetings, after Next: the calendar and the meeting notes as one section. */
 .th-meetings { margin-bottom: var(--td-gap); }
-.th-meetings .td-section-head { margin-bottom: 8px; }
+.th-meetings .td-section-head { margin-bottom: var(--space-2); }
 
 /* One quiet line for what is due and matters (the weekly review, tidy): a single line, never a card. */
 .td-quiet-line {
-  display: inline-flex; align-items: center; gap: 7px; margin: 2px 0;
-  padding: 4px 2px; font-size: var(--fs-small); color: var(--text-faint);
+  display: inline-flex; align-items: center; gap: 7px; margin: var(--space-0) 0;
+  padding: var(--space-1) var(--space-0); font-size: var(--fs-small); color: var(--text-faint);
   background: none; border: 0; cursor: pointer; text-align: left;
 }
 .td-quiet-line:hover { color: var(--text); }
 
 /* The one fold for the full list: the rows first, then the day's sections, the day's note and the week. */
 .td-else { margin-bottom: var(--td-gap); }
-.td-else-groups { display: flex; flex-direction: column; gap: var(--td-gap); margin-top: 12px; }
-.th-day-note-fold { margin-top: 4px; }
+.td-else-groups { display: flex; flex-direction: column; gap: var(--td-gap); margin-top: var(--space-3); }
+.th-day-note-fold { margin-top: var(--space-1); }
 
 /* The "things need a look" list (8 Nov 2026, calm Today): everything that was its own block is a row here —
    the nags, the vault rows, the projects waiting, the packs' rows, the turned-on cards. Shut, the rows stay
    rendered but hidden, so the line's count is what opening shows (the guard beats any display rule). */
 .td-look-open[hidden] { display: none; }
-.td-look-items { display: flex; flex-direction: column; margin-top: 12px; }
+.td-look-items { display: flex; flex-direction: column; margin-top: var(--space-3); }
 /* The nags stack as full rows in the list (they ran inline above the fold before). */
-.td-look-items .td-quiet-line { display: flex; width: 100%; padding: 7px 8px; border-radius: var(--r-3); }
+.td-look-items .td-quiet-line { display: flex; width: 100%; padding: 7px var(--space-2); border-radius: var(--r-3); }
 .td-look-items .td-quiet-line:hover { background: var(--bg-hover); }
 /* The packs' cards uncard into quiet row groups under their own heads (every pack, whatever shell it draws). */
-.td-look-items .tm-modules { display: flex; flex-direction: column; gap: 2px; margin: 8px 0 0; }
-.td-look-items .tm-modules > section { border: 0; background: none; box-shadow: none; padding: 8px 0 2px; }
-.td-look-items .tm-modules > section > header { margin-bottom: 2px; padding: 0 8px; }
+.td-look-items .tm-modules { display: flex; flex-direction: column; gap: var(--space-0); margin: var(--space-2) 0 0; }
+.td-look-items .tm-modules > section { border: 0; background: none; box-shadow: none; padding: var(--space-2) 0 var(--space-0); }
+.td-look-items .tm-modules > section > header { margin-bottom: var(--space-0); padding: 0 var(--space-2); }
 .td-look-items .tm-modules .td-section-head h2,
 .td-look-items .tm-modules .fy-today-head h2,
 .td-look-items .tm-modules .pb-today-head h2 { font-size: var(--fs-small); }
 /* A row that opens to its full card (components/LookRow.tsx): its title words, then the card itself. */
 .td-look-row { border-radius: var(--r-3); }
-.td-look-sum { display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: var(--r-3); cursor: pointer; list-style: none; font-size: var(--fs-small); color: var(--text); }
+.td-look-sum { display: flex; align-items: center; gap: var(--space-2); padding: 7px var(--space-2); border-radius: var(--r-3); cursor: pointer; list-style: none; font-size: var(--fs-small); color: var(--text); }
 .td-look-sum::-webkit-details-marker { display: none; }
 .td-look-sum:hover { background: var(--bg-hover); }
 .td-look-ic { flex: none; display: grid; place-items: center; color: var(--text-muted); }
 .td-look-title { flex: 1; min-width: 0; }
 .td-look-go { flex: none; color: var(--text-faint); }
 .td-look-row[open] > .td-look-sum .td-look-go { transform: rotate(90deg); }
-.td-look-body { padding: 2px 0 8px; }
-.td-look-body > .td-section, .td-look-body > .vh-warn { margin: 4px 0 0; }
+.td-look-body { padding: var(--space-0) 0 var(--space-2); }
+.td-look-body > .td-section, .td-look-body > .vh-warn { margin: var(--space-1) 0 0; }
 
 /* The one fold line names what folds (5 Nov 2026): on a full day the names run long, so the line wraps
    under its links instead of squeezing All tasks and Timeline off the row. */

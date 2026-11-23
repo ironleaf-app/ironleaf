@@ -196,7 +196,7 @@ test('the Inbox earns its Find; filter, count, Esc', { timeout: 300000 }, async 
   await sleep(700);
   assert.equal(await words(), '', 'Esc clears the words');
   assert.equal(await H.browser.ev(`document.querySelectorAll('main [aria-label="Waiting to be filed"] > div').length`), 47, 'every card stands again');
-  await H.browser.ev(`document.querySelector('main .w2a-ib-select .btn')?.focus()`);
+  await H.browser.ev(`document.querySelector('main .list-tools-end')?.focus()`);
   await slash();
   assert.equal(await H.browser.ev(`document.activeElement?.getAttribute('aria-label')`), 'Find in this list', '/ jumps to the box');
 });

@@ -1037,16 +1037,16 @@ function HomeGroup({ prefs, set }: { prefs: Prefs; set(p: Partial<Prefs>): void 
   const defOf = (id: HomeCardId): HomeCardDef => HOME_CARDS.find((c) => c.id === id)!;
   const offers = useMemo(() => homeOffers(layout.on), [layout]);
   const move = (id: HomeCardId, dir: -1 | 1) => save(moveHomeCard(layout, id, layout.on.indexOf(id) + dir));
-  // The mock-ups' small tinted glyph per card.
-  const tile = (id: HomeCardId): [string, string] =>
-    ({ due: ['red', '!'], brief: ['amber', '☀'], inbox: ['blue', '▤'], 'day-note': ['slate', '☀'], waiting: ['amber', '◷'], recent: ['slate', '↺'], upcoming: ['blue', '▦'], activity: ['slate', '〜'], bills: ['green', '$'], habits: ['amber', '✓'], weekly: ['slate', '★'], family: ['blue', '♡'] })[id] as [string, string];
+  // Each card's own icon on one quiet tile (phase 2, 23 Nov 2026: a solid red "!" beside Today's due items read as an
+  // alert with no words; the tile says which card, never a state).
+  const tile = (id: HomeCardId): IconName =>
+    ({ due: 'task', brief: 'sun', inbox: 'inbox', 'day-note': 'calendar', waiting: 'clock', recent: 'history', upcoming: 'calendar', activity: 'refresh', bills: 'receipt', habits: 'check', weekly: 'star', family: 'heart' } as Record<string, IconName>)[id] ?? 'notes';
   const cardRow = (def: HomeCardDef, on: boolean, i?: number) => {
     const locked = !!def.pack && !moduleIsOn(sw, def.pack.module);
-    const [tint, glyph] = tile(def.id);
     return (
       <div key={def.id} className={`cardrow${on ? '' : ' off'}`} data-setting={def.title}>
         <span className="grip" aria-hidden="true"><Icon name="grip" size={14} /></span>
-        <span className={`gtile xs ${tint}`} aria-hidden="true">{glyph}</span>
+        <span className="gtile xs slate" aria-hidden="true"><Icon name={tile(def.id)} size={13} /></span>
         <span className="nm">
           {def.title}
           <span className="ds">{locked ? `Switch on the ${def.pack!.name} pack` : def.words}</span>

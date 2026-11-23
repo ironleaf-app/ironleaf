@@ -50,11 +50,11 @@
   overflow-wrap: anywhere;
 }
 .canvas-card-body.is-bound {
-  padding: 12px 14px;
+  padding: var(--space-3) 14px;
 }
 .canvas-card.editing .canvas-card-body {
   overflow: hidden;
-  padding: 10px 12px;
+  padding: 10px var(--space-3);
 }
 .canvas-card.editing {
   box-shadow:
@@ -91,7 +91,7 @@
 
 /* A note card's title row: its name, and on hover the ways to write in it or open it. */
 .canvas-card-title {
-  padding: 8px 10px 0 12px;
+  padding: var(--space-2) 10px 0 var(--space-3);
   min-height: 30px;
 }
 .canvas-card.is-note .canvas-card-title {
@@ -101,7 +101,7 @@
 .cv-title-actions {
   margin-left: auto;
   display: flex;
-  gap: 2px;
+  gap: var(--space-0);
   opacity: 0;
   transition: opacity 0.12s;
 }
@@ -138,7 +138,7 @@
   mask-image: linear-gradient(to bottom, black 70%, transparent);
 }
 .cv-note-preview p {
-  margin: 0 0 4px;
+  margin: 0 0 var(--space-1);
   overflow: hidden; overflow-wrap: break-word;
 }
 
@@ -401,7 +401,7 @@
   top: calc(100% + 6px);
   display: flex;
   gap: 6px;
-  padding: 8px;
+  padding: var(--space-2);
   border-radius: var(--r-4);
   background: var(--bg-raised);
   border: 1px solid var(--border);
@@ -430,7 +430,7 @@
 
 .cv-toolbar {
   padding: 6px;
-  gap: 2px;
+  gap: var(--space-0);
   border-radius: var(--r-3);
 }
 .cv-toolbar button {
@@ -477,14 +477,14 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 8px;
+  gap: var(--space-2);
   z-index: 5;
 }
 .cv-zoom-row {
   display: flex;
   align-items: center;
   gap: 1px;
-  padding: 4px;
+  padding: var(--space-1);
   border-radius: var(--r-3);
   background: var(--bg-raised);
   border: 1px solid var(--border);
@@ -544,8 +544,8 @@
   z-index: 6;
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 4px 4px 10px;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-1) var(--space-1) 10px;
   border-radius: var(--r-4);
   background: var(--bg-raised);
   border: 1px solid var(--border);
@@ -590,7 +590,7 @@
   align-items: center;
   gap: 10px;
   max-width: calc(100% - 340px);
-  padding: 6px 12px 6px 10px;
+  padding: 6px var(--space-3) 6px 10px;
   border-radius: var(--r-3);
   background: color-mix(in srgb, var(--bg-raised) 94%, transparent);
   border: 1px solid var(--border);
@@ -631,7 +631,7 @@
 }
 .cv-switch {
   display: flex;
-  padding: 2px;
+  padding: var(--space-0);
   border-radius: var(--r-3);
   background: var(--bg-hover);
 }
@@ -657,7 +657,7 @@
   color: var(--text-faint);
 }
 .cv-empty-card .cv-empty-title {
-  margin: 4px 0 0;
+  margin: var(--space-1) 0 0;
   font-weight: 650;
   font-size: var(--fs-body);
   color: var(--text-muted);
@@ -682,7 +682,7 @@
   display: grid;
   justify-items: center;
   gap: 6px;
-  padding: 18px 24px;
+  padding: 18px var(--space-5);
   border-radius: var(--r-3);
   background: var(--bg-raised);
   box-shadow: var(--shadow);
@@ -698,7 +698,7 @@
 .cv-link {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   height: 100%;
 }
 .cv-link-tile {
@@ -734,9 +734,9 @@
 .cv-open {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   height: 26px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-2);
   font-size: var(--fs-caption);
   font-weight: 550;
@@ -758,7 +758,7 @@
 .cv-group-label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   top: -34px;
   pointer-events: auto;
   cursor: text;
@@ -895,7 +895,7 @@
 .cv-plain {
   display: block;
   width: 100%;
-  padding: 2px 0;
+  padding: var(--space-0) 0;
   border-radius: var(--r-2);
 }
 .cv-avatar {
@@ -938,13 +938,13 @@
     0 12px 32px -12px rgba(20, 26, 46, 0.22);
 }
 .canvas-card.part-project .canvas-card-body {
-  padding: 22px 24px 18px;
+  padding: 22px var(--space-5) 18px;
 }
 .cv-project {
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
 }
 .cv-project > * {
   flex: none;
@@ -965,7 +965,7 @@
 .cv-project-facts {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 .cv-project-summary {
@@ -985,7 +985,7 @@
 }
 .cv-project.is-missing {
   display: grid;
-  gap: 4px;
+  gap: var(--space-1);
   font-weight: 600;
 }
 
@@ -994,7 +994,7 @@
   border-radius: var(--r-3);
 }
 .canvas-card.part-portfolio-project .canvas-card-body {
-  padding: 12px 14px 10px;
+  padding: var(--space-3) 14px 10px;
 }
 .cv-project.compact {
   gap: 9px;
@@ -1011,7 +1011,7 @@
 .cv-project.compact .cv-pill {
   height: 21px;
   font-size: var(--fs-caption);
-  padding: 0 8px;
+  padding: 0 var(--space-2);
 }
 .cv-project.compact .cv-project-foot {
   padding-top: 6px;
@@ -1091,7 +1091,7 @@
 /* A key date. */
 .cv-date {
   display: flex;
-  gap: 12px;
+  gap: var(--space-3);
   align-items: center;
   height: 100%;
 }
@@ -1122,7 +1122,7 @@
 .cv-date-words {
   min-width: 0;
   display: grid;
-  gap: 4px;
+  gap: var(--space-1);
   justify-items: start;
 }
 .cv-date-what {
@@ -1179,15 +1179,15 @@
 /* A risk or issue. */
 .cv-risk {
   display: grid;
-  gap: 8px;
+  gap: var(--space-2);
   justify-items: start;
 }
 .cv-level {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   height: 21px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-2);
   font-size: var(--fs-caption);
   font-weight: 700;
@@ -1227,7 +1227,7 @@
 .cv-doc {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   height: 100%;
 }
 .cv-kind {
@@ -1268,7 +1268,7 @@
   min-width: 0;
   flex: 1;
   display: grid;
-  gap: 2px;
+  gap: var(--space-0);
 }
 .cv-doc-name {
   font-weight: 600;
@@ -1309,7 +1309,7 @@
   right: 0;
   bottom: 0;
   display: grid;
-  padding: 22px 12px 9px;
+  padding: 22px var(--space-3) 9px;
   background: linear-gradient(to top, rgba(20, 19, 18, 0.72), transparent);
   color: #fff;
 }
@@ -1380,7 +1380,7 @@
   .cv-toolbar .canvas-toolbar-sep {
     width: 20px;
     height: 1px;
-    margin: 4px 0;
+    margin: var(--space-1) 0;
   }
   .cv-zoom {
     right: 12px;
@@ -1424,7 +1424,7 @@
   align-items: center;
   gap: 7px;
   height: 34px;
-  padding: 0 16px 0 13px;
+  padding: 0 var(--space-4) 0 13px;
   border-radius: var(--r-1);
   background: var(--bg-raised);
   border: 1px solid var(--border);
@@ -1463,7 +1463,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 0 16px;
+  margin: 0 var(--space-4);
   padding: 10px 14px;
   border: 1px solid var(--coral);
   border-radius: var(--r-3);
@@ -1473,8 +1473,8 @@
 .cv-damaged .cv-damaged-words { flex: 1 1 auto; min-width: 0; }
 .cv-damaged .btn { flex: none; }
 .cv-damaged-bytes {
-  margin: 8px 16px 0;
-  padding: 12px 14px;
+  margin: var(--space-2) var(--space-4) 0;
+  padding: var(--space-3) 14px;
   max-height: 220px;
   overflow: auto;
   border: 1px solid var(--border);

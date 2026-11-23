@@ -22,9 +22,10 @@ import path from 'node:path';
 import { after, before, test } from 'node:test';
 import { clickWords, openRoom, sleep, waitFor } from './t152-lib.mjs';
 import { startHarness } from './vault-controls-harness.mjs';
+import { cssPxFor } from './css-px.mjs';
 
 const root = path.join(import.meta.dirname, '..');
-const read = (p) => readFileSync(path.join(root, p), 'utf8');
+const read = (p) => cssPxFor(p, readFileSync(path.join(root, p), 'utf8'));
 const shotsDir = path.join(root, '..', 'shots');
 mkdirSync(shotsDir, { recursive: true });
 const TAG = process.env.T278_TAG || 'after';
