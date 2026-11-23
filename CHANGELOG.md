@@ -6,6 +6,17 @@ the website. `tools/release.mjs` takes a release's notes from here when `--notes
 
 Format: one `## <version> — <YYYY-MM-DD>` heading a release, then one `- ` line a change.
 
+## 2.0.16 — 2026-11-23
+
+- One design language across the app: one spacing scale, quieter menus and dialogs, one strong button per page, and every screen checked at a normal window, a 2560 px monitor and in dark.
+- Meetings: a past meeting without a recording no longer leaves a tall empty pane; actions, people and decisions sit side by side, and minutes give decisions and actions room together.
+- Settings, Packs, Keyboard shortcuts and What Ironleaf can do use a wide window in columns instead of one narrow strip; the red "!" tile on Home cards is gone.
+- Today's columns end together on a big monitor, Inbox captures read as rows with a fairer list width, and the weekly review is flat and easy to scan.
+- Empty pages sit at the page's edge with a clear next step, and Locked is a calm two-part screen.
+- Long names in the breadcrumb and the Files panel are no longer cut off.
+- In dark, a switch that is on shows its knob again, and drop-downs keep room for their arrow.
+- Typing Chinese, Japanese or Korean: Enter now confirms the characters instead of submitting, renaming or closing mid-word.
+
 ## 2.0.15 — 2026-11-23
 
 - Slide decks look like a consultancy made them on the first pass: type set at slide size, one frame on every slide, an at-a-glance slide of key figures, and one highlight colour for the point that matters. Content grows to fill the room under each headline, and the PowerPoint file matches. Decks take about half the AI tokens they did.
