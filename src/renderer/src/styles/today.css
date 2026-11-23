@@ -1071,6 +1071,10 @@
 /* Next for you's rows are the one task row (tick, title, who, when), so their hover buttons overlay the title's end and
  * never take a line of their own or cover who and when, which stay clickable (4 Nov 2026, seen at their 3456 window). */
 .td-row.tkrow .td-actions { right: calc(var(--who-w) + var(--when-w) + 24px); }
+/* They ride the title's line, not the row's middle (23 Nov 2026): centred on a two-line row they covered the end of
+ * the project line under the title too, and a long project name (t152: "Job 114 Receipts") could not be clicked
+ * while the row was hovered. */
+.td-row.tkrow .td-actions { top: var(--space-0); transform: none; }
 /* The one Today count on the heading (4 Nov 2026, p12-today-focus): quiet, as the rail reads it. */
 .td-head-count { font-weight: 550; color: var(--text-muted); }
 /* The rest past Next for you under one quiet line, and Waiting folded (4 Nov 2026, p12-today-focus). */

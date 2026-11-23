@@ -75,7 +75,10 @@ export interface Connection {
 
 /** What each kind of provider is taken to offer when a model says nothing about itself. */
 const KIND_DEFAULTS: Record<ConnectionKind, { contextWindow: number; maxTokens: number; images: boolean }> = {
-  anthropic: { contextWindow: 200_000, maxTokens: 8192, images: true },
+  // Every Claude model served today writes at least 64K tokens (Haiku 4.5; the rest 128K), and Claude's own thinking
+  // counts against this ceiling: at 8192 a model that thinks by default (Sonnet 5.5) spent nearly all of it thinking
+  // and a two-page design was cut off (24 Nov 2026). A ceiling only: what is billed is what is written.
+  anthropic: { contextWindow: 200_000, maxTokens: 64_000, images: true },
   openai: { contextWindow: 128_000, maxTokens: 8192, images: true },
   google: { contextWindow: 1_000_000, maxTokens: 8192, images: true },
   ollama: { contextWindow: 32_768, maxTokens: 4096, images: false },

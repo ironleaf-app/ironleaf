@@ -248,6 +248,31 @@ test('a reply streams through pi-ai for each format', async () => {
   }
 });
 
+// Claude counts its thinking against max_tokens, and Sonnet 5.5 and Opus 5.5 think by default: at the old 8192 ceiling a
+// designed handout came back cut off (24 Nov 2026). An ask's room gets the thinking's room on top, within the model's
+// own ceiling; other formats send what was asked, within theirs.
+test('Claude gets room to think on top of what an ask asked for', async () => {
+  const port = await startServer();
+  const service = await serviceAt(path.join(work, 'p-room'), port, { 'c-chat': 'key-chat', 'c-claude': 'key-claude' });
+  try {
+    const sent = async (choice, maxTokens) => {
+      seen.length = 0;
+      const r = await service.stream(choice, 'Be brief.', [{ role: 'user', text: 'Say hello.' }], { signal: AbortSignal.timeout(15000), ...(maxTokens ? { maxTokens } : {}) });
+      assert.ok(!r.error, r.error);
+      const b = seen[0].body;
+      return b.max_tokens ?? b.max_completion_tokens;
+    };
+    assert.equal(P.toPiModel(P.toConnection({ id: 'a', name: 'A', kind: 'anthropic', baseURL: 'http://127.0.0.1:1/v1', api: 'anthropic-messages', models: [{ id: 'x' }] }), 'x').maxTokens, 64000, 'a Claude model with no stated ceiling may write 64K');
+    assert.equal(await sent({ provider: 'c-claude', model: 'claude-x' }), 64000, 'no ask cap: the model’s whole ceiling');
+    assert.equal(await sent({ provider: 'c-claude', model: 'claude-x' }, 4000), 4000 + P.THINKING_ROOM, 'a short ask still leaves room for thinking');
+    assert.equal(await sent({ provider: 'c-claude', model: 'claude-x' }, 60000), 64000, 'never past the model’s ceiling');
+    assert.equal(await sent({ provider: 'c-chat', model: 'chat-1' }, 16000), 4096, 'another format: what was asked, within its ceiling');
+    assert.equal(await sent({ provider: 'c-chat', model: 'chat-1' }, 1000), 1000);
+  } finally {
+    service.stop();
+  }
+});
+
 // A picture attached in the chat goes to a model that sees pictures as a picture; one that can't gets pi-ai's note
 // instead; the model list says which see pictures.
 test('an attached picture goes as a picture to a model that sees pictures', async () => {

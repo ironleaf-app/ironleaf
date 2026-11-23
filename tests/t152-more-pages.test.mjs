@@ -1,7 +1,7 @@
 // node --test tests/t152-more-pages.test.mjs — t152 (9 Nov 2026): every control
 // on the More menu's pages does what it says, on the 3,000-note vault:
 // Templates, Files and assets, Bookmarks, Locked, Bin, Import, Timeline,
-// Automations, Shared spaces, What the Vault can do, Tags and Areas. Real
+// Shared spaces, What the Vault can do, Tags and Areas. Real
 // renderer, real input; each control is judged by what a person would see
 // plus what landed in the files. (Graph, Search inside notes, People and
 // organisations and Commands open pages swept in their own area files.)
@@ -31,7 +31,7 @@ test('More pages: every control works, on the big vault', { timeout: 2700000 }, 
     { page: 'Locked', open: () => more('Locked'), stay: H1('Locked'), scope: 'main' },
     { page: 'Import', open: () => more('Import'), stay: H1('Import'), scope: 'main' },
     { page: 'Timeline', open: () => more('Timeline'), stay: PAGENAME('Timeline'), scope: 'main', skip: ['Today'] },
-    { page: 'Automations', open: () => more('Automations'), stay: PAGENAME('Automations'), scope: 'main' },
+    // Automations left the app on 20 Nov 2026 (its pages removed), so its row left this walk (23 Nov 2026).
     { page: 'Shared spaces', open: () => more('Shared spaces'), stay: H1('Shared spaces'), scope: 'main' },
     { page: 'Abilities', open: () => more('What Ironleaf can do'), stay: PAGENAME('What Ironleaf can do'), scope: 'main' },
     { page: 'Tags', open: () => more('Tags'), stay: MODAL_STAY, scope: DIALOG_SEL },

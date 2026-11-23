@@ -73,6 +73,17 @@ export interface Keys {
 /** The words every AI entry point shows while no connection is set up. */
 export const NO_CONNECTION = 'Add an AI connection in Settings › AI to use this.';
 
+/**
+ * The ceiling one ask sends: what it asked for, within the model's own. Claude counts its thinking against the same
+ * ceiling, and the models that think by default (Sonnet 5.5, Opus 5.5) do so whether or not a level is chosen, so an
+ * ask's words would otherwise lose their room to it (a 4,000-word ask could come back empty). Anthropic gets the
+ * thinking's room on top; a ceiling costs nothing unused.
+ */
+export const THINKING_ROOM = 32_000;
+export function answerRoom(model: { api: string; maxTokens: number }, asked: number): number {
+  return Math.min(model.api === 'anthropic-messages' ? asked + THINKING_ROOM : asked, model.maxTokens);
+}
+
 export class ProviderService implements ModelsService {
   readonly ownKeys = true;
   private listeners = new Set<() => void>();
@@ -263,7 +274,7 @@ export class ProviderService implements ModelsService {
         apiKey,
         signal,
         maxRetries: conn.maxRetries,
-        ...(opts.maxTokens ? { maxTokens: Math.min(opts.maxTokens, model.maxTokens) } : {}),
+        ...(opts.maxTokens ? { maxTokens: answerRoom(model, opts.maxTokens) } : {}),
         ...(level && level !== 'off' ? { reasoning: level as ThinkingLevel } : {}),
       });
       for await (const event of events) {

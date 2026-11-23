@@ -667,7 +667,7 @@ export const ENUM_JS = (scope) => `(() => {
         ? (el.getAttribute('aria-label') || el.getAttribute('placeholder') || el.name || cls || 'field')
         : container ? '' : viewSource ? 'view-source' : w.replace(/\\d[\\d,]*/g, '#').replace(/"[^"]*"/g, '"…"');
       const fam = [tag, role, el.type || '', cls, famKey].join('|');
-      out.push({ key, base, fam, tag: el.tagName.toLowerCase(), role: el.getAttribute('role') || '', type: el.type || '', words: w, disabled: !!el.disabled, checked: el.getAttribute('aria-checked') ?? (el.checked !== undefined && /checkbox|radio/.test(el.type || '') ? String(el.checked) : null), value: vv === null ? null : vv.length + ':' + vv.slice(-24), sel: el.getAttribute('aria-selected') ?? el.getAttribute('aria-current') ?? ((typeof el.className === 'string' && /(^|\\s)(on|active|selected|is-on)(\\s|$)/.test(el.className)) ? 'on' : null), pressed: el.getAttribute('aria-pressed'), label: el.getAttribute('aria-label') });
+      out.push({ key, base, fam, tag: el.tagName.toLowerCase(), role: el.getAttribute('role') || '', type: el.type || '', words: w, disabled: !!el.disabled, checked: el.getAttribute('aria-checked') ?? (el.checked !== undefined && /checkbox|radio/.test(el.type || '') ? String(el.checked) : null), value: vv === null ? null : vv.length + ':' + vv.slice(-24), sel: el.getAttribute('aria-selected') ?? el.getAttribute('aria-current') ?? ((typeof el.className === 'string' && /(^|\\s)(on|active|selected|is-on)(\\s|$)/.test(el.className)) ? 'on' : null), pressed: el.getAttribute('aria-pressed'), label: el.getAttribute('aria-label'), expanded: el.getAttribute('aria-expanded') });
     }
   }
   return out;
@@ -772,7 +772,12 @@ export async function clickReal(h, key) {
   // inline control's box centre can fall between its line fragments and
   // hit-test whatever sits there instead.
   try {
-    const pt = await h.browser.ev(`(() => { const el = document.querySelector(${QE(key)}); if (!el) return null; el.scrollIntoView({ block: 'nearest' }); const r = el.getBoundingClientRect(); if (r.width <= 2 || r.height <= 2) return null; const rs = el.getClientRects(); let rr = rs.length > 1 ? rs[Math.floor(rs.length / 2)] : r; let px = rr.x + rr.width / 2, py = rr.y + rr.height / 2; if (px < 0 || py < 0 || px > window.innerWidth || py > window.innerHeight) { el.scrollIntoView({ block: 'center' }); const r2 = el.getBoundingClientRect(); const rs2 = el.getClientRects(); rr = rs2.length > 1 ? rs2[Math.floor(rs2.length / 2)] : r2; px = rr.x + rr.width / 2; py = rr.y + rr.height / 2; if (px < 0 || py < 0 || px > window.innerWidth || py > window.innerHeight) return { unreachable: true }; } const x = Math.min(px, window.innerWidth - 2), y = Math.min(py, window.innerHeight - 2); const at = document.elementFromPoint(x, y); const covered = at && at !== el && !el.contains(at) && !(at.contains(el) && /^(BUTTON|A|SELECT|INPUT|TEXTAREA)$/.test(at.tagName)) ? ((at.innerText || at.getAttribute('aria-label') || at.tagName) + '').trim().replace(/\\s+/g, ' ').slice(0, 40) : null; return { x, y, covered }; })()`);
+    // Scrolled to the nearest edge, a row in a board with a sticky head lands under that head; a person scrolls it
+    // clear, so a covered first look tries again with the control in the middle of its scroller (23 Nov 2026: the
+    // Timeline's first row sat under its own sticky corner).
+    const look = (block) => h.browser.ev(`(() => { const el = document.querySelector(${QE(key)}); if (!el) return null; el.scrollIntoView({ block: ${JSON.stringify(block)} }); const r = el.getBoundingClientRect(); if (r.width <= 2 || r.height <= 2) return null; const rs = el.getClientRects(); let rr = rs.length > 1 ? rs[Math.floor(rs.length / 2)] : r; let px = rr.x + rr.width / 2, py = rr.y + rr.height / 2; if (px < 0 || py < 0 || px > window.innerWidth || py > window.innerHeight) { el.scrollIntoView({ block: 'center' }); const r2 = el.getBoundingClientRect(); const rs2 = el.getClientRects(); rr = rs2.length > 1 ? rs2[Math.floor(rs2.length / 2)] : r2; px = rr.x + rr.width / 2; py = rr.y + rr.height / 2; if (px < 0 || py < 0 || px > window.innerWidth || py > window.innerHeight) return { unreachable: true }; } const x = Math.min(px, window.innerWidth - 2), y = Math.min(py, window.innerHeight - 2); const at = document.elementFromPoint(x, y); const covered = at && at !== el && !el.contains(at) && !(at.contains(el) && /^(BUTTON|A|SELECT|INPUT|TEXTAREA)$/.test(at.tagName)) ? ((at.innerText || at.getAttribute('aria-label') || at.tagName) + '').trim().replace(/\\s+/g, ' ').slice(0, 40) : null; return { x, y, covered }; })()`);
+    let pt = await look('nearest');
+    if (pt && pt.covered) pt = (await look('center')) ?? pt;
     if (!pt) return 'gone';
     if (pt.unreachable) return 'unreached';
     // Covered means hands off (the tasks lesson: the old code clicked first
@@ -903,6 +908,9 @@ export async function probe(h, c) {
   // A button may open the OS file picker through a hidden file input (Import's
   // 'Bring files in'): headless that shows nothing, so activations are counted
   // page-side (installed once; a reload re-arms it) and read after the press.
+  // A link to a web page (About's Website, the download page) opens the person's browser through window.open:
+  // headless that shows nothing, so the calls are counted page-side, as the file picker's are (23 Nov 2026).
+  const wo0 = await ev(`(() => { if (window.__nvWindowOpens !== 0 && !window.__nvWindowOpens) { window.__nvWindowOpens = 0; const orig = window.open; window.open = function (...a) { window.__nvWindowOpens++; return orig.apply(this, a); }; } return window.__nvWindowOpens; })()`).catch(() => -1);
   const fp0 = await ev(`(() => { if (window.__nvFileClicks !== 0 && !window.__nvFileClicks) { window.__nvFileClicks = 0; const orig = HTMLInputElement.prototype.click; HTMLInputElement.prototype.click = function () { if (this.type === 'file') window.__nvFileClicks++; return orig.call(this); }; } return window.__nvFileClicks; })()`).catch(() => -1);
   // Server-side calls (the sweep's ledger: channel names, not the page's
   // dotted paths — 'capture:show', not 'capture.show').
@@ -936,8 +944,10 @@ export async function probe(h, c) {
   const diffs = diffSnap(before, after);
   // The control's own state (a toggled aria-pressed, a swapped aria-label, a
   // flipped selection — the sweep's lesson: without this, each reads dead).
-  const stateAfter = await ev(`(() => { const el = document.querySelector(${QE(c.key)}); if (!el) return 'gone'; const chk = el.getAttribute('aria-checked') ?? (el.checked !== undefined && /checkbox|radio/.test(el.type || '') ? String(el.checked) : ''); const vv = el.value !== undefined ? String(el.value) : ''; const sel = el.getAttribute('aria-selected') ?? el.getAttribute('aria-current') ?? ((typeof el.className === 'string' && /(^|\\s)(on|active|selected|is-on)(\\s|$)/.test(el.className)) ? 'on' : ''); return [chk, el.value !== undefined ? vv.length + ':' + vv.slice(-24) : '', el.getAttribute('aria-pressed') ?? '', el.getAttribute('aria-label') ?? '', sel].join('~'); })()`);
-  const stateBefore = [c.checked ?? '', c.value ?? '', c.pressed ?? '', c.label ?? '', c.sel ?? ''].join('~');
+  const stateAfter = await ev(`(() => { const el = document.querySelector(${QE(c.key)}); if (!el) return 'gone'; const chk = el.getAttribute('aria-checked') ?? (el.checked !== undefined && /checkbox|radio/.test(el.type || '') ? String(el.checked) : ''); const vv = el.value !== undefined ? String(el.value) : ''; const sel = el.getAttribute('aria-selected') ?? el.getAttribute('aria-current') ?? ((typeof el.className === 'string' && /(^|\\s)(on|active|selected|is-on)(\\s|$)/.test(el.className)) ? 'on' : ''); return [chk, el.value !== undefined ? vv.length + ':' + vv.slice(-24) : '', el.getAttribute('aria-pressed') ?? '', el.getAttribute('aria-label') ?? '', sel, el.getAttribute('aria-expanded') ?? ''].join('~'); })()`);
+  // aria-expanded counts too (23 Nov 2026): a one-line release note opened in About shows the same words wrapped
+  // instead of clipped, so the page's text did not change and the toggle read dead.
+  const stateBefore = [c.checked ?? '', c.value ?? '', c.pressed ?? '', c.label ?? '', c.sel ?? '', c.expanded ?? ''].join('~');
   if (stateAfter !== 'gone' && stateAfter !== stateBefore) diffs.push(`own state ${JSON.stringify(stateBefore)} → ${JSON.stringify(stateAfter)}`);
   if (how === 'dblclick') {
     // Escape puts the value back as it was (the verdict already saw the
@@ -975,6 +985,8 @@ export async function probe(h, c) {
   // The press reached a hidden file input (the OS picker opened headless).
   const fp1 = await ev(`window.__nvFileClicks ?? -1`).catch(() => -1);
   if (fp0 >= 0 && fp1 > fp0) return { verdict: 'external', effect: 'opens the OS file picker (nothing observable headless)', diffs, files, how, ...opened(after) };
+  const wo1 = await ev(`window.__nvWindowOpens ?? -1`).catch(() => -1);
+  if (wo0 >= 0 && wo1 > wo0) return { verdict: 'external', effect: 'opens a web page in the browser (nothing observable headless)', diffs, files, how, ...opened(after) };
   // An already-on tab, switch or option: pressing it again rightly does nothing.
   const noOpOk = c.sel != null || (c.pressed === 'true' && !/switch|checkbox/.test(c.role || '') && c.type !== 'checkbox') || ((c.role === 'radio' || c.role === 'menuitemradio') && c.checked === 'true');
   if (noOpOk) return { verdict: 'no-op-ok', effect: 'already on; pressing it again rightly does nothing', diffs, files, how, ...opened(after) };
