@@ -14,7 +14,7 @@ import { promises as fsp, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { CliServer, runCliArgs, type CliHost } from './cli';
 import { LooseFiles, type LooseFile, type LooseOpened } from './loose-files';
-import { handleMcpLine, type LocalMcpBackend, type McpResource } from './mcp-local';
+import { handleMcpLine, type LocalMcpBackend, type McpPrompt, type McpPromptGot, type McpResource } from './mcp-local';
 import { registerWindows, type WindowsEntryResult } from './windows-entry';
 import type { McpTool } from '../shared/agent-access';
 import { cleanAllowList, confirmWords, launchTargets, needsConfirm, parseVaultUri, URI_WRITES, type UriAction } from '../shared/uri';
@@ -38,7 +38,7 @@ export interface ExternalHost {
   ready(): Promise<void>;
   vaultRoot(): string | null;
   /** The verbs agents use, as the person (src/main/agent-access.ts). */
-  agents: { asPerson(name: string, args: Record<string, unknown>): Promise<ToolResult>; personNote(raw: string, write?: boolean): string; localMcpTools(): McpTool[]; asLocalMcp(name: unknown, args: unknown): Promise<ToolResult>; localMcpResources?(): McpResource[]; readLocalMcpResource?(uri: string): Promise<{ uri: string; mimeType: string; text: string }> };
+  agents: { asPerson(name: string, args: Record<string, unknown>): Promise<ToolResult>; personNote(raw: string, write?: boolean): string; localMcpTools(): McpTool[]; asLocalMcp(name: unknown, args: unknown): Promise<ToolResult>; localMcpResources?(): McpResource[]; readLocalMcpResource?(uri: string): Promise<{ uri: string; mimeType: string; text: string }>; localMcpPrompts?(): McpPrompt[]; localMcpPrompt?(name: string, args: Record<string, unknown>): { description: string; messages: McpPromptGot['messages'] } };
   readNote(rel: string): Promise<string>;
   writeNote(rel: string, text: string): Promise<void>;
   canWrite(): Promise<void>;
@@ -141,6 +141,18 @@ export class ExternalEntry {
             readResource: async (uri: string) => {
               await h.ready().catch(() => {});
               return h.agents.readLocalMcpResource!(uri);
+            },
+          }
+        : {}),
+      ...(h.agents.localMcpPrompts && h.agents.localMcpPrompt
+        ? {
+            prompts: async () => {
+              await h.ready().catch(() => {});
+              return h.agents.localMcpPrompts!();
+            },
+            prompt: async (name: string, args: Record<string, unknown>) => {
+              await h.ready().catch(() => {});
+              return h.agents.localMcpPrompt!(name, args);
             },
           }
         : {}),

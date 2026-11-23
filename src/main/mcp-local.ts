@@ -22,6 +22,23 @@ export interface LocalMcpBackend {
   /** The notes as resources (ironleaf://note/<path>), when the backend serves them. */
   resources?(): Promise<McpResource[]> | McpResource[];
   readResource?(uri: string): Promise<{ uri: string; mimeType: string; text: string }>;
+  /** Ironleaf's skills as prompts (src/shared/skills.ts), when the backend serves them. */
+  prompts?(): Promise<McpPrompt[]> | McpPrompt[];
+  prompt?(name: string, args: Record<string, unknown>): Promise<McpPromptGot>;
+}
+
+/** One skill as an MCP prompt. */
+export interface McpPrompt {
+  name: string;
+  title?: string;
+  description?: string;
+  arguments?: { name: string; description?: string; required?: boolean }[];
+}
+
+/** A prompt as prompts/get gives it. */
+export interface McpPromptGot {
+  description?: string;
+  messages: { role: 'user' | 'assistant'; content: { type: 'text'; text: string } }[];
 }
 
 /** One note as an MCP resource. */
@@ -34,7 +51,7 @@ export interface McpResource {
 
 /** Said to a client at initialize: what the server is and how to start. */
 export const MCP_INSTRUCTIONS =
-  'Ironleaf is the person’s library of Markdown notes. Start with vault_overview, find notes with vault_search or meaning_search, read one with note_read, and follow links with note_links. Private notes are never reachable. Every change is listed in Ironleaf (What agents did) with Undo, and File recovery keeps earlier versions.';
+  'Ironleaf is the person’s library of Markdown notes. Start with vault_overview, find notes with vault_search or meaning_search, read one with note_read, and follow links with note_links. Private notes are never reachable. Every change is listed in Ironleaf (What agents did) with Undo, and File recovery keeps earlier versions. Ironleaf has skills (know-how for Word, Excel, PowerPoint, PDFs, designed documents, minutes, status reports, organising notes, and the person’s own): skills_list names them; load one with skill_use before a job it fits, and follow it.';
 
 /** A line longer than this is dropped with the connection (4 MB: a note's worth and more). */
 export const MCP_MAX_LINE = 4 * 1024 * 1024;
@@ -89,7 +106,7 @@ async function handleOne(backend: LocalMcpBackend, raw: unknown): Promise<string
     switch (method) {
       case 'initialize': {
         const asked = typeof params.protocolVersion === 'string' && params.protocolVersion ? params.protocolVersion.slice(0, 40) : FALLBACK_VERSION;
-        return ok(id, { protocolVersion: asked, capabilities: { tools: { listChanged: false }, ...(backend.resources ? { resources: { listChanged: false } } : {}) }, serverInfo: { name: 'ironleaf', title: 'Ironleaf', version: String(backend.version() ?? '').slice(0, 40) || '1.0.0' }, instructions: MCP_INSTRUCTIONS });
+        return ok(id, { protocolVersion: asked, capabilities: { tools: { listChanged: false }, ...(backend.resources ? { resources: { listChanged: false } } : {}), ...(backend.prompts ? { prompts: { listChanged: false } } : {}) }, serverInfo: { name: 'ironleaf', title: 'Ironleaf', version: String(backend.version() ?? '').slice(0, 40) || '1.0.0' }, instructions: MCP_INSTRUCTIONS });
       }
       case 'tools/list':
         return ok(id, { tools: await backend.tools() });
@@ -109,7 +126,15 @@ async function handleOne(backend: LocalMcpBackend, raw: unknown): Promise<string
         return ok(id, { contents: [r] });
       }
       case 'prompts/list':
-        return ok(id, { prompts: [] });
+        return ok(id, { prompts: backend.prompts ? await backend.prompts() : [] });
+      case 'prompts/get': {
+        const name = typeof params.name === 'string' ? params.name.trim().slice(0, 120) : '';
+        if (!backend.prompt || !name) return err(id, -32602, 'Give the prompt’s name (from prompts/list).');
+        const args = params.arguments && typeof params.arguments === 'object' && !Array.isArray(params.arguments) ? (params.arguments as Record<string, unknown>) : {};
+        const r = await backend.prompt(name, args).catch((e: unknown) => ({ error: e instanceof Error ? e.message : String(e) }));
+        if ('error' in r) return err(id, -32602, r.error.slice(0, 2000));
+        return ok(id, r);
+      }
       case 'ping':
         return ok(id, {});
       default:

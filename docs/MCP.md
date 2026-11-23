@@ -130,14 +130,14 @@ printf '%s\n' \
 ## What the server speaks
 
 `initialize`, `ping`, `tools/list`, `tools/call`, `resources/list`, `resources/templates/list`, `resources/read`
-(each note is a resource, `ironleaf://note/<path>`; Private notes are never among them) and `prompts/list`
-(none). Every tool has a name, a title, a description and a JSON input schema; a tool that fails answers with
+(each note is a resource, `ironleaf://note/<path>`; Private notes are never among them), `prompts/list` and `prompts/get`
+(each skill is a prompt: `/word-documents`, `/meeting-minutes` and so on). Every tool has a name, a title, a description and a JSON input schema; a tool that fails answers with
 `isError: true` and plain words. While Connect an AI is off the read tools still list (so set-up reads right) and
 every call is refused with where to switch it on. More than 10 changes in one call are refused: split them.
 
-## The tools (81)
+## The tools (86)
 
-37 at Read only; all 80 at Read and write. A path is the note's path in the library
+40 at Read only; all 85 at Read and write. A path is the note's path in the library
 (`Notes/Oven service.md`) or its title.
 
 ### Notes
@@ -260,6 +260,20 @@ every call is refused with where to switch it on. More than 10 changes in one ca
 | `review_draft` | Read and write | Draft this week’s review across every project, as the Weekly review page does. |
 | `review_apply` | Read and write | Save a weekly review from a draft (review_draft’s, changed or not). |
 | `note_version_restore` | Read and write | Put a note back as it was in an earlier version (its id from note_versions). |
+
+### Skills
+
+Know-how for particular jobs (Settings › AI › Skills): the ones built into Ironleaf and the person’s own, kept in
+their notes as a folder with a SKILL.md. An AI sees each skill’s name and what it is for, and loads the full
+instructions only when a job needs them.
+
+| Tool | Needs | What it does |
+| --- | --- | --- |
+| `skills_list` | Read only | Every skill there is, with what each is for. |
+| `skill_use` | Read only | Load a skill’s instructions for the job at hand, and the names of its other files. |
+| `skill_file` | Read only | Read one of a skill’s other files (a checklist, an example) when its instructions point to it. |
+| `skill_save` | Read and write | Save a skill of the person’s own in their notes, or bring one up to date. |
+| `office_make` | Read and write | Make a new Word document, Excel workbook or PowerPoint deck at once, in the brand kit, kept with its project or note. |
 
 ### Records and packs
 

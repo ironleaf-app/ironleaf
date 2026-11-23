@@ -363,6 +363,11 @@ export class VaultIndex {
     }
   }
 
+  /** Every file that isn't a note, by path (a skill's other files: src/main/skills.ts). */
+  otherFiles(): string[] {
+    return [...this.filePaths];
+  }
+
   /** A link to a file that isn't a note: by its path, else by its name (the shortest path when several share it). */
   resolveFile(target: string, fromPath?: string): string | null {
     const t = target.replace(/\\/g, '/').trim();

@@ -10,6 +10,7 @@ import type { Project, ProjectEdit } from '../shared/project-file';
 import type { DesignFormat, DesignStartIn, DesignViewOut } from '../shared/design-doc';
 import type { ProjectCheckState } from '../shared/project-checks';
 import type { ProjectChange } from '../shared/project-hub';
+import type { SkillsView } from '../shared/skills';
 import type { TodayData, TodayFileInput } from '../shared/today';
 import type { MeetingItems, PersonItems, ProjectAttention, RecordPeek, RecordRef, RecordType, VaultRecord } from '../shared/records';
 import type { TemplateGroup, TemplateInfo } from '../shared/templates';
@@ -808,6 +809,13 @@ PC). */
     page: (rel: string, page: number) => invoke<{ state: OcrEntryState | 'pending'; lines: OcrLine[] }>('ocr:page', rel, page),
     /** Every picture and scanned page read again from the start. */
     rebuild: () => invoke<void>('ocr:rebuild'),
+  },
+  /** Skills (Settings › AI › Skills): every skill, on or off, and a skill's whole text to start a copy from. */
+  skills: {
+    list: () => invoke<SkillsView>('skills:list'),
+    text: (name: string) => invoke<string | null>('skills:text', name),
+    /** A skill someone published, picked on this PC (its SKILL.md, or a .zip or .skill) and copied into the notes. */
+    add: () => invoke<{ name: string; path: string; skipped: string[] } | null>('skills:add'),
   },
   /** Templates: the Templates page, notes made from one, a note saved as one, new ones, the ready-made ones back. */
   templates: {

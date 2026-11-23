@@ -263,7 +263,7 @@ const ACRONYMS = new Set(
    AUD NZD USD EUR GBP SGD AED CAD JPY CHF CNY HKD SEK NOK DKK ZAR KRW INR TWD THB MYR IDR PHP VND
    AM PM AU NZ UK US USA EU S M L XL XS XXL CTRL ALT SHIFT TAB ESC DEL CMD OPT FN YYYY YY MM DD HH MMM MMMM
    TABLE DIV ASIDE FIGURE
-   ONE RULE STRUCTURE ANSWER BOLAND HARBOUR LIGHTHOUSE GULL`
+   ONE RULE STRUCTURE ANSWER BOLAND HARBOUR LIGHTHOUSE GULL SKILL`
     .split(/\s+/)
     .filter(Boolean),
 );
@@ -273,6 +273,7 @@ const ACRONYMS = new Set(
 // example; LF: project-initials example; VS/NV: VS Code and the NV font families; TBC: quoted day words.
 // TABLE/DIV/ASIDE/FIGURE: tagName comparisons in the brand print paginator's embedded script (code a person never
 // reads, 5 Nov 2026 vault suite) — the same class as INPUT/SELECT/BUTTON above.
+// SKILL: the file name the open Agent Skills shape fixes (SKILL.md, 24 Nov 2026), a name like .DS_Store, not a label.
 
 /** All-caps words (2+ letters) in a words-chunk that no acronym covers. */
 function capsFaults(chunk) {
