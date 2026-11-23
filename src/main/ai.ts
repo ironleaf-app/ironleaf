@@ -2,6 +2,7 @@
 // being edited. Both run on the model the former host app has set up (or the one chosen in Settings › Models), through
 // ProviderService, so every provider and format the former host app supports works here the same way.
 
+import { skillsBrief, type Skill } from '../shared/skills';
 import { isPrivatePath } from '../shared/private';
 import type { VaultIndex } from './indexer';
 import type { SettingsStore } from './settings';
@@ -103,6 +104,8 @@ export class AiService {
 
   /** The one vault catalogue's tools for the side chat, through its gate (8.0 V1; src/main/app.ts). */
   catalogue: ((g: Gate | null) => CatalogueCaller) | null = null;
+  /** The skills in use (src/main/skills.ts): listed in the tools path's instructions, loaded with skill_use. */
+  skills: (() => Skill[]) | null = null;
 
   /** The open note, when the side chat isn't allowed its level: left out, and the model told why in a line. */
   private withheld(options: ChatOptions, g: Gate | null): { options: ChatOptions; words: string } {
@@ -192,7 +195,10 @@ export class AiService {
     // The focused conversation (one product step 5 part 4): the transcript rides in the question, and the model
     // is told it is what the question is about. Only its words cross, never its pictures.
     const chatBrief = chatText ? `\n\nThe person has a conversation open${options.chat?.title ? `, "${options.chat.title}"` : ''}: its transcript is inside <open_chat> in their question. Answer about that conversation: what was said and decided there. Only its words crossed, never its pictures; say so if asked about one.` : '';
-    const system = agentSystem(this.modelName(model), host.today(), open?.title ?? null, allowed, openWords, types, memory) + (attached ? `\n\n${ATTACH_RULE}` : '') + held.words + (host?.modules ? `\n\n${host.modules.rules()}` : '') + (webOff ? `\n\n${WEB_OFF_WORDS} If asked to search the web, say so and say where to turn it on.` : '') + chatBrief;
+    // The skills it may load (24 Nov 2026, phase 3): names and what each is for only; skill_use loads one when a job
+    // needs it. Offered only with the catalogue (skill_use is one of its tools); one in a note it may not read is left out.
+    const skillWords = catalogue && this.skills ? skillsBrief(this.skills().filter((s) => s.source === 'built-in' || !g || (!!s.path && g.sees(s.path)))) : '';
+    const system = agentSystem(this.modelName(model), host.today(), open?.title ?? null, allowed, openWords, types, memory, skillWords) + (attached ? `\n\n${ATTACH_RULE}` : '') + held.words + (host?.modules ? `\n\n${host.modules.rules()}` : '') + (webOff ? `\n\n${WEB_OFF_WORDS} If asked to search the web, say so and say where to turn it on.` : '') + chatBrief;
     const run = await runAgent({
       messages,
       tools,

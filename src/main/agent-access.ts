@@ -49,6 +49,8 @@ import {
 } from '../shared/agent-access';
 import { LOCAL_MCP_ID, LOCAL_MCP_LEFT_OUT, LOCAL_MCP_NAME, LOCAL_MCP_OFF, LOCAL_MCP_READONLY, localLevelAllows, localMcpCatalogue, localMcpDef, mcpToolOf } from '../shared/mcp-local';
 import { runMcpTool, type McpToolsHost } from './mcp-tools';
+import type { McpPrompt } from './mcp-local';
+import { makeDocx, makePptx, makeXlsx, type Brand as OfficeBrand, type CellIn, type SlideIn } from './office-make';
 import { isPrivatePath } from '../shared/private';
 import type { Area } from '../shared/areas';
 import type { BrandKit } from '../shared/assets';
@@ -78,7 +80,8 @@ import type { TodayData } from '../shared/today';
 import { planNextAdds, plannedEdits, plannedWords, routeNoteTask, updateNoteTaskLine, writeNoteUpdates } from './task-write';
 import type { TemplateInfo } from '../shared/templates';
 import type { ProjectCard, ProjectView } from '../shared/types';
-import { served, OWN_ASKER, type OwnConsumer } from '../shared/vault-tools';
+import { nameFor, served, wordsFor, OWN_ASKER, type OwnConsumer } from '../shared/vault-tools';
+import { BODY_MAX, DESCRIPTION_MAX, FILE_MAX, findSkill, readableSkillFile, skillAnswer, skillFilePath, skillFolder, skillName, skillText, skillTitleOf, validName, type Skill } from '../shared/skills';
 import { filterTasks, findAllTasks, setTaskDue, type TaskFilter, type TaskStatus, type TaskWhen, type VaultTask } from '../shared/tasks';
 import type { CalendarToday } from '../shared/calendar';
 import { readDay } from '../shared/today';
@@ -151,6 +154,8 @@ export interface AgentAccessHost {
   calendar?(): Promise<CalendarToday>;
   /** What the MCP-only tools read (File recovery's versions, bookmarks) and the local URL's view (src/main/mcp-http.ts). */
   mcp?: McpToolsHost & { httpView?(): LocalMcpHttpView | undefined; command?(): string | null };
+  /** Skills (src/main/skills.ts): those in use, built in and the person's own, and where a new one of theirs goes. */
+  skills?: { list(): Skill[]; home(): string };
   /** The weekly tidy (src/main/weekly-tidy.ts): its waiting lines and applying one. */
   tidy?: {
     list(): Promise<{ id: string; title: string; detail: string }[]>;
@@ -182,6 +187,8 @@ interface Caller {
   id: string;
   name: string;
   level: AgentLevel;
+  /** Whose tool names it knows (Ironleaf's own chat names some tools its own way); an outside agent's are the catalogue's. */
+  consumer?: OwnConsumer;
 }
 
 /** What Settings › Connect an AI keeps in agents.json. Anything else an earlier version kept there is left as it is. */
@@ -394,7 +401,7 @@ export class AgentAccess {
     if (!OWN_ASKER.test(who.id) || who.id.startsWith('agent:')) return text('That asker isn’t known to Ironleaf.', true);
     const def = toolDef(name);
     if (!def || !served(who.consumer, def)) return text(`There is no Ironleaf tool called ${name}.`, true);
-    const rec: Caller = { id: who.id, name: who.name, level: 'full' };
+    const rec: Caller = { id: who.id, name: who.name, level: 'full', consumer: who.consumer };
     const args = rawArgs && typeof rawArgs === 'object' && !Array.isArray(rawArgs) ? (rawArgs as Record<string, unknown>) : {};
     try {
       await this.host.ready();
@@ -473,6 +480,29 @@ export class AgentAccess {
   }
 
   /** The notes as MCP resources (ironleaf://note/<path>), Private notes never among them; none while off. */
+  /** The skills an outside AI may load (a skill kept in a note its gate hides isn't offered; built-in ones always are). */
+  private mcpSkills(): Skill[] {
+    const all = this.base.skills?.list() ?? [];
+    const gate = this.gateOf({ id: LOCAL_MCP_ID, name: LOCAL_MCP_NAME, level: 'read' });
+    return all.filter((s) => s.source === 'built-in' || (!!s.path && !isPrivatePath(s.path) && (!gate || gate.sees(s.path))));
+  }
+
+  /** The skills as MCP prompts (24 Nov 2026, phase 3): Claude Desktop and others offer each as a ready-made start. */
+  localMcpPrompts(): McpPrompt[] {
+    if (!this.localMcpSettings().on) return [];
+    return this.mcpSkills().map((s) => ({ name: s.name, title: skillTitleOf(s), description: s.description, arguments: [{ name: 'task', description: 'What you want done (optional).', required: false }] }));
+  }
+
+  /** One skill as an MCP prompt: its instructions, then the task when one was given. */
+  localMcpPrompt(name: string, args: Record<string, unknown>): { description: string; messages: { role: 'user'; content: { type: 'text'; text: string } }[] } {
+    if (!this.localMcpSettings().on) throw new Error(LOCAL_MCP_OFF);
+    const s = findSkill(this.mcpSkills(), name);
+    if (!s) throw new Error(`There is no skill called ${quote(str(name, 80))}.`);
+    const task = str(args.task, 4000).trim();
+    const text = `${skillAnswer(s)}${task ? `\n\nThe job: ${task}` : ''}`;
+    return { description: s.description, messages: [{ role: 'user', content: { type: 'text', text } }] };
+  }
+
   localMcpResources(max = 2000): { uri: string; name: string; title: string; mimeType: string }[] {
     if (!this.localMcpSettings().on) return [];
     return this.base.index
@@ -1158,6 +1188,118 @@ export class AgentAccess {
    * src/main/design-studio.ts, then kept in the note's Files as note_to_pdf keeps its PDF. The note's words reach the
    * AI as the branded document reads them (secrets, private paths and the transcript left out), through this call's gate.
    */
+  /** A new Word, Excel or PowerPoint file straight from what the AI wrote (24 Nov 2026, src/main/office-make.ts), in the
+   *  brand kit of the note or project it is for, placed as files agents save are (the card, the record, Undo). */
+  private async officeMake(rec: Caller, a: Record<string, unknown>): Promise<{ text: string; done?: Done }> {
+    const files = this.host.files;
+    if (!files) throw new Error('Making files needs the Ironleaf app (it isn’t available here).');
+    const kind = a.kind === 'docx' || a.kind === 'xlsx' || a.kind === 'pptx' ? a.kind : null;
+    if (!kind) throw new Error('kind is docx (Word), xlsx (Excel) or pptx (PowerPoint).');
+    const base = str(a.name, 160).replace(/\.(docx|xlsx|pptx)$/i, '').replace(/\s+/g, ' ').trim();
+    if (!base) throw new Error('Give the file a name.');
+    let project: ProjectCard | undefined;
+    let note: string | undefined;
+    if (str(a.project, 300).trim()) project = this.findProject(a.project);
+    else if (str(a.note, 600).trim()) note = this.pdfNote(a.note);
+    else throw new Error('Give the project it is for (projects_list has them), or the note it belongs with.');
+    const record = project?.path ?? note!;
+    const { brand: kit } = await this.noteBrand(record, this.host.index.content(record) ?? null).catch(() => ({ brand: null }));
+    const brand = officeBrand(kit);
+    let data: Buffer;
+    if (kind === 'docx') {
+      const md = str(a.markdown, 400_000);
+      if (!md.trim()) throw new Error('Give the document’s words in markdown.');
+      data = await makeDocx(md, { title: base, ...(brand ? { brand } : {}) });
+    } else if (kind === 'xlsx') {
+      const sheets = Array.isArray(a.sheets) ? a.sheets.slice(0, 40) : [];
+      const clean = sheets
+        .filter((x): x is Record<string, unknown> => !!x && typeof x === 'object')
+        .map((x, i) => ({ name: str(x.name, 80) || `Sheet ${i + 1}`, rows: (Array.isArray(x.rows) ? x.rows.slice(0, 20_000) : []).map((r) => (Array.isArray(r) ? r.slice(0, 200) : [r])) as CellIn[][] }));
+      if (!clean.some((x) => x.rows.length)) throw new Error('Give the sheets, each with its rows (the first row its headings).');
+      data = await makeXlsx({ sheets: clean, ...(brand ? { brand } : {}) });
+    } else {
+      const slides = (Array.isArray(a.slides) ? a.slides.slice(0, 80) : []).filter((x): x is Record<string, unknown> => !!x && typeof x === 'object');
+      if (!slides.length) throw new Error('Give the slides, each with its title.');
+      const layouts = new Set(['title', 'section', 'bullets', 'two-column', 'quote']);
+      const bullets = (v: unknown) => (Array.isArray(v) ? v.slice(0, 40).map((b) => (b && typeof b === 'object' ? { text: str((b as Record<string, unknown>).text, 600), level: typeof (b as Record<string, unknown>).level === 'number' ? Math.max(0, Math.min(4, Math.round((b as Record<string, unknown>).level as number))) : 0 } : str(b, 600))) : undefined);
+      data = await makePptx({
+        title: str(a.title, 200).trim() || base,
+        ...(str(a.subtitle, 300).trim() ? { subtitle: str(a.subtitle, 300).trim() } : {}),
+        slides: slides.map((x) => ({ title: str(x.title, 300), ...(bullets(x.bullets) ? { bullets: bullets(x.bullets) } : {}), ...(bullets(x.right) ? { right: bullets(x.right) } : {}), ...(typeof x.layout === 'string' && layouts.has(x.layout) ? { layout: x.layout as SlideIn['layout'] } : {}), ...(str(x.notes, 4000).trim() ? { notes: str(x.notes, 4000) } : {}) })),
+        ...(brand ? { brand } : {}),
+      });
+    }
+    const temp = path.join(this.host.dataDir, 'agent-uploads', `office_${randomBytes(9).toString('base64url')}.part`);
+    await fsp.mkdir(path.dirname(temp), { recursive: true });
+    await fsp.writeFile(temp, data);
+    try {
+      const what = str(a.what, 200).replace(/\s+/g, ' ').trim() || { docx: 'A Word document', xlsx: 'An Excel workbook', pptx: 'A PowerPoint deck' }[kind];
+      const out = await this.place(rec, files, temp, { ...(project ? { project: project.path } : {}), ...(note ? { note } : {}), name: `${base}.${kind}`, replace: false, what, move: true, tool: 'office_make' });
+      return { ...out, text: `${out.text}${kit ? ' It is in the brand kit’s fonts and colour.' : ''}` };
+    } finally {
+      await fsp.rm(temp, { force: true }).catch(() => {});
+    }
+  }
+
+  /** The skill tools (24 Nov 2026, phase 3; src/shared/skills.ts): list, load, read a file, save one of the person's. */
+  private async skill(rec: Caller, name: string, a: Record<string, unknown>): Promise<{ text: string; done?: Done }> {
+    const skills = this.host.skills;
+    if (!skills) throw new Error('Skills need the Ironleaf app with notes open.');
+    const words = (t: string) => wordsFor(rec.consumer ?? 'mcp', t);
+    const all = skills.list();
+    if (name === 'skills_list') {
+      if (!all.length) return { text: 'There are no skills switched on (Settings › AI › Skills).' };
+      return { text: json({ skills: all.map((s) => ({ name: s.name, description: s.description, from: s.source === 'built-in' ? 'built into Ironleaf' : s.path, ...(s.files.length ? { files: s.files.slice(0, 40) } : {}) })) }) };
+    }
+    if (name === 'skill_save') return this.skillSave(a, skills.home(), all);
+    const s = findSkill(all, a.name);
+    if (!s) throw new Error(`There is no skill called ${quote(str(a.name, 80))}${all.length ? `. The skills: ${all.map((x) => x.name).join(', ')}` : ''}.`);
+    if (name === 'skill_use') return { text: words(skillAnswer(s, nameFor(rec.consumer ?? 'mcp', 'skill_file') ?? 'skill_file')) };
+    const file = skillFilePath(a.file);
+    if (!file || !s.files.includes(file)) throw new Error(`The skill ${s.name} has no file ${quote(str(a.file, 200))}${s.files.length ? `: its files are ${s.files.slice(0, 40).join(', ')}` : ''}.`);
+    if (!readableSkillFile(file)) throw new Error(`${file} isn’t words (a picture or another kind of file): it can’t be read as text. Skills are words only; nothing in one is ever run.`);
+    let body: string;
+    if (s.source === 'built-in') body = s.texts?.[file] ?? '';
+    else {
+      const rel = `${skillFolder(s.path!)}/${file}`;
+      const note = /\.md$/i.test(rel) ? this.host.index.content(rel) : undefined;
+      if (note !== undefined) body = note;
+      else {
+        const abs = this.host.files?.absolute(rel);
+        if (!abs) throw new Error('That file can’t be reached here.');
+        const st = await fsp.stat(abs).catch(() => null);
+        if (!st?.isFile()) throw new Error(`${file} isn’t there any more.`);
+        body = (await fsp.readFile(abs, 'utf8')).replace(/\0/g, '');
+      }
+    }
+    const cut = body.length > FILE_MAX ? `${body.slice(0, FILE_MAX)}\n\n[The rest is cut.]` : body;
+    return { text: `<skill_file skill="${s.name}" file="${file}">\n${words(cut)}\n</skill_file>` };
+  }
+
+  /** A skill of the person's saved in their notes (a new one in the skills folder, or theirs of that name brought up to date). */
+  private async skillSave(a: Record<string, unknown>, home: string, all: Skill[]): Promise<{ text: string; done?: Done }> {
+    const nm = skillName(str(a.name, 200));
+    if (!validName(nm)) throw new Error('Give the skill a name of a few words (board-report).');
+    const description = str(a.description, 2000).replace(/\s+/g, ' ').trim();
+    if (!description) throw new Error('Give the skill a description: what it does and when to use it.');
+    if (description.length > DESCRIPTION_MAX) throw new Error(`The description is longer than ${DESCRIPTION_MAX} characters: say it in fewer words.`);
+    const instructions = str(a.instructions, BODY_MAX).trim();
+    if (!instructions) throw new Error('Give the skill’s instructions.');
+    if (/-----BEGIN [A-Z ]*PRIVATE KEY-----|\b(?:sk|pk|rk)-[A-Za-z0-9_-]{20,}|\bAKIA[0-9A-Z]{16}\b|\bgh[pousr]_[A-Za-z0-9]{30,}/.test(instructions)) throw new Error('That looks like it holds a key or password. Keep those in Secrets, never in a skill.');
+    const mine = all.find((x) => x.name === nm && x.source === 'notes');
+    const rel = mine?.path ?? `${home}/${nm}/SKILL.md`;
+    if (mine) this.writableNote(rel);
+    const text = skillText(nm, description, instructions);
+    const before = mine ? (this.host.index.content(rel) ?? (await this.host.notes.read(rel))) : null;
+    if (before === text) return { text: `The skill ${nm} is already exactly that (${rel}).` };
+    await this.host.writeNote(rel, text);
+    const replaces = !mine && all.some((x) => x.name === nm && x.source === 'built-in');
+    const said = `${mine ? 'Brought up to date' : 'Saved'} the skill ${nm} in ${rel}${replaces ? ', used from now on in place of the built-in skill of that name' : ''}. It is used when a job matches: ${description}`;
+    return before === null
+      ? { text: said, done: { words: `Saved the skill ${quote(nm)}.`, note: rel, undo: { kind: 'note-made', path: rel, text } } }
+      : { text: said, done: { words: `Brought the skill ${quote(nm)} up to date.`, note: rel, undo: { kind: 'note-edited', path: rel, before, after: text } } };
+  }
+
   private async designDocument(rec: Caller, a: Record<string, unknown>): Promise<{ text: string; done?: Done }> {
     const files = this.host.files;
     const design = this.host.design;
@@ -1815,6 +1957,13 @@ export class AgentAccess {
         return this.noteToPdf(rec, a);
       case 'design_document':
         return this.designDocument(rec, a);
+      case 'office_make':
+        return this.officeMake(rec, a);
+      case 'skills_list':
+      case 'skill_use':
+      case 'skill_file':
+      case 'skill_save':
+        return this.skill(rec, name, a);
       default: {
         // A life module's tool (Wave 5), through this call's gate (the agent's levels; Health and Family-private refused
         // unless the person allowed them).
@@ -1824,4 +1973,18 @@ export class AgentAccess {
       }
     }
   }
+}
+
+/** A brand kit as the Office files take it: its accent (the colour for headings, buttons or the brand, else its first),
+ *  a dark (for text or backgrounds), and its heading and body fonts. Null without a kit. */
+export function officeBrand(kit: BrandKit | null | undefined): OfficeBrand | null {
+  if (!kit || (!kit.colours?.length && !kit.fonts?.length)) return null;
+  const colours = kit.colours ?? [];
+  const pick = (re: RegExp) => colours.find((c) => re.test(`${c.use ?? ''} ${c.name ?? ''}`))?.hex;
+  const accent = pick(/primary|accent|brand|button|heading|main/i) ?? colours[0]?.hex;
+  const dark = pick(/dark|text|ink|navy|black|background/i);
+  const fonts = kit.fonts ?? [];
+  const heading = fonts.find((f) => /head|title|display/i.test(f.use ?? ''))?.name ?? fonts[0]?.name;
+  const body = fonts.find((f) => /body|text|paragraph/i.test(f.use ?? ''))?.name ?? fonts[1]?.name ?? fonts[0]?.name;
+  return { ...(accent ? { accent } : {}), ...(dark ? { dark } : {}), ...(heading ? { headingFont: heading } : {}), ...(body ? { font: body } : {}) };
 }

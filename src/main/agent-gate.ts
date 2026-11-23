@@ -399,6 +399,8 @@ export function gateAccessHost(base: AgentAccessHost, g: Gate): AgentAccessHost 
       };
     },
     templates: () => base.templates().filter((t) => sees(t.path)),
+    // A skill kept in a note the agent may not read isn't offered to it (the built-in ones always are).
+    ...(base.skills ? { skills: { list: () => base.skills!.list().filter((s) => s.source === 'built-in' || (!!s.path && sees(s.path))), home: () => base.skills!.home() } } : {}),
   };
   if (base.files) {
     const files = base.files;

@@ -14,6 +14,7 @@ import { setState, showError, useApp } from '../state/store';
 import { confirm } from './Dialogs';
 import { Icon } from './Icon';
 import { Row, Toggle } from './Settings';
+import { SkillsSettings } from './SkillsSettings';
 import '../styles/ai-settings.css';
 
 export const AI_PRIVACY_LINE = 'Requests go straight from this PC to the provider you choose. Nothing is sent until you add a connection.';
@@ -458,6 +459,7 @@ export function AiSettings({ prefs, set }: { prefs: Prefs; set(p: Partial<Prefs>
       <Row title="Ask before the assistant changes a note" hint={prefs.askBeforeChanges ? 'Its changes to a note wait in the note, each to keep or discard. New notes it makes are made straight away.' : 'It changes notes straight away; Undo under its answer puts them back.'}>
         <Toggle label="Ask first" value={prefs.askBeforeChanges} onChange={(askBeforeChanges) => set({ askBeforeChanges, askBeforeChangesChosen: true })} />
       </Row>
+      <SkillsSettings prefs={prefs} set={set} />
       </div>
     </div>
   );

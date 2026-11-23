@@ -4,6 +4,9 @@
 // The renderer is sandboxed and talks to this side only through the handlers below, every channel named nv:… so they
 // never meet The former host app's own.
 
+import { SkillLibrary, skillsHome } from './skills';
+import { packFrom } from './skill-import';
+import { skillText, skillTitleOf, type SkillsView } from '../shared/skills';
 import { RECORD_TYPES, findRecords, meetingItems, personOpenItems, projectAttention, type RecordRef, type RecordType } from '../shared/records';
 import { peekWithFolderFiles } from './folder-file-peek';
 import { HIDEABLE_ITEMS, type Prefs } from '../shared/prefs';
@@ -5998,6 +6001,45 @@ reminders. */
   // File recovery), and what they did kept in Ironleaf's own data.
   // Connect an AI's local URL (src/main/mcp-http.ts), made once the command's connection is (below).
   let mcpHttp: McpHttpServer | null = null;
+  // Skills (24 Nov 2026, phase 3; src/main/skills.ts): the built-in ones and the person's own from their notes, less those
+  // switched off in Settings › AI › Skills. The side chat lists them in its instructions; every AI loads one with skill_use.
+  const skillLibrary = new SkillLibrary(() => (vault ? index : null), () => settings.raw.prefs.skillsOff ?? []);
+  const skillsHost = { list: () => skillLibrary.list(), home: () => skillsHome(index, areasNow().some((a) => a.id === 'library')) };
+  ai.skills = () => skillLibrary.list();
+  handle('skills:list', (): SkillsView => ({
+    home: skillsHost.home(),
+    skills: skillLibrary.every().map(({ skill, on, replaces }) => ({ name: skill.name, title: skillTitleOf(skill), about: skill.about ?? skill.description, source: skill.source, ...(skill.path ? { path: skill.path } : {}), on, replaces, files: skill.files.length })),
+    problems: skillLibrary.problems(),
+  }));
+  // A skill someone published, brought into the notes (Settings' Add a skill): its SKILL.md, or the skill zipped.
+  handle('skills:add', async (): Promise<{ name: string; path: string; skipped: string[] } | null> => {
+    await requireCreate();
+    const v = requireVault();
+    const r = await showOpen({ title: 'Add a skill', buttonLabel: 'Add', properties: ['openFile'], filters: [{ name: 'Skills', extensions: ['md', 'zip', 'skill'] }] });
+    if (r.canceled || !r.filePaths[0]) return null;
+    const pack = await packFrom(r.filePaths[0]);
+    const folder = `${skillsHost.home()}/${pack.name}`;
+    if (index.has(`${folder}/SKILL.md`)) throw new Error(`You already have a skill called ${pack.name} (${folder}). Remove or rename it first.`);
+    const written: string[] = [];
+    for (const [rel, data] of pack.files) {
+      const target = cleanRel(`${folder}/${rel}`);
+      if (!target || !target.startsWith(`${folder}/`)) continue;
+      const abs = v.absolute(target);
+      await fsp.mkdir(path.dirname(abs), { recursive: true });
+      await fsp.writeFile(abs, data, { flag: 'wx' });
+      written.push(target);
+    }
+    for (const rel of written) if (/\.md$/i.test(rel)) await indexFile(v, rel);
+    await refreshFiles(v);
+    notifyChanged(written);
+    filesChanged();
+    return { name: pack.name, path: `${folder}/SKILL.md`, skipped: pack.skipped };
+  });
+  // A built-in skill's whole text, to start the person's own copy of it from (Settings' Make it mine).
+  handle('skills:text', (name: string) => {
+    const s = skillLibrary.every().find((e) => e.skill.name === name)?.skill;
+    return s ? skillText(s.name, s.description, s.body) : null;
+  });
   const agentAccess: AgentAccess = new AgentAccess({
     dataDir: host.dataDir,
     // The MCP-only tools' reads (src/main/mcp-tools.ts) and the local URL's view for Settings › Connect an AI.
@@ -6047,6 +6089,7 @@ reminders. */
     prefs: () => ({ captureNoProject: settings.raw.prefs.captureNoProject, timeFormat: settings.raw.prefs.timeFormat, templatesFolder: settings.raw.prefs.templatesFolder }),
     areas: () => areasNow(),
     templates: () => templatesList(),
+    skills: skillsHost,
     lastReview: async () => (await reviews.status()).last,
     person: () => (vault ? todayData(index, undefined).me : null),
     tidy: {

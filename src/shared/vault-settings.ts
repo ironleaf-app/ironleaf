@@ -78,6 +78,8 @@ export const PREF_HOME: Record<keyof Prefs, SettingHome | 'split'> = {
   calendarChosen: 'personal',
   // The vault tidy switch (t238): the person's, off until turned on.
   vaultTidy: 'personal',
+  // Skills switched off (24 Nov 2026): the vault's, like the skills kept in it, so every PC uses the same ones.
+  skillsOff: 'vault',
   // How the vault is built: its folders, its links, what search leaves out, its style files, where captures go.
   newNotePlace: 'vault',
   newNoteFolder: 'vault',

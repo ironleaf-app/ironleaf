@@ -56,6 +56,7 @@ const ALLOW_JS = [
   ['shared/notebook.ts', 'w.slice(0, words)'],
   ['shared/publications.ts', 'flat.slice(from, at + 110)'],
   ['main/indexer.ts', 'SNIPPET_CHARS'],
+  ['shared/skills.ts', 'description.slice(0, 297)'],
   ['main/agent.ts', 'edits.slice(0, 6)'],
   ['main/agent.ts', 'lost.slice(0, 25)'],
   ['main/work/meetings.ts', 'x.people.slice(0, 6)'],

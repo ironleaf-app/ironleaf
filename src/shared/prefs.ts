@@ -187,6 +187,8 @@ export interface Prefs {
   calendarChosen: string;
   /** The vault tidy (t238, Settings › Backups and sync): the new task shape, tried on a copy first. Off until turned on. */
   vaultTidy: boolean;
+  /** Skills switched off in Settings › AI › Skills, by name (src/shared/skills.ts): every skill is on until switched off. */
+  skillsOff: string[];
 }
 
 /** Every button and item a person can switch off (16 Oct 2026), with its words in Settings. */
@@ -322,6 +324,7 @@ export const DEFAULT_PREFS: Prefs = {
   calendarSync: false,
   calendarChosen: '',
   vaultTidy: false,
+  skillsOff: [],
 };
 
 /** The light looks, in the order Settings shows them (`page`, `side` draw each swatch). The former host app offers
@@ -494,6 +497,7 @@ export function mergePrefs(current: Prefs, patch: unknown): Prefs {
   if (has('calendarSync')) next.calendarSync = p.calendarSync === true;
   if (has('calendarChosen')) next.calendarChosen = typeof p.calendarChosen === 'string' ? p.calendarChosen.trim().slice(0, 200) : current.calendarChosen;
   if (has('vaultTidy')) next.vaultTidy = p.vaultTidy === true;
+  if (has('skillsOff')) next.skillsOff = cleanList(p.skillsOff, current.skillsOff, (v) => (/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(v) && v.length <= 64 ? v : null), 200);
   return next;
 }
 

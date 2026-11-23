@@ -230,6 +230,10 @@ export const SIDE_EVERYDAY: ReadonlySet<string> = new Set([
   'templates_list', 'template_apply', 'project_add_next_step', 'project_tick_next_step', 'project_log_update',
   'project_add_item', 'project_change_item', 'note_to_pdf', 'design_document', 'daily_note', 'project_move_item', 'project_archive',
   'project_pin_file', 'files_find', 'tasks_list', 'calendar_get',
+  // Skills (24 Nov 2026): the list is in the system words; loading one, its files and saving the person's own.
+  'skills_list', 'skill_use', 'skill_file', 'skill_save',
+  // New Office files straight from what the assistant writes (24 Nov 2026, src/main/office-make.ts).
+  'office_make',
 ]);
 
 /** A catalogue tool as a consumer is offered it. */
