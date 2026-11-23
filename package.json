@@ -46,7 +46,7 @@
     "@types/ssh2": "1.15.5",
     "@vitejs/plugin-react": "^6.1.2",
     "docx": "9.16.0",
-    "electron": "^44.11.5",
+    "electron": "^45.3.3",
     "electron-vite": "^6.0.0",
     "exceljs": "4.4.0",
     "jszip": "3.10.2",
