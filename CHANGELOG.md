@@ -6,6 +6,12 @@ the website. `tools/release.mjs` takes a release's notes from here when `--notes
 
 Format: one `## <version> — <YYYY-MM-DD>` heading a release, then one `- ` line a change.
 
+## 2.0.18 — 2026-11-24
+
+- Claude no longer stops short: Design with AI, long answers and quick asks on Claude models get room to think as well as answer. On Sonnet 5.5 a two-page handout was cut off before it finished.
+- Today: the buttons that show when you point at a task stay on the task's own line, so the project name under it can still be clicked.
+- Built on Electron 45 (Chromium 156), with the newer engine behind meaning search and an updated maths renderer.
+
 ## 2.0.17 — 2026-11-24
 
 - Skills: ready-made know-how the assistant loads when a job needs it. Built in: Word documents, Excel workbooks, PowerPoint decks, PDFs, designed documents, meeting minutes, project status reports, organising notes and making a skill. Settings › AI › Skills switches each on or off.
