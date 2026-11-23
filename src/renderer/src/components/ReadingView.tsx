@@ -10,6 +10,7 @@ import { hydrate } from '../lib/hydrate';
 import { renderMarkdown, wikilinkFromClick } from '../lib/markdownRender';
 import { editTableCell, markEditableCells, pencilCells, resetTableCell } from '../lib/readingTables';
 import { hoverLink } from './HoverPreview';
+import { isEnterKey } from '../lib/enterKey';
 
 interface ReadingViewProps {
   text: string;
@@ -118,7 +119,7 @@ export function ReadingView({ text, path, header, footer, className, interactive
           onKeyDown={(e) => {
             const td = (e.target as HTMLElement).closest?.('td[data-editable]') as HTMLTableCellElement | null;
             if (!td || e.target !== td || e.altKey || e.ctrlKey || e.metaKey) return;
-            if (e.key === 'Enter' || e.key === 'F2' || e.key === 'e' || e.key === 'E') {
+            if (isEnterKey(e) || e.key === 'F2' || e.key === 'e' || e.key === 'E') {
               e.preventDefault();
               editCell(td);
             }

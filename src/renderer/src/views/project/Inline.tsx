@@ -17,6 +17,7 @@ import { readDate, shortDate } from '../../lib/projectLook';
 import { useRecord } from '../../components/RecordScope';
 import * as A from '../../state/actions';
 import { cancelPeekSoon, peek, peekSoon, unpeek } from '../../state/peek';
+import { isEnterKey } from '../../lib/enterKey';
 
 export interface Editor {
   path: string;
@@ -423,7 +424,7 @@ function DateField({ initial, className, label, clearable, onClose }: { initial:
           if (e.key === 'Escape') {
             e.preventDefault();
             close(null);
-          } else if (e.key === 'Enter') {
+          } else if (isEnterKey(e)) {
             e.preventDefault();
             close(text || (clearable ? '' : null));
           }
@@ -559,7 +560,7 @@ export function AddRow({ label, fields, onAdd, initial = {} }: { label: string; 
                 onFocus={() => setFocusKey(f.key)}
                 onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (isEnterKey(e)) {
                     e.preventDefault();
                     void submit();
                   }

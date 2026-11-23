@@ -18,6 +18,7 @@ import * as A from '../../state/actions';
 import { openRecordFormulaEditor } from './RecordFormulaEditor';
 import { openRecordRollupEditor } from './RecordRollupEditor';
 import { computedKind, isComputedKey, recordColumnLabel, recordSummaryChoices, withRecordSummary, withoutRecordFormula, withoutRecordRollup } from './recordColumns';
+import { isEnterKey } from '../../lib/enterKey';
 
 interface LayoutProps {
   def: RecordViewDef;
@@ -360,7 +361,7 @@ function TitleEditor({ r, onDone }: { r: WsRecord; onDone(): void }) {
         onChange={(e) => setText(e.currentTarget.value)}
         onKeyDown={(e) => {
           e.stopPropagation();
-          if (e.key === 'Enter') {
+          if (isEnterKey(e)) {
             if (text.trim() && text.trim() !== r.title) void ctx.setField(r, 'title', text.trim());
             onDone();
           }

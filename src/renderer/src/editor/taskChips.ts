@@ -12,6 +12,7 @@ import { dueChipTone, plainDateRewrite, taskChips } from '../../../shared/note-t
 import { setTaskDue } from '../../../shared/tasks';
 import { minPopupTop } from '../lib/windowButtons';
 import { toast } from '../state/store';
+import { isEnterKey } from '../lib/enterKey';
 
 class OwnerChip extends WidgetType {
   constructor(
@@ -161,7 +162,7 @@ function showPicker(view: EditorView, chipEl: HTMLElement, iso: string): void {
       e.preventDefault();
       close();
       view.focus();
-    } else if (e.key === 'Enter') {
+    } else if (isEnterKey(e)) {
       e.preventDefault();
       save();
     }

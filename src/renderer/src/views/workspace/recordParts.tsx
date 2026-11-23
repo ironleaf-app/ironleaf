@@ -17,6 +17,7 @@ import { isDoneRecord, toneOf } from '../../lib/recordTone';
 import { minPopupTop } from '../../lib/windowButtons';
 import { visibleWho } from '../../components/plan/plan';
 import * as A from '../../state/actions';
+import { isEnterKey } from '../../lib/enterKey';
 
 // ── What a view edits and opens with ─────────────────────────────────────────────────────────────────────────────────
 
@@ -213,7 +214,7 @@ export function ValueEditor({ r, field, onDone }: { r: WsRecord; field: string; 
         onChange={(e) => setText(e.currentTarget.value)}
         onKeyDown={(e) => {
           e.stopPropagation();
-          if (e.key === 'Enter') void save((type === 'number' || type === 'money') && text.trim() ? Number(text) : text.trim());
+          if (isEnterKey(e)) void save((type === 'number' || type === 'money') && text.trim() ? Number(text) : text.trim());
           if (e.key === 'Escape') {
             done.current = true;
             onDone();

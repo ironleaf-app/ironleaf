@@ -26,6 +26,7 @@ import { setRecordCurrency } from '../../workspace/recordParts';
 import { openRecordForm, valueNumber, valueWords } from '../RecordForm';
 import { AskFloat, PackSection, PackShell, monthYear, packName, rowContext, rowMenu, shortDay, weekdayLong, type Tint } from '../pack87';
 import { Card, dayText, openDetail, Pill, placeOf, sameRecord, Tile, todayIso, useWorkCtx, WithRecords, WorkViews } from './WorkShell';
+import { isEnterKey } from '../../../lib/enterKey';
 
 type View = VendorsModel & { currency: string; folder: string; projects: { path: string; name: string }[] };
 type Tone = 'ok' | 'warn' | 'bad' | 'next' | 'none';
@@ -271,7 +272,7 @@ function EditValue({ kind, value, shown, options, placeholder, canEdit, onSave, 
       onChange={(e) => setDraft(e.target.value)}
       onBlur={() => void done(true)}
       onKeyDown={(e) => {
-        if (e.key === 'Enter') void done(true);
+        if (isEnterKey(e)) void done(true);
         if (e.key === 'Escape') {
           e.stopPropagation();
           void done(false);

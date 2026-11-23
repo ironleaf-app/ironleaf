@@ -16,6 +16,7 @@ import { askInChat } from '../../state/chat';
 import { docs } from '../../state/docs';
 import { loadNotes, showError, toast } from '../../state/store';
 import { useEditor } from './Inline';
+import { isEnterKey } from '../../lib/enterKey';
 
 export function Lifecycle({ view, files, open, onOpen }: { view: ProjectView; files: HubFileIn[]; open: boolean; onOpen(open: boolean): void }) {
   const { canEdit, edit, path } = useEditor();
@@ -242,7 +243,7 @@ function LineInput({ value, placeholder, onDone }: { value: string; placeholder?
       maxLength={200}
       onChange={(e) => setV(e.target.value)}
       onKeyDown={(e) => {
-        if (e.key === 'Enter') finish(v);
+        if (isEnterKey(e)) finish(v);
         else if (e.key === 'Escape') finish(null);
       }}
       onBlur={() => finish(v)}

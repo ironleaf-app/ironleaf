@@ -31,6 +31,7 @@ import { EditorContext, Inline } from '../../project/Inline';
 import { Card, dayText, openDetail, Pill, placeOf, todayIso, useWorkCtx, WithRecords, WorkShell, WorkViews } from './WorkShell';
 import { weeklyNeeds, whenWords } from '../../../../../shared/module-purpose';
 import { NeedsYou } from '../NeedsYou';
+import { isEnterKey } from '../../../lib/enterKey';
 
 export type Proj = ProjectInfo & { updates: string[]; risks: string[] };
 export type WeeklyView = WeeklyModel & { projects: Proj[]; settings: { dueDay: number; audience: string; sentBy: string }; folder: string; importable: { path: string; title: string; weeks: number; new: number }[] };
@@ -448,7 +449,7 @@ function ListBlock({ u, index, list, title, items, canEdit, placeholder, extra, 
             aria-label={placeholder}
             onChange={(e) => setAdding(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') {
+              if (isEnterKey(e)) {
                 e.preventDefault();
                 void add();
               }

@@ -4,6 +4,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { GrowField } from '../../components/GrowField';
 import { Icon } from '../../components/Icon';
+import { isEnterKey } from '../../lib/enterKey';
 
 /** Words saved when the person leaves the field or presses Enter (Shift+Enter: a new line in a field of several lines);
  *  Escape puts them back. The field wraps and grows with its words (never a one-line field hiding the end of them). */
@@ -77,7 +78,7 @@ export function Chips({ values, suggestions, placeholder, label, prefix, disable
             onChange={(e) => (e.target.value.endsWith(',') ? add(e.target.value) : setText(e.target.value))}
             onBlur={() => text.trim() && add(text)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') {
+              if (isEnterKey(e)) {
                 e.preventDefault();
                 add(text);
               } else if (e.key === 'Backspace' && !text && values.length) onChange(values.slice(0, -1));

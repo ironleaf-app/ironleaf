@@ -31,6 +31,7 @@ import { PdfPage, type PageHandle, type PageMatch } from './PdfPage';
 import { holdPdf, pageTextContent, releasePdf, type PdfDocument } from './pdfDoc';
 import { selectedParts, type SelectedPart } from './selection';
 import { useHighlights } from './useHighlights';
+import { isEnterKey } from '../../lib/enterKey';
 
 /** Room around and between pages, in CSS pixels (the layout below uses the same numbers). */
 const PAD = 20;
@@ -743,7 +744,7 @@ export function PdfView({ tab }: { tab: TabState }) {
               onChange={(e) => setPageBox(e.target.value.replace(/\D/g, '').slice(0, 6))}
               onBlur={() => setPageBox(null)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (isEnterKey(e)) {
                   const n = Number(pageBox);
                   if (n >= 1) goTo(Math.min(n, pages.length) - 1);
                   (e.target as HTMLInputElement).blur();

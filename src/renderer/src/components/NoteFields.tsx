@@ -29,6 +29,7 @@ import { openMenu } from './Menu';
 import { typeIcon } from './NotePageTop';
 import { pick } from './Pickers';
 import { KIND_ICON, KIND_NAME, ListEditor, renameKey, retypeValue, setValue, TextEditor } from './Properties';
+import { isEnterKey } from '../lib/enterKey';
 
 interface Props {
   path: string;
@@ -503,7 +504,7 @@ export function NoteFields({ path, text, readOnly, onChange, onOpenTag, onOpenLi
                   else if (to && to !== key) cascadeRename(to);
                 }}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+                  if (isEnterKey(e)) (e.target as HTMLInputElement).blur();
                   if (e.key === 'Escape') setRenaming(null);
                 }}
               />
@@ -592,7 +593,7 @@ export function NoteFields({ path, text, readOnly, onChange, onOpenTag, onOpenLi
                 onChange={(e) => setNewKey(e.target.value)}
                 onBlur={() => commitNew(newKey, false)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') commitNew(newKey, true);
+                  if (isEnterKey(e)) commitNew(newKey, true);
                   if (e.key === 'Escape') {
                     setAdding(false);
                     setNewKey('');

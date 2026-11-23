@@ -54,6 +54,7 @@
     "markdown-it": "^15.0.3",
     "markdown-it-footnote": "^4.0.0",
     "mermaid": "^11.17.2",
+    "modern-web-guidance": "1.0.1",
     "pptxgenjs": "4.0.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",

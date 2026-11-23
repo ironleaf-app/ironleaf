@@ -22,6 +22,7 @@ import { loadNotes, savePrefs, showError, toast, useApp } from '../state/store';
 import { confirm } from './Dialogs';
 import { Icon, type IconName } from './Icon';
 import { openMenu } from './Menu';
+import { isEnterKey } from '../lib/enterKey';
 
 export function LifeHost() {
   const vault = useApp((s) => s.vault?.path ?? null);
@@ -443,7 +444,7 @@ function AreasEditor({ onClose }: { onClose(): void }) {
                       void renameArea(a.id, n).catch(showError);
                     }}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+                      if (isEnterKey(e)) (e.target as HTMLInputElement).blur();
                       if (e.key === 'Escape') {
                         e.stopPropagation();
                         setEditing(null);

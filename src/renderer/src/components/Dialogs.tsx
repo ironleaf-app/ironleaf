@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { useLeaving } from '../lib/useLeaving';
 import { closeTours } from '../state/moduleFills';
+import { isEnterKey } from '../lib/enterKey';
 
 type Ask =
   | { kind: 'prompt'; title: string; message?: string; value: string; placeholder?: string; ok: string; select?: [number, number]; password?: boolean; resolve(v: string | null): void }
@@ -90,7 +91,7 @@ function FormBody({ ask }: { ask: Extract<Ask, { kind: 'form' }> }) {
     <div
       className="dialog-form"
       onKeyDown={(e) => {
-        if (e.key === 'Enter' && (e.target as HTMLElement).tagName === 'INPUT') {
+        if (isEnterKey(e) && (e.target as HTMLElement).tagName === 'INPUT') {
           e.preventDefault();
           done({ values, checks });
         }
@@ -194,7 +195,7 @@ function ArrivalBody({ ask }: { ask: Extract<Ask, { kind: 'arrival' }> }) {
           spellCheck
           onChange={(e) => setStep(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && picked && step.trim()) done({ project: picked, step: step.trim() });
+            if (isEnterKey(e) && picked && step.trim()) done({ project: picked, step: step.trim() });
           }}
         />
       </label>
@@ -240,7 +241,7 @@ function PromptBody({ ask }: { ask: Extract<Ask, { kind: 'prompt' }> }) {
         spellCheck={false}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' && value.trim()) done(value.trim());
+          if (isEnterKey(e) && value.trim()) done(value.trim());
           if (e.key === 'Escape') done(null);
         }}
       />

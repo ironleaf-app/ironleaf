@@ -1,0 +1,14 @@
+{
+  "css": {
+    "colourLiterals": 599,
+    "rawSpacing": 5710,
+    "rawShadows": 210,
+    "important": 145,
+    "clickableWithoutRole": 37
+  },
+  "legacy": {
+    "autofill-sign-in-form": 1,
+    "ime-safe-enter-submit": 0,
+    "js": 57
+  }
+}

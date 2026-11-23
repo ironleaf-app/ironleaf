@@ -7,6 +7,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Icon, type IconName } from '../../../components/Icon';
 import { workDid } from '../../../state/workModules';
 import { toneOf } from '../../workspace/recordParts';
+import { isEnterKey } from '../../../lib/enterKey';
 
 export type InlineKind = 'text' | 'date' | 'choice' | 'number' | 'long';
 
@@ -84,7 +85,7 @@ export function Inline({ value, shown, label, kind = 'text', options, canEdit, p
         onChange={(e) => setText(e.target.value)}
         onBlur={() => void done(text)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') void done(text);
+          if (isEnterKey(e)) void done(text);
           if (e.key === 'Escape') setEditing(false);
         }}
       />

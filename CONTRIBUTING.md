@@ -18,6 +18,15 @@ npm run dev        # the app with hot reload
 Node.js 22 or later. Never commit `node_modules`, build output (`out/`, `dist/`), a real vault, recordings or
 screenshots of real notes. Test fixtures are always made up.
 
+## Guidance for people and coding agents
+
+- [AGENTS.md](AGENTS.md): the brief every coding agent works from (Claude Code reads it through `CLAUDE.md`).
+- [docs/DESIGN.md](docs/DESIGN.md): how Ironleaf looks, feels and reads: tokens, spacing, density, controls, words.
+- Modern Web Guidance (a pinned devDependency): `npx modern-web-guidance search "<what you are building>"` before
+  writing UI, so the platform does the work instead of extra JavaScript.
+- `tests/ui-ratchet.test.mjs` holds the line: hard-coded colours, raw spacing, `!important`, clickable elements with no
+  role and legacy web patterns may only go down.
+
 ## Checks
 
 ```bash

@@ -12,6 +12,7 @@ import { getState, prefs, showError, toast } from '../state/store';
 import { GrowField } from './GrowField';
 import { Icon, type IconName } from './Icon';
 import { openMenu } from './Menu';
+import { isEnterKey } from '../lib/enterKey';
 
 export const KIND_ICON: Record<PropKind, IconName> = { text: 'text', list: 'list', number: 'hash', checkbox: 'task', date: 'calendar', datetime: 'calendar', tags: 'tag', aliases: 'link' };
 export const KIND_NAME: Record<PropKind, string> = { text: 'Text', list: 'List', number: 'Number', checkbox: 'Tick-box', date: 'Date', datetime: 'Date and time', tags: 'Tags', aliases: 'Other names' };
@@ -116,7 +117,7 @@ export function ListEditor({ items, kind, readOnly, onChange, onOpenTag, chip }:
             placeholder={items.length ? '' : 'Empty'}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ',') {
+              if (isEnterKey(e) || e.key === ',') {
                 e.preventDefault();
                 add(draft);
               } else if (e.key === 'Backspace' && !draft && items.length) onChange(items.slice(0, -1));
@@ -297,7 +298,7 @@ export function Properties({ text, readOnly, onChange, onOpenTag, addKey, path }
                       else if (to && to !== key) apply((doc) => { for (const r of cascadeRenamesFor(props, key, to)) renameKey(doc, r.from, r.to); });
                     }}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+                      if (isEnterKey(e)) (e.target as HTMLInputElement).blur();
                       if (e.key === 'Escape') setRenaming(null);
                     }}
                   />
@@ -355,7 +356,7 @@ export function Properties({ text, readOnly, onChange, onOpenTag, addKey, path }
                   onChange={(e) => setNewKey(e.target.value)}
                   onBlur={() => commitNew(newKey)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') commitNew(newKey);
+                    if (isEnterKey(e)) commitNew(newKey);
                     if (e.key === 'Escape') {
                       setAdding(false);
                       setNewKey('');

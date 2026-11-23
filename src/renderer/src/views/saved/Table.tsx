@@ -21,6 +21,7 @@ import { fileMenu } from '../../state/menus';
 import * as A from '../../state/actions';
 import { loadFiles, useApp, usePrefs } from '../../state/store';
 import { FIRST, kindFor, openNote, ValueView, type WriteProp } from './common';
+import { isEnterKey } from '../../lib/enterKey';
 
 interface Props {
   def: ViewDef;
@@ -471,7 +472,7 @@ function CellEditor({ row, field, kind, value, label, done, write, suggestions }
       onChange={(e) => setText(e.currentTarget.value)}
       onBlur={commit}
       onKeyDown={(e) => {
-        if (e.key === 'Enter') {
+        if (isEnterKey(e)) {
           e.preventDefault();
           commit();
         } else if (e.key === 'Escape') {

@@ -16,6 +16,7 @@ import { Icon, type IconName } from './Icon';
 import { homeArea } from '../../../shared/areas';
 import { currentArea, getAreas, useAreas } from '../state/areas';
 import { markTemplateUsed } from '../state/templateUsed';
+import { isEnterKey } from '../lib/enterKey';
 
 export const PROJECT_ICONS: Record<string, IconName> = {
   'project-it-rollout': 'settings',
@@ -123,7 +124,7 @@ export function NewProjectDialog({ template, onClose }: { template?: string; onC
             spellCheck={false}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') void make();
+              if (isEnterKey(e)) void make();
             }}
           />
         </label>
