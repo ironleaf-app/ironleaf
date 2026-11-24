@@ -53,6 +53,7 @@ import { loadGraphSettings } from './state/graph';
 import { closeDrawer, rightShown, useFit } from './state/fit';
 import { goToNoteFoot } from './components/NoteFoot';
 import { loadWorkspace, saveWorkspaceNow, setWorkspace, useWorkspace } from './state/layout';
+import { pendingNav } from './state/pending-nav';
 import { closeModal, modalChangeCancelsPick, openModal, requestSearch, useModal, type Modal } from './state/modals';
 import { useLeaving } from './lib/useLeaving';
 import { LifeHost } from './components/LifeHost';
@@ -298,11 +299,6 @@ export function App() {
     }
   }, [modal]);
 
-  // Navigation arriving while the vault loads (one window, 9 Nov 2026: Today/Graph clicks stayed
-  // on People): the reload from the saved layout lands after the place, so the place is lost. What arrives
-  // mid-load waits and lands once the notes are there, in the order it came.
-  const vaultLoading = useRef(0);
-  const pendingNav = useRef<Array<() => void>>([]);
   // Opening the notes: the vault and its lock.
   const openLibraryRef = useRef<(info: VaultInfo | null) => Promise<void>>(async () => {});
   const bootVault = useCallback(async () => {
@@ -310,8 +306,12 @@ export function App() {
     if (info) await openLibraryRef.current(info);
   }, []);
   const openLibrary = useCallback(async (info: VaultInfo | null) => {
-    vaultLoading.current++;
+    // Navigation arriving while the vault loads waits for the notes (state/pending-nav.ts).
+    pendingNav.begin();
     try {
+      // The same notes again (vault:opened after the start): a page opened a moment ago is not saved yet, and the
+      // saved layout is about to be read back.
+      if (info && getState().vault?.path === info.path) await saveWorkspaceNow();
       await docs.reset();
       setState({ vault: info });
       // The same notes again (the window opened again): their conversation stays; other notes start a new one.
@@ -327,25 +327,11 @@ export function App() {
       const known = new Set(getState().files.map((f) => f.rel));
       setWorkspace((w) => W.removed(w, (p) => known.has(p)));
     } finally {
-      if (--vaultLoading.current <= 0) {
-        vaultLoading.current = 0;
-        const queue = pendingNav.current;
-        pendingNav.current = [];
-        for (const run of queue) {
-          try {
-            run();
-          } catch {
-            // A stale navigation lands nowhere.
-          }
-        }
-      }
+      pendingNav.end();
     }
   }, []);
   openLibraryRef.current = openLibrary;
-  const deferNav = useCallback((run: () => void) => {
-    if (vaultLoading.current > 0) pendingNav.current.push(run);
-    else run();
-  }, []);
+  const deferNav = useCallback((run: () => void) => pendingNav.defer(run), []);
 
   // Start: settings, then the notes.
   useEffect(() => {
@@ -359,6 +345,7 @@ export function App() {
         setFailed(errorMessage(err));
       } finally {
         setBooting(false);
+        pendingNav.started();
       }
     })();
     let changed = new Set<string>();
