@@ -351,3 +351,32 @@ test('Windows: registered once — the next start writes nothing', async () => {
   assert.ok(ran.some((a) => a[0] === 'delete' && a[1] === 'HKCU\\Software\\Classes\\.md\\OpenWithProgids' && a.includes('NeuralVault.Markdown')));
   assert.equal(reg.get('HKCU\\Environment').get('Path').data, '%USERPROFILE%\\AppData\\Local\\Microsoft\\WindowsApps');
 });
+
+test('a test build or a development copy never takes the places of the installed Ironleaf', () => {
+  const takes = (o) => M.takesPlaces({ platform: 'win32', packaged: true, testBuild: false, ...o });
+  assert.equal(takes({}), true, 'an installed copy does');
+  assert.equal(takes({ testBuild: true }), false, 'a test build does not');
+  assert.equal(takes({ packaged: false }), false, 'a development copy does not');
+  assert.equal(takes({ testBuild: true, forced: true }), true, 'unless asked to');
+  assert.equal(takes({ packaged: false, forced: true }), true);
+  assert.equal(takes({ platform: 'linux', forced: true }), false, 'only on Windows');
+  assert.equal(M.isTestBuild(() => '{"name":"ironleaf","testIdentity":true}'), true);
+  for (const text of ['{"name":"ironleaf"}', '{"testIdentity":"true"}', '{"testIdentity":false}', 'null', 'not json', '']) assert.equal(M.isTestBuild(() => text), false, text);
+  assert.equal(
+    M.isTestBuild(() => {
+      throw new Error('ENOENT');
+    }),
+    false,
+    'a package.json that can’t be read is the real app',
+  );
+});
+
+test('only a --test-identity build is marked as one, and the app asks before it registers', () => {
+  const release = readFileSync(path.join(root, 'tools', 'release.mjs'), 'utf8');
+  assert.match(release, /\.\.\.\(testIdentity \? \{ testIdentity: true \} : \{\}\)/);
+  assert.equal(release.split('testIdentity: true').length, 2, 'set in that one place');
+  assert.equal(JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8')).testIdentity, undefined);
+  const app = readFileSync(path.join(root, 'src', 'main', 'app.ts'), 'utf8');
+  assert.match(app, /const registerHere = takesPlaces\(\{/);
+  assert.match(app, /windowsEntry: registerHere \?/);
+});

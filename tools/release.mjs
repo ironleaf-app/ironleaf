@@ -40,7 +40,8 @@ const version = value('--version') ?? pkg.version;
 if (!/^\d+\.\d+\.\d+$/.test(version)) fail(`version ${version} is not x.y.z.`);
 if (value('--version') && (has('--publish') || has('--publish-only'))) fail('--version is for test builds: it cannot be published.');
 // --test-identity: the same app installed under another name and installer id ("Ironleaf Update Test", no
-// shortcuts, no ironleaf:// entry), so a test install on a PC that has the real Ironleaf never touches it
+// shortcuts), marked in its package.json so the app takes no links, Open with or PATH (src/main/windows-entry.ts): a
+// test install on a PC that has the real Ironleaf never touches it
 // (docs/RELEASING.md, "Testing an update end to end"). Never published.
 const testIdentity = has('--test-identity');
 if (testIdentity && (has('--publish') || has('--publish-only'))) fail('--test-identity builds cannot be published.');
@@ -180,7 +181,7 @@ function stage() {
   mkdirSync(stageDir, { recursive: true });
   writeFileSync(
     path.join(stageDir, 'package.json'),
-    JSON.stringify({ name: pkg.name, productName: 'Ironleaf', version, description: 'Ironleaf: plain Markdown notes with links, a graph and canvases.', homepage: SITE, author: { name: 'Kaitiaki IT Pty Ltd', email: 'support@kaitiaki-it.com' }, license: pkg.license, main: pkg.main, dependencies: Object.fromEntries(shippedDependencies().map((d) => [d, pkg.dependencies[d]])) }, null, 2) + '\n',
+    JSON.stringify({ name: pkg.name, productName: 'Ironleaf', version, description: 'Ironleaf: plain Markdown notes with links, a graph and canvases.', homepage: SITE, author: { name: 'Kaitiaki IT Pty Ltd', email: 'support@kaitiaki-it.com' }, license: pkg.license, main: pkg.main, ...(testIdentity ? { testIdentity: true } : {}), dependencies: Object.fromEntries(shippedDependencies().map((d) => [d, pkg.dependencies[d]])) }, null, 2) + '\n',
   );
   cpSync(path.join(root, 'out'), path.join(stageDir, 'out'), { recursive: true, filter: (src) => !src.endsWith('.map') });
   cpSync(path.join(root, 'resources'), path.join(stageDir, 'resources'), { recursive: true });

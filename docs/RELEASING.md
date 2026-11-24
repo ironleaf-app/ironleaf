@@ -34,7 +34,7 @@ the published version is higher than the one installed.
 | `--publish-only` | Publishes what is already in `dist/release/` without building. |
 | `--win-smoke` | Installs `dist/release/Ironleaf-Setup.exe` on the Windows PC, starts it, uninstalls (needs `NV_WIN_BUILDER`). |
 | `--version x.y.z` | Builds that version without changing `package.json` (update tests). Cannot be published. |
-| `--test-identity` | Builds "Ironleaf Update Test" (own installer id, no shortcuts, no link entry) for update tests on a PC that has Ironleaf. Cannot be published. |
+| `--test-identity` | Builds "Ironleaf Update Test" (own installer id, no shortcuts, and the app never takes the links, Open with or the PATH) for update tests on a PC that has Ironleaf. Cannot be published. |
 
 Environment: `NV_BUILDTOOLS` (default `~/.ironleaf-buildtools`), `NV_WIN_BUILDER` (unset: Windows is built here),
 `NV_WIN_BUILD_DIR` (default `C:\nv-build`), `NV_DOWNLOAD_DIR` (the web server's download folder(s), split by `:`;
@@ -289,11 +289,14 @@ for the updater: it downloads the versioned name, which never changes under a do
 
 `node tools/release.mjs --fast --test-identity --version 2.0.1` (then `2.0.2`) builds test versions without
 touching `package.json`: `--test-identity` installs as "Ironleaf Update Test" under its own installer id, with no
-shortcuts and no `ironleaf://` entry, so it never replaces the real Ironleaf on the PC. Neither flag can be
+shortcuts, and its package.json says `testIdentity`, so the app leaves `ironleaf://` links, Open with and the PATH to
+the real Ironleaf on the PC (`takesPlaces`, src/main/windows-entry.ts). Neither flag can be
 combined with `--publish`. Serve a scratch folder with the newer `latest.json` and installer over HTTP with ranges,
 and point a **development** build at it with `NV_UPDATE_ORIGIN=http://127.0.0.1:<port>` (an installed copy never
 reads another site; the old `--nv-update-test-origin` switch does nothing there). Install test builds in a
-temporary folder (`/S /D=<folder>`) with their own `--user-data-dir`.
+temporary folder (`/S /D=<folder>`) with their own `--user-data-dir`: without it a test build uses the real one. A new
+profile opens the notes it finds in Documents, so put a `settings.json` in it first, with `library` and `lastVault`
+naming two different scratch folders that exist.
 
 So a release reaches people as soon as `latest.json` is published: there is nothing else to update.
 
