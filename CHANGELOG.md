@@ -6,6 +6,13 @@ the website. `tools/release.mjs` takes a release's notes from here when `--notes
 
 Format: one `## <version> — <YYYY-MM-DD>` heading a release, then one `- ` line a change.
 
+## 2.0.19 — 2026-11-24
+
+- Saved keys and sign-ins use the operating system's newer protected store, ready for the next Electron. Keys saved by earlier versions still open, and nothing needs entering again.
+- Signing out while a sign-in is being saved, or locking Private while its unlock is being remembered, now always wins.
+- If a saved AI key, backup secret or sync key can't be opened, its file is copied aside before anything is written over it.
+- Health records: the message about a new store says "store".
+
 ## 2.0.18 — 2026-11-24
 
 - Claude no longer stops short: Design with AI, long answers and quick asks on Claude models get room to think as well as answer. On Sonnet 5.5 a two-page handout was cut off before it finished.
