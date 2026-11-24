@@ -1,7 +1,8 @@
 // Ironleaf's places in Windows (21 Oct 2026, gap G26), for this Windows user only (HKCU\Software\Classes and the user's
 // own PATH; never an administrator), written the way the former host app writes File Explorer's "Ask the former host app
 // about this" (its src/quick-ask.cjs): with reg.exe, only what is missing or different, at each start of an installed
-// copy (a development copy only when NV_REGISTER_WINDOWS=1, so it never takes the places from the installed app).
+// copy (a development copy or a test build only when NV_REGISTER_WINDOWS=1, so neither takes the places from the
+// installed app).
 //
 //   - ironleaf:// links open Ironleaf (src/shared/uri.ts; each change a link asks for is confirmed first);
 //   - "Open with › Ironleaf" for every file type it opens (.md, .markdown, .mdown, .mkd, .txt), offered beside the
@@ -28,6 +29,21 @@ const ENV_KEY = 'HKCU\\Environment';
 
 export type RegRun = (args: string[]) => Promise<string>;
 export const runReg: RegRun = (args) => new Promise((resolve, reject) => execFile('reg', args, { windowsHide: true, timeout: 15000 }, (error, stdout) => (error ? reject(error) : resolve(String(stdout)))));
+
+/** Whether this copy takes Ironleaf's places in Windows: an installed one, unless it is a test build. */
+export function takesPlaces(o: { platform: NodeJS.Platform; packaged: boolean; testBuild: boolean; forced?: boolean }): boolean {
+  return o.platform === 'win32' && (!!o.forced || (o.packaged && !o.testBuild));
+}
+
+/** A --test-identity build says so in its own package.json (tools/release.mjs). Anything unreadable is not one: the
+ *  installed app must never stop answering its own links. */
+export function isTestBuild(readPackage: () => string): boolean {
+  try {
+    return JSON.parse(readPackage())?.testIdentity === true;
+  } catch {
+    return false;
+  }
+}
 
 /** One key's values: '' is the key's default value. REG_NONE marks an "Open with" choice (it has no data). */
 export interface RegEntry {

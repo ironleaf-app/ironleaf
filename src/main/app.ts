@@ -150,6 +150,7 @@ import { writeZip } from './zip';
 import { AREAS_FILE, areaOf as areaOfPath, readAreas, type Area } from '../shared/areas';
 import { AgentAccess } from './agent-access';
 import { ExternalEntry } from './external';
+import { isTestBuild, takesPlaces } from './windows-entry';
 import { McpHttpServer } from './mcp-http';
 import { askBeforeChangesUnderPolicy } from './policy';
 import type { LocalMcpHttpView } from '../shared/agent-access';
@@ -6219,7 +6220,12 @@ reminders. */
 
   // Ironleaf from outside its window (src/main/external.ts; 21 Oct 2026, gap G26): the ironleaf command,
   // ironleaf:// links (each change asked about first) and Markdown files from anywhere on the PC.
-  const registerHere = process.platform === 'win32' && (app.isPackaged || process.env.NV_REGISTER_WINDOWS === '1');
+  const registerHere = takesPlaces({
+    platform: process.platform,
+    packaged: app.isPackaged,
+    testBuild: isTestBuild(() => readFileSync(path.join(app.getAppPath(), 'package.json'), 'utf8')),
+    forced: process.env.NV_REGISTER_WINDOWS === '1',
+  });
   const external = new ExternalEntry({
     dataDir: host.dataDir,
     kind: host.kind,

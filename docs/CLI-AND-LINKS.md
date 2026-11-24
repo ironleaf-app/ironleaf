@@ -7,7 +7,7 @@ Gap G26, added 21 Oct 2026. Code: `src/shared/cli.ts`, `src/shared/uri.ts`, `src
 
 Each time an installed Ironleaf starts on Windows, it adds these for the current Windows user only. That means
 `HKCU\Software\Classes` and the user's own PATH, so no administrator is needed. It writes only what is missing or
-different. A development copy does this only when
+different. A development copy, or a `--test-identity` build (docs/RELEASING.md), does this only when
 `NV_REGISTER_WINDOWS=1`.
 
 - **ironleaf:// links**: `HKCU\Software\Classes\ironleaf`, and `HKCU\Software\Classes\neuralvault` for the old
