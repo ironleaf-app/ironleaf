@@ -12,6 +12,7 @@ import { startAccount } from './account';
 import { createIronleaf, type IronleafApp } from './app';
 import { ProviderService } from './providers';
 import { ConnectionStore } from './providers/connections';
+import { osProtect } from './os-protect-app';
 import { KeyStore } from './providers/keys';
 import { LEGACY_START_MENU_LINK, legacyExeTarget, repairInstalledEntry } from './installed-entry';
 import { isMcpCommand, launchIronleaf, runMcpBridge } from './mcp-bridge';
@@ -78,6 +79,8 @@ app.whenReady().then(async () => {
     return;
   }
   if (process.platform === 'win32' && app.isPackaged) void repairInstalledEntry({ version: app.getVersion() });
+  // The protected store is asked once, before anything it keeps is read (src/main/os-protect.ts).
+  await osProtect.ready();
   await keys.load();
   // The tray icon, there from the start (src/main/tray.ts): a close hides the window there, after its save.
   tray = createTray({ dataDir: app.getPath('userData'), icons: path.join(__dirname, '../../resources/tray'), icon: path.join(__dirname, '../../resources/icon.png'), argv: process.argv, checkUpdate: () => updater.check(), openAbout: () => openAbout({ check: true }), log: (message) => console.error(message) });

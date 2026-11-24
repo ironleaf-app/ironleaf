@@ -25,8 +25,8 @@ export const STEP_UP_MS = 5 * 60 * 1000;
 /** Windows protection for one small value on this PC (Electron safeStorage in the app; a stand-in in tests). */
 export interface RememberedSeal {
   available(): boolean;
-  protect(plain: Buffer): Buffer;
-  unprotect(sealed: Buffer): Buffer;
+  protect(plain: Buffer): Buffer | Promise<Buffer>;
+  unprotect(sealed: Buffer): Buffer | Promise<Buffer>;
 }
 /** Where the sealed remembered unlock is kept: on this PC, outside the vault, so it never syncs (8.2). */
 export interface RememberedStore {
@@ -197,7 +197,11 @@ export class PrivateNotes {
     if (!this.dataKey || !seal || !store || this.keepMode() === 'strict') return;
     try {
       if (!seal.available()) return;
-      const rec = { v: 1, vault: this.vaultMark(), mode: this.keepMode(), at: this.now(), until: this.rememberedUntil, sealed: seal.protect(this.dataKey).toString('base64') };
+      const key = this.dataKey;
+      const sealed = (await seal.protect(key)).toString('base64');
+      // Locked, or the strict choice made, while it was sealed: nothing is kept after that.
+      if (this.dataKey !== key || this.keepMode() === 'strict') return;
+      const rec = { v: 1, vault: this.vaultMark(), mode: this.keepMode(), at: this.now(), until: this.rememberedUntil, sealed };
       await store.write(JSON.stringify(rec));
     } catch {
       // No Windows protection here: the unlock is remembered only while Ironleaf runs.
@@ -229,7 +233,12 @@ export class PrivateNotes {
       }
       const k = await this.keyFile();
       if (!k) return false;
-      const dataKey = seal.unprotect(Buffer.from(rec.sealed, 'base64'));
+      const dataKey = await seal.unprotect(Buffer.from(rec.sealed, 'base64'));
+      // Opened another way, or other notes opened, or the strict choice made, while it was unsealed.
+      if (this.dataKey || rec.vault !== this.vaultMark() || (this.keepMode() as string) === 'strict') {
+        dataKey.fill(0);
+        return !!this.dataKey;
+      }
       const expected = Buffer.from(k.check, 'base64');
       const actual = Buffer.from(checkOf(dataKey), 'base64');
       if (expected.length !== actual.length || !timingSafeEqual(expected, actual)) {

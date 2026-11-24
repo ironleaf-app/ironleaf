@@ -288,7 +288,7 @@ export function newId(): string {
 
 const M = (id: string, name: string, kind: MeasureKind, group: MeasureGroup, more: Partial<Measure> = {}): Measure => ({ id, name, kind, group, created: 0, ...more });
 
-/** The measures a new cafe starts with; every one is the person's to rename, change or put away. */
+/** The measures a new store starts with; every one is the person's to rename, change or put away. */
 export const STARTING_MEASURES: Measure[] = [
   M('sleep', 'Sleep', 'number', 'sleep', { unit: 'h', checkin: true, better: 'up' }),
   M('sleep-quality', 'Sleep quality', 'scale', 'sleep', { min: 1, max: 5, checkin: true, better: 'up' }),

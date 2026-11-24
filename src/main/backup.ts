@@ -3,7 +3,9 @@
 // never the notes), and the two secrets they need — a Git token and the sync passphrase — kept encrypted by Windows
 // (Electron safeStorage) in Ironleaf's data folder, never shown again and never in a log.
 
-import { dialog, safeStorage, type BrowserWindow } from 'electron';
+import { dialog, type BrowserWindow } from 'electron';
+import { keepUnread } from './os-protect';
+import { osProtect } from './os-protect-app';
 import { promises as fsp } from 'node:fs';
 import path from 'node:path';
 import { branchProblem, cleanBackupPrefs, DEFAULT_BACKUP, remoteKind, type BackupPrefs, type BackupView } from '../shared/backup';
@@ -36,10 +38,13 @@ class BackupSecrets {
 
   private async all(): Promise<Secrets> {
     if (this.data) return this.data;
+    // Not cached: the saved ones are read when the protected store answers, not written over.
+    if (!(await osProtect.ready())) return {};
     try {
       const bytes = await fsp.readFile(this.file);
-      this.data = safeStorage.isEncryptionAvailable() ? (JSON.parse(safeStorage.decryptString(bytes)) as Secrets) : {};
+      this.data = JSON.parse(await osProtect.open(bytes)) as Secrets;
     } catch {
+      await keepUnread(this.file);
       this.data = {};
     }
     return this.data;
@@ -55,10 +60,10 @@ class BackupSecrets {
     if (value) entry[which] = value;
     else delete entry[which];
     all[vault] = entry;
-    if (!safeStorage.isEncryptionAvailable()) throw new Error('This PC can’t protect saved secrets, so it wasn’t saved.');
+    if (!(await osProtect.ready())) throw new Error('This PC can’t protect saved secrets, so it wasn’t saved.');
     await fsp.mkdir(path.dirname(this.file), { recursive: true });
     const temp = `${this.file}.${process.pid}.tmp`;
-    await fsp.writeFile(temp, safeStorage.encryptString(JSON.stringify(all)));
+    await fsp.writeFile(temp, await osProtect.seal(JSON.stringify(all)));
     await fsp.rename(temp, this.file);
     this.data = all;
   }

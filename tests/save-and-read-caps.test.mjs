@@ -27,7 +27,7 @@ before(async () => {
   writeFileSync(
     path.join(eDir, 'index.mjs'),
     `export const app = { getPath: () => ${JSON.stringify(appdata)} };\n` +
-      `export const safeStorage = { isEncryptionAvailable: () => true, encryptString: (s) => Buffer.from([...s].reverse().join('')), decryptString: (b) => [...b.toString()].reverse().join('') };\n`,
+      `export const safeStorage = { isAsyncEncryptionAvailable: async () => true, encryptStringAsync: async (s) => Buffer.from([...s].reverse().join('')), decryptStringAsync: async (b) => ({ result: [...b.toString()].reverse().join('') }) };\n`,
   );
   const entry = path.join(work, 'entry.ts');
   writeFileSync(

@@ -58,7 +58,7 @@ export const accountService = (): AccountService | null => service;
 export function startAccount(): void {
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { app, ipcMain, net, safeStorage, shell, webContents, BrowserWindow } = require('electron') as typeof import('electron');
+    const { app, ipcMain, net, shell, webContents, BrowserWindow } = require('electron') as typeof import('electron');
     const log = (m: string) => console.error(m);
     void app.whenReady().then(async () => {
       const dataDir = app.getPath('userData');
@@ -80,11 +80,9 @@ export function startAccount(): void {
         }
         await shell.openExternal(url);
       };
-      const store = new TokenStore(dataDir, {
-        available: () => safeStorage.isEncryptionAvailable(),
-        seal: (plain) => safeStorage.encryptString(plain),
-        open: (sealed) => safeStorage.decryptString(sealed),
-      });
+      const { osProtect } = await import('../os-protect-app');
+      await osProtect.ready();
+      const store = new TokenStore(dataDir, osProtect);
       const licence = new LicenceKeeper({
         dataDir,
         verify: (token) => verifyLicence(token, keyOpt),

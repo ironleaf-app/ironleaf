@@ -96,7 +96,7 @@ test('the health store: sealed on disk, opened again, only by the account that m
   const fresh = await s4.read();
   assert.equal(fresh.entries.length, 0);
   assert.ok(allFiles(dir).some((f) => f.startsWith('health damaged ')), 'the damaged file is kept beside it');
-  assert.match((await s4.status()).problem, /put aside and a new cafe was started\. Nothing was deleted\./);
+  assert.match((await s4.status()).problem, /put aside and a new store was started\. Nothing was deleted\./);
 });
 
 test('nothing can be saved without the protected store, and the person is told why', async () => {

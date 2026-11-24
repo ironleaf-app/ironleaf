@@ -32,7 +32,8 @@ import { registerSync, type SyncService } from './sync/service';
 import { registerTeams } from './teams/service';
 import { ATTACH_LIMITS, cleanAttachments } from '../shared/chat-attach';
 import { NO_CONNECTION } from './providers';
-import { app, BrowserWindow, clipboard, safeStorage, desktopCapturer, dialog, ipcMain, Menu, nativeImage, Notification, powerMonitor, screen, session, shell, utilityProcess, webContents, type IpcMainInvokeEvent, type MenuItemConstructorOptions, type OpenDialogOptions, type OpenDialogReturnValue, type SaveDialogOptions, type SaveDialogReturnValue, type WebContents } from 'electron';
+import { app, BrowserWindow, clipboard, desktopCapturer, dialog, ipcMain, Menu, nativeImage, Notification, powerMonitor, screen, session, shell, utilityProcess, webContents, type IpcMainInvokeEvent, type MenuItemConstructorOptions, type OpenDialogOptions, type OpenDialogReturnValue, type SaveDialogOptions, type SaveDialogReturnValue, type WebContents } from 'electron';
+import { osProtect } from './os-protect-app';
 import { randomUUID } from 'node:crypto';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { Worker } from 'node:worker_threads';
@@ -673,9 +674,10 @@ export async function createIronleaf(host: IronleafHost): Promise<IronleafApp> {
     lockAfter: () => settings.raw.prefs.privateLockMinutes,
     keepUnlocked: () => settings.raw.prefs.secretsKeepUnlocked,
     rememberedSeal: {
-      available: () => { try { return safeStorage.isEncryptionAvailable(); } catch { return false; } },
-      protect: (plain) => safeStorage.encryptString(plain.toString('base64')),
-      unprotect: (sealed) => Buffer.from(safeStorage.decryptString(sealed), 'base64'),
+      available: () => osProtect.available(),
+      // Its words are made before anything waits: a lock meanwhile wipes the key it was handed.
+      protect: (plain) => osProtect.seal(plain.toString('base64')),
+      unprotect: async (sealed) => Buffer.from(await osProtect.open(sealed), 'base64'),
     },
     rememberedStore: {
       read: async () => { try { return await fsp.readFile(rememberedFile, 'utf8'); } catch { return null; } },
@@ -5376,13 +5378,13 @@ reminders. */
     });
 
     // Ironleaf Sync (src/main/sync/service.ts, docs/SYNC.md): end-to-end encrypted sync through the Ironleaf account.
-    const osProtect = { available: () => { try { return safeStorage.isEncryptionAvailable(); } catch { return false; } }, encrypt: (t: string) => safeStorage.encryptString(t), decrypt: (b: Buffer) => safeStorage.decryptString(b) };
+    const sealWith = { available: () => osProtect.available(), encrypt: (t: string) => osProtect.seal(t), decrypt: (b: Buffer) => osProtect.open(b) };
     syncService = registerSync({
       handle,
       send,
       dataDir: host.dataDir,
       device: thisPc,
-      protect: osProtect,
+      protect: sealWith,
       osTrash: (abs) => shell.trashItem(abs),
       applied: (rels, moves) => (vault && void rescan(vault).catch(() => {}), notifyChanged(rels, moves), filesChanged()),
       mayWrite: () => requireCreate().then(() => true, () => false),
@@ -5390,7 +5392,7 @@ reminders. */
       ...(!app.isPackaged && process.env.IRONLEAF_SYNC_DEV_TOKEN ? { devToken: process.env.IRONLEAF_SYNC_DEV_TOKEN } : {}),
       log: (m) => host.log?.(m),
     });
-    teamsService = registerTeams({ handle, send, dataDir: host.dataDir, protect: osProtect, sync: syncService.team, ...(!app.isPackaged && process.env.IRONLEAF_CLOUD_API ? { apiBase: process.env.IRONLEAF_CLOUD_API } : {}), log: (m) => host.log?.(m) });
+    teamsService = registerTeams({ handle, send, dataDir: host.dataDir, protect: sealWith, sync: syncService.team, ...(!app.isPackaged && process.env.IRONLEAF_CLOUD_API ? { apiBase: process.env.IRONLEAF_CLOUD_API } : {}), log: (m) => host.log?.(m) });
 
     // Settings › Connect an AI and What agents did (src/main/agent-access.ts).
     handle('agents:state', () => agentAccess.state());
@@ -5919,7 +5921,10 @@ reminders. */
   // Windows through safeStorage) and Family (notes in the Family area), off until switched on in Settings › Packs.
   // The end-to-end check on Linux only (never in the product, never on Windows): no keyring there, so Electron's own
   // stand-in protects the key and the store's sealing is proved all the same (tools/shots-modules.mjs).
-  if (!app.isPackaged && host.kind === 'standalone' && process.platform === 'linux' && process.env.NV_TEST_PLAIN_KEYS === '1') (safeStorage as { setUsePlainTextEncryption?: (on: boolean) => void }).setUsePlainTextEncryption?.(true);
+  if (!app.isPackaged && host.kind === 'standalone' && process.platform === 'linux' && process.env.NV_TEST_PLAIN_KEYS === '1') {
+    osProtect.allowFixedKey();
+    await osProtect.ready();
+  }
   const lifeModules = new Modules({
     handle,
     dataDir: host.dataDir,
@@ -5928,9 +5933,9 @@ reminders. */
     index,
     modules: () => settings.raw.prefs.modules,
     protector: {
-      available: () => safeStorage.isEncryptionAvailable(),
-      protect: (plain) => safeStorage.encryptString(plain.toString('utf8')),
-      unprotect: (sealed) => Buffer.from(safeStorage.decryptString(sealed), 'utf8'),
+      available: () => osProtect.available(),
+      protect: (plain) => osProtect.seal(plain.toString('utf8')),
+      unprotect: async (sealed) => Buffer.from(await osProtect.open(sealed), 'utf8'),
     },
     sensitivity,
     requireCreate,

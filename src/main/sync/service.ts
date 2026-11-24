@@ -3,6 +3,7 @@
 // through the open Vault (guarded saves for notes, the Bin for deletes, Vault.move for renames). It listens to the
 // Vault's own watcher events (no second watcher). Off by default; it needs the account (account.ts) with Sync.
 
+import { keepUnread } from '../os-protect';
 import { promises as fsp } from 'node:fs';
 import path from 'node:path';
 import { textVersion } from '../../shared/project-file';
@@ -45,8 +46,8 @@ const cleanFolders = (list: unknown[]): string[] =>
 
 export interface Protector {
   available(): boolean;
-  encrypt(text: string): Buffer;
-  decrypt(bytes: Buffer): string;
+  encrypt(text: string): Buffer | Promise<Buffer>;
+  decrypt(bytes: Buffer): string | Promise<string>;
 }
 
 export interface SyncServiceDeps {
@@ -77,9 +78,12 @@ class KeyStore {
   ) {}
   private async all(): Promise<Record<string, string>> {
     if (this.cache) return this.cache;
+    // Not cached: the saved ones are read when the protected store answers, not written over.
+    if (!this.protect.available()) return {};
     try {
-      this.cache = JSON.parse(this.protect.decrypt(await fsp.readFile(this.file))) as Record<string, string>;
+      this.cache = JSON.parse(await this.protect.decrypt(await fsp.readFile(this.file))) as Record<string, string>;
     } catch {
+      await keepUnread(this.file);
       this.cache = {};
     }
     return this.cache;
@@ -102,7 +106,7 @@ class KeyStore {
     if (!this.protect.available()) throw new Error('This PC can’t protect the sync key, so sync can’t be set up here.');
     await fsp.mkdir(path.dirname(this.file), { recursive: true });
     const tmp = `${this.file}.${process.pid}.tmp`;
-    await fsp.writeFile(tmp, this.protect.encrypt(JSON.stringify(all)));
+    await fsp.writeFile(tmp, await this.protect.encrypt(JSON.stringify(all)));
     await fsp.rename(tmp, this.file);
     this.cache = all;
   }
