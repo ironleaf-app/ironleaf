@@ -13,12 +13,14 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { after, before, test } from 'node:test';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { clockFrom } from './clock-from.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const work = mkdtempSync(path.join(tmpdir(), 'nv-systems-records-'));
 let S;
 let M;
 const TODAY = new Date(2026, 9, 24, 10, 0);
+clockFrom(TODAY);
 before(async () => {
   const { build } = await import(pathToFileURL(path.join(root, 'node_modules', 'rolldown', 'dist', 'index.mjs')).href);
   const entry = path.join(work, 'shared.ts');
