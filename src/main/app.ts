@@ -150,7 +150,7 @@ import { writeZip } from './zip';
 import { AREAS_FILE, areaOf as areaOfPath, readAreas, type Area } from '../shared/areas';
 import { AgentAccess } from './agent-access';
 import { ExternalEntry } from './external';
-import { isTestBuild, takesPlaces } from './windows-entry';
+import { takesPlaces } from './windows-entry';
 import { McpHttpServer } from './mcp-http';
 import { askBeforeChangesUnderPolicy } from './policy';
 import type { LocalMcpHttpView } from '../shared/agent-access';
@@ -187,6 +187,8 @@ export interface IronleafHost {
   icon: string;
   /** Ironleaf's identity on the Windows taskbar. */
   appId: string;
+  /** A --test-identity build (src/main/test-build.ts): it keeps to its own notes and takes no places in Windows. */
+  testBuild?: boolean;
   models: ModelsService;
   /** Inside the former host app: Windows Hello (a PIN, face or fingerprint), which opens Private notes on this PC. */
   hello?: PrivateHello;
@@ -1467,7 +1469,7 @@ null. */
     }
     // A first start on this PC: a vault waiting in Documents\Ironleaf or a synced place is opened, never a new, empty
     // one made beside it (src/main/vault-home-service.ts).
-    if (await vaultHome.firstStart().catch((err) => (host.log?.('Looking for your vault: ' + (err instanceof Error ? err.message : String(err))), false))) return;
+    if (!host.testBuild && (await vaultHome.firstStart().catch((err) => (host.log?.('Looking for your vault: ' + (err instanceof Error ? err.message : String(err))), false)))) return;
     let made = false;
     try {
       await fsp.access(library);
@@ -6223,7 +6225,7 @@ reminders. */
   const registerHere = takesPlaces({
     platform: process.platform,
     packaged: app.isPackaged,
-    testBuild: isTestBuild(() => readFileSync(path.join(app.getAppPath(), 'package.json'), 'utf8')),
+    testBuild: !!host.testBuild,
     forced: process.env.NV_REGISTER_WINDOWS === '1',
   });
   const external = new ExternalEntry({

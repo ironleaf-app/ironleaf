@@ -35,16 +35,6 @@ export function takesPlaces(o: { platform: NodeJS.Platform; packaged: boolean; t
   return o.platform === 'win32' && (!!o.forced || (o.packaged && !o.testBuild));
 }
 
-/** A --test-identity build says so in its own package.json (tools/release.mjs). Anything unreadable is not one: the
- *  installed app must never stop answering its own links. */
-export function isTestBuild(readPackage: () => string): boolean {
-  try {
-    return JSON.parse(readPackage())?.testIdentity === true;
-  } catch {
-    return false;
-  }
-}
-
 /** One key's values: '' is the key's default value. REG_NONE marks an "Open with" choice (it has no data). */
 export interface RegEntry {
   key: string;
