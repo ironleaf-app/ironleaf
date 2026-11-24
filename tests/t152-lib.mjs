@@ -562,7 +562,8 @@ export async function viaMore(h, ...items) {
   // sit in FILES mode with no More at all — FILES goes back to nav first).
   const openAppMore = async () => {
     if ((await clickExact(h, 'More', '.sidebar.left, aside')) === 'CLICKED') return true;
-    await clickWords(h, 'FILES', '.sidebar.left, aside');
+    // By the button itself: its words lost their capitals with the design language, and the walk stayed in the file list.
+    await h.browser.ev(`document.querySelector('.sidebar.left .side-title-back')?.click()`);
     await sleep(500);
     return (await clickExact(h, 'More', '.sidebar.left, aside')) === 'CLICKED';
   };
