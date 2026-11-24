@@ -37,7 +37,7 @@ export function sealedKeyStore(file: string, protect: Protector): DeviceKeyStore
     available: () => protect.available(),
     async load() {
       try {
-        const o = JSON.parse(protect.decrypt(await fsp.readFile(file))) as { publicKey: string; privateKey: string };
+        const o = JSON.parse(await protect.decrypt(await fsp.readFile(file))) as { publicKey: string; privateKey: string };
         return { publicKey: o.publicKey, privateKey: Buffer.from(o.privateKey, 'base64') } satisfies DeviceKeyPair;
       } catch {
         return null;
@@ -47,7 +47,7 @@ export function sealedKeyStore(file: string, protect: Protector): DeviceKeyStore
       if (!protect.available()) throw new Error('This PC can’t protect a team key.');
       await fsp.mkdir(path.dirname(file), { recursive: true });
       const tmp = `${file}.${process.pid}.tmp`;
-      await fsp.writeFile(tmp, protect.encrypt(JSON.stringify({ publicKey: k.publicKey, privateKey: k.privateKey.toString('base64') })));
+      await fsp.writeFile(tmp, await protect.encrypt(JSON.stringify({ publicKey: k.publicKey, privateKey: k.privateKey.toString('base64') })));
       await fsp.rename(tmp, file);
     },
   };

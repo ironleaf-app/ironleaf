@@ -16,8 +16,8 @@ import { cleanDb, emptyDb, type HealthDb } from '../shared/health';
 /** The operating system's protected store (safeStorage in the app; a stand-in in tests). */
 export interface KeyProtector {
   available(): boolean;
-  protect(plain: Buffer): Buffer;
-  unprotect(sealed: Buffer): Buffer;
+  protect(plain: Buffer): Buffer | Promise<Buffer>;
+  unprotect(sealed: Buffer): Buffer | Promise<Buffer>;
 }
 
 const DB_FILE = 'health.nvdb';
@@ -115,7 +115,7 @@ export class HealthStore {
     if (!this.opts.protector.available()) throw new Error('Windows can’t open protected data for Ironleaf right now, so your health records stay locked. Try again after signing in to Windows again.');
     let key: Buffer;
     try {
-      key = Buffer.from(this.opts.protector.unprotect(Buffer.from(k.protected, 'base64')).toString('utf8'), 'base64');
+      key = Buffer.from((await this.opts.protector.unprotect(Buffer.from(k.protected, 'base64'))).toString('utf8'), 'base64');
     } catch {
       throw new Error('This Windows account can’t open the health store’s key. Health records are kept for the Windows account and PC that made them.');
     }
@@ -153,10 +153,10 @@ export class HealthStore {
       try {
         db = cleanDb(JSON.parse(unseal(key, JSON.parse(raw) as Sealed)));
       } catch {
-        // Damaged (or written by something else): put aside as it is, and a new cafe started, said once.
+        // Damaged (or written by something else): put aside as it is, and a new store started, said once.
         const aside = path.join(dir, `health damaged ${new Date().toISOString().replace(/[:.]/g, '-')}.nvdb`);
         await fsp.rename(path.join(dir, DB_FILE), aside).catch(() => {});
-        this.problem = 'Your health records couldn’t be opened, so they were put aside and a new cafe was started. Nothing was deleted.';
+        this.problem = 'Your health records couldn’t be opened, so they were put aside and a new store was started. Nothing was deleted.';
         this.opts.log?.(`Health store: ${DB_FILE} couldn't be opened; put aside as ${path.basename(aside)}`);
         db = emptyDb();
       }
@@ -176,7 +176,7 @@ export class HealthStore {
       if (!this.key) {
         if (!this.opts.protector.available()) throw new Error('This PC can’t protect the health store’s key (Windows’ protected store isn’t available), so nothing was saved.');
         const key = randomBytes(32);
-        const k: KeyFile = { version: 1, created: new Date().toISOString(), protected: this.opts.protector.protect(Buffer.from(key.toString('base64'), 'utf8')).toString('base64'), check: checkOf(key) };
+        const k: KeyFile = { version: 1, created: new Date().toISOString(), protected: (await this.opts.protector.protect(Buffer.from(key.toString('base64'), 'utf8'))).toString('base64'), check: checkOf(key) };
         await this.writeAtomic(path.join(dir, KEY_FILE), JSON.stringify(k, null, 1));
         this.key = key;
       }

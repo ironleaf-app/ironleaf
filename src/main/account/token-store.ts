@@ -7,6 +7,7 @@
 
 import { promises as fsp } from 'node:fs';
 import path from 'node:path';
+import { KeyedQueue } from '../save-guard';
 import type { Profile, Tokens } from './oidc';
 
 export const SEALED_FILE = 'account.sealed';
@@ -22,8 +23,8 @@ export interface SignedIn {
 /** Electron's safeStorage, as this file needs it (the checks pass their own). */
 export interface Sealer {
   available(): boolean;
-  seal(plain: string): Buffer;
-  open(sealed: Buffer): string;
+  seal(plain: string): Buffer | Promise<Buffer>;
+  open(sealed: Buffer): string | Promise<string>;
 }
 
 const MAGIC = 'ironleaf-account-1\n';
@@ -31,6 +32,8 @@ const MAGIC = 'ironleaf-account-1\n';
 export class TokenStore {
   private memory: SignedIn | null = null;
   private loaded = false;
+  /** One write or removal at a time: signing out while a save is being sealed must end signed out. */
+  private writes = new KeyedQueue();
   readonly file: string;
 
   constructor(
@@ -61,7 +64,7 @@ export class TokenStore {
       return null;
     }
     try {
-      const text = this.sealer.open(buf);
+      const text = await this.sealer.open(buf);
       if (!text.startsWith(MAGIC)) throw new Error('not ours');
       const v = JSON.parse(text.slice(MAGIC.length)) as SignedIn;
       if (!v?.tokens?.accessToken || !v.profile) throw new Error('incomplete');
@@ -82,16 +85,19 @@ export class TokenStore {
     this.memory = v;
     this.loaded = true;
     if (!this.persistent) return; // No protected store: kept for this run only, never written in plain text.
-    const sealed = this.sealer.seal(MAGIC + JSON.stringify(v));
-    await this.fs.mkdir(path.dirname(this.file), { recursive: true });
-    const tmp = `${this.file}.${process.pid}.tmp`;
-    await this.fs.writeFile(tmp, sealed, { mode: 0o600 });
-    await this.fs.rename(tmp, this.file);
+    await this.writes.run(this.file, async () => {
+      const sealed = await this.sealer.seal(MAGIC + JSON.stringify(v));
+      if (this.memory !== v) return; // Signed out, or saved again, while it was sealed.
+      await this.fs.mkdir(path.dirname(this.file), { recursive: true });
+      const tmp = `${this.file}.${process.pid}.tmp`;
+      await this.fs.writeFile(tmp, sealed, { mode: 0o600 });
+      await this.fs.rename(tmp, this.file);
+    });
   }
 
   async clear(): Promise<void> {
     this.memory = null;
     this.loaded = true;
-    await this.fs.rm(this.file, { force: true }).catch(() => {});
+    await this.writes.run(this.file, () => this.fs.rm(this.file, { force: true }).catch(() => {}));
   }
 }
