@@ -17,7 +17,7 @@ before(async () => {
   const { build } = await import(pathToFileURL(path.join(root, 'node_modules', 'rolldown', 'dist', 'index.mjs')).href);
   const entry = path.join(work, 'entry.ts');
   const src = (p) => JSON.stringify(path.join(root, p));
-  writeFileSync(entry, [`export * from ${src('src/shared/cli.ts')};`, `export * from ${src('src/main/cli.ts')};`, `export * from ${src('src/main/windows-entry.ts')};`].join('\n'));
+  writeFileSync(entry, [`export * from ${src('src/shared/cli.ts')};`, `export * from ${src('src/main/cli.ts')};`, `export * from ${src('src/main/windows-entry.ts')};`, `export * from ${src('src/main/test-build.ts')};`].join('\n'));
   await build({ input: entry, platform: 'node', external: ['yaml', 'electron', /^node:/], output: { file: path.join(work, 'cli.mjs'), format: 'esm' }, logLevel: 'silent' });
   mkdirSync(path.join(work, 'node_modules'), { recursive: true });
   try {
@@ -378,5 +378,13 @@ test('only a --test-identity build is marked as one, and the app asks before it 
   assert.equal(JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8')).testIdentity, undefined);
   const app = readFileSync(path.join(root, 'src', 'main', 'app.ts'), 'utf8');
   assert.match(app, /const registerHere = takesPlaces\(\{/);
+  assert.match(app, /testBuild: !!host\.testBuild,/);
   assert.match(app, /windowsEntry: registerHere \?/);
+  // And it keeps to its own data and notes, never the person's.
+  assert.match(app, /if \(!host\.testBuild && \(await vaultHome\.firstStart\(\)/);
+  const index = readFileSync(path.join(root, 'src', 'main', 'index.ts'), 'utf8');
+  assert.match(index, /TEST_BUILD \? TEST_DATA : \['@neuralspark', 'vault'\]/);
+  assert.match(index, /defaultLibrary: TEST_BUILD \? path\.join\(app\.getPath\('userData'\), 'notes'\) : defaultLibraryIn/);
+  assert.match(index, /APP_ID = TEST_BUILD \? TEST_APP_ID : 'com\.kaitiaki\.neuralvault'/);
+  assert.ok(release.includes(M.TEST_APP_ID), 'the installer’s own id');
 });

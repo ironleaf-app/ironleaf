@@ -3,7 +3,7 @@
 
 import { app, shell } from 'electron';
 import { spawn } from 'node:child_process';
-import { existsSync, rmSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import { checkForUpdate, startUpdateCheck } from './update-check';
 import { openAbout, startUpdateAbout } from './update-about';
@@ -18,13 +18,15 @@ import { LEGACY_START_MENU_LINK, legacyExeTarget, repairInstalledEntry } from '.
 import { isMcpCommand, launchIronleaf, runMcpBridge } from './mcp-bridge';
 import { createTray, type TrayController } from './tray';
 import { defaultLibraryIn } from '../shared/vault-home';
+import { isTestBuild, TEST_APP_ID, TEST_DATA } from './test-build';
 
 // Kept from NeuralVault on purpose (the rename to Ironleaf, 20 Nov 2026): Windows knows the app by this id (taskbar
 // pins and grouping, the Start menu shortcut's identity, notification settings and history), so changing it would
 // split an updated install from everything the person already set up.
-export const APP_ID = 'com.kaitiaki.neuralvault';
-// Kept: earlier installs' settings, keys and connections live here (NeuralVault 1.x and 2.0).
-const DATA_DIR = path.join(app.getPath('appData'), '@neuralspark', 'vault');
+const TEST_BUILD = isTestBuild(() => readFileSync(path.join(app.getAppPath(), 'package.json'), 'utf8'));
+export const APP_ID = TEST_BUILD ? TEST_APP_ID : 'com.kaitiaki.neuralvault';
+// Kept: earlier installs' settings, keys and connections live here (NeuralVault 1.x and 2.0). A test build has its own.
+const DATA_DIR = path.join(app.getPath('appData'), ...(TEST_BUILD ? TEST_DATA : ['@neuralspark', 'vault']));
 
 // The installed program was NeuralVault.exe until the rename; an update over such an install keeps a NeuralVault.exe
 // beside Ironleaf.exe (the installer links it, build-standalone/build/update-progress.nsh) for what still starts it
@@ -89,7 +91,9 @@ app.whenReady().then(async () => {
     kind: 'standalone',
     dataDir: app.getPath('userData'),
     // Documents\Ironleaf for a new install; Documents\NeuralVault where an earlier version's notes already are.
-    defaultLibrary: defaultLibraryIn(app.getPath('documents'), path, existsSync),
+    // A test build's notes stay in its own data.
+    defaultLibrary: TEST_BUILD ? path.join(app.getPath('userData'), 'notes') : defaultLibraryIn(app.getPath('documents'), path, existsSync),
+    testBuild: TEST_BUILD,
     preload: path.join(__dirname, '../preload/index.js'),
     renderer: { file: path.join(__dirname, '../renderer/index.html'), devUrl: !app.isPackaged ? process.env.ELECTRON_RENDERER_URL : undefined },
     icon: path.join(__dirname, '../../resources/icon.png'),

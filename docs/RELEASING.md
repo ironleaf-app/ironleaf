@@ -294,9 +294,9 @@ the real Ironleaf on the PC (`takesPlaces`, src/main/windows-entry.ts). Neither 
 combined with `--publish`. Serve a scratch folder with the newer `latest.json` and installer over HTTP with ranges,
 and point a **development** build at it with `NV_UPDATE_ORIGIN=http://127.0.0.1:<port>` (an installed copy never
 reads another site; the old `--nv-update-test-origin` switch does nothing there). Install test builds in a
-temporary folder (`/S /D=<folder>`) with their own `--user-data-dir`: without it a test build uses the real one. A new
-profile opens the notes it finds in Documents, so put a `settings.json` in it first, with `library` and `lastVault`
-naming two different scratch folders that exist.
+temporary folder (`/S /D=<folder>`) with their own `--user-data-dir`. Without one a test build
+keeps its settings, keys and notes in `vault-update-test`, beside the real app's data, and never looks for notes elsewhere
+(src/main/test-build.ts).
 
 So a release reaches people as soon as `latest.json` is published: there is nothing else to update.
 
