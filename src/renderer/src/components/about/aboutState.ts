@@ -8,6 +8,7 @@ import type { AboutRequest } from '../../../../main/update-about';
 import { mergeVersions, parseChangelog, type ReleaseEntry } from '../../../../shared/version-history';
 import changelog from '../../../../../CHANGELOG.md?raw';
 import * as A from '../../state/actions';
+import { pendingNav } from '../../state/pending-nav';
 
 export type { AboutRequest };
 
@@ -65,11 +66,12 @@ export function useAboutDoor(): void {
   useEffect(() => {
     const api = window.nvUpdate;
     if (!api?.onOpen) return;
+    // While Ironleaf starts, the page waits for the saved layout: opened before it, the layout would replace it.
     const off = api.onOpen((req) => {
-      openAboutPage(req);
+      pendingNav.defer(() => openAboutPage(req));
       void api.takeOpen().catch(() => null);
     });
-    void api.takeOpen().then((req) => req && openAboutPage(req), () => {});
+    void api.takeOpen().then((req) => req && pendingNav.defer(() => openAboutPage(req)), () => {});
     return off;
   }, []);
 }
