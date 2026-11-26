@@ -6,6 +6,13 @@ the website. `tools/release.mjs` takes a release's notes from here when `--notes
 
 Format: one `## <version> — <YYYY-MM-DD>` heading a release, then one `- ` line a change.
 
+## 2.0.20 — 2026-11-26
+
+- Windows: the `ironleaf` command works again, so other AI apps that start it (VS Code and GitHub Copilot, Claude Desktop, Cursor) can reach your notes. It had stopped working in an earlier update.
+- Asked how to connect another AI app, the assistant now points you to Settings › Connect an AI instead of saying there's no way in.
+- About and updates opens when asked for while Ironleaf is still starting.
+- A test build of Ironleaf no longer takes over the installed app's links, Open with or PATH, and keeps its own settings, keys and notes.
+
 ## 2.0.19 — 2026-11-24
 
 - Saved keys and sign-ins use the operating system's newer protected store, ready for the next Electron. Keys saved by earlier versions still open, and nothing needs entering again.
