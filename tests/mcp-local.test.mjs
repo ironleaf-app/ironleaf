@@ -486,7 +486,7 @@ test('the command script bridges stdio to /mcp (before stdin is read as one comm
   assert.match(ps1, /IsInputRedirected/);
   assert.match(ps1, /ReadLine/);
   assert.match(ps1, /\/mcp/);
-  assert.match(ps1, /Your notes’ MCP server runs from your other AI apps’ set-up/);
+  assert.match(ps1, /MCP server is started by your other AI app, not by hand\. Switch it on in Ironleaf \(Settings › Connect an AI\)/);
   assert.match(ps1, /StatusCode -eq 200/);
   assert.match(ps1, /x-neuralvault-cli/);
   assert.match(ps1, /\/cli/, 'the one-shot verbs still post to /cli');
