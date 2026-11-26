@@ -137,7 +137,7 @@ every call is refused with where to switch it on. More than 10 changes in one ca
 
 ## The tools (86)
 
-40 at Read only; all 85 at Read and write. A path is the note's path in the library
+40 at Read only; all 86 at Read and write. A path is the note's path in the library
 (`Notes/Oven service.md`) or its title.
 
 ### Notes
