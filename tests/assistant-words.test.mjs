@@ -42,6 +42,16 @@ test('the tools prompt opens with a voice block, not operating rules alone', () 
   assert.ok(s.indexOf('Never open with') < s.indexOf('How to work:'), 'voice before rules');
 });
 
+test('asked how another AI app connects, the assistant knows Settings › Connect an AI (26 Nov 2026)', async () => {
+  const { readFileSync } = await import('node:fs');
+  const prompt = system();
+  assert.ok(prompt.includes('Settings › Connect an AI'), 'names the setting');
+  assert.ok(prompt.includes('ironleaf mcp') && prompt.includes('127.0.0.1:47731/mcp'), 'both ways in');
+  assert.match(prompt, /never make up or ask for the token/);
+  const src = readFileSync(path.join(root, 'src/main/ai.ts'), 'utf8');
+  assert.ok(src.includes('${CONNECT_AN_AI}'), 'the notes-only assistant is told too');
+});
+
 test('a greeting or thanks gets one sentence back, with no tools and no steps', () => {
   const s = system();
   const line = s.split('\n').find((l) => /hello/i.test(l) && /thank/i.test(l)) ?? '';

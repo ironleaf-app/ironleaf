@@ -385,5 +385,6 @@ test('docs/MCP.md names every tool and every app', () => {
   const doc = readFileSync(path.join(root, 'docs', 'MCP.md'), 'utf8');
   for (const name of M.LOCAL_MCP_TOOL_NAMES) assert.ok(doc.includes(`\`${name}\``), `${name} is in docs/MCP.md`);
   assert.ok(doc.includes(`## The tools (${M.LOCAL_MCP_TOOL_NAMES.length})`), 'the count is right');
+  assert.ok(doc.includes(`all ${M.LOCAL_MCP_TOOL_NAMES.length} at Read and write`), 'the Read and write count agrees');
   for (const app of ['Claude Desktop', 'Claude Code', 'Cursor', 'VS Code', 'ChatGPT desktop', 'Any other MCP app']) assert.ok(doc.includes(`### ${app}`), `${app} has its set-up`);
 });

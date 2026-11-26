@@ -92,7 +92,8 @@ export function pathWith(current: string, dir: string): string | null {
   return [...parts, dir].join(';');
 }
 
-const ps = (s: string) => `'${s.replace(/'/g, "''")}'`;
+// PowerShell reads ‘ ’ ‚ ‛ as single quotes too, so each is doubled like ' (a path such as O’Brien stays one string).
+const ps = (s: string) => `'${s.replace(/['\u2018\u2019\u201A\u201B]/g, (q) => q + q)}'`;
 
 /** The command's two files: neuralvault.cmd (what a terminal finds on the PATH) and neuralvault.ps1 (Windows PowerShell,
  *  on every Windows 10 and 11 PC), which sends the words to the running Ironleaf — starting it first when it isn't
@@ -115,7 +116,7 @@ export function cliScripts(o: { exe: string; launchArgs: readonly string[]; endp
     '# The MCP bridge (before stdin is read: here stdin is the message stream, not one command’s words).',
     'if ($words.Count -gt 0 -and $words[0] -eq \'mcp\') {',
     '  if (-not [Console]::IsInputRedirected) {',
-    '    [Console]::Out.WriteLine(\'Your notes’ MCP server runs from your other AI apps’ set-up, not by hand. Switch it on in Ironleaf (Settings › Agents › Use your notes from other AI apps), then paste the set-up for your app.\')',
+    `    [Console]::Out.WriteLine(${ps('Ironleaf’s MCP server is started by your other AI app, not by hand. Switch it on in Ironleaf (Settings › Connect an AI), then paste the set-up for your app.')})`,
     '    exit 0',
     '  }',
     '  [Console]::InputEncoding = [Text.UTF8Encoding]::new($false)',

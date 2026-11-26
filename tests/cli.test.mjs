@@ -287,6 +287,40 @@ test('Windows: the command’s script hands its words over, and starts Ironleaf 
   assert.ok(s.ps1.includes('exit [int]$answer.exit'));
 });
 
+// PowerShell's own quoting rules: ' ‘ ’ ‚ ‛ all open and close a single-quoted string (doubled to mean one), and
+// " “ ” „ a double-quoted one (where ` escapes). Returns the line numbers left inside a string at their end.
+function unclosedPsLines(script) {
+  const single = /['\u2018\u2019\u201A\u201B]/;
+  const double = /["\u201C\u201D\u201E]/;
+  const bad = [];
+  script.split(/\r?\n/).forEach((line, n) => {
+    if (/^\s*#/.test(line)) return;
+    let mode = null;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (mode === null) {
+        if (c === '#') break;
+        if (single.test(c)) mode = 's';
+        else if (double.test(c)) mode = 'd';
+      } else if (mode === 's') {
+        if (single.test(c)) { if (single.test(line[i + 1] ?? '')) i++; else mode = null; }
+      } else if (c === '`') i++;
+      else if (double.test(c)) { if (double.test(line[i + 1] ?? '')) i++; else mode = null; }
+    }
+    if (mode) bad.push(n + 1);
+  });
+  return bad;
+}
+
+test('Windows: the command’s script parses in PowerShell, curly quotes included', () => {
+  const s = M.cliScripts({ exe: 'C:\\Users\\O’Brien\\AppData\\Local\\Programs\\Ironleaf\\Ironleaf.exe', launchArgs: ['--it’s'], endpointFile: 'C:\\Users\\O’Brien\\cli.json', ps1: 'C:\\Data\\bin\\ironleaf.ps1' });
+  assert.deepEqual(unclosedPsLines(s.ps1), [], 'every string closes on its own line');
+  assert.ok(s.ps1.includes("$exe = 'C:\\Users\\O’’Brien\\AppData"), 'a curly apostrophe in a path is doubled');
+  assert.ok(s.ps1.includes('Settings › Connect an AI'), 'points at the setting by its real name');
+  // The checker itself catches the 2.0.19 fault.
+  assert.deepEqual(unclosedPsLines("[Console]::Out.WriteLine('Your notes’ MCP server runs')"), [1]);
+});
+
 test('Windows: registered once — the next start writes nothing', async () => {
   const reg = new Map();
   const ran = [];

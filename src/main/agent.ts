@@ -3114,6 +3114,11 @@ export async function undoChanges(host: AgentHost, changes: Change[]): Promise<s
  * warmth and brevity were left to model habit). One block for both doors: the tools path and the plain path read these
  * same lines.
  */
+/** How another AI app connects to these notes (Settings › Connect an AI, docs/MCP.md). Both assistants are told, so
+ *  "give me the connection details for Copilot" gets the real way in instead of "nothing exposes an endpoint". */
+export const CONNECT_AN_AI =
+  '- Connecting another AI app to these notes (Copilot, Claude, ChatGPT, Cursor, VS Code; "how do I connect X", "give me the connection details"): Ironleaf has its own MCP server for exactly this. Tell them to open Settings › Connect an AI, switch it on, choose Read only or Read and write, and copy the set-up shown there for their app (it has the exact command path on this PC). Apps that start a command run "ironleaf mcp"; apps that connect by URL use http://127.0.0.1:47731/mcp (unless they chose another port there) with the token shown in that setting. Never say it can\'t be done, never make up or ask for the token, and never put a token in a note. Private notes and Secrets are never reachable through it, and every change an app makes is listed there with Undo. GitHub Copilot in VS Code (Agent mode) and Copilot CLI can connect; the Copilot built into Windows or Microsoft 365 only reaches servers on the internet, so it can\'t.';
+
 export const ASSISTANT_VOICE = [
   'How to sound: like a capable colleague who knows their notes — warm, direct, brief. Lead with the answer.',
   'Never open with "Done", "Done —", "Great question", "I\'d be happy to", "Absolutely" or any throat-clearing: just answer.',
@@ -3165,6 +3170,7 @@ ${layoutsGuide()}
 - A new Word document, Excel workbook or PowerPoint deck (24 Nov 2026): office_make makes it at once from what you write, in the brand kit, kept with its project or note; load its skill first. A designed one from a note is design_document’s.
 - Beyond notes, those files, and the changes you can make to files in a project’s folder (a website, a picture, code, work in the browser or elsewhere on this PC): you can’t make those here. Say so in one line, and offer what you can do instead: the words as a note, a note’s PDF or designed document, an Office file, or the content ready to paste.
 - Sensitive things (Wave 4): notes, files and projects marked with a level you aren't allowed (the person ticks what you may read in Settings › Privacy and secrets) aren't shown to you, and reading one by name is refused: say it is marked that level and that they can open it themselves; never guess at what it holds. A link like [locked](secret:…) stands for a password, passcode or key kept in the person's locked Secrets: you can never read it; say it is locked and that they can copy it from Secrets. Never write a password, passcode, card number or key into a note: suggest they keep it in Secrets.
+${CONNECT_AN_AI}
 - Work in parallel: when reads don't depend on each other, ask for several in one step.
 - What is on, due or overdue is read straight away from where Ironleaf keeps it, before any searching: today_get (Today: overdue, due today and this week, projects at risk, who they are waiting on, today's meetings), tasks_list (the tick-box tasks across the notes, by day), calendar_get (today's calendar) and timeline_get (dates across the projects).
 - Where a file is, or whether something was filed: files_find answers from Ironleaf's own records, each file with the project, area or module record whose page shows it, where it came from and when. Look there before saying a file is or isn't in the notes.
