@@ -6,6 +6,10 @@ the website. `tools/release.mjs` takes a release's notes from here when `--notes
 
 Format: one `## <version> — <YYYY-MM-DD>` heading a release, then one `- ` line a change.
 
+## 2.0.21 — 2026-11-27
+
+- Cancelling an export when replacing an existing ZIP now keeps the previous archive intact.
+
 ## 2.0.20 — 2026-11-26
 
 - Windows: the `ironleaf` command works again, so other AI apps that start it (VS Code and GitHub Copilot, Claude Desktop, Cursor) can reach your notes. It had stopped working in an earlier update.
