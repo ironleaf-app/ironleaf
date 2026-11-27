@@ -1,3 +1,4 @@
+import { needsWindowsRepair } from '../shared/paths';
 // Word documents as notes (9.5 nv-import F9): a folder of .docx files becomes notes — headings, lists, tables,
 // bold and italic, links, pictures and tick boxes — with the originals kept beside them. Read from the open
 // Office format (ECMA-376) alone: document.xml for the words, numbering.xml for lists, the rels for links and
@@ -220,7 +221,8 @@ export async function docxToMarkdown(buf: Buffer, filesDir: string): Promise<Wor
     const rel = rels.get(id);
     const target = rel && !rel.external ? rel.target.replace(/^\//, '') : '';
     const part = target.startsWith('word/') ? target : target ? `word/${target.replace(/^\.\//, '')}` : '';
-    const e = part ? byName.get(part) : undefined;
+    const valid = /^word\/media\/[^/]+$/i.test(part) && !needsWindowsRepair(part.slice('word/media/'.length));
+    const e = valid ? byName.get(part) : undefined;
     if (!e) return alt ? `(${alt} — picture not in the file)` : '(a picture not in the file)';
     const key = part.toLowerCase();
     if (!media.has(key)) {

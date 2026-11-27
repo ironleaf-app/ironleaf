@@ -165,7 +165,7 @@ export interface LogNoteOffer {
 /** Another module family's tools (Finance, Documents and ID: src/main/record-modules.ts), carried out by its own code:
  *  null when the tool isn't one of its own. The person asking is ctx.gate undefined. */
 export interface ModuleDelegate {
-  call(name: string, args: Record<string, unknown>, ctx: { gate?: Gate }): Promise<{ text: string; done?: { words: string } } | null>;
+  call(name: string, args: Record<string, unknown>, ctx: { gate?: Gate }): Promise<{ text: string; sources?: import('../shared/types').ChatSource[]; done?: { words: string } } | null>;
   rules?(): string;
 }
 
@@ -624,7 +624,7 @@ export class Modules {
   }
 
   /** One module tool's call, for an asker: its answer in words (and a line for "What agents did"). */
-  async call(asker: Asker, name: string, a: Record<string, unknown>): Promise<{ text: string; done?: { words: string } }> {
+  async call(asker: Asker, name: string, a: Record<string, unknown>): Promise<{ text: string; sources?: import('../shared/types').ChatSource[]; done?: { words: string } }> {
     const def = moduleToolDef(name);
     if (!def || !this.has(name)) throw new Error(def ? `${moduleInfo(def.module)?.name ?? 'That module'} is switched off in Ironleaf (Settings › Packs).` : `There is no tool called ${name}.`);
     if (def.module === 'health') return this.healthTool(asker, name, a);
@@ -634,7 +634,7 @@ export class Modules {
     return out;
   }
 
-  private async healthTool(asker: Asker, name: string, a: Record<string, unknown>): Promise<{ text: string; done?: { words: string } }> {
+  private async healthTool(asker: Asker, name: string, a: Record<string, unknown>): Promise<{ text: string; sources?: import('../shared/types').ChatSource[]; done?: { words: string } }> {
     const today = todayIso();
     const day = (v: unknown) => {
       const t = S(v, 20);
@@ -760,7 +760,7 @@ export class Modules {
     throw new Error(`There is no tool called ${name}.`);
   }
 
-  private async familyTool(asker: Asker, name: string, a: Record<string, unknown>): Promise<{ text: string; done?: { words: string } }> {
+  private async familyTool(asker: Asker, name: string, a: Record<string, unknown>): Promise<{ text: string; sources?: import('../shared/types').ChatSource[]; done?: { words: string } }> {
     const today = todayIso();
     const st = await this.familyState();
     // The family's notes are notes: an agent's gate decides by each note's own level (Family-private unless changed).

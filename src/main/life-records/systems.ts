@@ -329,9 +329,7 @@ export function makeSystems(w: WorkModules): PersonalPart {
     const cred = entry.credentials[0];
     if (!cred) throw new Error(`Link ${entry.name}’s login first (Logins › Link): Ironleaf signs in with it to read the machine.`);
     if (!w.d.login) throw new Error('Checking machines isn’t available here.');
-    const login = await w.d.login(cred.id).catch(() => {
-      throw new Error('Unlock your Secrets first: Check now signs in with the login kept there.');
-    });
+    const login = await w.d.login(cred.id, address);
     const today = w.todayIso();
     let out: string;
     try {
@@ -418,7 +416,7 @@ export function makeSystems(w: WorkModules): PersonalPart {
     if (!address) throw new Error(`Add ${entry.name}’s address first.`);
     const cred = entry.credentials[0];
     if (!cred || !w.d.login) throw new Error(`Link ${entry.name}’s login first: the fix signs in with it.`);
-    const login = await w.d.login(cred.id);
+    const login = await w.d.login(cred.id, address);
     const today = w.todayIso();
     let words: string;
     try {

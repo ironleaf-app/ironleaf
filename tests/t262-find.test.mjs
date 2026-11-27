@@ -114,8 +114,12 @@ test('Past earns its Find; a word narrows it with its count', { timeout: 300000 
   assert.ok(await waitFor(H, `!!document.querySelector('main input[aria-label="Find in this list"]')`, 8000), 'the 61-row list earns a Find');
   assert.equal(await H.browser.ev(`document.querySelectorAll('main .trow').length`), 61, '61 past meetings stand');
   await type('marquee');
-  assert.equal(await H.browser.ev(`document.querySelectorAll('main .trow').length`), 3, 'the Find narrows to its rows');
-  assert.equal(await count(), '3 of 61', 'naming what it shows');
+  assert.equal(await H.browser.ev(`document.querySelectorAll('main .trow').length`), 5, 'three titles and two decision passages match');
+  const rows = await H.browser.ev(`Array.from(document.querySelectorAll('main .trow'), row => row.innerText)`);
+  for (const title of ['Festival budget check 15', 'Festival crew briefing 39']) {
+    assert.ok(rows.some(row => row.includes(title)), `the decision brings in ${title}`);
+  }
+  assert.equal(await count(), '5 of 61', 'naming what it shows');
 });
 
 test('switching chips keeps the words; the count is for the open chip', { timeout: 300000 }, async () => {
@@ -131,7 +135,7 @@ test('switching chips keeps the words; the count is for the open chip', { timeou
   assert.equal(await count(), '0 of 10', 'no coming meeting matches, counted plainly');
   assert.equal(await H.browser.ev(`document.querySelectorAll('main .trow').length`), 0, 'nothing standing matches nothing');
   await pickChip('Past');
-  assert.equal(await count(), '3 of 61', 'back on Past the count is Past’s again');
+  assert.equal(await count(), '5 of 61', 'back on Past the count is Past’s again');
 });
 
 test('a folded group holding a match opens; Esc shuts it and clears', { timeout: 300000 }, async () => {

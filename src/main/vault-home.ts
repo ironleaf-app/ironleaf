@@ -1,3 +1,4 @@
+import { needsWindowsRepair } from '../shared/paths';
 // One standard home for vaults, and the same vault on every PC (23 Oct 2026; src/shared/vault-home.ts has the words and
 // the rules that need no disk). The desktop opened a second, local vault (C:\Users\<them>\Documents\Work, a plain
 // folder, while Windows had moved Documents into OneDrive) while a laptop, the former host app and a chat bot used
@@ -611,7 +612,10 @@ export async function importInto(root: string, src: ImportSource, o: ImportOptio
         const stem = nodePath.basename(f.rel).replace(/\.(html?|csv|mht(?:ml)?|docx)$/i, '');
         const noteDir = noteRel.includes('/') ? noteRel.slice(0, noteRel.lastIndexOf('/')) : '';
         const filesDir = `${stem}_files`;
-        const mediaRel = (name: string) => `${noteDir ? `${noteDir}/` : ''}${filesDir}/${name}`;
+        const mediaRel = (name: string) => {
+          if (needsWindowsRepair(name)) throw new Error('Invalid picture name.');
+          return `${noteDir ? `${noteDir}/` : ''}${filesDir}/${name}`;
+        };
         try {
           if (HTML.test(f.rel)) {
             const raw = await fsp.readFile(f.abs, 'utf8');

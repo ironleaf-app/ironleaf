@@ -58,7 +58,7 @@ import { EmptyState } from './EmptyState';
 import { AboutPage } from './about/AboutPage';
 import { AccountSettings } from './account/AccountSettings';
 import { openAboutPage } from './about/aboutState';
-import { commandEntries, searchSettings, SETTINGS_GROUPS, SETTINGS_INDEX, SETTINGS_JOB_GROUPS, resolveSection, type SettingEntry, type SettingsSectionId } from '../lib/settingsSearch';
+import { commandEntries, PACK_PART_ENTRIES, searchSettings, SETTINGS_GROUPS, SETTINGS_INDEX, SETTINGS_JOB_GROUPS, resolveSection, type SettingEntry, type SettingsSectionId } from '../lib/settingsSearch';
 
 type Section = SettingsSectionId;
 
@@ -1297,6 +1297,9 @@ function showFound(body: HTMLElement | null, title: string, command: boolean): b
   const target = rows[0] ?? [...body.querySelectorAll<HTMLElement>('h3')].find((h) => h.textContent?.trim() === title) ?? [...body.querySelectorAll<HTMLElement>('h1')].find((h) => h.textContent?.trim() === title);
   if (!target) return false;
   const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (target.classList.contains('ms-part')) {
+    (target.querySelector<HTMLInputElement>('input:enabled') ?? target).focus({ preventScroll: true });
+  }
   target.scrollIntoView({ block: 'center', behavior: still ? 'auto' : 'smooth' });
   target.classList.remove('setting-found');
   void target.offsetWidth;
@@ -1390,7 +1393,7 @@ export function SettingsPage({ tab }: { tab: W.TabState }) {
   const [keysFind, setKeysFind] = useState<string | undefined>(undefined);
   const page = useRef<HTMLDivElement>(null);
   // The packs are in the index already (moduleEntries, with each pack's earlier names), so nothing is spread twice.
-  const hits = useMemo(() => (query.trim() ? searchSettings(query, [...SETTINGS_INDEX, ...commandEntries(COMMANDS)], SECTION_LABELS).map((h) => h.entry) : []), [query]);
+  const hits = useMemo(() => (query.trim() ? searchSettings(query, [...SETTINGS_INDEX, ...PACK_PART_ENTRIES, ...commandEntries(COMMANDS)], SECTION_LABELS).map((h) => h.entry) : []), [query]);
   useEffect(() => {
     setAt(0);
     if (query.trim() && page.current) page.current.scrollTop = 0;
@@ -1489,7 +1492,7 @@ export function SettingsPage({ tab }: { tab: W.TabState }) {
               {current === 'general' && <General onShow={showTitle} reveal={found && !found.command ? found.title : null} />}
               {current === 'look' && <Look prefs={prefs} set={set} />}
               {current === 'home' && <HomeGroup prefs={prefs} set={set} />}
-              {current === 'packs' && <ModulesSettings />}
+              {current === 'packs' && <ModulesSettings reveal={found?.title} />}
               {current === 'quick-add' && <QuickAddGroup prefs={prefs} set={set} />}
               {current === 'backups' && <BackupsGroup prefs={prefs} set={set} />}
               {current === 'keys' && <Keys prefs={prefs} set={set} find={keysFind} />}

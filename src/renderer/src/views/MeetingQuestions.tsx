@@ -1,3 +1,5 @@
+import { isEnterKey } from '../lib/enterKey';
+import { useMeetingDraft } from './meeting/useMeetingDraft';
 // The meeting note's Questions (t248, 12 Nov 2026): asked where they happen, beside the meeting's
 // Tasks and Decisions, open until answered and never lost. The same backend as the Meetings room
 // (add-item, answer-question, question-task, question-decision), the same rows it reads.
@@ -10,19 +12,14 @@ import type { MeetingQuestionRec } from '../../../shared/work-meetings';
 
 export function MeetingQuestions({ path, text, canEdit }: { path: string; text: string; canEdit: boolean }) {
   const { ctx, model } = useMeetingModel(path, text);
-  const [adding, setAdding] = useState('');
+  const { value: adding, setValue: setAdding, save } = useMeetingDraft();
   const [busy, setBusy] = useState(false);
   if (!ctx) return null;
   if (!ctx.meeting) return null;
   if (!model) return null;
   const questions = model.questions;
   const open = questions.filter((q) => !q.answered);
-  const add = async () => {
-    const t = adding.trim();
-    if (!t) return;
-    setAdding('');
-    await workDid(workCall('meetings', 'add-item', path, 'question', t));
-  };
+  const add = () => save((t) => workDid(workCall('meetings', 'add-item', path, 'question', t)));
   const answer = async (q: MeetingQuestionRec) => {
     const said = await prompt('Answer it', { message: q.what, placeholder: 'The answer, in plain words', ok: 'Answer' });
     if (!said?.trim()) return;
@@ -95,7 +92,7 @@ export function MeetingQuestions({ path, text, canEdit }: { path: string; text: 
           <div className="mt-foot">
             <div className="w2b-add" style={{ marginTop: 0, flex: '1 1 100%' }}>
               <Icon name="plus" size={12} />
-              <input value={adding} placeholder="Ask a question (“Who signs off the oven logs?”)" aria-label="Ask a question" onChange={(e) => setAdding(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), void add())} onBlur={() => void add()} />
+              <input value={adding} placeholder="Ask a question (“Who signs off the oven logs?”)" aria-label="Ask a question" onChange={(e) => setAdding(e.target.value)} onKeyDown={(e) => isEnterKey(e) && (e.preventDefault(), void add())} onBlur={() => void add()} />
             </div>
           </div>
         )}

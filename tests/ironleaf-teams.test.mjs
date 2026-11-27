@@ -265,6 +265,13 @@ test('two members share a team vault; removal rotates the key; a newer member re
   assert.equal(va.vaults.length, 1);
   const vaultId = va.vaults[0].id;
   assert.deepEqual([va.vaults[0].name, va.vaults[0].hasKey, va.vaults[0].here], ['Acme plans', true, true]);
+  assert.equal(cloud.vaults.get(vaultId).wraps.size, 1, 'only the creating PC is trusted initially');
+  await assert.rejects(ana.core.verify(vaultId, va.vaults[0].code), /does not match/);
+  await ana.core.verify(vaultId, vb.deviceCode);
+  vb = await ben.core.refresh();
+  assert.equal(vb.vaults[0].hasKey, false, 'the receiving PC verifies the vault first');
+  await assert.rejects(ben.core.verify(vaultId, vb.deviceCode), /does not match/);
+  await ben.core.verify(vaultId, va.vaults[0].code);
   assert.equal(cloud.vaults.get(vaultId).wraps.size, 2, 'Ana’s and Ben’s devices');
   for (const w of cloud.vaults.get(vaultId).wraps.values()) assert.ok(!w.wrap.includes('Acme'));
   assert.ok(!cloud.vaults.get(vaultId).envelope.includes('Acme plans'), 'the name is sealed');
@@ -315,7 +322,9 @@ test('two members share a team vault; removal rotates the key; a newer member re
   let vc = await cal.core.refresh();
   assert.equal(vc.vaults[0].hasKey, false);
   await ana.core.refresh();
-  vc = await cal.core.refresh();
+  await ana.core.verify(vaultId, vc.deviceCode);
+  await cal.core.refresh();
+  vc = await cal.core.verify(vaultId, ana.core.view().vaults[0].code);
   assert.equal(vc.vaults[0].hasKey, true);
   assert.equal(vc.vaults[0].name, 'Acme plans');
   await cal.core.joinVault(vaultId);
@@ -373,17 +382,23 @@ test('a member gives their own new PC the key; only admins wrap for others; rota
   await ana.core.refresh();
   const vaultId = (await ana.core.createVault('Shared')).vaults[0].id;
   await ben.core.refresh();
+  await ana.core.verify(vaultId, ben.core.view().deviceCode);
+  await ben.core.refresh();
+  await ben.core.verify(vaultId, ana.core.view().vaults[0].code);
   // Ben's second PC appears (its own key); Ben's first PC, holding the key, gives it.
   const benDev2 = randomUUID();
   cloud.devices.set(benDev2, { account: 'ben', publicKey: null });
   const ben2 = member(cloud, server, 'ben', benDev2, 'BEN2-LAPTOP');
   await ben2.core.refresh();
-  const vb = await ben.core.refresh();
+  const vb = await ben.core.verify(vaultId, ben2.core.view().deviceCode);
   assert.ok(vb.notes.some((n) => /Gave 1 PC/.test(n)), vb.notes.join(' | '));
-  assert.equal((await ben2.core.refresh()).vaults[0].hasKey, true);
+  await ben2.core.refresh();
+  await ben2.core.verify(vaultId, ben.core.view().vaults[0].code);
+  assert.equal(ben2.core.view().vaults[0].hasKey, true);
   await assert.rejects(ben.core.rotateNow(vaultId), /owners and admins/);
   // A refused wrap (Ben for someone else's device) is the cloud's rule too.
   await assert.rejects(cloud.api('ben').addWraps(vaultId, 1, [{ device: anaDev, publicKey: cloud.devices.get(anaDev).publicKey, wrap: 'x'.repeat(40) }]), /admin_only/);
+  await ana.core.verify(vaultId, ben2.core.view().deviceCode);
   const va = await ana.core.rotateNow(vaultId);
   assert.equal(va.vaults[0].epoch, 2);
   assert.equal((await ben2.core.refresh()).vaults[0].hasKey, true, 'every member device got the new key');

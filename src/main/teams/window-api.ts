@@ -14,6 +14,7 @@ export function teamsApi(invoke: Invoke, subscribe: Subscribe) {
     setRole: (accountId: string, role: 'owner' | 'admin' | 'member') => invoke<TeamsView>('iteams:set-role', accountId, role),
     remove: (accountId: string) => invoke<TeamsView>('iteams:remove', accountId),
     createVault: (name: string) => invoke<TeamsView>('iteams:create-vault', name),
+    verify: (id: string, code: string) => invoke<TeamsView>('iteams:verify', id, code),
     joinVault: (id: string) => invoke<TeamsView>('iteams:join-vault', id),
     rotate: (id: string) => invoke<TeamsView>('iteams:rotate', id),
     uploadNow: () => invoke<TeamsView>('iteams:upload-now'),

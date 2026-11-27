@@ -1,6 +1,6 @@
 {
   "name": "ironleaf",
-  "version": "2.0.21",
+  "version": "2.0.22",
   "private": true,
   "productName": "Ironleaf",
   "description": "Ironleaf: a standalone notes app. Plain Markdown notes on your PC with links, a graph and canvases, and an MCP server so any AI can connect.",

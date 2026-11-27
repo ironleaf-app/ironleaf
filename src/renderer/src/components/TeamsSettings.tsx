@@ -72,7 +72,7 @@ export function TeamsSettings() {
   };
   const makeVault = async () => {
     const name = await prompt('Share these notes with the team', { message: 'The open notes become a shared vault every member can sync. Its name is only seen by the team.', placeholder: 'Shared vault name', ok: 'Share' });
-    if (name) await act(() => window.nv.teams.createVault(name), 'Shared. Members’ Ironleaf get the key the next time it is online.');
+    if (name) await act(() => window.nv.teams.createVault(name), 'Shared. Verify a member’s PC to give it access.');
   };
 
   return (
@@ -154,8 +154,14 @@ export function TeamsSettings() {
       <h3>Shared vaults</h3>
       <p className="setting-said">End-to-end encrypted like Sync: each member’s PC holds the key, the cloud never sees names or words.</p>
       {!v.keyProtected && <p className="setting-said warn">This PC can’t protect a team key (no system keyring), so shared vaults can’t be used here.</p>}
+      {v.deviceCode && <Row title="This PC’s verification code" hint="Give this code directly to the person sharing the vault."><code>{v.deviceCode}</code></Row>}
       {v.vaults.map((x) => (
-        <Row key={x.id} title={x.name ?? 'A shared vault'} hint={x.here ? 'These notes sync with it.' : !x.hasKey ? 'Waiting for its key: it arrives when an admin’s Ironleaf (or your other PC) is next online.' : x.rotationNeeded ? 'Someone left: an admin’s Ironleaf makes a new key.' : 'Ready to sync on this PC.'}>
+        <Row key={x.id} title={x.name ?? 'A shared vault'} hint={x.here ? 'These notes sync with it.' : !x.hasKey ? 'Ask someone with access to verify your PC code, then enter their vault code here.' : x.rotationNeeded ? 'Someone left: an admin’s Ironleaf makes a new key.' : 'Ready to sync on this PC.'}>
+          {x.code && <code title="Vault verification code">{x.code}</code>}
+          <button className="button" disabled={busy || !v.keyProtected} onClick={async () => {
+            const code = await prompt(x.hasKey ? 'Verify a member’s PC' : 'Verify this vault', { message: x.hasKey ? 'Ask the member directly for the code shown on their PC in Settings › Teams.' : 'Ask the person sharing this vault directly for its vault code.', ok: 'Verify' });
+            if (code) await act(() => window.nv.teams.verify(x.id, code));
+          }}>{x.hasKey ? 'Verify a PC' : 'Verify vault'}</button>
           {x.hasKey && !x.here && (
             <button className="button" disabled={busy || !v.here.notesOpen || v.here.syncOn} title={v.here.syncOn ? 'These notes already sync. Open an empty notes folder first.' : undefined} onClick={() => void act(() => window.nv.teams.joinVault(x.id), 'These notes now sync with the shared vault.')}>
               Sync these notes with it

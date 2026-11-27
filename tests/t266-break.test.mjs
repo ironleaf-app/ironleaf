@@ -135,14 +135,14 @@ test('Meetings stands as left: chip, words and count survive leaving the room', 
   assert.ok(await waitFor(H, `document.querySelectorAll('main .trow').length > 5`, 15000), 'meetings lands');
   await pickChip('Past');
   await type('marquee');
-  assert.equal(await count(), '3 of 61', 'narrowed first');
+  assert.equal(await count(), '5 of 61', 'narrowed first');
   await openRoom(H, 'Today');
   await sleep(900);
   await openRoom(H, 'Meetings');
   await sleep(1200);
   assert.equal(await chip(), 'Past', 'the chip stands as left');
   assert.equal(await words(), 'marquee', 'the words stand as left');
-  assert.equal(await count(), '3 of 61', 'the count stands with them');
+  assert.equal(await count(), '5 of 61', 'the count stands with them');
 });
 
 test('Meetings words survive opening a row and coming Back', { timeout: 300000 }, async () => {
@@ -202,7 +202,7 @@ test('a meeting saved in the background joins the standing Find', { timeout: 300
   await sleep(1200);
   await pickChip('Past');
   assert.equal(await words(), 'marquee', 'the words stand from before');
-  assert.equal(await count(), '3 of 61', 'before the background save');
+  assert.equal(await count(), '5 of 61', 'before the background save');
   const p = path.join(H.vaultDir, 'Meetings', `${D(-5)} Marquee finale review.md`);
   writeFileSync(p, `---\ntype: meeting\ndate: ${D(-5)}\nattendees: [Alex Chen, Bettina Maddox]\nproject: Festival Build\n---\n# Marquee finale review\n\n## Agenda\n\n- The stalls and the power walk\n`);
   await H.services.rescanAll();
@@ -213,7 +213,7 @@ test('a meeting saved in the background joins the standing Find', { timeout: 300
   await sleep(1200);
   assert.equal(await chip(), 'Past', 'still on the chip as left');
   assert.equal(await words(), 'marquee', 'the words stand across the revisit');
-  assert.equal(await count(), '4 of 62', 'the new row joins, counted');
+  assert.equal(await count(), '6 of 62', 'the new row joins, counted');
   await esc(H);
   await sleep(500);
 });

@@ -558,7 +558,11 @@ test('meetings on the main side: actions are the project’s tasks with no filin
   assert.match(v.read(m20), /## Summary\n\nA quick one\.[\s\S]*## Transcript/);
   // Tools: a meeting read back, a new one added only with its day.
   const spark = gateFor(v.index, 'neuralspark', 'the host app', S.sensitivity.emptyStore());
-  assert.match((await v.w.callTool('meeting_get', { meeting: 'fit-out sync 2026-10-27' }, spark)).text, /Decisions:\n- Go with the two-rack layout\n- Electrician starts Monday\n- Trays after racks/);
+  const meetingAnswer = await v.w.callTool('meeting_get', { meeting: 'fit-out sync 2026-10-27' }, spark);
+  const source = meetingAnswer.sources.find((s) => s.meetingDecision.text === 'Go with the two-rack layout');
+  assert.ok(v.read(source.path).split(/\r?\n/)[source.meetingDecision.line].includes(source.meetingDecision.text));
+  assert.match(meetingAnswer.text, /Go with the two-rack layout.*line \d+/);
+
   assert.match((await v.w.callTool('meeting_list', { when: 'upcoming' }, spark)).text, /2026-10-27 10:00 AM 2026-10-27 Fit-out sync/);
   assert.match((await v.w.callTool('meeting_add', { title: 'Landlord call', date: 'Friday' }, spark)).text, /Added the meeting Landlord call on 2026-10-30 \[Work\/Meetings\/2026-10-30 Landlord call\.md\]/);
   assert.match((await v.w.callTool('meeting_add', { title: 'Landlord call', date: '2026-10-30', attendees: ['Lee Wong'] }, spark)).text, /already a meeting called Landlord call/);

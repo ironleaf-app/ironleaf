@@ -1116,6 +1116,18 @@ test('every room holds no half-page hole at 1920x1080 and 1366x768', { timeout: 
         await waitFor(h, `!document.querySelector('main .view-loading')`, 8000);
         await sleep(600);
         await calm(h);
+        if (id === 'project') {
+          const decisionFits = await h.browser.ev(`(() => {
+            const rows = [...document.querySelectorAll('[aria-label="Latest decisions"] .trow')];
+            const sources = rows.filter(row => row.querySelector('div > div.meta'));
+            return sources.length > 0 && sources.every(row => {
+              const button = row.querySelector('button'), source = row.querySelector('div > div.meta');
+              return source.getBoundingClientRect().top >= button.getBoundingClientRect().bottom - 1 &&
+                row.scrollWidth <= row.clientWidth + 1;
+            });
+          })()`);
+          if (!decisionFits) bad.push(`project at ${w}x${hh}: a meeting decision or its source does not fit`);
+        }
         const m = await h.browser.ev(BLANK_JS);
         const f = blankFails(m);
         if (f) {

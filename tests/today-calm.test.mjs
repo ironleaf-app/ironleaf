@@ -109,11 +109,11 @@ test('no switch-on offer shows on Today; offers belong in Settings › Packs', (
   assert.ok(!read('src/renderer/src/views/TodayView.tsx').includes('could help'), 'no offer words on Today');
   const css = read('src/renderer/src/styles/record-modules.css');
   assert.ok(!css.includes('.rm-offer'), 'no offer styles left behind');
-  // In Packs, an off pack the vault would use says why under its line; the switch takes it, Not now puts it away.
+  // In Packs, an off pack the vault would use says why under its line; the switch takes it, Hide suggestion puts it away.
   const packs = read('src/renderer/src/components/ModulesSettings.tsx');
   assert.ok(packs.includes('recmod.offers(inbox)'), 'the same read Today offered from');
   assert.ok(packs.includes('offer.why'), 'each off pack says why under its line');
-  assert.ok(packs.includes('Not now'), 'Not now puts it away');
+  assert.ok(packs.includes('Hide suggestion'), 'Hide suggestion puts it away');
   assert.ok(packs.includes("setOptions(module, { dismissed: true })"), 'put away for good');
   assert.ok(read('src/renderer/src/styles/settings-87.css').includes('.ms-offer'), 'the why-line reads quiet');
 });
@@ -420,10 +420,10 @@ test('pack offers live in Settings › Packs, never on Today', { timeout: 420000
   const why = await ev(`document.querySelector('section[data-setting="Sites"] .ms-offer')?.innerText.replace(/\\s+/g, ' ').trim() ?? ''`);
   assert.match(why, /notes are about/, `Sites says why (${JSON.stringify(why)})`);
   assert.equal(await ev(`document.querySelector('section[data-setting="Sites"] input')?.checked ?? null`), false, 'Sites stays off until taken');
-  // Not now puts it away, where it never nags again.
+  // Hide suggestion puts it away, where it never nags again.
   await ev(`document.querySelector('section[data-setting="Sites"] .packrow-words')?.click()`);
   await sleep(500);
-  await clickWords(h, 'Not now', 'section[data-setting="Sites"]');
+  await clickWords(h, 'Hide suggestion', 'section[data-setting="Sites"]');
   await sleep(500);
-  assert.equal(await ev(`document.querySelector('section[data-setting="Sites"] .ms-offer')`), null, 'Not now puts the offer away');
+  assert.equal(await ev(`document.querySelector('section[data-setting="Sites"] .ms-offer')`), null, 'Hide suggestion puts the offer away');
 });

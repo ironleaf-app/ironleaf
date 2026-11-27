@@ -467,8 +467,8 @@ export function NoteView({ tab, focused }: { tab: W.TabState; focused: boolean }
       {mode !== 'source' && !isProject && !isPrivate && <MeetingMinutes path={path} text={text} canEdit={canEdit} onChangeText={applyText} />}
       {/* A meeting's Tasks, Decisions and Questions (t248, 12 Nov 2026: the note is the meeting). */}
       {mode !== 'source' && !isProject && <MeetingActions path={path} text={text} canEdit={canEdit} />}
-      {mode !== 'source' && !isProject && <MeetingDecisions path={path} text={text} canEdit={canEdit} />}
-      {mode !== 'source' && !isProject && <MeetingQuestions path={path} text={text} canEdit={canEdit} />}
+      {mode !== 'source' && !isProject && <MeetingDecisions key={path} path={path} text={text} canEdit={canEdit} />}
+      {mode !== 'source' && !isProject && <MeetingQuestions key={path} path={path} text={text} canEdit={canEdit} />}
     </div>
   );
 

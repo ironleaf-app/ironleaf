@@ -2171,7 +2171,7 @@ null. */
   const workDeps: ConstructorParameters<typeof WorkModules>[0] = {
     vault: requireVault,
     // Checking or connecting to a machine with its linked login is using it, not revealing it (8.5): no step-up.
-    login: async (id) => secrets.useValue(id),
+    login: async (id, destination) => secrets.useValue(id, destination),
     dataDir: host.dataDir,
     device: thisPc,
     appVersion: host.version ?? app.getVersion(),
@@ -4252,6 +4252,7 @@ reminders. */
       },
       allowFile: !app.isPackaged,
       notes: () => index.allMeta().map((m) => ({ path: m.path, title: m.label || m.title, props: (m.props ?? {}) as Record<string, unknown>, mtime: m.mtime })),
+      projectMembers: (p) => projects.view(p).notes.map((n) => n.path),
       projects: () => projects.all().map(({ path: p, project }) => ({ path: p, name: project.name, ...(project.status ? { status: project.status } : {}), ...(project.health ? { health: project.health } : {}), ...(project.progress !== undefined ? { progress: project.progress } : {}), ...(project.owner ? { owner: project.owner } : {}), ...(project.due ? { due: project.due } : {}), ...(project.updated ? { updated: project.updated } : {}), ...(project.folder ? { folder: project.folder } : {}), tags: project.tags })),
       tasks: () => tasks.view().tasks.map((t) => ({ words: t.words, done: t.done, due: t.due, time: t.time, projectName: t.projectName, path: t.path, title: t.title, line: t.line, tags: t.allTags, ...(t.priority ? { priority: t.priority } : {}), reminder: t.reminder, repeats: t.repeats })),
       moduleTypes: () => MODULE_TYPES.map((t) => ({ id: t.id, name: t.name, plural: t.plural, fields: t.fields.map((f) => ({ key: f.key })) })),
@@ -6002,7 +6003,11 @@ reminders. */
   lifeModules.setDelegate({ call: async (name, args, ctx) => (await publications.callTool(name, args, ctx.gate)) ?? (await workModules.callTool(name, args, ctx.gate)) ?? (await lifeRecords.callTool(name, args, ctx.gate)) ?? (await personal.callTool(name, args, ctx.gate)) ?? recordModules.callTool(name, args, ctx.gate), rules: () => [recordModules.rules(), workModules.rules(), lifeRecords.rules(), personal.rules(), publications.rules()].filter(Boolean).join('\n') });
   lifeModules.switched();
   // The side chat's module tools (through its own gate) and the rules it is told while a module is on.
-  ai.modules = (g) => (g ? { specs: () => lifeModules.tools(), call: (name, args) => lifeModules.call({ gate: g }, name, args).then((r) => r.text), rules: () => lifeModules.rules() } : null);
+  ai.modules = (g) => (g ? { specs: () => lifeModules.tools(), call: async (name, args, onSource) => {
+    const result = await lifeModules.call({ gate: g }, name, args);
+    for (const source of result.sources ?? []) onSource?.(source);
+    return result.text;
+  }, rules: () => lifeModules.rules() } : null);
 
   // Other AI apps (src/main/agent-access.ts): the local MCP server's calls and the side chat's catalogue, every change
   // through the same steps as the person's own (a project's edit with the agent's name in its history; notes kept in

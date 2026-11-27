@@ -6,6 +6,16 @@ the website. `tools/release.mjs` takes a release's notes from here when `--notes
 
 Format: one `## <version> — <YYYY-MM-DD>` heading a release, then one `- ` line a change.
 
+## 2.0.22 — 2026-11-27
+
+- Teams lets members verify a new PC and shared vault directly. Existing synced PCs check the vault’s key history before accepting a newer version.
+- Systems checks use an SSH password or private key for the address saved in Secrets. Bin restoration and imported Word pictures validate their destination paths.
+- Meetings show the agenda and recent decisions in the list. Open a passage to read it in its meeting note.
+- Project decisions include decisions recorded in its meetings. The assistant can look up a decision and give its source line.
+- Meeting inputs keep your draft when saving fails, ready to retry.
+- Search Settings for a pack part by name to find its switch.
+- Review the files in a project ZIP before saving. Assigned notes are included and unrelated notes in a shared folder stay out.
+
 ## 2.0.21 — 2026-11-27
 
 - Cancelling an export when replacing an existing ZIP now keeps the previous archive intact.

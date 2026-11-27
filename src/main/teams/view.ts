@@ -13,6 +13,7 @@ export interface TeamsMemberView {
 }
 
 export interface TeamsVaultView {
+  code?: string;
   id: string;
   /** Its name, once this PC holds the key (sealed on the server). */
   name: string | null;
@@ -26,6 +27,7 @@ export interface TeamsVaultView {
 }
 
 export interface TeamsView {
+  deviceCode?: string;
   status: TeamsStatus;
   /** Plain sentences: a problem, what happened in the background (a key shared, a key rotated). */
   notes: string[];

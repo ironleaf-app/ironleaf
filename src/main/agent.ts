@@ -11,7 +11,7 @@ import { parseDocument } from 'yaml';
 import { frontMatterRange } from '../shared/frontmatter';
 import { isoOf } from '../shared/finance';
 import { secretFileWhy } from '../shared/secret-scan';
-import type { ChatChanges, ChatStep, SendRequest, SendResult } from '../shared/types';
+import type { ChatSource, ChatChanges, ChatStep, SendRequest, SendResult } from '../shared/types';
 import type { VaultIndex } from './indexer';
 import type { ChatMessageIn, StreamResult, ToolCall, ToolSpec } from './providers/types';
 import { randomUUID } from 'node:crypto';
@@ -220,7 +220,7 @@ export const catalogueSpec = (t: ServedTool): ToolSpec => ({ name: t.name, descr
 /** The life modules' tools as one assistant reaches them (its gate already chosen). */
 export interface ModuleCaller {
   specs(): ModuleToolDef[];
-  call(name: string, args: Record<string, unknown>): Promise<string>;
+  call(name: string, args: Record<string, unknown>, onSource?: (s: ChatSource) => void): Promise<string>;
   rules(): string;
 }
 
@@ -1073,6 +1073,7 @@ function lookKey(args: Record<string, unknown>): { key: string; name: string } |
 
 export class AgentTools {
   readonly changes: Change[] = [];
+  readonly meetingSources: ChatSource[] = [];
   readonly proposals: Proposal[] = [];
   /** Notes this answer suggested changes in (Ask before the assistant changes a note), with how many wait in each. */
   readonly suggested = new Map<string, number>();
@@ -1891,7 +1892,9 @@ export class AgentTools {
         // it changed is kept for this answer's Undo, as the catalogue's tools are (module writes never wait).
         if (this.host.modules?.specs().some((t) => t.name === name)) {
           const def = this.host.modules.specs().find((t) => t.name === name)!;
-          const { out: text, changed } = await recordingWrites(() => this.host.modules!.call(name, a));
+          const { out: text, changed } = await recordingWrites(() => this.host.modules!.call(name, a, (s) => {
+            if (!this.meetingSources.some((x) => x.path === s.path && x.meetingDecision?.line === s.meetingDecision?.line)) this.meetingSources.push(s);
+          }));
           for (const c of changed) {
             const after = await this.host.read(c.path).catch(() => null);
             if (after === null) continue;

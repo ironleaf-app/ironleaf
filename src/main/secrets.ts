@@ -1,3 +1,4 @@
+import { addressOf } from '../shared/machine-address';
 // Secrets (Wave 4, 24 Oct 2026; module 22 of the life OS: "Passwords, passcodes, licence keys, ID numbers … masked, never
 // sent to agents, audit trail"). A locked store inside the vault, beside the Private notes and opened with the same lock:
 // the recovery password on any PC, Windows Hello (the OS's protected store) on a PC that was added. Each secret is one
@@ -184,6 +185,7 @@ export class SecretsStore {
     const all = await this.all();
     const base = typeof id === 'string' ? all.get(id) : undefined;
     if (!base) throw new Error('That secret isn’t there any more.');
+    if ((patch.kind !== undefined && patch.kind !== base.kind) || (patch.where !== undefined && patch.where !== base.where)) this.host.store.assertStepUp();
     const r: SecretRecord = { ...base, ...this.clean(patch, base), id: base.id, created: base.created, modified: Date.now() };
     for (const k of ['username', 'where', 'notes', 'from'] as const) if (patch[k] !== undefined && !words(patch[k], 4000)) delete r[k];
     await this.put(r);
@@ -203,14 +205,18 @@ export class SecretsStore {
     return { name: r.name, value: r.value };
   }
 
-  /** The value for Ironleaf's own use on this PC (8.5): signing in to a machine to check or connect to it is
-   *  using a login, not revealing it, so it never asks for a step-up while Secrets are unlocked; the value goes to
-   *  the connection, never to the window, a note or an agent. (Linking needs only the list, and copying a plain
-   *  login through copy() above asks only for the sensitive kinds.) */
-  async useValue(id: unknown): Promise<{ username: string; value: string }> {
+  /** Systems may sign in only to the destination recorded inside the protected login. */
+  async useValue(id: unknown, destination: string): Promise<{ username: string; value: string }> {
     const r = typeof id === 'string' ? (await this.all()).get(id) : undefined;
     if (!r) throw new Error('That secret isn’t there any more.');
-    return { username: r.username ?? '', value: r.value };
+    if (r.kind !== 'password' && r.kind !== 'private-key') throw new Error('Choose an SSH password or private key in Secrets.');
+    const target = addressOf(destination);
+    const bound = addressOf(r.where ?? '');
+    if (!target || !bound || target.host.toLowerCase() !== bound.host.toLowerCase() || target.port !== bound.port || (bound.user && target.user && bound.user !== target.user)) {
+      throw new Error('Open this login in Secrets and enter its SSH host and port under Website, device or place.');
+    }
+    if (isStepUpKind(r.kind)) this.host.store.assertStepUp();
+    return { username: r.username || bound.user || '', value: r.value };
   }
 
   /** On the clipboard, cleared after a while if it is still what we put there (and at once on lock or quit). */

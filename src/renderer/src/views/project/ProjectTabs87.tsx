@@ -1,3 +1,5 @@
+import { openMeetingPassage } from '../meeting/openMeetingPassage';
+import type { MeetingItem } from '../../../../shared/work-meetings';
 // A project's folio sections (5 Nov 2026, the vault folio: the eight tabs of 8.7 wave 2a became one scrolling page —
 // What's next, Waiting, Key dates, People, Decisions, Notes, Files, Risks, Updates, Money, Activity — each the tab
 // body it replaces, every row still ticking, editing in place, filing, opening or deleting to the Bin with Undo).
@@ -75,6 +77,7 @@ export interface TabsCtx {
   files: ProjectFiles | null | undefined;
   /** Its meetings' open questions, longest waiting first (step 2: asked, open until answered, never lost). */
   questions: ProjectQuestion[];
+  meetingDecisions: { item: MeetingItem; path: string; meeting: string; date: string }[];
   path: string;
   me: string | null;
   hub: HubModel;
@@ -517,7 +520,7 @@ export function folioEmptySections(ctx: TabsCtx, byPath: Map<string, NoteMeta>):
   if (!projectMilestones(p, ctx.today).length) empty.add('key-dates');
   if (!ctx.hub.people.length) empty.add('people');
   const meetings = folioMeetingRows(ctx.view.notes, byPath);
-  if (!p.decisions.length && !decisionsFlowed(ctx.hub).length) empty.add('decisions');
+  if (!p.decisions.length && !decisionsFlowed(ctx.hub).length && !ctx.meetingDecisions.length) empty.add('decisions');
   const extras = p.extra.some((x) => x.heading.trim().toLowerCase() !== 'stage checklist');
   const f = ctx.files;
   // Notes and files share one section (t239): it hides only when both parts hold nothing. 'files' stays in the set
@@ -644,7 +647,7 @@ const FOLIO_STARTERS: { id: FolioSection; noun: string; label: string }[] = [
  *  questions, every key date, the Notes-and-files All list, everyone named, decisions with their flowed rows,
  *  open risks, updates with agent deliveries, the project's bills, activity rows. Done, Past and dealt
  *  with keep their own counts where they fold. */
-export function tabCounts(ctx: Pick<TabsCtx, 'view' | 'files' | 'questions' | 'path' | 'hub' | 'today' | 'changes' | 'delivered' | 'agentLines' | 'money'>, byPath: Map<string, NoteMeta>): Record<string, number> {
+export function tabCounts(ctx: Pick<TabsCtx, 'view' | 'files' | 'questions' | 'meetingDecisions' | 'path' | 'hub' | 'today' | 'changes' | 'delivered' | 'agentLines' | 'money'>, byPath: Map<string, NoteMeta>): Record<string, number> {
   const p = ctx.view.project;
   return {
     'whats-next': ownOpen(ctx.hub).length,
@@ -653,7 +656,7 @@ export function tabCounts(ctx: Pick<TabsCtx, 'view' | 'files' | 'questions' | 'p
     'key-dates': projectMilestones(p, ctx.today).length,
     notes: notesListCount(ctx.view, p, ctx.files, byPath),
     people: ctx.hub.people.length,
-    decisions: p.decisions.length + decisionsFlowed(ctx.hub).length,
+    decisions: p.decisions.length + decisionsFlowed(ctx.hub).length + ctx.meetingDecisions.length,
     risks: p.risks.filter((r) => !r.closed).length,
     updates: p.updates.length + ctx.delivered.length,
     money: ctx.money.on && ctx.money.data ? billsForProject(ctx.money.data.bills, ctx.path).length : 0,
@@ -1665,6 +1668,15 @@ class t242 bans. */}
 
 // ── Decisions ────────────────────────────────────────────────────────────────────────────────────────────────────────
 
+function meetingDecisionRow(d: TabsCtx['meetingDecisions'][number]) {
+  return <div className="trow compact" key={d.path + ':' + d.item.line}>
+    <div style={{ minWidth: 0 }}>
+      <button type="button" className="t pj-ov-open" onClick={() => void openMeetingPassage(d.path, 'decisions', d.item)}>{d.item.text}</button>
+      <div className="meta">{d.meeting} · {niceDate(d.date)}</div>
+    </div>
+  </div>;
+}
+
 export function DecisionsSection({ ctx }: { ctx: TabsCtx }) {
   const { canEdit, edit } = useEditor();
   const tabbed = useTabbed();
@@ -1691,13 +1703,14 @@ export function DecisionsSection({ ctx }: { ctx: TabsCtx }) {
     if (a.ref.kind === 'record') return A.openAtLine(a.ref.path, a.ref.line ?? 0);
   };
   const flowedShown = tabbed || flowedOpen ? flowed : flowed.slice(0, FOLD_N);
-  if (!list.length && !flowed.length) return null;
+  if (!list.length && !flowed.length && !ctx.meetingDecisions.length) return null;
   return (
     <Section
       id="decisions"
       title="Decisions"
       action={canEdit ? <button className="btn pri" onClick={() => void logDecision()}><Icon name="plus" size={14} /> Log decision</button> : undefined}
     >
+      {ctx.meetingDecisions.map(meetingDecisionRow)}
       {list.length > 0 && (
       <div className="card" data-item-card="decisions" style={{ padding: '8px 20px' }}>
           {shown.map((d) => (
@@ -1870,7 +1883,10 @@ export function OverviewSection({ ctx, shown = true }: { ctx: TabsCtx; /** Wheth
   const byPath = useApp((s) => s.byPath);
   const mine = useMemo(() => ownOpen(ctx.hub), [ctx.hub]);
   const kd = useMemo(() => keyDatesModel(p, ctx.hub, ctx.today), [p, ctx.hub, ctx.today]);
-  const decisions = useMemo(() => p.decisions.map((d, i) => ({ ...d, i })).reverse(), [p]);
+  const decisions = useMemo(() => [
+    ...p.decisions.map((d, i) => ({ ...d, i })).reverse(),
+    ...ctx.meetingDecisions,
+  ].sort((a, b) => (b.date ?? '').localeCompare(a.date ?? '')), [p.decisions, ctx.meetingDecisions]);
   const updates = useMemo(() => p.updates.map((u, i) => ({ ...u, i })), [p]);
   // A roomy window (round 3) shows every block whole in window-tall panes; a smaller one keeps three rows each.
   const roomy = useRoomy();
@@ -1969,7 +1985,7 @@ export function OverviewSection({ ctx, shown = true }: { ctx: TabsCtx; /** Wheth
           <p className="pj-faint">No decisions yet.</p>
         ) : (
           <>
-            {decisions.slice(0, cap).map((d) => (
+            {decisions.slice(0, cap).map((d) => 'item' in d ? meetingDecisionRow(d) : (
               <div className="trow compact" key={d.i}>
                 <button type="button" className="t clip-2 pj-ov-open" onClick={ctx.go({ kind: 'decision', index: d.i }, d.what)} title={plain(d.what)}>
                   <Words text={d.what} from={ctx.path} />

@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Settings › Teams' IPC (`iteams:*`) and the parts handed to the core (core.ts): the account (sync/account.ts, the
 // one seam to src/main/account), the cloud, this PC's team key sealed by the operating system, the open notes' sync,
@@ -37,17 +38,18 @@ export function sealedKeyStore(file: string, protect: Protector): DeviceKeyStore
     available: () => protect.available(),
     async load() {
       try {
-        const o = JSON.parse(await protect.decrypt(await fsp.readFile(file))) as { publicKey: string; privateKey: string };
-        return { publicKey: o.publicKey, privateKey: Buffer.from(o.privateKey, 'base64') } satisfies DeviceKeyPair;
-      } catch {
-        return null;
+        const o = JSON.parse(await protect.decrypt(await fsp.readFile(file))) as { publicKey: string; privateKey: string; verified?: string[] };
+        return { verified: Array.isArray(o.verified) ? o.verified.filter((x) => typeof x === 'string') : [], publicKey: o.publicKey, privateKey: Buffer.from(o.privateKey, 'base64') } satisfies DeviceKeyPair;
+      } catch (err) {
+        if ((err as NodeJS.ErrnoException).code === 'ENOENT') return null;
+        throw new Error('This PC could not open its saved Teams verification details.');
       }
     },
     async save(k) {
       if (!protect.available()) throw new Error('This PC can’t protect a team key.');
       await fsp.mkdir(path.dirname(file), { recursive: true });
-      const tmp = `${file}.${process.pid}.tmp`;
-      await fsp.writeFile(tmp, await protect.encrypt(JSON.stringify({ publicKey: k.publicKey, privateKey: k.privateKey.toString('base64') })));
+      const tmp = `${file}.${randomUUID()}.tmp`;
+      await fsp.writeFile(tmp, await protect.encrypt(JSON.stringify({ verified: k.verified, publicKey: k.publicKey, privateKey: k.privateKey.toString('base64') })));
       await fsp.rename(tmp, file);
     },
   };
@@ -83,6 +85,7 @@ export function registerTeams(d: TeamsServiceDeps): { stop(): void; core: TeamsC
   d.handle('iteams:set-role', (accountId: unknown, role: unknown) => core.setRole(accountId, role).then(push));
   d.handle('iteams:remove', (accountId: unknown) => core.remove(accountId).then(push));
   d.handle('iteams:create-vault', (name: unknown) => core.createVault(name).then(push));
+  d.handle('iteams:verify', (id: unknown, code: unknown) => core.verify(id, code).then(push));
   d.handle('iteams:join-vault', (id: unknown) => core.joinVault(id).then(push));
   d.handle('iteams:rotate', (id: unknown) => core.rotateNow(id).then(push));
   d.handle('iteams:upload-now', async () => (await uploader.flush(), push(core.view())));

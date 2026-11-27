@@ -151,8 +151,10 @@ AES-256-GCM` over `VK`, bound to `ironleaf-sync/vault-key/v1|member|<vault>|<epo
 `{v:1, kind:'team', epoch, name, history:[{epoch, key}]}`: the name sealed with the current meta key, every earlier `VK`
 sealed under the current one.
 
+In Settings › Teams the recipient gives their PC code directly to a member who already holds the vault. That member verifies the PC code and returns the vault code through the same trusted channel. Device codes bind the team, account, device and public key. Vault codes bind the team, vault, epoch and current key. Ironleaf stores approvals locally with the protected device key. A PC with an existing synced vault checks its previously held keys against the incoming history before accepting a later epoch.
+
 Removing a member means a new `VK` (they may have kept the old one): the server drops their wraps and marks the vault;
-an admin's Ironleaf makes the next epoch's key, wraps it to every remaining device and posts it. New changes are sealed
+an admin's Ironleaf makes the next epoch's key, wraps it to verified remaining devices and posts it. New changes are sealed
 with the newest key; the engine opens older ones with the earlier keys (`TeamKeyRing`, newest first). Slots stay keyed
 by the first key so the change log and its compare-and-swap carry on; a former member could only test whether a path
 they guess exists. The change log, blobs and the engine's loop are unchanged. Settings › Teams (`src/main/teams/`)

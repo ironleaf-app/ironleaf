@@ -1,3 +1,6 @@
+import { isEnterKey } from '../../../lib/enterKey';
+import { openMeetingPassage } from '../../meeting/openMeetingPassage';
+import { useMeetingDraft } from '../../meeting/useMeetingDraft';
 // Meetings (Wave 6 part b; the catalogue, row 3; 8.7 w2b, 30 Oct 2026): one Meetings place, no second path. The home is
 // the mock-up's list (stats, Upcoming / Past / Series / Every action / Every decision, the week beside it on Calendar),
 // and one meeting page in three states: before (agenda, prep, record set-up), during (the recorder and live words), after
@@ -8,6 +11,7 @@
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+import { dateOf } from '../../../../../shared/finance';
 import { defaultRecordView } from '../../../../../shared/record-views';
 import { meetingActionCounts, meetingDayLabel, meetingPhase, meetingStats, meetingTimeWords, prepAnswer } from '../../../../../shared/work-meetings';
 import type { MeetingActionRec, MeetingRec, MeetingsModel, PrepItem, PrepPack, SeriesRec } from '../../../../../shared/work-meetings';
@@ -84,7 +88,7 @@ const openMeeting = (path: string, where: W.Where = 'current') => (where === 'ta
 const openSeries = (path: string) => openDetail('meetings', 'series', path);
 const bareTitle = (t: string) => t.replace(/^\d{4}-\d{2}-\d{2}\s*/, '') || t;
 /** What the home's Find reads on a meeting row: the words the row shows (title, day, people, project, place). */
-const meetingHay = (m: Meet, today: string): string => `${bareTitle(m.title)} ${meetingDayLabel(m.date, today)} ${meetingTimeWords(m.time)} ${m.where ?? ''} ${m.people.join(' ')} ${m.project}`.toLowerCase();
+const meetingHay = (m: Meet, today: string): string => `${bareTitle(m.title)} ${meetingDayLabel(m.date, today)} ${meetingTimeWords(m.time)} ${m.where ?? ''} ${m.people.join(' ')} ${m.project} ${m.agenda.map((item) => item.text).join(' ')} ${m.decisions.map((item) => item.text).join(' ')}`.toLowerCase();
 /** What the home's Find reads on a record row: the title, project and every field it shows. */
 const recordHay = (r: WsRecord): string => `${r.title} ${r.projectName ?? ''} ${Object.values(r.fields ?? {}).map((v) => String(v ?? '')).join(' ')}`.toLowerCase();
 
@@ -404,13 +408,8 @@ function PrepPackCard({ m }: { m: Meet }) {
 // ── A meeting's agenda (its decisions live in the note beside its tasks, t248) ─────────────────────────────────────────
 
 function ItemList({ m, kind, items, canEdit, title, empty, placeholder }: { m: Meet; kind: 'agenda'; items: { text: string; done: boolean; line: number; raw: string }[]; canEdit: boolean; title: string; empty: string; placeholder: string }) {
-  const [adding, setAdding] = useState('');
-  const add = async () => {
-    const t = adding.trim();
-    if (!t) return;
-    setAdding('');
-    await workDid(call('add-item', m.path, kind, t));
-  };
+  const { value: adding, setValue: setAdding, save } = useMeetingDraft();
+  const add = () => save((t) => workDid(call('add-item', m.path, kind, t)));
   return (
     <section aria-label={title}>
       <div className="glabel w2b-group">{title} · {items.length}</div>
@@ -433,7 +432,7 @@ function ItemList({ m, kind, items, canEdit, title, empty, placeholder }: { m: M
       {canEdit && (
         <div className="w2b-add">
           <Icon name="plus" size={12} />
-          <input value={adding} placeholder={placeholder} aria-label={placeholder} onChange={(e) => setAdding(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), void add())} onBlur={() => void add()} />
+          <input value={adding} placeholder={placeholder} aria-label={placeholder} onChange={(e) => setAdding(e.target.value)} onKeyDown={(e) => isEnterKey(e) && (e.preventDefault(), void add())} onBlur={() => void add()} />
         </div>
       )}
     </section>
@@ -460,7 +459,7 @@ function Attendees({ m, view, canEdit }: { m: Meet; view: MeetingsView; canEdit:
       {canEdit && (
         <span className="w2b-addperson">
           <Icon name="plus" size={11} />
-          <input list="wmt-people" value={adding} placeholder={m.people.length ? 'Add someone' : 'Who is coming'} aria-label="Add an attendee" onChange={(e) => setAdding(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), void add())} onBlur={() => void add()} />
+          <input list="wmt-people" value={adding} placeholder={m.people.length ? 'Add someone' : 'Who is coming'} aria-label="Add an attendee" onChange={(e) => setAdding(e.target.value)} onKeyDown={(e) => isEnterKey(e) && (e.preventDefault(), void add())} onBlur={() => void add()} />
           <datalist id="wmt-people">
             {view.people.filter((p) => !m.people.includes(p)).map((p) => (
               <option key={p} value={p} />
@@ -661,7 +660,7 @@ function BeforeMeeting({ m, view, canEdit }: { m: Meet; view: MeetingsView; canE
   // near the top of the main column.
   return (
     <>
-      <ItemList m={m} kind="agenda" items={m.agenda} canEdit={canEdit} title="Agenda" empty="No agenda yet." placeholder="Add an agenda item" />
+      <ItemList key={m.path} m={m} kind="agenda" items={m.agenda} canEdit={canEdit} title="Agenda" empty="No agenda yet." placeholder="Add an agenda item" />
       <section aria-label="Recording">
         <div className="glabel w2b-group">Recording</div>
         <BeforeRecordingCard m={m} canEdit={canEdit} />
@@ -967,7 +966,9 @@ type Chip = 'upcoming' | 'past' | 'series' | 'actions' | 'decisions' | 'question
 // (overview, calendar, a detail) lands on Upcoming, as before.
 const chipFor = (section: string): Chip => ((['upcoming', 'past', 'series', 'actions', 'decisions', 'questions', 'all'] as string[]).includes(section) ? (section as Chip) : 'upcoming');
 
-function MeetingRow({ m, today, upcoming }: { m: Meet; today: string; upcoming: boolean }) {
+const meetingMonth = new Intl.DateTimeFormat('en-AU', { month: 'short' });
+
+function MeetingRow({ m, today, upcoming, featured, selected }: { m: Meet; today: string; upcoming: boolean; featured?: boolean; selected?: boolean }) {
   // One open per row (9.2 uplift F117): a click opens here, Ctrl-click in a tab. No double-click opener: two
   // handlers opened the meeting twice, here and in a tab.
   // Guests in words (3 Nov 2026, audit f F13: two names plus "..." cut the rest); status in neutral with coral
@@ -975,17 +976,38 @@ function MeetingRow({ m, today, upcoming }: { m: Meet; today: string; upcoming: 
   const counts = meetingActionCounts(m, isDone);
   const guests = m.people.length <= 2 ? m.people.join(', ') : `${m.people.slice(0, 2).join(', ')} and ${m.people.length - 2} other${m.people.length - 2 === 1 ? '' : 's'}`;
   const meta = [m.dated ? meetingDayLabel(m.date, today) : 'No day set', meetingTimeWords(m.time), m.where, m.people.length ? `with ${guests}` : ''].filter(Boolean).join(' · ');
+  const date = m.dated ? dateOf(m.date) : null;
+  const passages = upcoming ? m.agenda : m.decisions;
   return (
-    <button type="button" className="trow w2b-row" data-pick={m.path} onClick={(e) => openMeeting(m.path, e.ctrlKey || e.metaKey ? 'tab' : 'current')} title={`${bareTitle(m.title)} (open the meeting)`}>
-      <span className="gtile xs slate" aria-hidden="true"><Icon name="calendar" size={13} /></span>
-      <span className="w2b-row-main">
-        <span className="t w2b-row-words">{bareTitle(m.title)}</span>
-        <span className="meta w2b-row-words">{meta}</span>
-      </span>
-      {upcoming
-        ? m.agenda.length ? <span className="tag slate w2b-tag">{m.agenda.length} {m.agenda.length === 1 ? 'agenda item' : 'agenda items'}</span> : <span className="tag slate w2b-tag">No agenda yet</span>
-        : counts.open > 0 ? <span className="tag slate w2b-tag"><span className="dot" aria-hidden="true" />{counts.open} still open</span> : <span className="tag slate w2b-tag">{counts.total ? `${counts.total} tasks` : 'No tasks'}</span>}
-    </button>
+    <div className={`meeting-entry${featured ? ' meeting-brief' : ''}`}>
+      <button type="button" className={`trow w2b-row${selected ? ' is-active' : ''}`} data-pick={m.path} onClick={(e) => openMeeting(m.path, e.ctrlKey || e.metaKey ? 'tab' : 'current')} title={`${bareTitle(m.title)} (open the meeting)`}>
+        <span className="meeting-date-tile" aria-hidden="true">
+          {date && Number.isFinite(date.getTime()) ? <><span>{meetingMonth.format(date)}</span><strong>{date.getDate()}</strong></> : <Icon name="calendar" size={16} />}
+        </span>
+        <span className="w2b-row-main">
+          {featured && m.project && <span className="meeting-project">{m.project}</span>}
+          <span className="t w2b-row-words">{bareTitle(m.title)}</span>
+          <span className="meta w2b-row-words">{meta}</span>
+          {!featured && passages[0] && <span className="meeting-row-excerpt" title={passages[0].text}>{passages[0].text}</span>}
+        </span>
+        {upcoming
+          ? m.agenda.length ? <span className="tag slate w2b-tag">{m.agenda.length} {m.agenda.length === 1 ? 'agenda item' : 'agenda items'}</span> : <span className="tag slate w2b-tag">No agenda yet</span>
+          : counts.open > 0 ? <span className="tag slate w2b-tag"><span className="dot" aria-hidden="true" />{counts.open} still open</span> : <span className="tag slate w2b-tag">{counts.total ? `${counts.total} tasks` : 'No tasks'}</span>}
+      </button>
+      {featured && passages.length > 0 && (
+        <section className="meeting-passages" aria-label={upcoming ? 'Agenda preview' : 'Decision preview'}>
+          <h3>{upcoming ? 'On the agenda' : 'Decisions'}</h3>
+          <ul>{passages.slice(0, 3).map((item) => (
+            <li key={item.line}>
+              <button type="button" className="meeting-brief-source" data-pick={m.path} title="Open this passage in the meeting note" onClick={(e) => void openMeetingPassage(m.path, upcoming ? 'agenda' : 'decisions', item, e.ctrlKey || e.metaKey ? 'tab' : 'current')}>
+                <span>{item.text}</span><Icon name="chevron" size={14} />
+              </button>
+            </li>
+          ))}</ul>
+          {passages.length > 3 && <button type="button" className="text-button" onClick={() => openMeeting(m.path)}>View all {passages.length} {upcoming ? 'agenda items' : 'decisions'}</button>}
+        </section>
+      )}
+    </div>
   );
 }
 
@@ -1105,19 +1127,14 @@ function SeriesCards({ view, canEdit, weeklyOnly }: { view: MeetingsView; canEdi
 function AskAnywhere({ view, canEdit }: { view: MeetingsView; canEdit: boolean }) {
   const ordered = useMemo(() => [...view.meetings].sort((a, z) => z.date.localeCompare(a.date)), [view.meetings]);
   const [at, setAt] = useState('');
-  const [asking, setAsking] = useState('');
+  const { value: asking, setValue: setAsking, save } = useMeetingDraft();
   if (!canEdit || !ordered.length) return null;
   const into = ordered.find((m) => m.path === at) ?? ordered[0];
-  const ask = async () => {
-    const t = asking.trim();
-    if (!t) return;
-    setAsking('');
-    await workDid(call('add-item', into.path, 'question', t));
-  };
+  const ask = () => save((t) => workDid(call('add-item', into.path, 'question', t)));
   return (
     <div className="w2b-add" style={{ margin: '0 0 12px' }}>
       <Icon name="plus" size={12} />
-      <input value={asking} placeholder="Ask a question (“Who signs off the oven logs?”)" aria-label="Ask a question" onChange={(e) => setAsking(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), void ask())} />
+      <input value={asking} placeholder="Ask a question (“Who signs off the oven logs?”)" aria-label="Ask a question" onChange={(e) => setAsking(e.target.value)} onKeyDown={(e) => isEnterKey(e) && (e.preventDefault(), void ask())} />
       <button type="button" className="button small" style={{ flex: 'none', maxWidth: '45%', whiteSpace: 'normal', textAlign: 'left' }} title="Which meeting it is asked in" onClick={(e) => openMenu(e.currentTarget, [{ heading: 'Ask it in' }, ...ordered.slice(0, 20).map((m) => ({ label: bareTitle(m.title), checked: m.path === into.path, run: () => setAt(m.path) }))])}>
         in {bareTitle(into.title)} <Icon name="chevron" size={10} />
       </button>
@@ -1209,9 +1226,9 @@ function ListHome({ view, canEdit, chip, setChip, records }: { view: MeetingsVie
   ];
   // The meeting the detail shows: the one the pointer or keys are on, else the first with something in it (its
   // minutes, tasks or decisions) on the open list, so the panes never open on an empty note.
-  const shownList = chip === 'past' || !foundUpcoming.length ? foundPast : foundUpcoming;
+  const shownList = chip === 'past' || (chip === 'upcoming' && !upcoming.length) ? foundPast : foundUpcoming;
   const firstMeet = shownList.find((m) => m.dated && meetingHasContent(m)) ?? shownList.find(meetingHasContent) ?? shownList[0];
-  const pickedPath = settled && view.meetings.some((m) => m.path === settled) ? settled : firstMeet?.path;
+  const pickedPath = settled && (chip === 'past' || chip === 'upcoming' ? shownList : view.meetings).some((m) => m.path === settled) ? settled : firstMeet?.path;
   const pickedMeet = pickedPath ? view.meetings.find((x) => x.path === pickedPath) : undefined;
   const pickedEmpty = !!pickedMeet && !meetingHasContent(pickedMeet) && !pickedMeet.project && !(pickedMeet.dated && pickedMeet.date >= view.today);
   // A coming meeting's detail carries its prep (round 3: the detail pane fills with what helps, not a blank).
@@ -1275,8 +1292,8 @@ function ListHome({ view, canEdit, chip, setChip, records }: { view: MeetingsVie
               <>
                 <div className="glabel w2b-group w2b-section">Past meetings</div>
                 <div className="card w2b-card">
-                  {foundPast.map((m) => (
-                    <MeetingRow key={m.path} m={m} today={view.today} upcoming={false} />
+                  {foundPast.map((m, i) => (
+                    <MeetingRow key={m.path} m={m} today={view.today} upcoming={false} featured={i === 0} selected={m.path === pickedPath} />
                   ))}
                 </div>
               </>
@@ -1285,8 +1302,8 @@ function ListHome({ view, canEdit, chip, setChip, records }: { view: MeetingsVie
         ) : (
           <>
             <div className="card w2b-card">
-              {foundUpcoming.map((m) => (
-                <MeetingRow key={m.path} m={m} today={view.today} upcoming />
+              {foundUpcoming.map((m, i) => (
+                <MeetingRow key={m.path} m={m} today={view.today} upcoming featured={i === 0} selected={m.path === pickedPath} />
               ))}
             </div>
             {view.series.some((s) => s.cadence === 'Weekly') && (
@@ -1303,8 +1320,8 @@ function ListHome({ view, canEdit, chip, setChip, records }: { view: MeetingsVie
           <p className="vsub">Meetings you have had show here.</p>
         ) : (
           <div className="card w2b-card">
-            {foundPast.map((m) => (
-              <MeetingRow key={m.path} m={m} today={view.today} upcoming={false} />
+            {foundPast.map((m, i) => (
+              <MeetingRow key={m.path} m={m} today={view.today} upcoming={false} featured={i === 0} selected={m.path === pickedPath} />
             ))}
           </div>
         )

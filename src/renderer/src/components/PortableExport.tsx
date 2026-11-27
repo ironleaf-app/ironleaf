@@ -30,7 +30,7 @@ function usePortable(project?: { path: string; name: string }) {
 
   useEffect(() => window.nv.portable.onProgress((p) => setProgress((prev) => (working ? p : prev))), [working]);
 
-  const run = async () => {
+  const run = async (expectedPreview?: string) => {
     if (working) return;
     setWorking(true);
     setProgress(null);
@@ -39,7 +39,7 @@ function usePortable(project?: { path: string; name: string }) {
     setFile(null);
     setUnlock(false);
     try {
-      const done: PortableResult | null = project ? await window.nv.portable.exportProject(project.path, { includePrivate }) : await window.nv.portable.exportAll({ includePrivate });
+      const done: PortableResult | null = project ? await window.nv.portable.exportProject(project.path, { expectedPreview }) : await window.nv.portable.exportAll({ includePrivate });
       if (done) {
         setSaid(done.words);
         setFile(done.file);
@@ -111,6 +111,15 @@ export function PortableExportSettings() {
 /** A project's Export this project: the same shape for one project (its notes, files, tables and guide). */
 export function PortableExportDialog({ path, name, onClose }: { path: string; name: string; onClose(): void }) {
   const e = usePortable({ path, name });
+  const [preview, setPreview] = useState<{ entries: string[]; token: string } | null>(null);
+  const [previewError, setPreviewError] = useState('');
+  useEffect(() => {
+    let live = true;
+    setPreview(null);
+    setPreviewError('');
+    window.nv.portable.previewProject(path).then((result) => { if (live) setPreview(result); }, (err) => { if (live) setPreviewError(errorMessage(err)); });
+    return () => { live = false; };
+  }, [path]);
   useEscape(() => !e.working && onClose());
   return (
     <div className="overlay" onMouseDown={() => !e.working && onClose()}>
@@ -118,15 +127,14 @@ export function PortableExportDialog({ path, name, onClose }: { path: string; na
         <h2>Export this project</h2>
         {!e.said && !e.working && (
           <>
-            <p className="dialog-message">Save “{name}” in one zip file: its note, its folder, its files, tables of its tasks and records, and a guide to opening them in any other app. Saved where you choose, starting in Downloads.</p>
-            <label className="check-line">
-              <input type="checkbox" checked={e.includePrivate} onChange={(ev) => e.setIncludePrivate(ev.target.checked)} /> {INCLUDE_PRIVATE_LABEL}
-            </label>
-            {e.includePrivate && <p className="dialog-message vp-failed">{PRIVATE_WARNING}</p>}
-            {!e.includePrivate && <p className="hint">Private notes, secrets and health records stay out of a project export.</p>}
+            <p className="dialog-message">Export “{name}” with its notes, files and tables. Private notes, secrets and health records stay out.</p>
+            {preview ? <details open>
+              <summary>{preview.entries.length} files in this ZIP</summary>
+              <ul style={{ maxHeight: '32vh', overflow: 'auto', overflowWrap: 'anywhere' }}>{preview.entries.map((entry) => <li key={entry}>{entry}</li>)}</ul>
+            </details> : <p role="status">{previewError || 'Listing project files…'}</p>}
             <div className="dialog-actions">
               <button className="button" onClick={onClose}>Cancel</button>
-              <button className="button primary" onClick={() => void e.run()}>Choose where to save it…</button>
+              <button className="button primary" disabled={!preview} onClick={() => void e.run(preview?.token)}>Choose where to save it…</button>
             </div>
           </>
         )}

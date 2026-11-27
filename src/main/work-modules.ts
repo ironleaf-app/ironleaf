@@ -56,7 +56,7 @@ export interface WorkNotice {
 
 export interface WorkModulesDeps {
   /** A login kept in Secrets, for Systems and Home Lab's Check now (its user name and value; never shown or written). */
-  login?(id: string): Promise<{ username: string; value: string }>;
+  login?(id: string, destination: string): Promise<{ username: string; value: string }>;
   /** Ironleaf's own data folder on this PC. */
   dataDir?: string;
   vault(): Vault;
@@ -97,6 +97,7 @@ export interface WorkModulesDeps {
 
 /** What a part is told about the asker of a tool. */
 export interface ToolCtx {
+  source?(s: import('../shared/types').ChatSource): void;
   /** The index the asker may read (the whole index for the person). */
   gated: VaultIndex;
   /** The asker's name, for its answers ("a chat bot isn’t allowed…"). */
@@ -347,7 +348,7 @@ export class WorkModules {
   /** One of the tools for an asker with its gate (none: the person): null when it isn't a work module's. Reads come from
    *  what the gate lets through; a write is refused unless the asker is allowed the module's level, and each note it
    *  changes is checked against the gate before anything is written. */
-  async callTool(name: string, args: Record<string, unknown>, gate?: Gate | null): Promise<{ text: string } | null> {
+  async callTool(name: string, args: Record<string, unknown>, gate?: Gate | null): Promise<{ text: string; sources?: import('../shared/types').ChatSource[] } | null> {
     const def = this.group.tools.find((t) => t.name === name);
     if (!def) return null;
     const mod = this.group.modules.find((m) => m.id === def.module)!;
@@ -357,7 +358,9 @@ export class WorkModules {
     if (!part?.tool) return { text: `There is no tool called ${name}.` };
     const gated = gate ? gateIndex(this.d.index, gate) : this.d.index;
     try {
-      return { text: await part.tool(name, args ?? {}, { gated, agent: gate?.name ?? 'This agent', gate: gate ?? null, check: gate ? (rel) => gate.check(rel, 'changed') : undefined }) };
+      const sources: import('../shared/types').ChatSource[] = [];
+      const text = await part.tool(name, args ?? {}, { gated, agent: gate?.name ?? 'This agent', gate: gate ?? null, check: gate ? (rel) => gate.check(rel, 'changed') : undefined, source: (s) => sources.push(s) });
+      return { text, ...(sources.length ? { sources } : {}) };
     } catch (e) {
       return { text: e instanceof Error ? e.message : String(e) };
     }
