@@ -10,6 +10,7 @@ import { initials, personHue } from '../../lib/projectLook';
 import { saveNoteFact } from '../../lib/noteFacts';
 import { docs } from '../../state/docs';
 import { useApp } from '../../state/store';
+import { openModule } from '../../state/modules';
 import { useWork } from '../../state/workModules';
 import { EditorContext, Inline, InlineDate } from '../project/Inline';
 import '../../styles/people-meetings.css';
@@ -78,6 +79,7 @@ export function MeetingTop({ path, canEdit }: { path: string; canEdit: boolean; 
               <Inline value={meeting.people.join(', ')} label="Who is in it" placeholder="Who is coming" compact onSave={save('attendees', 'Changed who is coming.', 'Took everyone off.')} />
             </span>
           )}
+          <button type="button" className="text-button" onClick={() => openModule('meetings', 'meeting:' + encodeURIComponent(path), 'tab')}>Open meeting workspace</button>
         </EditorContext.Provider>
       </div>
       {phase === 'before' ? (

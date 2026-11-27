@@ -907,6 +907,7 @@ function ProjectShell({
       { label: 'Catch up from its folder', icon: 'refresh' as const, run: () => askInChat(`Catch up “${p.name}”: what’s new or changed in its folder since it was last updated? Propose the changes.`, path) },
       ...(shows(prefsNow, 'project:canvas') ? [{ label: 'See it on a canvas', icon: 'canvas' as const, run: () => void openProjectCanvas(path) }] : []),
       ...(canEdit ? [{ label: 'Tidy this project…', icon: 'sparkle' as const, run: () => setTidyOpen(true) }] : []),
+      ...(canEdit ? [{ label: 'Schedule a meeting…', icon: 'calendar' as const, run: () => void import('./modules/work/MeetingsPage').then(({ newMeeting }) => newMeeting(null, { project: p.name })).catch(showError) }] : []),
       { label: 'Export this project…', icon: 'download' as const, run: () => setExportOpen(true) },
       ...(p.folder ? [{ label: 'Open the folder', icon: 'folderOpen' as const, hint: p.folder, run: () => void window.nv.projects.openFolder(path).catch(showError) }] : []),
       // No folder on this PC yet (t267: the tabs left no way to link one): Choose sits between Open and

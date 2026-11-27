@@ -1,3 +1,5 @@
+import { MeetingFollowUp } from '../../meeting/MeetingFollowUp';
+import { MeetingCapture } from '../../meeting/MeetingCapture';
 import { isEnterKey } from '../../../lib/enterKey';
 import { openMeetingPassage } from '../../meeting/openMeetingPassage';
 import { useMeetingDraft } from '../../meeting/useMeetingDraft';
@@ -128,7 +130,7 @@ function Person({ name, people, onRemove }: { name: string; people: string[]; on
 
 // ── Forms ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-function newMeeting(view: MeetingsView | null, prefill: { project?: string; series?: string } = {}) {
+export function newMeeting(view: MeetingsView | null, prefill: { project?: string; series?: string } = {}) {
   openRecordForm({
     title: 'New meeting',
     icon: 'calendar',
@@ -139,7 +141,7 @@ function newMeeting(view: MeetingsView | null, prefill: { project?: string; seri
       { key: 'date', label: 'Day', kind: 'date', required: true, value: todayIso() },
       { key: 'time', label: 'Time', kind: 'text', placeholder: '10:00 AM' },
       { key: 'attendees', label: 'Who is coming', kind: 'text', wide: true, placeholder: 'Names, with commas between', hint: view?.people.length ? `People you keep notes on: ${view.people.slice(0, 6).join(', ')}${view.people.length > 6 ? `, and ${view.people.length - 6} more` : ''}` : undefined },
-      { key: 'project', label: 'Project', kind: 'choice', options: ['', ...(view?.projects.map((p) => p.name) ?? [])], value: prefill.project ?? '' },
+      { key: 'project', label: 'Project', kind: 'choice', options: ['', ...new Set([...(prefill.project ? [prefill.project] : []), ...(view?.projects.map((p) => p.name) ?? [])])], value: prefill.project ?? '' },
       { key: 'where', label: 'Where', kind: 'text', placeholder: 'Teams, the site office…' },
       { key: 'agenda', label: 'Agenda', kind: 'text', wide: true, placeholder: 'Items, with semicolons between' },
     ],
@@ -407,6 +409,16 @@ function PrepPackCard({ m }: { m: Meet }) {
 
 // ── A meeting's agenda (its decisions live in the note beside its tasks, t248) ─────────────────────────────────────────
 
+function CaptureMeetingItem({ path }: { path: string }) {
+  const [opened, setOpened] = useState(false);
+  return (
+    <details className="meeting-quick-capture" onToggle={e => { if (e.currentTarget.open) setOpened(true); }}>
+      <summary>Capture a meeting item</summary>
+      {opened && <MeetingCapture path={path} />}
+    </details>
+  );
+}
+
 function ItemList({ m, kind, items, canEdit, title, empty, placeholder }: { m: Meet; kind: 'agenda'; items: { text: string; done: boolean; line: number; raw: string }[]; canEdit: boolean; title: string; empty: string; placeholder: string }) {
   const { value: adding, setValue: setAdding, save } = useMeetingDraft();
   const add = () => save((t) => workDid(call('add-item', m.path, kind, t)));
@@ -435,6 +447,7 @@ function ItemList({ m, kind, items, canEdit, title, empty, placeholder }: { m: M
           <input value={adding} placeholder={placeholder} aria-label={placeholder} onChange={(e) => setAdding(e.target.value)} onKeyDown={(e) => isEnterKey(e) && (e.preventDefault(), void add())} onBlur={() => void add()} />
         </div>
       )}
+      {canEdit && <CaptureMeetingItem path={m.path} />}
     </section>
   );
 }
@@ -521,9 +534,10 @@ function LiveMeeting({ m, canEdit }: { m: Meet; canEdit: boolean }) {
       {v.live.warning && (
         <p className="w2b-warn" role="alert">
           <Icon name="warning" size={13} />
-          {v.live.warning === 'mic-gone' ? 'Your microphone was unplugged. Plug it back in, or choose another in the note.' : 'Your microphone is not picking anything up. Check it is not muted, or choose another in the note.'}
+          {v.live.warning === 'mic-gone' ? 'Your microphone was unplugged. Plug it back in, or choose another microphone below.' : 'Your microphone is not picking anything up. Check it is not muted, or choose another microphone below.'}
         </p>
       )}
+      {v.live.warning && <MicPicker compact always />}
       <div className="w2b-livecols">
         <div className="w2b-livecol">
           <div className="glabel w2b-group">Live transcript</div>
@@ -561,6 +575,7 @@ function LiveMeeting({ m, canEdit }: { m: Meet; canEdit: boolean }) {
         </div>
         <div className="w2b-livecol">
           <div className="glabel w2b-group">Notes, take them as you go</div>
+          {canEdit && <MeetingCapture key={m.path} path={m.path} />}
           <div className="card w2b-card">
             {m.agenda.length ? (
               m.agenda.map((x) => (
@@ -664,6 +679,7 @@ function BeforeMeeting({ m, view, canEdit }: { m: Meet; view: MeetingsView; canE
       <section aria-label="Recording">
         <div className="glabel w2b-group">Recording</div>
         <BeforeRecordingCard m={m} canEdit={canEdit} />
+        {canEdit && <MeetingFollowUp key={m.path} meeting={m} />}
       </section>
       {/* Minutes ready to send (views/MeetingMinutes.tsx): the one card, beneath the recording as in the note. */}
       <MeetingMinutesHere path={m.path} canEdit={canEdit} />
@@ -717,6 +733,8 @@ function AfterMeeting({ m, canEdit }: { m: Meet; canEdit: boolean }) {
     <div ref={measure} className={`w2b-after mt-regions${wide ? ' nv-panes-root' : ''}${hasRec && three ? ' is-three' : ''}${wide && !hasRec ? ' is-norec' : ''}`} data-regions={regionCount}>
       <ContextPaneProvider value={side ? slot : null}>
         <div className="w2b-after-main mt-minutes">
+          {canEdit && <CaptureMeetingItem key={m.path} path={m.path} />}
+          {canEdit && <MeetingFollowUp key={m.path} meeting={m} />}
           {/* Minutes ready to send (views/MeetingMinutes.tsx): the one card. */}
           <MeetingMinutesHere path={m.path} canEdit={canEdit} />
           {summary && !minutesMade && (
