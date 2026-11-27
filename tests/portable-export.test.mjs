@@ -163,6 +163,27 @@ test('a cancelled export leaves no half file', async () => {
   assert.deepEqual(readdirSync(work).filter((n) => n.startsWith('cancelled.zip.')), [], 'no temporary file left beside it');
 });
 
+test('cancelling a replacement preserves the previous archive byte for byte', async () => {
+  const vault = path.join(work, 'replacement-vault');
+  put(path.join(vault, 'Meeting.md'), 'Original decision');
+  const { files } = await H.vaultFiles(vault);
+  const dest = path.join(work, 'previous.zip');
+  const options = { root: vault, dest, vaultName: 'Vault', includePrivate: false, files, notes: [], projects: [], tasks: [], moduleTypes: [] };
+  await P.exportPortable(options);
+  const previous = readFileSync(dest);
+  put(path.join(vault, 'Meeting.md'), 'Revised decision');
+  let cancelled = false;
+  await assert.rejects(() => P.exportPortable({
+    ...options,
+    onProgress: ({ phase, done }) => { if (phase === 'packing' && done > 0) cancelled = true; },
+    shouldCancel: () => cancelled,
+  }), /Export cancelled/);
+  assert.deepEqual(readFileSync(dest), previous);
+  assert.equal(await textOf(dest, 'Meeting.md'), 'Original decision');
+  await P.exportPortable(options);
+  assert.equal(await textOf(dest, 'Meeting.md'), 'Revised decision');
+});
+
 test('a project export holds only its own note, folder, files and tables', async () => {
   const vault = path.join(work, 'vault');
   const { files } = await H.vaultFiles(vault);

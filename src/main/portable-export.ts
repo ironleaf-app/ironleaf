@@ -147,12 +147,7 @@ export async function exportPortable(o: ExportPortableInput): Promise<PortableRe
   }
 
   o.onProgress?.({ phase: 'packing', done: 0, total });
-  try {
-    await writeZip(dest, sources(), (_n, bytes) => o.onProgress?.({ phase: 'packing', done: Math.min(bytes, total), total }));
-  } catch (err) {
-    if (isPortableCancel(err)) await fsp.rm(dest, { force: true }).catch(() => {});
-    throw err;
-  }
+  await writeZip(dest, sources(), (_n, bytes) => o.onProgress?.({ phase: 'packing', done: Math.min(bytes, total), total }));
   const size = (await fsp.stat(dest)).size;
   const count = kept.length + privateBytes.length + tables.length + 1;
   const words = o.project
