@@ -6,7 +6,7 @@ import { openMeetingPassage } from '../views/meeting/openMeetingPassage';
 
 import { isPrivatePath } from '../../../shared/private';
 import { isProjectProps } from '../../../shared/project-file';
-import { useEffect, useMemo, useRef, useState, type DragEvent } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type DragEvent } from 'react';
 import type { ChatStep, ModelsView } from '../../../shared/types';
 import { foldSteps, stepWords } from '../../../shared/chat-steps';
 import { hydrate } from '../lib/hydrate';
@@ -39,6 +39,8 @@ import type { TabState } from '../state/workspace';
 import { priorUserText } from '../components/plan/plan';
 import { isEnterKey } from '../lib/enterKey';
 import '../styles/search-ask-87.css';
+
+const PackActions = lazy(() => import('./PackActions'));
 
 /** An answer's words, with its cited passages and links (4 Nov 2026, p9-one-ask: the floating Ask card is gone, so only the panel shows it). */
 export function Answer({ message, onOpenLink }: { message: ChatMessage; onOpenLink(target: string, newTab: boolean): void }) {
@@ -389,6 +391,8 @@ export function ChatPanel({ tab }: { tab: TabState }) {
   const log = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLTextAreaElement>(null);
   const picker = useRef<HTMLInputElement>(null);
+  const [packActionsOpen, setPackActionsOpen] = useState(false);
+  const vaultPath = useApp(s => s.vault?.path);
   // Files dragged over the chat: it shows where they go.
   const [dragging, setDragging] = useState(false);
   const dragDepth = useRef(0);
@@ -594,6 +598,10 @@ export function ChatPanel({ tab }: { tab: TabState }) {
           stick.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48;
         }}
       >
+        {vaultPath && chat.scope !== 'chat' && told.chat == null && <details className="chat-pack-panel" onToggle={e => { if (e.currentTarget.open) setPackActionsOpen(true); }}>
+          <summary>Pack actions</summary>
+          {packActionsOpen && <Suspense fallback={<p>Loading actions…</p>}><PackActions key={vaultPath} root={vaultPath} /></Suspense>}
+        </details>}
         {notReady && <AiSetup why={settings.ai.note} />}
         {!chat.messages.length && !notReady && (
           <div className="chat-empty">
@@ -642,6 +650,11 @@ export function ChatPanel({ tab }: { tab: TabState }) {
               {m.steps && m.steps.length > 0 && <Steps steps={m.steps} pending={!!m.pending} onOpen={openNote} />}
               {m.content ? <Answer message={m} onOpenLink={(t, n) => void A.openLink(t, note, n ? 'tab' : 'current')} /> : m.pending ? <div className="chat-thinking"><span /><span /><span /></div> : null}
               {!m.pending && <FolderCards cards={m.folders} onOpen={openNote} />}
+              {!m.pending && vaultPath && chat.scope !== 'chat' && told.chat == null && m.steps?.map((s, i) =>
+                s.packAction && s.packRoot === vaultPath && <details key={i} className="chat-pack-panel">
+                  <summary>{s.words}</summary>
+                  <Suspense fallback={<p>Loading action…</p>}><PackActions root={vaultPath} draft={s.packAction} /></Suspense>
+                </details>)}
               {!m.pending && <Proposals message={m} onOpen={openNote} />}
               {!m.pending && <Suggested message={m} />}
               {!m.pending && <Changes message={m} onOpen={openNote} showMe />}

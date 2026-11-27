@@ -65,7 +65,7 @@ button.w2a-ava:hover { filter: brightness(.96); }
 .w2a-addfact:hover .k, .w2a-addfact:hover .v { color: var(--text-muted); }
 
 /* The gantt's today line and clash diamonds. */
-.gtrack .w2a-today { position: absolute; top: -6px; bottom: -6px; width: 0; border-left: 2px dashed var(--coral); }
+.gtrack .w2a-today { pointer-events: none; position: absolute; top: -6px; bottom: -6px; width: 0; border-left: 2px dashed var(--coral); }
 .gtrack .w2a-clash { position: absolute; top: -9px; width: 9px; height: 9px; background: var(--coral); transform: translateX(-50%) rotate(45deg); border-radius: var(--r-1); }
 .gbar.w2a-link { cursor: pointer; border: 0; font-family: inherit; }
 button.gbar { cursor: pointer; }

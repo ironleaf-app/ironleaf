@@ -1,3 +1,4 @@
+import { meetingTaskLine } from '../../shared/tasks';
 // Meetings on the main side (Wave 6 part b; src/shared/work-meetings.ts). Meetings are the vault's own Meeting notes and
 // series are notes of their own type, all read from the index; every change is one change of its note (a tick, a line
 // added to a section, a property). A meeting in a project has its actions as that project's tasks from the moment
@@ -560,6 +561,21 @@ export function makeMeetings(w: WorkModules): WorkPart {
       }
       const draft = followUpDraft(x, done(x), { greeting: S(args.greeting, 60), signoff: S(args.signoff, 60) });
       return `Draft only, not sent. Send it only when the person says so.\n\nSubject: ${draft.subject}\n\n${draft.text}${refusedWords}`;
+    }
+    if (name === 'meeting_capture_item') {
+      const target = S(args.meeting, 400);
+      if (!target) throw new Error('Choose a meeting first.');
+      const meeting = findMeeting(m.meetings, target, m.today);
+      if (!meeting) throw new Error('Choose a meeting from the meetings list.');
+      const kind = args.kind;
+      if (kind !== 'agenda' && kind !== 'question' && kind !== 'decision' && kind !== 'action') throw new Error('Choose what to capture.');
+      if (typeof args.words !== 'string' || !args.words.trim() || args.words.length > 4000) throw new Error('Write a meeting item of up to 4,000 characters.');
+      const due = S(args.due, 32);
+      if (due && !/^\d{4}-\d{2}-\d{2}$/.test(due)) throw new Error('Give a due date as YYYY-MM-DD.');
+      ctx.check?.(meeting.path);
+      const words = kind === 'action' ? meetingTaskLine({ what: args.words, who: S(args.owner, 160), due }).replace(/^- \[ \] /, '') : args.words;
+      await addItem(meeting.path, kind, words);
+      return 'Saved the ' + kind + ' in ' + meeting.title + ' [' + meeting.path + '].';
     }
     if (name === 'meeting_series_add') {
       const nameFor = S(args.name, 120);

@@ -11,6 +11,7 @@ const LOOK_BACK = 12;
 
 /** What a step is about: its own key when the tool gave one, else its kind and words. */
 export function stepKey(s: ChatStep): string {
+  if (s.packAction) return JSON.stringify(s.packAction);
   return s.about ? `${s.kind}|${s.about}` : `${s.kind}|${s.words}`;
 }
 

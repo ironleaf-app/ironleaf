@@ -63,15 +63,23 @@ const tokenMatch = (name: string, w: string): boolean => {
 export function resolveOne<T extends MatchCandidate>(items: readonly T[], want: unknown, opts: ResolveOpts): T {
   const w = normalizeRef(want);
   const said = String(want ?? '').trim();
+  const destination = /^\[[^\]]+\]\(([^)]+)\)$/.exec(said)?.[1] ?? said;
+  const qualified = destination.replace(/^\[{1,2}|\]{1,2}$/g, '').split('|')[0].replace(/\\/g, '/');
+  if (qualified.includes('/')) {
+    const full = (path: string) => path.replace(/\.md$/i, '').toLowerCase();
+    const exact = items.filter(item => item.path && full(item.path) === full(qualified));
+    if (exact.length === 1) return exact[0];
+    if (/\.md$/i.test(qualified)) throw new Error('Choose an existing ' + opts.noun + ' path from the list.');
+  }
   const others = (i: T) => [...(i.aliases ?? []), ...(i.names ?? [])];
   const exacts = items.filter((i) => normalizeRef(i.path ?? '') === w || normalizeRef(i.name) === w);
   const aliasExacts = !exacts.length ? items.filter((i) => others(i).some((a) => normalizeRef(a) === w)) : [];
   const allExacts = [...exacts, ...aliasExacts];
   if (allExacts.length === 1) return allExacts[0];
-  if (allExacts.length > 1) throw new Error(`More than one ${opts.noun} matches “${said}”: ${allExacts.map((h) => h.name).join(', ')}. Say which one.`);
+  if (allExacts.length > 1) throw new Error(`More than one ${opts.noun} matches “${said}”: ${allExacts.map(h => h.name).join(', ')}. Choose by path: ${allExacts.map(h => h.path || h.name).join(', ')}.`);
   const hits = w ? items.filter((i) => startsAtWord(normalizeRef(i.name), w) || tokenMatch(i.name, w) || others(i).some((a) => startsAtWord(normalizeRef(a), w) || tokenMatch(a, w))) : [];
   if (hits.length === 1) return hits[0];
-  if (hits.length > 1) throw new Error(`More than one ${opts.noun} matches “${said}”: ${hits.map((h) => h.name).join(', ')}. Say which one.`);
+  if (hits.length > 1) throw new Error(`More than one ${opts.noun} matches “${said}”: ${hits.map(h => h.name).join(', ')}. Say which one.`);
   const names = (opts.candidates ?? []).filter(Boolean);
   const plural = `${opts.noun.charAt(0).toUpperCase()}${opts.noun.slice(1)}s`;
   throw new Error(`There is no ${opts.noun} called “${said}”${opts.where ? ` ${opts.where}` : ''}.${names.length ? ` ${plural}: ${names.slice(0, 8).join(', ')}${names.length > 8 ? ', …' : ''}.` : ''}`);

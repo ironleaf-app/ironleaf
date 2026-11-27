@@ -55,3 +55,11 @@ test('same record: case, spacing and punctuation never fork one', () => {
   assert.equal(R.sameRecordName('Credit Card', 'Credit Card 2'), false);
   assert.equal(R.sameRecordName('', 'x'), false);
 });
+
+test('an exact source selects the same record even when another folder has the same name', () => {
+  const rows = ['North', 'South'].map(folder => ({ name: 'Renewal', path: folder + '/Renewal.md' }));
+  for (const ref of ['South/Renewal.md', '[[South/Renewal.md|Renewal]]', '[Renewal](South/Renewal.md)']) {
+    assert.equal(R.resolveOne(rows, ref, { noun: 'document' }), rows[1]);
+  }
+  assert.throws(() => R.resolveOne(rows, 'Old/Renewal.md', { noun: 'document' }));
+});

@@ -79,7 +79,7 @@ import { PHOTOS, isMedia, newAlbumText, newFamilyAlbumText } from '../shared/mem
 import { readTable } from '../shared/personal-records';
 import { typeFolder } from '../shared/module-records';
 import { moduleInfo, moduleOn, partOn, type ModuleSwitches } from '../shared/life-modules';
-import { MODULE_TOOLS, moduleToolDef, type ModuleToolDef } from '../shared/module-tools';
+import { MODULE_TOOLS, moduleToolDef, partForTool, type ModuleToolDef } from '../shared/module-tools';
 import '../shared/life-tools';
 import { levelLabel, refusal, type AgentId, type Level } from '../shared/sensitivity';
 import type { Gate } from './agent-gate';
@@ -593,8 +593,7 @@ export class Modules {
   }
 
   private partFor(name: string, sw: ModuleSwitches): boolean {
-    const parts: Record<string, string> = { health_session_log: 'training', health_meal_log: 'food', health_appointments: 'appointments', health_appointment_add: 'appointments', family_milestone_add: 'milestones', family_reward_log: 'rewards', family_events: 'calendar', family_event_add: 'calendar', family_activity_add: 'calendar' };
-    const p = parts[name];
+    const p = partForTool(name);
     return !p || partOn(sw, name.split('_')[0], p);
   }
 

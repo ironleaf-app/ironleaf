@@ -107,7 +107,7 @@ function keepChat(): void {
   clearTimeout(keepTimer);
   keepTimer = setTimeout(() => {
     try {
-      const messages = store.messages.filter((m) => !m.pending).slice(-40).map((m) => ({ ...m, attachments: m.attachments?.map((a) => ({ id: a.id, name: a.name, kind: a.kind, size: a.size, cut: a.cut })) }));
+      const messages = store.messages.filter((m) => !m.pending).slice(-40).map((m) => ({ ...m, steps: m.steps?.filter(s => !s.packAction), attachments: m.attachments?.map((a) => ({ id: a.id, name: a.name, kind: a.kind, size: a.size, cut: a.cut })) }));
       localStorage.setItem(KEPT, JSON.stringify({ messages, scope: store.scope, library: keptLibrary, at: Date.now() }));
     } catch {
       // Kept only while it fits; the chat works the same without it.

@@ -126,3 +126,35 @@ test("the host app's served tools open through the door, never every turn", asyn
   await t.run({ id: '1', name: 'more_tools', arguments: '{}' });
   assert.ok(names(t.offeredTools()).includes('neuralvault_view'), 'served views open with the door');
 });
+
+test('all enabled pack actions are reachable in pages and suggest mode also guards a direct write', async () => {
+  const defs = Array.from({ length: 32 }, (_, i) => ({ module: 'meetings', name: 'meeting_action_' + i, title: 'Meeting action ' + i, description: 'Meeting register', step: 'Checked the meeting register', input: {}, readOnly: i !== 31 }));
+  const seen = [];
+  const modules = { specs: () => defs, call: async name => { seen.push(name); return 'Completed'; } };
+  const t = tools({ modules });
+  assert.ok(names(t.offeredTools()).includes('find_pack_actions'));
+  const reached = new Set();
+  let offset = 0;
+  do {
+    const result = await t.run({ id: String(offset), name: 'find_pack_actions', arguments: JSON.stringify({ query: 'meetings', offset }) });
+    const page = JSON.parse(result.text);
+    for (const action of page.actions) { assert.ok(names(t.offeredTools()).includes(action.name)); reached.add(action.name); }
+    offset = page.nextOffset;
+  } while (offset !== null);
+  assert.equal(reached.size, defs.length);
+  await t.run({ id: 'work', name: defs[31].name, arguments: '{}' });
+  const guarded = tools({ modules, suggest: { on: () => true } });
+  const refused = await guarded.run({ id: 'held', name: defs[31].name, arguments: '{}' });
+  assert.match(refused.text, /for review/);
+  assert.equal(refused.wrote, undefined);
+  assert.deepEqual(guarded.steps.at(-1).packAction, { name: defs[31].name, args: {} });
+  assert.deepEqual(seen, [defs[31].name]);
+});
+
+test('a bank import with no named local file prepares a file chooser', async () => {
+  const def = { module: 'finance', name: 'finance_csv_import', title: 'Import bank transactions', input: { file: {}, account: {} }, readOnly: false };
+  const t = tools({ modules: { specs: () => [def], call: () => assert.fail('approval must come first') } });
+  const result = await t.run({ id: 'file', name: def.name, arguments: JSON.stringify({ file: 'unnamed.csv', account: 'Everyday' }) });
+  assert.equal(result.wrote, undefined);
+  assert.deepEqual(t.steps.at(-1).packAction, { name: def.name, args: { account: 'Everyday' } });
+});

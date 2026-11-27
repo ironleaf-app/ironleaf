@@ -691,6 +691,11 @@ export function followUpDraft(m: MeetingRec, done: (a: MeetingActionRec) => bool
 
 export const MEETING_TOOLS: WorkToolDef[] = [
   {
+    name: 'meeting_capture_item', module: 'meetings', write: true, title: 'Capture a meeting item', step: 'Captured a meeting item',
+    description: 'Add an agenda item, decision, question or assigned action to an existing meeting. Use the exact meeting path when names match.',
+    parameters: { type: 'object', properties: { meeting: { type: 'string' }, kind: { type: 'string', enum: ['agenda', 'decision', 'question', 'action'] }, words: { type: 'string' }, owner: { type: 'string' }, due: { type: 'string', description: 'Due date for an action, YYYY-MM-DD.' } }, required: ['meeting', 'kind', 'words'], additionalProperties: false },
+  },
+  {
     name: 'meeting_series_add',
     module: 'meetings',
     write: true,
@@ -804,6 +809,10 @@ export function findMeeting(meetings: readonly MeetingRec[], words: string, toda
     })
     .filter((x) => x.s > 0)
     .sort((a, b) => b.s - a.s || Math.abs(dateOf(a.m.date).getTime() - dateOf(today).getTime()) - Math.abs(dateOf(b.m.date).getTime() - dateOf(today).getTime()));
+  if (scored.length > 1 && scored[0].s === scored[1].s) {
+    const matches = scored.filter(row => row.s === scored[0].s);
+    throw new Error('Choose the meeting by its exact path: ' + matches.slice(0, 12).map(row => row.m.path).join(' · '));
+  }
   return scored[0]?.m ?? null;
 }
 
