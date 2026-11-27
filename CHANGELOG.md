@@ -6,6 +6,13 @@ the website. `tools/release.mjs` takes a release's notes from here when `--notes
 
 Format: one `## <version> — <YYYY-MM-DD>` heading a release, then one `- ` line a change.
 
+## 2.0.23 — 2026-11-27
+
+- Schedule a meeting from its project. Capture questions, decisions and assigned tasks from the meeting page, including during a recording.
+- Choose a replacement microphone in the meeting if the input drops.
+- Review and edit the follow-up before adding it to this week’s update. Weekly keeps its source meeting and preserves edits when you add it again.
+- Review the recipients, subject and contents before saving individual email drafts. Retrying the same follow-up skips recipients whose drafts were saved. A connected mail host also supports individual sending.
+
 ## 2.0.22 — 2026-11-27
 
 - Teams lets members verify a new PC and shared vault directly. Existing synced PCs check the vault’s key history before accepting a newer version.

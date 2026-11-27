@@ -11,6 +11,7 @@
 // read into the recorder's own transcript lines; the prep pack's words; the agent tools. Pure: no files, no DOM.
 
 import { ACTION_HEADING, AGENDA_HEADING, DECISION_HEADING, findActions, FILED_MARK, isMeetingNote, meetingDate, notePeople, readAction, sameJob, sameWhat } from './meetings';
+import { isIsoDay } from './hub';
 import { isoDay, readDay } from './days';
 import { clockWords, readClockTime } from './clock';
 import { readTranscript, wholeSentences } from './meeting-notes';
@@ -62,6 +63,7 @@ export interface MeetingRec {
   /** Its day (YYYY-MM-DD), and whether that came from the note (a property or its name) rather than when it was made. */
   date: string;
   dated: boolean;
+  originalDate?: string;
   time: string;
   where: string;
   people: string[];
@@ -239,6 +241,7 @@ export function readMeeting(n: { path: string; title: string; props: Record<stri
     path: n.path,
     title: n.title,
     date: isoOf(d),
+    ...(isIsoDay(props['occurrence-date']) ? { originalDate: props['occurrence-date'] } : {}),
     dated,
     time: timeOf(props, text),
     where: str(props.where ?? props.location) || (whereLine ? tidy(whereLine[1]).slice(0, 120) : ''),
@@ -301,7 +304,7 @@ export function readSeries(n: { path: string; title: string; props: Record<strin
   const s: SeriesRec = { path: n.path, name, cadence: str(p.cadence) || 'Weekly', day: WEEKDAY_NAMES.findIndex((w) => w.startsWith(dayWord.slice(0, 3)) && dayWord.length >= 3), time: str(p.time), where: str(p.where), attendees: listOf(p.attendees ?? p.people), project: linkName(str(p.project)), standing, meetings: mine.map((m) => m.path), next: null };
   const last = mine.find((m) => m.date < today) ?? null;
   const upcoming = mine.filter((m) => m.date >= today).sort((a, b) => a.date.localeCompare(b.date))[0];
-  s.next = upcoming ? upcoming.date : nextOfSeries(s, today, last?.date ?? null);
+  s.next = upcoming ? upcoming.date : nextOfSeries(s, today, last?.originalDate ?? last?.date ?? null);
   return s;
 }
 

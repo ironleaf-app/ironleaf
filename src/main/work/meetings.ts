@@ -8,6 +8,8 @@
 
 import { promises as fsp } from 'node:fs';
 import path from 'node:path';
+import { isIsoDay } from '../../shared/hub';
+import { meetingDelivery } from './meeting-follow-up';
 import { sameJob, sameWhat } from '../../shared/meetings';
 import { anyTaskText } from '../../shared/tasks';
 import { inFolder } from '../../shared/paths';
@@ -40,6 +42,7 @@ const dayShort = (iso: string, today: string) => {
 };
 
 export function makeMeetings(w: WorkModules): WorkPart {
+  const deliver = meetingDelivery(w);
   const isMeeting = (p: string, props: Record<string, unknown>) => isMeetingNote(p, props) && String(props.type ?? '').toLowerCase() !== 'meeting-series' && !/^(project|review|template|weekly-update)$/i.test(String(props.type ?? ''));
 
   /** The people the vault keeps notes on (People notes' titles). */
@@ -245,11 +248,17 @@ export function makeMeetings(w: WorkModules): WorkPart {
     }
   }
 
+  function moveDay(text: string, rel: string, next: string | null): string {
+    const m = meetingAt(rel);
+    const keep = m.series && m.dated && next && next !== m.date && !m.originalDate;
+    return setNoteProp(keep ? setNoteProp(text, 'occurrence-date', m.date) : text, 'date', next);
+  }
+
   async function setProp(rel: string, key: string, value: unknown): Promise<string> {
     const k = S(key, 20);
     if (!['date', 'time', 'where', 'project', 'series', 'people'].includes(k)) throw new Error('That can’t be changed here.');
     let v: unknown = typeof value === 'string' ? value.trim().slice(0, 200) : value;
-    if (k === 'date' && v && !/^\d{4}-\d{2}-\d{2}$/.test(String(v))) throw new Error('Give the day as it shows in the calendar.');
+    if (k === 'date' && v && !isIsoDay(v)) throw new Error('Give the day as it shows in the calendar.');
     if ((k === 'project' || k === 'series') && v) v = `[[${linkName(String(v))}]]`;
     if (k === 'people') {
       const list = (Array.isArray(value) ? value : []).map((x) => S(x, 80)).filter(Boolean).slice(0, 60);
@@ -258,7 +267,7 @@ export function makeMeetings(w: WorkModules): WorkPart {
       await w.change(rel, (text) => setNoteProp(text, key2, list.length ? list.map((p) => `[[${linkName(p)}]]`) : null));
       return '';
     }
-    await w.change(rel, (text) => setNoteProp(text, k, (v as string) || null));
+    await w.change(rel, (text) => k === 'date' ? moveDay(text, rel, (v as string) || null) : setNoteProp(text, k, (v as string) || null));
     return '';
   }
 
@@ -272,14 +281,14 @@ export function makeMeetings(w: WorkModules): WorkPart {
     const date = typeof p.date === 'string' ? p.date.trim().slice(0, 10) : undefined;
     const time = typeof p.time === 'string' ? p.time.trim().slice(0, 20) : undefined;
     const where = typeof p.where === 'string' ? p.where.trim().slice(0, 200) : undefined;
-    if (date !== undefined && date !== '' && !/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error('Give the day as it shows in the calendar.');
+    if (date !== undefined && date !== '' && !isIsoDay(date)) throw new Error('Give the day as it shows in the calendar.');
     if (eventId === undefined && calendarId === undefined && syncedAt === undefined && date === undefined && time === undefined && where === undefined) throw new Error('Nothing to write.');
     await w.change(rel, (text) => {
       let out = text;
       if (eventId !== undefined) out = setNoteProp(out, 'calendar-event', eventId || null);
       if (calendarId !== undefined) out = setNoteProp(out, 'calendar-id', calendarId || null);
       if (syncedAt !== undefined) out = setNoteProp(out, 'calendar-synced', syncedAt || null);
-      if (date !== undefined) out = setNoteProp(out, 'date', date || null);
+      if (date !== undefined) out = moveDay(out, rel, date || null);
       if (time !== undefined) out = setNoteProp(out, 'time', time || null);
       if (where !== undefined) out = setNoteProp(out, 'where', where || null);
       return out;
@@ -637,6 +646,8 @@ export function makeMeetings(w: WorkModules): WorkPart {
         w.need('meetings');
         return makePrepSheet(str(rel));
       },
+      'can-send-follow-up': () => !!w.d.sendMail,
+      'deliver-follow-up': (rel, to, subject, body, mode) => deliver(str(rel), to, subject, body, mode),
       'follow-up': (rel: unknown) => followUpDraft(meetingAt(str(rel))),
       project: (rel: unknown) => forProject(str(rel)),
     },

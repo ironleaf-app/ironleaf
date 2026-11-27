@@ -790,3 +790,60 @@ test('m7: a second same-day meeting keeps its typed name in its properties', () 
   const first = X.newMeetingText({ title: 'Cart retry standup', date: '2026-11-06', fileBase: '2026-11-06 Cart retry standup' });
   assert.equal(X.meetingProps(first).title, undefined, 'no extra title when the file is the name');
 });
+
+test('one meeting hands reviewed words to Weekly and retries only unfinished recipients', async () => {
+  const meeting = 'Meetings/Studio review.md';
+  const notes = '---\ntype: meeting\ndate: 2026-10-24\nproject: "[[Studio]]"\n---\n## Agenda\n\n- Keep this handwritten agenda.\n';
+  const received = [], drafts = [];
+  let refuse = true;
+  const v = setup({ [meeting]: notes }, { meetings: { on: true }, weekly: { on: true } }, TODAY, {
+    sendMail: async ({ to }) => {
+      if (to[0] === 'second@example.test' && refuse) return { ok: false, words: 'Test transport offline.' };
+      received.push(...to);
+      return { ok: true, words: '' };
+    },
+    saveFile: async o => { drafts.push(o); return 'draft.eml'; },
+  });
+  try {
+    await v.op('meetings', 'prep-sheet', meeting);
+    assert.match(v.read(meeting), /Keep this handwritten agenda/);
+    await v.op('meetings', 'add-item', meeting, 'decision', 'Use the east entrance.');
+    await v.op('meetings', 'add-item', meeting, 'action', 'Send the map — Sam Lee · by 26 Oct 2026');
+    await v.op('meetings', 'add-item', meeting, 'question', 'Which gate opens first?');
+    const { path: week, added } = await v.op('weekly', 'meeting-review', meeting, 'Send the revised map.');
+    assert.ok(added);
+    assert.ok(v.read(week).includes(meeting));
+    v.write(week, v.read(week).replace('Send the revised map.', 'The map was sent.'));
+    const before = v.read(week);
+    assert.equal((await v.op('weekly', 'meeting-review', meeting, 'Send the revised map.')).added, false);
+    assert.equal(v.read(week), before);
+    const recipients = ['first@example.test', 'second@example.test'];
+    const send = mode => v.op('meetings', 'deliver-follow-up', meeting, recipients, 'Studio review', 'The reviewed message.', mode);
+    assert.deepEqual((await send('send')).map(r => r.status), ['sent', 'failed']);
+    refuse = false;
+    assert.deepEqual((await send('send')).map(r => r.status), ['sent', 'sent']);
+    assert.deepEqual(received, recipients);
+    await send('draft'); await send('draft');
+    assert.equal(drafts.length, 2);
+    for (const [i, draft] of drafts.entries()) {
+      assert.ok(draft.data.includes('To: ' + recipients[i] + '\r\n'));
+      assert.equal(Buffer.from(draft.data.split('\r\n\r\n')[1].trim(), 'base64').toString(), 'The reviewed message.');
+    }
+  } finally { rmSync(v.dir, { recursive: true, force: true }); }
+});
+
+test('moving a monthly occurrence preserves its series day, the other occurrence and held notes', async () => {
+  const first = 'Meetings/First studio review.md', second = 'Meetings/Second studio review.md', series = 'Meetings/Series/Studio reviews.md';
+  const note = date => '---\ntype: meeting\nseries: "[[Studio reviews]]"\ndate: ' + date + '\n---\n## Notes\n\nKeep these minutes.\n';
+  const v = setup({ [first]: note('2026-09-20'), [second]: note('2026-10-20'), [series]: '---\ntype: meeting-series\ncadence: Monthly\n---\n' }, { meetings: { on: true } });
+  try {
+    const prior = v.read(first);
+    await v.op('meetings', 'set-prop', second, 'date', '2026-10-22');
+    await v.op('meetings', 'set-prop', second, 'date', '2026-10-23');
+    assert.equal(v.read(first), prior);
+    assert.ok(v.read(second).includes('Keep these minutes.'));
+    const model = await v.op('meetings', 'model');
+    assert.equal(model.meetings.find(m => m.path === second).originalDate, '2026-10-20');
+    assert.equal(model.series.find(s => s.path === series).next, '2026-11-20');
+  } finally { rmSync(v.dir, { recursive: true, force: true }); }
+});

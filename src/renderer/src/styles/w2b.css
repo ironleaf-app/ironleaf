@@ -503,3 +503,22 @@ button.card.w2b-stat.on { background: var(--sel); }
   font-size: var(--fs-small); line-height: 1.4; color: var(--text);
   max-block-size: 2.8em; overflow: hidden; overflow-wrap: anywhere;
 }
+
+.meeting-follow-up { margin-bottom: var(--space-3); }
+.meeting-follow-up summary { cursor: pointer; font-weight: 600; }
+.meeting-review-fields { display: grid; min-width: 0; gap: var(--space-2); border: 0; padding: 0; margin: var(--space-2) 0; }
+.meeting-review-fields label { display: grid; gap: var(--space-1); color: var(--text-muted); font-size: var(--fs-small); }
+.meeting-review-fields :is(input, textarea, select) { min-width: 0; width: 100%; box-sizing: border-box; font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: var(--r-2); padding: var(--space-2); }
+.meeting-review-fields textarea { resize: vertical; }
+.meeting-review-fields button { justify-self: start; }
+.meeting-quick-capture { margin-block: var(--space-2); }
+.meeting-quick-capture summary { cursor: pointer; font-size: var(--fs-small); color: var(--text-muted); }
+
+.meeting-follow-up, .meeting-quick-capture, .meeting-capture { container-type: inline-size; max-inline-size: var(--w-content); }
+.meeting-review-column { min-width: 0; display: grid; align-content: start; gap: var(--space-2); }
+.meeting-review-layout > [role='status'] { grid-column: 1 / -1; overflow-wrap: anywhere; }
+.meeting-review-layout > [role='status']:empty { display: none; }
+@container (min-width: 42rem) {
+  .meeting-review-layout { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); column-gap: var(--space-4); }
+  .meeting-capture > fieldset { grid-template-columns: minmax(8rem, 1fr) minmax(16rem, 3fr); align-items: end; }
+}

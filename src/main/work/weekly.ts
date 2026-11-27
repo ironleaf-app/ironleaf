@@ -4,10 +4,14 @@
 // page's own path (its history, so Undo takes it back); the update sent as text, a Word document or a PDF; an older long
 // note of updates brought in, one note a week, the old note left as it was; "due" said in the bell once a week.
 
+import { createHash } from 'node:crypto';
+import { readProps } from '../../shared/frontmatter';
+import { setNoteProp } from '../../shared/views';
 import { parseProject, openSteps } from '../../shared/project-file';
 import { projectNameKeys } from '../../shared/work-modules';
 import { formatDate } from '../../shared/dates';
-import { sameWhat } from '../../shared/meetings';
+import { isPrivatePath } from '../../shared/private';
+import { isMeetingNote, sameWhat } from '../../shared/meetings';
 import { applyWeeklyEdit, audienceFrom, gatheredSections, historyWords, importWeeklyNote, looksLikeWeeklyNote, mondayOf, newWeekly, readDayWords, readWeekly, streamKey, sureProject, weekShort, weekTitle, weeklyDocx, weeklyFileName, weeklyModel, weeklyText, writeWeekly, FLAGS, type ExportBrand, type ProjectInfo, type WeeklyEdit, type WeeklyUpdate } from '../../shared/weekly-updates';
 import type { ToolCtx, WorkModules, WorkNotice, WorkPart } from '../work-modules';
 import type { VaultIndex } from '../indexer';
@@ -82,6 +86,42 @@ export function makeWeekly(w: WorkModules): WorkPart {
     const s = await settings();
     const u = newWeekly(monday, last, { audience: S(opts.audience, 120) || s.audience });
     return w.newNote(await w.folderOf('weekly-update'), weeklyFileName(monday), writeWeekly(u));
+  }
+
+  let addingMeeting = false;
+  async function addMeetingReview(source: string, words: unknown) {
+    w.need('weekly');
+    if (typeof words !== 'string' || !words.trim() || words.length > 12000) throw new Error('Review up to 12,000 characters for Weekly.');
+    const meta = w.d.index.get(source);
+    if (!meta || isPrivatePath(source) || !isMeetingNote(source, meta.props)) throw new Error('Choose a meeting for the weekly update.');
+    if (addingMeeting) throw new Error('A meeting is being added to Weekly. Try again when it finishes.');
+    addingMeeting = true;
+    const vault = w.d.vault().root;
+    try {
+      const rel = await create(w.todayIso());
+      if (w.d.vault().root !== vault) throw new Error('Open the original vault to finish the handoff.');
+      const added = await w.change(rel, text => {
+        const u = readWeekly(rel, text);
+        const key = createHash('sha256').update(source).digest('hex');
+        const saved = readProps(text).reviewed_meetings;
+        const keys = Array.isArray(saved) ? saved.filter((v): v is string => typeof v === 'string') : [];
+        if (keys.includes(key)) return text;
+        if (u.status === 'Sent') throw new Error('This week’s update has already been sent.');
+        const name = String(meta.props.project ?? '').replace(/^\[\[|\]\]$/g, '').trim() || meta.title;
+        let section = u.sections.find(s => streamKey(s.name) === streamKey(name) || streamKey(s.project) === streamKey(name));
+        if (!section) {
+          applyWeeklyEdit(u, { kind: 'add-section', name });
+          section = u.sections[u.sections.length - 1];
+        }
+        section.progress.push(...words.split(/\r?\n/).map(line => line.trim().replace(/^[-*]\s+/, '')).filter(Boolean));
+        if (!u.attachments.some(a => a.link === source)) {
+          const label = u.attachments.some(a => a.name === meta.title) ? source : meta.title;
+          u.attachments.push({ link: source, name: label, what: 'Source meeting' });
+        }
+        return setNoteProp(writeWeekly(u, text), 'reviewed_meetings', [...keys, key]);
+      });
+      return { path: rel, added };
+    } finally { addingMeeting = false; }
   }
 
   async function edit(rel: string, edits: WeeklyEdit | WeeklyEdit[]): Promise<string> {
@@ -329,6 +369,7 @@ export function makeWeekly(w: WorkModules): WorkPart {
     id: 'weekly',
     ops: {
       model: () => model(),
+      'meeting-review': (rel, words) => addMeetingReview(str(rel), words),
       create: (week: unknown, opts: unknown) => create(str(week, 20) || w.todayIso(), (opts ?? {}) as { fromLast?: boolean; audience?: string }),
       edit: (rel: unknown, edits: unknown) => edit(str(rel), (edits ?? []) as WeeklyEdit[]),
       'mark-sent': (rel: unknown, opts: unknown) => markSent(str(rel), (opts ?? {}) as { date?: string; by?: string }),
