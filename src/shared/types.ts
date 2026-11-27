@@ -398,6 +398,7 @@ export interface ChatStepEvent {
 }
 
 export interface ChatSource {
+  meetingDecision?: { text: string; line: number };
   path: string;
   title: string;
   section: string;

@@ -1,23 +1,19 @@
+import { isEnterKey } from '../lib/enterKey';
+import { useMeetingDraft } from './meeting/useMeetingDraft';
 // The meeting note's Decisions (t248, 12 Nov 2026): beside its Tasks and Questions, the same rows
 // the Meetings room reads, logged in one wording ("Log decision", as the project page says it).
-import { useState } from 'react';
 import { Icon } from '../components/Icon';
 import { workCall, workDid } from '../state/workModules';
 import { useMeetingModel } from './meeting/useMeetingModel';
 
 export function MeetingDecisions({ path, text, canEdit }: { path: string; text: string; canEdit: boolean }) {
   const { ctx, model } = useMeetingModel(path, text);
-  const [adding, setAdding] = useState('');
+  const { value: adding, setValue: setAdding, save } = useMeetingDraft();
   if (!ctx) return null;
   if (!ctx.meeting) return null;
   if (!model) return null;
   const decisions = model.decisions;
-  const add = async () => {
-    const t = adding.trim();
-    if (!t) return;
-    setAdding('');
-    await workDid(workCall('meetings', 'add-item', path, 'decision', t));
-  };
+  const add = () => save((t) => workDid(workCall('meetings', 'add-item', path, 'decision', t)));
   return (
     <section className="mt-panel open" aria-label="Decisions in this note">
       <div className="mt-head" aria-hidden="true">
@@ -45,7 +41,7 @@ export function MeetingDecisions({ path, text, canEdit }: { path: string; text: 
           <div className="mt-foot">
             <div className="w2b-add" style={{ marginTop: 0, flex: '1 1 100%' }}>
               <Icon name="plus" size={12} />
-              <input value={adding} placeholder="Log decision" aria-label="Log decision" onChange={(e) => setAdding(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), void add())} onBlur={() => void add()} />
+              <input value={adding} placeholder="Log decision" aria-label="Log decision" onChange={(e) => setAdding(e.target.value)} onKeyDown={(e) => isEnterKey(e) && (e.preventDefault(), void add())} onBlur={() => void add()} />
             </div>
           </div>
         )}

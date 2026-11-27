@@ -1,3 +1,4 @@
+import { needsWindowsRepair } from '../shared/paths';
 // The vault's own Bin (5 Nov 2026). Nothing the Vault's assistant takes out is deleted for good: a note, canvas, view,
 // file or folder goes to the Bin, kept 30 days with who took it out, when and why, and comes back where it was with
 // Restore. The Bin is inside the vault (.neuralvault/bin, a hidden folder the index and every AI's reads leave out), so
@@ -11,7 +12,7 @@
 // vault here: what went there could not be listed or brought back by anyone but the person.
 
 import { createHash, randomBytes } from 'node:crypto';
-import { cp, mkdir, readFile, readdir, rename, rm, rmdir, stat, writeFile } from 'node:fs/promises';
+import { cp, lstat, mkdir, readFile, readdir, rename, rm, rmdir, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { emailAttachmentsFor, isEmailNoteText } from '../shared/email-note';
 import { filesFolderFor, ownsFolder, parseSidecar, writeSidecar } from '../shared/file-records';
@@ -121,6 +122,11 @@ export function cleanBinRel(given: unknown): string {
   return rel;
 }
 
+function validStoredPath(p: unknown): p is string {
+  return typeof p === 'string' && !!p && cleanBinRel(p) === p && !p.split('/').some(needsWindowsRepair)
+    && !/^(?:\.neuralvault|private notes|\.git)(?:\/|$)/i.test(p);
+}
+
 /** What `which` means: an id, a path, a title, else the one sure near title ("restore kick off" is Kick-off).
  *  Shared by restore and the gate (which checks what it means before it comes back). */
 export function matchBinItems(items: BinItem[], given: string): { matches: BinItem[]; suggestions: string[] } {
@@ -163,10 +169,32 @@ export function createVaultBin({ root, now = () => Date.now() }: { root: string;
   const binOf = () => path.join(root, ...BIN_DIR.split('/'));
   const full = (rel: string) => path.join(root, ...rel.split('/'));
 
+  async function noLinks(rel: string): Promise<boolean> {
+    let at = root;
+    for (const part of rel.split('/')) {
+      at = path.join(at, part);
+      try {
+        if ((await lstat(at)).isSymbolicLink()) return false;
+      } catch (err) {
+        return (err as NodeJS.ErrnoException).code === 'ENOENT';
+      }
+    }
+    return true;
+  }
+
   async function readItem(id: string): Promise<BinItem | null> {
     try {
+      if (!ID.test(id) || !await noLinks(`${BIN_DIR}/${id}/item.json`)) return null;
       const v = JSON.parse(await readFile(path.join(binOf(), id, 'item.json'), 'utf8')) as BinItem;
-      return v && v.id === id && typeof v.path === 'string' ? v : null;
+      if (!v || v.id !== id || !validStoredPath(v.path)) return null;
+      if (v.files !== undefined && (v.files !== filesFolderFor(v.path) || !validStoredPath(v.files))) return null;
+      if (v.attachments !== undefined && (v.attachments !== emailAttachmentsFor(v.path) || !validStoredPath(v.attachments))) return null;
+      for (const rel of [v.path, v.files, v.attachments]) if (rel && !await noLinks(rel)) return null;
+      const home = `${BIN_DIR}/${id}`;
+      if (!await noLinks(`${home}/item/${path.posix.basename(v.path)}`)) return null;
+      if (v.files && !await noLinks(`${home}/files/${path.posix.basename(v.files)}/.files.json`)) return null;
+      if (v.attachments && !await noLinks(`${home}/attachments/${path.posix.basename(v.attachments)}`)) return null;
+      return v;
     } catch {
       return null;
     }
@@ -176,6 +204,7 @@ export function createVaultBin({ root, now = () => Date.now() }: { root: string;
    *  beside it when they came too); an intent with nothing across is cleaned, the original untouched. */
   async function recoverMoving(id: string): Promise<BinItem | null> {
     const home = path.join(binOf(), id);
+    if (!await noLinks(`${BIN_DIR}/${id}/moving.json`)) return null;
     let moving: { path?: unknown; kind?: unknown; title?: unknown; by?: unknown; at?: unknown; why?: unknown; sha?: unknown } | null = null;
     try {
       moving = JSON.parse(await readFile(path.join(home, 'moving.json'), 'utf8')) as Record<string, unknown>;
@@ -186,6 +215,7 @@ export function createVaultBin({ root, now = () => Date.now() }: { root: string;
       await rm(home, { recursive: true, force: true }).catch(() => {});
       return null;
     }
+    if (!validStoredPath(moving.path) || !await noLinks(moving.path)) return null;
     const itemFile = path.join(home, 'item', path.posix.basename(moving.path));
     const across = await stat(itemFile).then(() => true, () => false);
     if (!across) {
@@ -232,7 +262,10 @@ export function createVaultBin({ root, now = () => Date.now() }: { root: string;
         continue;
       }
       const recovered = await recoverMoving(id).catch(() => null);
-      if (recovered) out.push(recovered);
+      if (recovered) {
+        const checked = await readItem(id);
+        if (checked) out.push(checked);
+      }
     }
     return out.sort((a, b) => b.at - a.at);
   }
@@ -307,6 +340,7 @@ export function createVaultBin({ root, now = () => Date.now() }: { root: string;
   async function put(given: string, { by = 'The side chat', why = '' }: { by?: string; why?: string } = {}): Promise<BinItem> {
     const rel = cleanBinRel(given);
     if (!rel) throw new Error('That isn’t something in the notes that can go to the Bin (Private notes and hidden folders are their own).');
+    if (!validStoredPath(rel) || !await noLinks(rel) || !await noLinks(BIN_DIR)) throw new Error('That path cannot be moved to the Bin.');
     const src = full(rel);
     let folder = false;
     try {
@@ -339,7 +373,7 @@ export function createVaultBin({ root, now = () => Date.now() }: { root: string;
         const own = filesFolderFor(rel);
         // Most notes have no Files folder: that is not "left behind", only a folder that failed to move is.
         const hasFiles = await stat(full(own)).then((s) => s.isDirectory(), () => false);
-        if (hasFiles) {
+        if (hasFiles && await noLinks(own)) {
           try {
             await moveTo(full(own), path.join(home, 'files', path.basename(own)));
             files = own;
@@ -358,7 +392,7 @@ export function createVaultBin({ root, now = () => Date.now() }: { root: string;
       if (kind === 'note' && text !== null && isEmailNoteText(text)) {
         const att = emailAttachmentsFor(rel);
         const hasAtt = att ? await stat(full(att)).then((s) => s.isDirectory(), () => false) : false;
-        if (att && hasAtt) {
+        if (att && hasAtt && await noLinks(att)) {
           try {
             await moveTo(full(att), path.join(home, 'attachments', path.basename(att)));
             attachments = att;

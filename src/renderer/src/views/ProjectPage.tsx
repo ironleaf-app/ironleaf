@@ -1,3 +1,4 @@
+import { projectOwnsFolder } from '../../../shared/project-file';
 // A project's page (docs/PROJECTS-DESIGN.md; t255, 13 Nov 2026: the folio's one long page became real tabs —
 // Overview first, then Your next, Waiting, Open questions, Key dates, Notes and files, People, Decisions, Risks,
 // Updates, Money and Activity — under a fixed head with the name, the standing and the status). The hub, workspace
@@ -642,6 +643,13 @@ function ProjectShell({
   const { data: finance } = useFinance(billsOn);
   // Its meetings' open questions, longest waiting first (step 2: asked in a meeting, open until answered).
   const { data: meetingsView } = useWork<MeetingsView>('meetings');
+  const meetingDecisions = useMemo(() => {
+    const members = new Set([...view.notes, ...view.activity].map((entry) => entry.path));
+    const dir = projectOwnsFolder(path) ? path.slice(0, path.lastIndexOf('/') + 1) : '';
+    return (meetingsView?.meetings ?? []).filter((m) => members.has(m.path) || (dir && m.path.startsWith(dir)))
+      .flatMap((m) => m.decisions.map((item) => ({ item, path: m.path, meeting: m.title, date: m.date })))
+      .sort((a, b) => b.date.localeCompare(a.date));
+  }, [path, view, meetingsView]);
   const questions = useMemo(() => {
     const mine = p.name.trim().toLowerCase();
     return (meetingsView?.meetings ?? [])
@@ -658,8 +666,8 @@ function ProjectShell({
   const [memory, remember] = useProjectMemory(path);
   const memReady = useProjectMemoryReady();
   const counts = useMemo(
-    () => tabCounts({ view, files, questions, path, hub, today, changes, delivered, agentLines, money: { on: billsOn, data: finance } }, byPath),
-    [view, files, questions, path, hub, today, changes, delivered, agentLines, billsOn, finance, byPath],
+    () => tabCounts({ view, files, questions, meetingDecisions, path, hub, today, changes, delivered, agentLines, money: { on: billsOn, data: finance } }, byPath),
+    [view, files, questions, meetingDecisions, path, hub, today, changes, delivered, agentLines, billsOn, finance, byPath],
   );
   const tabs = useMemo(() => PROJECT_TABS.map((t) => (t.id === 'overview' ? { id: t.id, title: t.title } : { id: t.id, title: t.title, count: counts[t.id] ?? 0 })), [counts]);
   const remembered = isProjectTabId(memory.section) ? memory.section : memory.tab !== undefined ? (sectionForTab(memory.tab) ?? undefined) : undefined;
@@ -695,7 +703,7 @@ function ProjectShell({
   };
   const go = (ref: ItemRef, title?: string) => (e?: React.MouseEvent) => void openHubItem(openCtx, ref, title, e);
   const goSection = (id: FolioSection) => openTab(id === 'files' ? 'notes' : id, { push: true, focus: true });
-  const ctx: TabsCtx = { view, files, questions, path, me: who, hub, connected: [...(connected?.elsewhere ?? []), ...(connected?.filedElsewhere ?? [])], today, go, goSection, refreshFiles: () => void loadFolder(true), noteMenu: (a) => void noteMenu(a), changes, fileList, delivered, agentLines, fileNames, money: { on: billsOn, data: finance } };
+  const ctx: TabsCtx = { view, files, questions, meetingDecisions, path, me: who, hub, connected: [...(connected?.elsewhere ?? []), ...(connected?.filedElsewhere ?? [])], today, go, goSection, refreshFiles: () => void loadFolder(true), noteMenu: (a) => void noteMenu(a), changes, fileList, delivered, agentLines, fileNames, money: { on: billsOn, data: finance } };
   // A tab with nothing in it reads quietly, never hidden (t255): the empty set marks quiet tabs and their quiet
   // panels, so the order never shifts. A brand-new project starts from the Overview's empty start.
   const empty = folioEmptySections(ctx, byPath);

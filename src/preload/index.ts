@@ -566,7 +566,8 @@ const api = {
   /** Export everything (31 Oct 2026): one zip saved where chosen, in Settings › Backups and sync and the palette. */
   portable: {
     exportAll: (o?: { includePrivate?: boolean; file?: string }) => flagUnlockNeeded(invoke<PortableResult | null>('portable:export', o ?? {})),
-    exportProject: (project: string, o?: { includePrivate?: boolean; file?: string }) => flagUnlockNeeded(invoke<PortableResult | null>('portable:export-project', project, o ?? {})),
+    previewProject: (project: string) => invoke<{ entries: string[]; token: string }>('portable:preview-project', project),
+    exportProject: (project: string, o?: { expectedPreview?: string; includePrivate?: boolean; file?: string }) => flagUnlockNeeded(invoke<PortableResult | null>('portable:export-project', project, o ?? {})),
     cancel: () => invoke<void>('portable:cancel'),
     onProgress: (cb: (p: PortableProgress) => void) => subscribe('portable:progress', cb),
   },

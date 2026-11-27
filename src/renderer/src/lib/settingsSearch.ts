@@ -103,6 +103,7 @@ export interface SettingEntry {
   hint?: string;
   /** Other words people look for it by. */
   words?: string;
+  aliases?: readonly string[];
   /** A command in Settings › Keys (its id): choosing it shows that command's keys. */
   command?: string;
 }
@@ -289,8 +290,12 @@ export function commandEntries(commands: { id: string; name: string; aliasOf?: s
 /** Every pack's row in Settings › Packs, in the catalogue's own words, with each pack's earlier names as well: an old
  *  name ("Health and Fitness") still finds the pack. The index's packs rows come from here, so there is one copy. */
 export function moduleEntries(): SettingEntry[] {
-  return LIFE_MODULES.map((m) => ({ section: 'packs', title: m.name, hint: m.words, words: `pack module ${m.id} switch on off ${MODULE_EXTRA[m.id] ?? ''} ${(m.aliases ?? []).join(' ')}` }));
+  return LIFE_MODULES.map((m) => ({ section: 'packs', title: m.name, hint: m.words, aliases: m.aliases, words: `pack module ${m.id} switch on off ${MODULE_EXTRA[m.id] ?? ''} ${(m.aliases ?? []).join(' ')}` }));
 }
+
+export const PACK_PART_ENTRIES = LIFE_MODULES.flatMap((m) => m.parts.map((part): SettingEntry => ({
+  section: 'packs', title: part.name, hint: `${m.name} · ${part.words}`, words: m.name,
+})));
 
 /** Lower case, without accents, with typographic quotes as plain ones: "Note’s" is found by "notes" and "note's". */
 const plain = (text: string): string =>
@@ -348,6 +353,7 @@ export function searchSettings(query: string, entries: SettingEntry[], sectionLa
     if (!matched) return;
     const t = plain(entry.title).replace(/'/g, '');
     if (t === whole) score += 40;
+    else if (entry.aliases?.some((alias) => plain(alias) === whole)) score += 20;
     else if (t.startsWith(whole)) score += 20;
     else if (t.includes(whole)) score += 10;
     // How many words matched outranks how well (F24's tiers): an entry matching every word always stands above

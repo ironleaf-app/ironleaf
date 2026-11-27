@@ -56,6 +56,7 @@ export type DocNotice = { kind: 'conflict'; copy: string } | { kind: 'missing' }
 
 export type SaveState = 'saved' | 'saving' | 'error' | 'conflict';
 
+const renameListeners = new Set<(from: string, to: string) => void>();
 const open = new Map<string, Doc>();
 const loading = new Map<string, Promise<Doc>>();
 // Docs just closed, kept warm (t146, 9 Nov 2026): returning to a note re-read it over the bridge before the
@@ -186,6 +187,11 @@ export const docs = {
   },
 
   /** Every open document's text as it changes (the suggested changes in a note follow it; state/suggestions.ts). */
+  onRename(fn: (from: string, to: string) => void): () => void {
+    renameListeners.add(fn);
+    return () => { renameListeners.delete(fn); };
+  },
+
   onText(fn: TextListener): () => void {
     textListeners.add(fn);
     return () => textListeners.delete(fn);
@@ -424,6 +430,7 @@ export const docs = {
 
   /** A file moved: its open document (and anything inside a moved folder) follows. */
   async renamed(from: string, to: string): Promise<void> {
+    for (const notify of renameListeners) notify(from, to);
     const moveFile = (p: string): string => (p === from ? to : p.startsWith(`${from}/`) ? to + p.slice(from.length) : p);
     for (const p of [...recent.keys()]) if (p === from || p.startsWith(`${from}/`)) recent.delete(p);
     for (const [path, doc] of [...open]) {

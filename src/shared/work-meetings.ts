@@ -773,6 +773,7 @@ export function findMeeting(meetings: readonly MeetingRec[], words: string, toda
   if (!w) return meetings.filter((m) => m.dated && m.date >= today).sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time))[0] ?? null;
   const exact = meetings.find((m) => m.path === w || m.path.replace(/\.md$/i, '') === w.replace(/\.md$/i, ''));
   if (exact) return exact;
+  if (/\.md$/i.test(w)) return null;
   const day = /(\d{4}-\d{2}-\d{2})/.exec(w)?.[1];
   const q = w.toLowerCase().replace(/\d{4}-\d{2}-\d{2}/, '').trim();
   const scored = meetings
@@ -923,7 +924,7 @@ export function meetingWords(m: MeetingRec, done: (a: MeetingActionRec) => boole
   if (m.series) lines.push(`Series: ${m.series}`);
   if (m.agenda.length) lines.push('Agenda:', ...m.agenda.map((a) => `- [${a.done ? 'x' : ' '}] ${a.text}`));
   if (m.summary) lines.push('Summary:', wholeSentences(m.summary, 2000));
-  lines.push(m.decisions.length ? 'Decisions:' : 'No decisions recorded.', ...m.decisions.map((d) => `- ${d.text}`));
+  lines.push(m.decisions.length ? 'Decisions:' : 'No decisions recorded.', ...m.decisions.map((d) => `- ${d.text} [${m.path}, line ${d.line + 1}]`));
   if (m.questions.length) lines.push('Questions:', ...m.questions.map((q) => `- ${q.answered ? 'Answered' : 'Open'}: ${q.what}${q.owner ? ` (for ${q.owner})` : q.askedBy ? ` (asked by ${q.askedBy})` : ''}${q.answer ? `, answer: ${q.answer}` : ''}`));
   lines.push(m.actions.length ? 'Actions:' : 'No actions recorded.', ...m.actions.map((a) => `- [${done(a) ? 'x' : ' '}] ${a.what}${a.who ? ` — ${a.who}` : ''}${a.due ? ` · by ${a.due}` : a.whenWords ? ` · ${a.whenWords}` : ''}`));
   if (m.transcripts) lines.push(`Transcript: ${m.transcripts} ${m.transcripts === 1 ? 'part' : 'parts'} in the note.`);

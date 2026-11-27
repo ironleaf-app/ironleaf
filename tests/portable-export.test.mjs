@@ -199,3 +199,34 @@ test('a project export holds only its own note, folder, files and tables', async
   assert.ok(tasks.includes('Order cups'));
   assert.ok((await textOf(dest, 'README.md')).includes('Riverside Pop-up'));
 });
+
+test('the preview and saved project ZIP agree for projects in shared folders', async () => {
+  const vault = path.join(work, 'shared');
+  const project = { path: 'Projects/Market.md', name: 'Market', tags: [] };
+  const member = 'Meetings/Stall planning.md';
+  const neighbour = 'Projects/Unrelated.md';
+  const hidden = 'Private notes/Hidden.md';
+  const attachment = 'Meetings/Files/Stall planning/plan.pdf';
+  for (const rel of [project.path, member, neighbour, hidden, attachment]) put(path.join(vault, rel), '# Fixture');
+  const handlers = new Map();
+  const members = [member, hidden];
+  P.registerPortableExport({
+    handle: (name, fn) => handlers.set(name, fn), send() {}, root: () => vault,
+    vaultName: () => 'Test', allowFile: true, projects: () => [project], projectMembers: () => members,
+    notes: () => [member, neighbour, hidden].map((rel) => ({ path: rel, title: rel, props: { type: 'meeting' }, mtime: T })),
+    tasks: () => [], moduleTypes: () => [],
+  });
+  const preview = await handlers.get('portable:preview-project')(project.path);
+  assert.ok(preview.entries.includes(member) && preview.entries.includes(attachment));
+  assert.ok(!preview.entries.includes(neighbour) && !preview.entries.includes(hidden));
+  const file = path.join(work, 'shared-project.zip');
+  const save = () => handlers.get('portable:export-project')(project.path, { expectedPreview: preview.token, file });
+  await save();
+  assert.deepEqual(await names(file), preview.entries);
+  const meetings = await textOf(file, 'tables/meetings.csv');
+  assert.ok(meetings.includes(member) && !meetings.includes(neighbour) && !meetings.includes(hidden));
+  const previous = readFileSync(file);
+  members.push(neighbour);
+  await assert.rejects(save, /review the current list/);
+  assert.deepEqual(readFileSync(file), previous);
+});

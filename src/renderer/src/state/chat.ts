@@ -125,9 +125,20 @@ function set(patch: Partial<ChatStore>): void {
   if ('messages' in patch || 'scope' in patch) keepChat();
 }
 
+function renameMeetingSources(from: string, to: string) {
+  let changed = false;
+  const messages = store.messages.map((entry) => {
+    if (!entry.sources?.some((s) => s.meetingDecision && (s.path === from || s.path.startsWith(from + '/')))) return entry;
+    changed = true;
+    return { ...entry, sources: entry.sources.map((s) => s.meetingDecision && (s.path === from || s.path.startsWith(from + '/')) ? { ...s, path: to + s.path.slice(from.length) } : s) };
+  });
+  if (changed) set({ messages });
+}
+
 function listen(): void {
   if (listening) return;
   listening = true;
+  docs.onRename(renameMeetingSources);
   window.nv.on.chatDelta(({ requestId, text }) => {
     if (requestId !== store.requestId) return;
     set({ messages: store.messages.map((m) => (m.pending ? { ...m, content: m.content + text } : m)) });

@@ -162,7 +162,7 @@ test('using a login is not revealing it: no step-up to use or copy a plain login
   const r = rig('vault-use', { mode: 'until-sign-out' });
   const first = r.make();
   await first.store.setUp('correct horse battery', true);
-  const login = await first.secrets.add({ name: 'NAS login', kind: 'password', value: 'hunter2-secret', username: 'root' });
+  const login = await first.secrets.add({ name: 'NAS login', where: 'storage.example.test:22', kind: 'password', value: 'hunter2-secret', username: 'root' });
   const key = await first.secrets.add({ name: 'Server key', kind: 'api-key', value: 'api-key-value-123456' });
   await tick();
 
@@ -170,8 +170,9 @@ test('using a login is not revealing it: no step-up to use or copy a plain login
   // sensitive kind still asks.
   const second = r.make();
   assert.equal(await second.store.tryRememberedUnlock(), true);
-  assert.deepEqual(await second.secrets.useValue(login.id), { username: 'root', value: 'hunter2-secret' }, 'a machine login is used without a step-up');
-  assert.deepEqual(await second.secrets.useValue(key.id), { username: '', value: 'api-key-value-123456' }, 'even a key used to connect is used, not revealed: no step-up');
+  assert.deepEqual(await second.secrets.useValue(login.id, 'storage.example.test'), { username: 'root', value: 'hunter2-secret' }, 'a machine login is used without a step-up');
+  await assert.rejects(second.secrets.useValue(key.id, 'storage.example.test'), /SSH password or private key/);
+  await assert.rejects(second.secrets.useValue(login.id, 'storage.example.test:2022'), /host and port/);
   const copied = await second.secrets.copy(login.id);
   assert.equal(r.clipboard.text, 'hunter2-secret', 'copying a plain login needs no prompt');
   assert.equal(typeof copied.seconds, 'number');
@@ -180,7 +181,7 @@ test('using a login is not revealing it: no step-up to use or copy a plain login
 
   // Locked, using is refused like everything else.
   second.store.lock();
-  await assert.rejects(() => second.secrets.useValue(login.id), /locked/, 'using a login still needs Secrets unlocked');
+  await assert.rejects(() => second.secrets.useValue(login.id, 'storage.example.test'), /locked/, 'using a login still needs Secrets unlocked');
 });
 
 test('changing the choice while open works the period out again from when it began', async () => {
@@ -316,6 +317,6 @@ test('the app wiring (8.5): opening a vault does not wipe the remembered unlock,
   assert.ok(app.includes("watchLockEvents(powerMonitor, () => privateNotes.lock(), () => settings.raw.prefs.secretsLockOnWindowsLock)"), 'Windows lock and sleep lock only when the person turned it on');
   assert.ok(app.includes("watchSignOutEvents(powerMonitor, () => privateNotes.lock())"), 'signing out of Windows locks');
   assert.ok(app.includes("next.on('session-end', () => privateNotes.lock())"), 'the window’s session-end (sign-out, shutdown) locks too');
-  assert.ok(app.includes('login: async (id) => secrets.useValue(id)'), 'a machine’s login is used, not revealed');
+  assert.ok(app.includes('login: async (id, destination) => secrets.useValue(id, destination)'), 'a machine’s login is used, not revealed');
   assert.ok(app.includes("path.join(host.dataDir, 'remembered-unlock.json')"), 'the sealed remembered unlock is kept in the host’s data, outside the vault');
 });

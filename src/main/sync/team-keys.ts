@@ -21,6 +21,7 @@ const X25519_SPKI = Buffer.from('302a300506032b656e032100', 'hex');
 const WRAP_VERSION = 0x01;
 
 export interface DeviceKeyPair {
+  verified?: string[];
   /** Raw 32-byte public key, base64 (what the cloud keeps beside the device). */
   publicKey: string;
   /** PKCS#8 DER of the private key (kept sealed by the operating system, never sent). */

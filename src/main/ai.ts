@@ -219,7 +219,9 @@ export class AiService {
     // The notes it read that the answer links (else the ones it read), and the notes it made.
     const read = [...new Set(steps.filter((s) => s.kind === 'read' && s.path).map((s) => s.path!))].map((p) => ({ path: p, title: this.index.get(p)?.title ?? p, section: '' }));
     const linked = read.filter((s) => run.text.toLowerCase().includes(`[[${s.title.toLowerCase()}`));
-    const sources = (linked.length ? linked : read).slice(0, 6);
+    const citedDecisions = tools.meetingSources.filter((s) => s.meetingDecision && run.text.includes(s.meetingDecision.text));
+    const meetingSources = citedDecisions.length ? citedDecisions : tools.meetingSources;
+    const sources = [...meetingSources, ...(linked.length ? linked : read).filter((s) => !meetingSources.some((m) => m.path === s.path))].slice(0, 12);
     for (const p of tools.proposals) this.proposals.set(p.id, p);
     // One answer's proposals wait as one change set (10.0, v2changes): the chat card and the review panel read the same
     // waiting set. When no set waits (no vault, or the offer refused), the chat's own cards still answer.

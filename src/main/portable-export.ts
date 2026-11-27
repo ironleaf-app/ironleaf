@@ -1,3 +1,6 @@
+import { filesFolderFor } from '../shared/file-records';
+import { createHash } from 'node:crypto';
+import { projectOwnsFolder } from '../shared/project-file';
 // Export everything (31 Oct 2026): one zip saved where the person chooses. Notes exactly as on disk (folders kept),
 // attachments and assets beside them, one CSV per record type, a plain README, and nothing secret unless "Include
 // my private notes" is ticked (then decrypted, only after unlocking). A cancelled export leaves no half file: the
@@ -38,6 +41,8 @@ export interface ExportPortableInput {
   day?: string;
   includePrivate: boolean;
   project?: { path: string; name: string };
+  members?: ReadonlySet<string>;
+  expectedPreview?: string;
   files: PortableFile[];
   notes: PortableNote[];
   projects: PortableProject[];
@@ -56,16 +61,21 @@ const isOwn = (rel: string) => rel === '.neuralvault' || rel.startsWith('.neural
 const isPrivateRel = (rel: string) => rel === 'Private notes' || rel.startsWith('Private notes/');
 
 const dirOf = (p: string) => (p.includes('/') ? p.slice(0, p.lastIndexOf('/')) : '');
-const inProject = (rel: string, projectPath: string) => rel === projectPath || (dirOf(projectPath) !== '' && rel.startsWith(`${dirOf(projectPath)}/`));
+const inProject = (rel: string, projectPath: string, members?: ReadonlySet<string>) => rel === projectPath || members?.has(rel) || (projectOwnsFolder(projectPath) && dirOf(projectPath) !== '' && rel.startsWith(`${dirOf(projectPath)}/`));
 
 /** The files that go in the zip: everything except Ironleaf's own, Git's history, and (by default) private notes.
  *  A project export holds only that project's note and folder. Encrypted private files never go in as they are. */
-export function filterPortableFiles(files: PortableFile[], o: { includePrivate: boolean; project?: string }): PortableFile[] {
+export function filterPortableFiles(files: PortableFile[], o: { includePrivate: boolean; project?: string; members?: ReadonlySet<string> }): PortableFile[] {
+  const homes = o.project ? new Set([o.project, ...(o.members ?? [])].map(filesFolderFor)) : new Set<string>();
+  const inFilesHome = (rel: string) => {
+    for (let parent = dirOf(rel); parent; parent = dirOf(parent)) if (homes.has(parent)) return true;
+    return false;
+  };
   return files.filter((f) => {
     if (isOwn(f.rel)) return false;
     if (isPrivateRel(f.rel)) return false;
     if (f.rel.endsWith('.nvlock') || f.rel.endsWith('.nvsecret') || f.rel.endsWith('.nvkey')) return false;
-    if (o.project && !inProject(f.rel, o.project)) return false;
+    if (o.project && !inProject(f.rel, o.project, o.members) && !inFilesHome(f.rel)) return false;
     return true;
   });
 }
@@ -74,21 +84,12 @@ function throwIfCancelled(shouldCancel?: () => boolean): void {
   if (shouldCancel?.()) throw new PortableCancelled();
 }
 
-/** Notes, projects and tasks for the zip: a project export holds only that project's own. */
-function scoped<T extends { path: string }>(rows: T[], project?: string): T[] {
-  return project ? rows.filter((r) => inProject(r.path, project)) : rows;
-}
-
-function scopedTasks(tasks: PortableTask[], project?: string, projectPath?: string): PortableTask[] {
-  if (!project) return tasks;
-  return tasks.filter((t) => t.path === project || inProject(t.path, project) || (projectPath !== undefined && t.path === projectPath));
-}
-
 /** Every table for the zip. A project export holds only its own tables: private notes, secrets and health stay out. */
-export function buildPortableTables(o: { notes: PortableNote[]; projects: PortableProject[]; tasks: PortableTask[]; moduleTypes: ModuleTypeInput[]; moduleFolder?: (typeId: string) => string; includePrivate: boolean; project?: string; secrets?: PortableSecret[]; health?: HealthTableInput | null }): PortableTable[] {
-  const notes = scoped(o.notes.filter((n) => isNoteRel(n.path)), o.project);
-  const projects = scoped(o.projects, o.project);
-  const tasks = o.project ? scopedTasks(o.tasks, o.project) : o.tasks;
+export function buildPortableTables(o: { notes: PortableNote[]; projects: PortableProject[]; tasks: PortableTask[]; moduleTypes: ModuleTypeInput[]; moduleFolder?: (typeId: string) => string; includePrivate: boolean; project?: string; permitted?: ReadonlySet<string>; secrets?: PortableSecret[]; health?: HealthTableInput | null }): PortableTable[] {
+  const allow = (r: { path: string }) => !o.project || (o.permitted ? o.permitted.has(r.path) : inProject(r.path, o.project));
+  const notes = o.notes.filter((n) => isNoteRel(n.path) && allow(n));
+  const projects = o.projects.filter(allow);
+  const tasks = o.tasks.filter(allow);
   const tables: PortableTable[] = [];
   for (const t of [projectsTable(projects), tasksTable(tasks), meetingsTable(notes), peopleTable(notes)]) if (t) tables.push(t);
   tables.push(...packTables(notes, o.moduleTypes, o.moduleFolder));
@@ -100,6 +101,24 @@ export function buildPortableTables(o: { notes: PortableNote[]; projects: Portab
     if (o.health) tables.push(...healthTables(o.health));
   }
   return tables.sort((a, b) => a.file.localeCompare(b.file));
+}
+
+function portablePlan(o: Pick<ExportPortableInput, 'root' | 'files' | 'includePrivate' | 'project' | 'members' | 'notes' | 'projects' | 'tasks' | 'moduleTypes' | 'moduleFolder' | 'health' | 'secrets' | 'privateNotes'>) {
+  const kept = filterPortableFiles(o.files, { includePrivate: o.includePrivate, project: o.project?.path, members: o.members });
+  const tables = buildPortableTables({ ...o, project: o.project?.path, permitted: new Set(kept.map((f) => f.rel)) });
+  const used = new Set([...kept.map((f) => f.rel), ...(o.privateNotes ?? []).map((n) => n.path)].map((p) => p.toLowerCase()));
+  function available(name: string) {
+    const ext = path.extname(name);
+    let candidate = name;
+    for (let n = 2; used.has(candidate.toLowerCase()); n++) candidate = name.slice(0, -ext.length) + '-' + n + ext;
+    used.add(candidate.toLowerCase());
+    return candidate;
+  }
+  for (const t of tables) t.file = available(t.file);
+  const guide = available('README.md');
+  const entries = [...kept.map((f) => f.rel), ...tables.map((t) => t.file), guide].sort();
+  const token = createHash('sha256').update(JSON.stringify([o.root, o.project?.path, entries])).digest('hex');
+  return { kept, tables, guide, entries, token };
 }
 
 export function portableDay(day?: string): string {
@@ -116,9 +135,9 @@ export async function exportPortable(o: ExportPortableInput): Promise<PortableRe
   throwIfCancelled(o.shouldCancel);
   o.onProgress?.({ phase: 'listing', done: 0, total: o.files.length });
 
-  const kept = filterPortableFiles(o.files, { includePrivate: o.includePrivate, project: o.project?.path });
+  const { kept, tables, guide, token } = portablePlan(o);
+  if (o.expectedPreview !== undefined && token !== o.expectedPreview) throw new Error('The project files have changed. Reopen the export to review the current list.');
   const day = portableDay(o.day);
-  const tables = buildPortableTables({ notes: o.notes, projects: o.projects, tasks: o.tasks, moduleTypes: o.moduleTypes, moduleFolder: o.moduleFolder, includePrivate: o.includePrivate, project: o.project?.path, secrets: o.secrets, health: o.health });
   const notesCount = kept.filter((f) => isNoteRel(f.rel)).length + (o.includePrivate && !o.project ? (o.privateNotes?.length ?? 0) : 0);
   const readme = portableReadme({ vault: o.vaultName, day, project: o.project?.name, notes: notesCount, files: kept.length + tables.length + 1 + (o.includePrivate && !o.project ? (o.privateNotes?.length ?? 0) : 0), tables, includePrivate: o.includePrivate && !o.project });
 
@@ -143,7 +162,7 @@ export async function exportPortable(o: ExportPortableInput): Promise<PortableRe
       yield { name: tables[i].file, data: tableBytes[i], mtime: Date.now() };
     }
     throwIfCancelled(o.shouldCancel);
-    yield { name: 'README.md', data: readmeBytes, mtime: Date.now() };
+    yield { name: guide, data: readmeBytes, mtime: Date.now() };
   }
 
   o.onProgress?.({ phase: 'packing', done: 0, total });
@@ -168,6 +187,7 @@ export interface PortableServiceDeps {
   allowFile: boolean;
   notes(): PortableNote[];
   projects(): PortableProject[];
+  projectMembers?(path: string): string[];
   tasks(): PortableTask[];
   moduleTypes(): ModuleTypeInput[];
   moduleFolder?(typeId: string): string;
@@ -184,7 +204,16 @@ export function registerPortableExport(d: PortableServiceDeps): { cancel(): void
   let cancelled = false;
   const progress = (p: PortableProgress) => d.send('portable:progress', p);
 
-  async function run(o: { file?: unknown; includePrivate?: unknown; project?: { path: string; name: string } }): Promise<PortableResult | null> {
+  function projectInfo(projectPath: unknown) {
+    const found = d.projects().find((p) => p.path === projectPath);
+    if (!found) throw new Error('That project is not there any more.');
+    return { path: found.path, name: found.name };
+  }
+  function records(project?: { path: string; name: string }) {
+    return { project, members: project ? new Set(d.projectMembers?.(project.path)) : undefined, notes: d.notes(), projects: d.projects(), tasks: d.tasks(), moduleTypes: d.moduleTypes(), moduleFolder: d.moduleFolder };
+  }
+
+  async function run(o: { expectedPreview?: string; file?: unknown; includePrivate?: unknown; project?: { path: string; name: string } }): Promise<PortableResult | null> {
     if (running) throw new Error('An export is already running. Wait for it or cancel it.');
     const root = d.root();
     if (!root) throw new Error('Open your notes first.');
@@ -192,28 +221,26 @@ export function registerPortableExport(d: PortableServiceDeps): { cancel(): void
     if (includePrivate && !o.project && !d.privateUnlocked()) throw new Error(PRIVATE_NEEDED);
     const day = isoDayOf(new Date());
     const name = exportFileName(d.vaultName(), day, o.project?.name);
-    let dest: string | null = null;
-    if (typeof o.file === 'string' && path.isAbsolute(o.file) && d.allowFile) dest = o.file.toLowerCase().endsWith('.zip') ? o.file : `${o.file}.zip`;
-    else dest = await d.saveDialog(name);
-    if (!dest) return null;
     running = true;
     cancelled = false;
     try {
+      let dest: string | null = null;
+      if (typeof o.file === 'string' && path.isAbsolute(o.file) && d.allowFile) dest = o.file.toLowerCase().endsWith('.zip') ? o.file : `${o.file}.zip`;
+      else dest = await d.saveDialog(name);
+      if (!dest) return null;
       const { files } = await vaultFiles(root);
-      const shouldCancel = () => cancelled;
+      const shouldCancel = () => cancelled || d.root() !== root;
+      throwIfCancelled(shouldCancel);
+      if (o.project) projectInfo(o.project.path);
       return await exportPortable({
         root,
         dest: dest.toLowerCase().endsWith('.zip') ? dest : `${dest}.zip`,
         vaultName: d.vaultName(),
         day,
         includePrivate,
-        ...(o.project ? { project: o.project } : {}),
         files,
-        notes: d.notes(),
-        projects: d.projects(),
-        tasks: d.tasks(),
-        moduleTypes: d.moduleTypes(),
-        ...(d.moduleFolder ? { moduleFolder: (id: string) => d.moduleFolder!(id) } : {}),
+        expectedPreview: o.expectedPreview,
+        ...records(o.project),
         ...(includePrivate && !o.project ? { privateNotes: d.privateNotes(), secrets: await d.secrets(), health: await d.health() } : {}),
         onProgress: progress,
         shouldCancel,
@@ -223,13 +250,16 @@ export function registerPortableExport(d: PortableServiceDeps): { cancel(): void
     }
   }
 
-  d.handle('portable:export', (o: unknown) => run((o ?? {}) as { file?: unknown; includePrivate?: unknown }));
-  d.handle('portable:export-project', (projectPath: unknown, o: unknown) => {
-    if (typeof projectPath !== 'string' || !projectPath.endsWith('.md')) throw new Error('That project is not there any more.');
-    const found = d.projects().find((p) => p.path === projectPath);
-    if (!found) throw new Error('That project is not there any more.');
-    return run({ ...((o ?? {}) as { file?: unknown; includePrivate?: unknown }), project: { path: found.path, name: found.name } });
+  d.handle('portable:export', (o: { file?: unknown; includePrivate?: unknown } | null) => run({ file: o?.file, includePrivate: o?.includePrivate }));
+  d.handle('portable:preview-project', async (projectPath: unknown) => {
+    const root = d.root();
+    if (!root) throw new Error('Open your notes first.');
+    const { files } = await vaultFiles(root);
+    if (root !== d.root()) throw new PortableCancelled();
+    const { entries, token } = portablePlan({ root, files, includePrivate: false, ...records(projectInfo(projectPath)) });
+    return { entries, token };
   });
+  d.handle('portable:export-project', (projectPath: unknown, o: { file?: unknown; expectedPreview?: string } | null) => run({ file: o?.file, expectedPreview: o?.expectedPreview, project: projectInfo(projectPath) }));
   d.handle('portable:cancel', () => {
     cancelled = true;
   });

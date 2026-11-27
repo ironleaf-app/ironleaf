@@ -1,3 +1,4 @@
+import { openMeetingPassage } from '../views/meeting/openMeetingPassage';
 // Chat with your notes (the Neural part), on the person's own AI connections (switch model from here), about all notes or just the
 // open one. The assistant works with tools (src/main/agent.ts): it looks through the notes before answering, makes and
 // changes notes when asked, and reads folders on this PC the person names or adds. Its steps show as it works, and what
@@ -662,7 +663,7 @@ export function ChatPanel({ tab }: { tab: TabState }) {
                         From · {m.sources.length}
                       </div>
                       {m.sources.map((s) => (
-                        <button key={s.path} className="srcrow chat-source-row" onClick={(e) => A.openPath(s.path, { where: e.ctrlKey || e.metaKey ? 'tab' : 'current' })} title={s.path}>
+                        <button key={JSON.stringify([s.path, s.meetingDecision?.line])} className="srcrow chat-source-row" onClick={(e) => s.meetingDecision ? void openMeetingPassage(s.path, 'decisions', s.meetingDecision, e.ctrlKey || e.metaKey ? 'tab' : 'current') : A.openPath(s.path, { where: e.ctrlKey || e.metaKey ? 'tab' : 'current' })} title={s.path}>
                           <span className="gtile xs slate">
                             <Icon name={fileIcon(s.path)} size={13} />
                           </span>

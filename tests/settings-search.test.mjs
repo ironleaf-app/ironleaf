@@ -73,6 +73,16 @@ test('a command is found by its name for its keys, after a setting that matches 
   assert.ok(theme.indexOf('Theme') < theme.indexOf('Theme: light or dark'));
 });
 
+test('a named pack part is a direct result with its parent pack', () => {
+  assert.equal(S.searchSettings('Goals and Habits', [...S.SETTINGS_INDEX, ...S.PACK_PART_ENTRIES], labels())[0].entry.title, 'Goals');
+  for (const [part, pack] of [['Puzzle engine', 'Publications'], ['Fuel log', 'Cars'], ['Warranty reminders', 'House']]) {
+    const [first] = S.searchSettings(part, [...S.SETTINGS_INDEX, ...S.PACK_PART_ENTRIES], labels());
+    assert.equal(first.entry.title, part);
+    assert.equal(first.entry.section, 'packs');
+    assert.ok(first.entry.hint.startsWith(pack));
+  }
+});
+
 test('every pack is found by its short name, and by its earlier names', () => {
   const packs = S.moduleEntries();
   const titles = packs.map((e) => e.title);

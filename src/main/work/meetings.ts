@@ -177,6 +177,7 @@ export function makeMeetings(w: WorkModules): WorkPart {
 
   async function addItem(rel: string, kind: 'agenda' | 'decision' | 'action' | 'question', words: string): Promise<string> {
     // 4000 letters land whole (t250, 12 Nov 2026: 600 cut a 2,000-letter question with no warning, losing its words).
+    if (words.trim().length > 4000) throw new Error('Keep each meeting item to 4,000 characters. Your draft is still here.');
     const t = S(words, 4000).replace(/\n/g, ' ');
     if (!t) throw new Error('Write something first.');
     // A question's tails typed with it ("Who signs off? — for Alex") land as tails, not words.
@@ -539,7 +540,10 @@ export function makeMeetings(w: WorkModules): WorkPart {
     if (name === 'meeting_get' || name === 'meeting_prep' || name === 'meeting_prep_sheet' || name === 'meeting_follow_up') {
       const x = findMeeting(m.meetings, S(args.meeting, 300), m.today);
       if (!x) return `No meeting matches “${S(args.meeting, 300)}”.${refusedWords}`;
-      if (name === 'meeting_get') return meetingWords(x, done(x)) + refusedWords;
+      if (name === 'meeting_get') {
+        for (const d of x.decisions) ctx.source?.({ path: x.path, title: x.title, section: d.text, meetingDecision: { text: d.text, line: d.line } });
+        return meetingWords(x, done(x)) + refusedWords;
+      }
       if (name === 'meeting_prep') return prepWords(await prep(x.path, ctx.gated)) + refusedWords;
       if (name === 'meeting_prep_sheet') {
         ctx.check?.(x.path);
@@ -618,7 +622,7 @@ export function makeMeetings(w: WorkModules): WorkPart {
       'add-series': (input: unknown) => addSeries((input ?? {}) as { name: string }),
       'next-in-series': (rel: unknown) => nextInSeries(str(rel)),
       'make-series': (rel: unknown, input: unknown) => makeSeries(str(rel), (input ?? {}) as { name?: string }),
-      'add-item': (rel: unknown, kind: unknown, words: unknown) => addItem(str(rel), kind === 'decision' ? 'decision' : kind === 'action' ? 'action' : kind === 'question' ? 'question' : 'agenda', str(words, 4000)),
+      'add-item': (rel: unknown, kind: unknown, words: unknown) => addItem(str(rel), kind === 'decision' ? 'decision' : kind === 'action' ? 'action' : kind === 'question' ? 'question' : 'agenda', typeof words === 'string' ? words : ''),
       tick: (rel: unknown, line: unknown, raw: unknown, done: unknown) => tick(str(rel), Number(line), typeof raw === 'string' ? raw : '', done === true),
       'answer-question': (rel: unknown, line: unknown, raw: unknown, answer: unknown) => answerQuestion(str(rel), Number(line), typeof raw === 'string' ? raw : '', typeof answer === 'string' ? answer : ''),
       'question-task': (rel: unknown, line: unknown, raw: unknown) => questionTo(str(rel), Number(line), typeof raw === 'string' ? raw : '', 'task'),
@@ -638,6 +642,6 @@ export function makeMeetings(w: WorkModules): WorkPart {
     },
     check,
     tool,
-    rules: () => 'Meetings: meeting_list and meeting_get for what is coming up and what was said; meeting_prep before a meeting, and meeting_prep_sheet makes its prep sheet and saves it in its note (also made the evening before); meeting_follow_up drafts a follow-up email after a meeting and never sends it (the person says first); add one with meeting_add only with the day the person gave, a series with meeting_series_add, and tick an action with meeting_action_tick (a meeting in a project has its actions as that project’s tasks already).',
+    rules: () => 'Meetings: meeting_list and meeting_get for what is coming up and what was said; for project decisions use meeting_list with when=all and project, then meeting_get with the exact meeting path and cite its decision and source line; meeting_prep before a meeting, and meeting_prep_sheet makes its prep sheet and saves it in its note (also made the evening before); meeting_follow_up drafts a follow-up email after a meeting and never sends it (the person says first); add one with meeting_add only with the day the person gave, a series with meeting_series_add, and tick an action with meeting_action_tick (a meeting in a project has its actions as that project’s tasks already).',
   };
 }

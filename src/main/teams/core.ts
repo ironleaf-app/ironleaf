@@ -11,7 +11,7 @@
 //     device, with the earlier keys sealed under it so newer members can still read what came before.
 // The server only ever sees public keys, wraps and sealed envelopes.
 
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import type { LoadedPolicy } from '../policy';
 import type { TeamSyncBinding } from '../sync/service';
 import { makeDeviceKeyPair, newTeamVault, openTeamName, parseTeamEnvelope, ringFrom, rotateRing, teamEnvelope, unwrapVaultKey, wrapVaultKey, type DeviceKeyPair, type Ring } from '../sync/team-keys';
@@ -51,6 +51,10 @@ export interface TeamsDeps {
 
 const emailOk = (e: string) => /^[^\s@]{1,64}@[^\s@]{1,255}\.[^\s@]{2,}$/.test(e) && e.length <= 320;
 
+function verificationCode(...fields: string[]): string {
+  return createHash('sha256').update(JSON.stringify(fields)).digest('hex').slice(0, 32).match(/.{4}/g)!.join('-');
+}
+
 export class TeamsCore {
   private v: TeamsView = EMPTY_TEAMS_VIEW;
   private selected: string | null = null;
@@ -58,6 +62,25 @@ export class TeamsCore {
   private rows: TeamVaultRow[] = [];
   private rings = new Map<string, Ring>();
   private names = new Map<string, string>();
+  private context = '';
+  private deviceCode(account: string, id: string, publicKey: string) {
+    return verificationCode('device', this.selected!, account, id, publicKey);
+  }
+  private vaultCode(id: string, ring: Ring) {
+    return verificationCode('vault', this.selected!, id, String(ring.epoch), ring.keys[String(ring.epoch)]!);
+  }
+  private trusted(scope: string, code: string): boolean {
+    return this.device?.verified?.includes(JSON.stringify([this.context, scope, code])) ?? false;
+  }
+  private async remember(scope: string, code: string) {
+    const device = this.needKeys().keys;
+    const entry = JSON.stringify([this.context, scope, code]);
+    if (!device.verified?.includes(entry)) {
+      const next = { ...device, verified: [...(device.verified ?? []), entry] };
+      await this.d.keys.save(next);
+      this.device = next;
+    }
+  }
   private device: DeviceKeyPair | null = null;
   private registered: string | null = null;
   private policyApplied: { teamId: string; updatedAt: number | null; words: string[]; audit: boolean } | null = null;
@@ -81,6 +104,7 @@ export class TeamsCore {
 
   /** Reads everything again (and does the key jobs). Never throws; a problem is in view.error. */
   refresh(o: { team?: string } = {}): Promise<TeamsView> {
+    if (this.refreshing && o.team) return this.refreshing.then(() => this.refresh(o));
     if (o.team) this.selected = o.team;
     this.refreshing ??= this.doRefresh().finally(() => (this.refreshing = null));
     return this.refreshing;
@@ -94,6 +118,12 @@ export class TeamsCore {
       const teams = await this.d.api.teams();
       if (!teams.length) return this.reset('no-team');
       const pick = teams.find((t) => t.id === this.selected) ?? teams[0]!;
+      const context = JSON.stringify([pick.id, this.d.account.accountId(), this.d.account.deviceId()]);
+      if (context !== this.context) {
+        this.rings.clear();
+        this.names.clear();
+        this.context = context;
+      }
       this.selected = pick.id;
       this.detail = await this.d.api.team(pick.id);
       await this.applyPolicy(pick.id);
@@ -109,6 +139,9 @@ export class TeamsCore {
   }
 
   private reset(status: TeamsView['status']): TeamsView {
+    this.rings.clear();
+    this.names.clear();
+    this.context = '';
     this.detail = null;
     this.rows = [];
     if (this.policyApplied) this.d.applyPolicy(null);
@@ -163,10 +196,15 @@ export class TeamsCore {
     for (const row of this.rows) {
       try {
         const env = parseTeamEnvelope(row.envelope);
-        let ring = this.rings.get(row.id) ?? (await this.d.sync?.ring(row.id)) ?? null;
+        const here = this.d.sync?.current();
+        let ring = this.rings.get(row.id) ?? (here?.teamId === this.selected && here.vaultId === row.id ? await this.d.sync?.ring(row.id) : null) ?? null;
         if ((!ring || ring.epoch < row.epoch) && row.wrap && me) {
           const vk = unwrapVaultKey(row.wrap, me, row.id, row.epoch);
           const fresh = ringFrom(env, row.id, vk);
+          if (fresh.epoch !== row.epoch) throw new Error('The vault version does not match.');
+          if (ring) {
+            if (Object.entries(ring.keys).some(([epoch, key]) => fresh.keys[epoch] !== key)) throw new Error('The shared vault does not match this PC’s verified history.');
+          } else if (!this.trusted(row.id, this.vaultCode(row.id, fresh))) continue;
           // Keep any older key this PC had that the envelope doesn't list.
           ring = { ...fresh, keys: { ...(ring?.keys ?? {}), ...fresh.keys } };
           await this.d.sync?.rekey(row.id, ring);
@@ -191,6 +229,34 @@ export class TeamsCore {
   }
   private isAdmin(): boolean {
     return this.role() === 'owner' || this.role() === 'admin';
+  }
+
+  private accepts(vault: string, account: string, id: string, publicKey: string): boolean {
+    const me = this.me();
+    if (me && account === this.d.account.accountId() && me.device === id && me.keys.publicKey === publicKey) return true;
+    return this.trusted(vault, this.deviceCode(account, id, publicKey));
+  }
+
+  async verify(vault: unknown, given: unknown): Promise<TeamsView> {
+    const context = this.context;
+    const row = this.rows.find((r) => r.id === vault);
+    const code = typeof given === 'string' ? given.trim().toLowerCase() : '';
+    if (!row || !/^(?:[a-f0-9]{4}-){7}[a-f0-9]{4}$/.test(code)) throw new Error('Enter the complete verification code from the other PC.');
+    const ring = this.holdsCurrent(row);
+    if (ring) {
+      const { members } = await this.d.api.vaultMembers(row.id);
+      const match = members.some((m) => (this.isAdmin() || m.account === this.d.account.accountId()) && m.devices.some((d) => d.publicKey && this.deviceCode(m.account, d.device, d.publicKey) === code));
+      if (!match) throw new Error('That PC code does not match a current team device.');
+    } else {
+      const me = this.needKeys();
+      if (!row.wrap) throw new Error('Ask someone with this vault to verify your PC first.');
+      if (this.rings.has(row.id) || await this.d.sync?.ring(row.id)) throw new Error('The shared vault does not match this PC’s verified history.');
+      const candidate = ringFrom(parseTeamEnvelope(row.envelope), row.id, unwrapVaultKey(row.wrap, me, row.id, row.epoch));
+      if (candidate.epoch !== row.epoch || this.vaultCode(row.id, candidate) !== code) throw new Error('That code does not match the shared vault.');
+    }
+    if (this.context !== context || this.selected !== this.detail?.id || !await this.d.account.signedIn()) throw new Error('Open the current team and verify again.');
+    await this.remember(row.id, code);
+    return this.refresh();
   }
 
   /** Rotation after someone left (admins), then the key shared with devices that have none. */
@@ -223,7 +289,7 @@ export class TeamsCore {
     const wraps: WrapOut[] = [];
     for (const member of m.members) {
       if (!this.isAdmin() && member.account !== mine) continue;
-      for (const dev of member.devices) if (!dev.hasKey && dev.publicKey) wraps.push({ device: dev.device, publicKey: dev.publicKey, wrap: wrapVaultKey(vk, { device: dev.device, publicKey: dev.publicKey }, vaultId, ring.epoch) });
+      for (const dev of member.devices) if (!dev.hasKey && dev.publicKey && this.accepts(vaultId, member.account, dev.device, dev.publicKey)) wraps.push({ device: dev.device, publicKey: dev.publicKey, wrap: wrapVaultKey(vk, { device: dev.device, publicKey: dev.publicKey }, vaultId, ring.epoch) });
     }
     if (wraps.length) await this.d.api.addWraps(vaultId, ring.epoch, wraps);
     return wraps.length;
@@ -236,7 +302,7 @@ export class TeamsCore {
     const vk = Buffer.from(next.keys[String(next.epoch)]!, 'base64');
     const m = await this.d.api.vaultMembers(row.id);
     const wraps: WrapOut[] = [];
-    for (const member of m.members) for (const dev of member.devices) if (dev.publicKey) wraps.push({ device: dev.device, publicKey: dev.publicKey, wrap: wrapVaultKey(vk, { device: dev.device, publicKey: dev.publicKey }, row.id, next.epoch) });
+    for (const member of m.members) for (const dev of member.devices) if (dev.publicKey && this.accepts(row.id, member.account, dev.device, dev.publicKey)) wraps.push({ device: dev.device, publicKey: dev.publicKey, wrap: wrapVaultKey(vk, { device: dev.device, publicKey: dev.publicKey }, row.id, next.epoch) });
     await this.d.api.rotate(row.id, next.epoch, JSON.stringify(teamEnvelope(next, row.id, name)), wraps);
     this.rings.set(row.id, next);
     row.epoch = next.epoch;
@@ -252,12 +318,13 @@ export class TeamsCore {
     const here = this.d.sync?.current() ?? null;
     this.v = {
       status: 'ready',
+      deviceCode: this.device && this.d.account.deviceId() && this.d.account.accountId() ? this.deviceCode(this.d.account.accountId()!, this.d.account.deviceId()!, this.device.publicKey) : undefined,
       notes: this.notes,
       teams,
       team: { id: t.id, name: t.name, role: t.role, seats: t.seats, seatsUsed: t.seatsUsed, sso: !!t.zitadelOrgId, canAdmin: this.isAdmin(), isOwner: t.role === 'owner' },
       members: t.members.map((m) => ({ accountId: m.accountId, name: m.name ?? '', email: m.email ?? '', role: m.role, me: m.accountId === mine })),
       invites: (t.invites ?? []).map((i) => ({ id: i.id, email: i.email, role: i.role, expires: Date.parse(i.expiresAt) || 0 })),
-      vaults: this.rows.map((r) => ({ id: r.id, name: this.holdsCurrent(r) ? (this.names.get(r.id) ?? null) : null, epoch: r.epoch, rotationNeeded: r.rotationNeeded, hasKey: !!this.holdsCurrent(r), here: !!here && here.on && here.vaultId === r.id })),
+      vaults: this.rows.map((r) => ({ id: r.id, code: this.holdsCurrent(r) ? this.vaultCode(r.id, this.holdsCurrent(r)!) : undefined, name: this.holdsCurrent(r) ? (this.names.get(r.id) ?? null) : null, epoch: r.epoch, rotationNeeded: r.rotationNeeded, hasKey: !!this.holdsCurrent(r), here: !!here && here.on && here.vaultId === r.id })),
       here: { notesOpen: !!here, syncOn: !!here?.on, teamVault: here?.on && here.teamId ? here.vaultId : null },
       policy: { applied: !!this.policyApplied, words: this.policyApplied?.words ?? [], updatedAt: this.policyApplied?.updatedAt ?? null },
       audit: { on: !!this.policyApplied?.audit, waiting: this.d.audit?.waiting ?? 0, sent: this.d.audit?.sent ?? 0 },
@@ -328,7 +395,7 @@ export class TeamsCore {
     const row = this.rows.find((r) => r.id === id);
     if (!row) throw new Error('That shared vault isn’t in your team.');
     const ring = this.holdsCurrent(row);
-    if (!ring) throw new Error('This PC doesn’t have this vault’s key yet. It arrives when a team admin’s Ironleaf (or your other PC) is next online.');
+    if (!ring) throw new Error('Verify this PC and the shared vault in Settings › Teams first.');
     if (this.d.sync && !this.d.sync.current()) throw new Error('Open an empty notes folder (or the one to fill) first.');
     await this.d.sync?.begin(row.id, this.selected!, ring);
     return this.refresh();
