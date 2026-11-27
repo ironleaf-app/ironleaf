@@ -358,7 +358,11 @@ page). */
 }
 
 /** One thing the assistant did while answering (shown as it works). */
+export interface PackActionDraft { name: string; args: Record<string, unknown> }
+
 export interface ChatStep {
+  packAction?: PackActionDraft;
+  packRoot?: string;
   kind: 'say' | 'search' | 'read' | 'list' | 'write' | 'move' | 'pc' | 'error';
   words: string;
   /** A note it read, made or changed (opened from the step). */

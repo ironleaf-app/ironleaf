@@ -1,3 +1,5 @@
+import { notePage } from '../shared/note-passage';
+import { LIFE_MODULES, moduleInfo, resolveModule } from '../shared/life-modules';
 // The chat's assistant at work (16 Oct 2026; and an answer that said the notes held no decisions beside a Decision
 // Log). It looks through the notes with tools before it answers, makes and changes notes when asked, and reads folders
 // on this PC that the person names or adds in the chat. Every change of one answer is kept, to undo as one.
@@ -337,7 +339,7 @@ export const TOOLS: ToolSpec[] = [
   {
     name: 'read_note',
     description: 'Read one note in full (its properties too). Give its path from list_notes or search_notes. A picture or a scanned PDF reads as the words recognised in it; a Word, Excel, PowerPoint, PDF or text file among the notes reads as its document words. A long note comes in parts of about 12,000 characters: ask for part 2, 3… for more.',
-    parameters: { type: 'object', properties: { path: { type: 'string' }, part: { type: 'number', description: 'Which part of a long note (1 is the start).' } }, required: ['path'], additionalProperties: false },
+    parameters: { type: 'object', properties: { path: { type: 'string' }, part: { type: 'number', description: 'Which part of a long note (1 is the start).' }, structured: { type: 'boolean', description: 'Return the exact Markdown with path, source line, character offset and next page.' } }, required: ['path'], additionalProperties: false },
   },
   {
     name: 'note_links',
@@ -1237,6 +1239,17 @@ export class AgentTools {
   /** Whether more_tools opened the rest of the catalogue in this answer (the door stays open for its later rounds). */
   private moreOpen = false;
 
+  private packSelection: string[] = [];
+  private completedPackWrites = new Map<string, string>();
+
+  private packReceipt(name: string, args: Record<string, unknown>): string {
+    return JSON.stringify([name, Object.entries(args).sort(([left], [right]) => left.localeCompare(right))]);
+  }
+
+  private packTools(): ModuleToolDef[] {
+    return this.host.modules?.specs() ?? [];
+  }
+
   /** The tools the model is offered this round: the everyday set always (the side chat's own, the switched-on modules,
    *  the catalogue's everyday tools, web and memory, and the more_tools door), and the catalogue's rarer tools appended
    *  once the door opened them. Appended at the end, so the request's opening never moves (its cached prefix holds on
@@ -1244,9 +1257,17 @@ export class AgentTools {
    *  narrowing included — so the door never offers what the narrowing withholds. */
   offeredTools(): ToolSpec[] {
     const specs = this.host.catalogue?.specs() ?? [];
+    const packs = this.packTools();
+    const selected = packs.length <= 10 ? packs : packs.filter(t => this.packSelection.includes(t.name));
+    const packNames = [...new Set(packs.map(t => moduleInfo(t.module)?.name ?? t.module))];
     return [
       ...TOOLS,
-      ...(this.host.modules ? this.host.modules.specs().map(moduleSpec) : []),
+      ...(this.host.modules ? [{
+        name: 'find_pack_actions',
+        description: 'Find actions in enabled packs: ' + packNames.join(', ') + '. Give a pack name, action or words from the request. The matching actions become callable on the next step. Search again for another pack. When approval is on, call the action to prepare an editable request for the person.',
+        parameters: { type: 'object', properties: { query: { type: 'string' }, offset: { type: 'integer', minimum: 0 } }, required: ['query'], additionalProperties: false },
+      }] : []),
+      ...selected.map(moduleSpec),
       ...specs.filter((t) => SIDE_EVERYDAY.has(t.name)).map(catalogueSpec),
       ...(webToolsOffered(this.host) ? WEB_TOOLS : []),
       ...(this.host.memory ? MEMORY_TOOLS : []),
@@ -1279,7 +1300,7 @@ export class AgentTools {
       if (sig) this.done.set(sig, text);
       // A write invalidates what was read: verifying it afterwards reads it fresh, never "already above" (9.2). Only
       // the reads go; the file-makers' guard (the same call twice would make a second copy) stays.
-      const wrote = FILE_MAKERS.has(call.name) || WRITERS.has(call.name) || !!this.host.catalogue?.specs().some((t) => t.name === call.name && !t.readOnly) || !!this.host.modules?.specs().some((t) => t.name === call.name && !t.readOnly);
+      const wrote = FILE_MAKERS.has(call.name) || WRITERS.has(call.name) || !!this.host.catalogue?.specs().some((t) => t.name === call.name && !t.readOnly) || this.completedPackWrites.has(this.packReceipt(call.name, args));
       if (wrote) for (const k of [...this.done.keys()]) if (READERS.has(k.slice(0, k.indexOf(':')))) this.done.delete(k);
       if (looked) this.looks.set(looked.key, { name: looked.name, n: (seen?.n ?? 0) + 1 });
       return { text, ...(looked ? { looked: looked.name, again: !!seen } : {}), ...(wrote ? { wrote: true } : {}) };
@@ -1392,6 +1413,7 @@ export class AgentTools {
         this.step({ kind: 'read', words: `Read ${index.get(rel)?.title ?? rel}`, path: rel });
         this.readNotes.add(rel);
         const current = await this.host.read(rel);
+        if (a.structured === true) return JSON.stringify(notePage(rel, current, part, NOTE_PART_CHARS));
         const waiting = this.host.suggest?.on() ? this.host.suggest.pending(rel, current) : undefined;
         // With the changes it suggested still waiting: read as they would leave it, so its next edit builds on them.
         // A meeting's named voices read in their names (6 Nov 2026), as they do to the person; the file is untouched.
@@ -1874,6 +1896,23 @@ export class AgentTools {
       // The door to the rest of the catalogue (s10-assistant-tools-lean): what opens is offered from the next round
       // (offeredTools appends it). Lists the wired specs, so suggest-mode narrowing holds here too; a call of a known
       // tool runs anyway (below), door or not, so nothing can strand.
+      case 'find_pack_actions': {
+        const query = str(a.query, 200).trim().toLowerCase();
+        const words = query.split(/[\s_]+/).filter(Boolean);
+        const matches = this.packTools().map(t => {
+          const pack = moduleInfo(t.module);
+          const labels = [t.module, pack?.name, ...(pack?.aliases ?? []), t.name, t.title].join(' ').toLowerCase();
+          const searchable = labels + ' ' + t.description.toLowerCase();
+          const score = words.reduce((n, word) => n + (labels.includes(word) ? 4 : searchable.includes(word) ? 1 : 0), 0);
+          return { t, score };
+        }).filter(row => !words.length || row.score > 0).sort((l, r) => r.score - l.score);
+        const offset = num(a.offset, 0, matches.length, 0);
+        const page = matches.slice(offset, offset + 10).map(row => row.t);
+        this.packSelection = page.map(t => t.name);
+        const available = new Set(this.host.modules?.specs().map(t => resolveModule(t.module)));
+        const otherPacks = LIFE_MODULES.filter(p => !available.has(p.id) && [p.id, p.name, ...(p.aliases ?? [])].some(label => label.toLowerCase().includes(query))).map(p => p.name);
+        return JSON.stringify({ ...(otherPacks.length ? { unavailable: otherPacks, resume: 'Open Pack actions in chat, select the pack and enable it to continue.' } : {}), actions: page.map(t => ({ name: t.name, pack: moduleInfo(t.module)?.name, title: t.title, changesRecords: !t.readOnly })), nextOffset: offset + page.length < matches.length ? offset + page.length : null });
+      }
       case 'more_tools': {
         const rare = (this.host.catalogue?.specs() ?? []).filter((t) => !SIDE_EVERYDAY.has(t.name));
         this.moreOpen = true;
@@ -1892,17 +1931,35 @@ export class AgentTools {
         // it changed is kept for this answer's Undo, as the catalogue's tools are (module writes never wait).
         if (this.host.modules?.specs().some((t) => t.name === name)) {
           const def = this.host.modules.specs().find((t) => t.name === name)!;
+          const needsFile = name === 'finance_csv_import' && !await insideAllowed(str(a.file, 4096), this.allowed).catch(() => null);
+          if (!def.readOnly && (this.host.suggest?.on() || needsFile)) {
+            const args = Object.fromEntries(Object.entries(a).filter(([key]) => Object.hasOwn(def.input, key) && !(name === 'finance_csv_import' && key === 'file')));
+            const packAction = { name, args };
+            this.step({ kind: 'list', words: 'Review ' + def.title, packAction });
+            return 'Prepared ' + def.title + ' for review. The person can check and apply it in this answer. No change has been made.';
+          }
+
+          const receipt = this.packReceipt(name, a);
+          const previous = this.completedPackWrites.get(receipt);
+          if (previous !== undefined) return previous;
           const { out: text, changed } = await recordingWrites(() => this.host.modules!.call(name, a, (s) => {
             if (!this.meetingSources.some((x) => x.path === s.path && x.meetingDecision?.line === s.meetingDecision?.line)) this.meetingSources.push(s);
           }));
+          const saved: string[] = [];
           for (const c of changed) {
             const after = await this.host.read(c.path).catch(() => null);
-            if (after === null) continue;
+            if (after === null || after === c.before) continue;
+            saved.push(c.path);
             if (c.before === null) this.changes.push({ kind: 'made', path: c.path, text: after });
             else if (c.before !== after) this.changes.push({ kind: 'edited', path: c.path, before: c.before, after });
           }
-          this.step({ kind: def.readOnly ? 'read' : 'write', words: def.step });
-          return text;
+          for (const path of saved) {
+            if (!this.meetingSources.some(source => source.path === path)) this.meetingSources.push({ path, title: this.host.index.get(path)?.title ?? path, section: '' });
+          }
+          this.step({ kind: def.readOnly || !saved.length ? 'read' : 'write', words: saved.length || def.readOnly ? def.step : def.title });
+          const result = saved.length ? text + '\nSaved notes: ' + saved.join(', ') : text;
+          if (!def.readOnly) this.completedPackWrites.set(receipt, result);
+          return result;
         }
         // A tool of the one vault catalogue (8.0 V1): the handler outside agents use, through this assistant's gate. Each
         // note it changed is kept for this answer's Undo, as the assistant's own writes are.

@@ -1,3 +1,5 @@
+import { resolveChatAsk, MAX_CHAT_CHARS } from '../shared/chat-context';
+import { notePage } from '../shared/note-passage';
 // Ironleaf's main side: its window, the notes it keeps (its library), the index and the AI. The same code runs on its
 // own (the development build, src/main/index.ts) and inside the former host app (the product, src/main/embed.ts): the
 // host says where its data and library are, gives it its models and its licence, and how to reach the former host app.
@@ -695,6 +697,7 @@ export async function createIronleaf(host: IronleafHost): Promise<IronleafApp> {
   const sensitivity = new Sensitivity({ root: () => vault?.root ?? null, props: (rel) => index.get(rel)?.props, pc: os.hostname(), log: (m) => host.log?.(m) });
   const secrets = new SecretsStore({ store: privateNotes, trash: (abs) => toTrash(abs), clipboard: { write: (t) => clipboard.writeText(t), read: () => clipboard.readText(), clear: () => clipboard.clear() } });
   let vault: Vault | null = null;
+  ai.vaultRoot = () => vault?.root;
   // The window's file: requests (security review, 20 Nov 2026; src/main/file-url-guard.ts): only the open vault,
   // Ironleaf's own folders and this PC's project folders; never another computer (a
   // picture naming \\host\share or file://host/… would send this PC's sign-in to it).
@@ -1304,6 +1307,10 @@ null. */
     // A vault opening (at start, or switching) takes the words out of memory, but must not take the sealed
     // remembered unlock away before it is checked below (8.5, 30 Oct 2026): close(), not lock().
     // tryRememberedUnlock then keeps it only for this vault, inside the chosen period.
+    if (vault && vault.root !== next.root) {
+      ai.leavingVault(vault.root);
+      for (const controller of chatControllers.values()) controller.abort();
+    }
     privateNotes.close();
     vault?.close();
     void ocrStore?.flush();
@@ -4387,6 +4394,26 @@ reminders. */
         // Folders the person added with the chat's folder button (chosen in Windows' own folder window).
         folders: Array.isArray(o.folders) ? o.folders.filter((f): f is string => typeof f === 'string' && chatFolders.has(f)).slice(0, 10) : undefined,
       };
+      if (o.scope === 'chat') {
+        clean.scope = 'chat';
+        delete clean.note;
+        delete clean.noteText;
+        clean.folders = [];
+        const target = resolveChatAsk(toldFocus, o.chat?.id);
+        if (target && 'withheld' in target) clean.chatWithheld = target.withheld;
+        else if (target && host.chatTranscript) {
+          const transcript = await host.chatTranscript(target.id).catch(() => null);
+          const now = resolveChatAsk(toldFocus, target.id);
+          if (!now || !transcript) clean.chatMissing = true;
+          else if ('withheld' in now) clean.chatWithheld = now.withheld;
+          else if ('private' in transcript) clean.chatWithheld = 'private';
+          else if ('locked' in transcript) clean.chatWithheld = 'locked';
+          else {
+            clean.chat = { id: target.id, title: transcript.title };
+            clean.chatText = transcript.text.slice(-MAX_CHAT_CHARS);
+          }
+        } else clean.chatMissing = true;
+      }
       const controller = new AbortController();
       chatControllers.set(requestId, controller);
       try {
@@ -5092,6 +5119,27 @@ reminders. */
       return typeof id === 'string' ? ai.applyProposal(id) : { ok: false, words: 'That proposal isn’t here any more.' };
     });
     // Undo under an answer is the person's own change (the earlier versions say "You").
+    handle('ai:pack-preview', async (root: string, path: string, page: number) => {
+      const v = requireVault();
+      if (root !== v.root || typeof path !== 'string' || !/\.md$/i.test(path)) throw new Error('Choose a note in this folder.');
+      const rel = cleanNotePath(path);
+      const gate = makeGate(sensitivity, 'side-chat', 'The side chat');
+      gate.check(rel);
+      const content = await v.read(rel);
+      if (v !== vault) throw new Error('Return to the original notes folder.');
+      gate.check(rel);
+      gate.note(rel, 'read', 'pack action source preview');
+      return notePage(rel, content, page, 2400);
+    });
+    handle('ai:pack-action', async (root: unknown, name: unknown, args: unknown) => {
+      if (root !== requireVault().root || typeof root !== 'string' || typeof name !== 'string' || !args || typeof args !== 'object' || Array.isArray(args)) throw new Error('Review the pack action in the current notes folder.');
+      await requireCreate();
+      return writer.run('assistant', () => ai.runPackAction(root, () => vault?.root, name, args as Record<string, unknown>));
+    });
+    handle('ai:pack-undo', async (id: string) => {
+      await requireCreate();
+      return writer.run('you', () => ai.undoPackAction(requireVault().root, id));
+    });
     handle('ai:undo', async (turnId: unknown) => {
       await requireCreate();
       return typeof turnId === 'string' ? writer.run('you', () => ai.undo(turnId)) : 'There is nothing to undo.';

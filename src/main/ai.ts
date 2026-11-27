@@ -1,3 +1,5 @@
+import { recordingWrites } from './module-writes';
+import { moduleInfo } from '../shared/life-modules';
 // AI features: chat with your vault (retrieval + streaming answer with [[citations]]) and link suggestions for the note
 // being edited. Both run on the model the former host app has set up (or the one chosen in Settings › Models), through
 // ProviderService, so every provider and format the former host app supports works here the same way.
@@ -115,6 +117,64 @@ export class AiService {
     return { options: { ...options, scope: 'all', note: undefined, noteText: undefined }, words: `\n\nThe note the person has open is marked ${level}, which you aren't allowed to read (Settings › Privacy and secrets). If they ask about it, say so in one line: they can read it themselves or allow ${level} for the side chat.` };
   }
 
+  private packHistory = new Map<string, { root: string; changes: Change[] }>();
+  private packBusy = new Set<string>();
+
+  vaultRoot?: () => string | undefined;
+  private vaultGeneration = 0;
+
+  leavingVault(root: string): void {
+    if (this.packBusy.has(root)) throw new Error('Wait for the pack action to finish before switching notes folders.');
+    this.vaultGeneration++;
+    this.packHistory.clear();
+    this.journals.clear();
+    this.proposals.clear();
+    this.madeFiles.clear();
+  }
+
+  /** Explicit actions from the person's pack form. No provider, outside actor or background job uses this entry point. */
+  async runPackAction(root: string, currentRoot: () => string | undefined, name: string, args: Record<string, unknown>): Promise<ChatResult> {
+    const gate = this.gate?.();
+    const modules = gate && this.modules?.(gate);
+    const def = modules?.specs().find(t => t.name === name);
+    if (!gate || !this.agentHost || !modules || !def) throw new Error('Enable the pack and its action in Settings › Packs, then try again.');
+    const pack = moduleInfo(def.module);
+    if (pack && !gate.allowsLevel(pack.level)) throw new Error('Review access for the side chat in Settings › Privacy and secrets.');
+    if (currentRoot() !== root) throw new Error('Open the original notes folder to continue.');
+    if (this.packBusy.has(root)) throw new Error('Wait for the current pack action to finish.');
+    const missing = def.required?.find(k => args[k] === undefined || args[k] === '');
+    if (missing) throw new Error('Fill in ' + missing.replace(/_/g, ' ') + '.');
+    if (Object.keys(args).some(k => !Object.hasOwn(def.input, k))) throw new Error('Review the fields for this action.');
+    const host = gateNotes(this.agentHost, gate);
+    const sources: ChatSource[] = [];
+    this.packBusy.add(root);
+    try {
+      const { out, changed } = await recordingWrites(() => modules.call(name, args, source => sources.push(source)));
+      if (currentRoot() !== root) throw new Error('Return to the original notes folder to review the result.');
+      const changes: Change[] = [];
+      for (const item of changed) {
+        if (!gate.sees(item.path)) continue;
+        const after = await host.read(item.path);
+        if (item.before === null) changes.push({ kind: 'made', path: item.path, text: after });
+        else if (item.before !== after) changes.push({ kind: 'edited', path: item.path, before: item.before, after });
+      }
+      const id = randomUUID();
+      if (changes.length) {
+        this.packHistory.set(id, { root, changes });
+        if (this.packHistory.size > 40) this.packHistory.delete(this.packHistory.keys().next().value!);
+      }
+      return { text: out, sources: sources.filter(s => gate.sees(s.path)), changes: summarise(id, changes) };
+    } finally { this.packBusy.delete(root); }
+  }
+
+  async undoPackAction(root: string, id: string): Promise<string> {
+    const entry = this.packHistory.get(id);
+    const gate = this.gate?.();
+    if (!entry || entry.root !== root || !gate || !this.agentHost) return 'This change is no longer available to undo here.';
+    this.packHistory.delete(id);
+    return undoChanges(gateNotes(this.agentHost, gate), entry.changes);
+  }
+
   /** Each answer's changes, to undo as one (kept while Ironleaf is open). */
   private journals = new Map<string, Change[]>();
   /** Changes to projects waiting for the person (Catch up), by id. */
@@ -148,7 +208,7 @@ export class AiService {
     const gated = this.agentHost && g ? gateNotes(this.agentHost, g) : this.agentHost;
     // The life modules' tools reach the side chat only through its gate (Wave 5), and only while a module is on.
     const modules = gated ? (this.modules?.(g) ?? null) : null;
-    const withModules = gated && modules && modules.specs().length ? { ...gated, modules } : gated;
+    const withModules = gated && modules ? { ...gated, modules } : gated;
     // The catalogue's tools (8.0 V1): while the person has asked to approve each change first (Settings › Models), only its
     // looks, since a change through them would not wait in the note.
     const served = withModules && this.catalogue ? this.catalogue(g) : null;
@@ -161,8 +221,10 @@ export class AiService {
     const open = options.note ? this.index.get(options.note) : undefined;
     const allowed = [...new Set([...namedPaths(turns.filter((t) => t.role === 'user').map((t) => t.content)), ...(options.folders ?? [])])];
     // The steps as the chat shows them: the same thing again counts on one line (src/shared/chat-steps.ts).
+    const packRoot = this.vaultRoot?.();
     let steps: ChatStep[] = [];
     const step = (s: ChatStep, clearText = false) => {
+      if (s.packAction) s = { ...s, packRoot };
       steps = addStep(steps, s);
       onStep(s, clearText);
     };
@@ -200,6 +262,7 @@ export class AiService {
     // needs it. Offered only with the catalogue (skill_use is one of its tools); one in a note it may not read is left out.
     const skillWords = catalogue && this.skills ? skillsBrief(this.skills().filter((s) => s.source === 'built-in' || !g || (!!s.path && g.sees(s.path)))) : '';
     const system = agentSystem(this.modelName(model), host.today(), open?.title ?? null, allowed, openWords, types, memory, skillWords) + (attached ? `\n\n${ATTACH_RULE}` : '') + held.words + (host?.modules ? `\n\n${host.modules.rules()}` : '') + (webOff ? `\n\n${WEB_OFF_WORDS} If asked to search the web, say so and say where to turn it on.` : '') + chatBrief;
+    const generation = this.vaultGeneration;
     const run = await runAgent({
       messages,
       tools,
@@ -212,6 +275,7 @@ export class AiService {
       // switch (c3 item 2, webToolsOffered), as the system words above say.
       stream: (msgs, text, o) => this.providers.stream(model, system, msgs, { signal, onText: text, conversation, ...(o?.tools === false ? {} : { tools: tools.offeredTools() }), maxTokens: 8000 }),
     });
+    if (generation !== this.vaultGeneration) return { text: 'The notes folder changed. Open the original folder to continue.', sources: [] };
     if (run.noTools) return this.chatPlain(history, onText, signal, options);
     const turnId = crypto.randomUUID();
     if (tools.changes.length) this.journals.set(turnId, tools.changes);

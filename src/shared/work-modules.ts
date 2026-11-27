@@ -76,7 +76,7 @@ export const MEETINGS: RecordModule = {
     { id: 'questions', label: 'Questions', icon: 'help', line: 'Every question asked in a meeting, open until answered.' },
     { id: 'series', label: 'Series', icon: 'history', line: 'Meetings that come round, each starting from the last.' },
   ],
-  tools: ['meeting_list', 'meeting_get', 'meeting_prep', 'meeting_add'],
+  tools: ['meeting_list', 'meeting_get', 'meeting_prep', 'meeting_add', 'meeting_capture_item'],
 };
 
 export const WEEKLY: RecordModule = {

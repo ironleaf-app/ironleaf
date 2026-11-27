@@ -398,6 +398,9 @@ const api = {
     closeReady: () => invoke<void>('app:close-ready'),
   },
   ai: {
+    packPreview: (root: string, path: string, page: number) => invoke<import('../shared/note-passage').NotePage>('ai:pack-preview', root, path, page),
+    packAction: (root: string, name: string, args: Record<string, unknown>) => invoke<ChatResult>('ai:pack-action', root, name, args),
+    undoPackAction: (id: string) => invoke<string>('ai:pack-undo', id),
     chat: (requestId: string, history: ChatTurn[], options?: ChatOptions) => invoke<ChatResult>('ai:chat', requestId, history, options),
     cancel: (requestId: string) => invoke<void>('ai:chat-cancel', requestId),
     suggestLinks: (path: string, content: string) => invoke<AiLinkResult>('ai:suggest-links', path, content),

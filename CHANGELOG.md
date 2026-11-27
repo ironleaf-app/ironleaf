@@ -6,6 +6,12 @@ the website. `tools/release.mjs` takes a release's notes from here when `--notes
 
 Format: one `## <version> — <YYYY-MM-DD>` heading a release, then one `- ` line a change.
 
+## 2.0.24 — 2026-11-28
+
+- In the assistant, open Pack actions to choose a pack, review its fields and run an action locally, including when your model is offline. Enable a pack without losing the form. Review saved notes and undo note changes from the result.
+- The assistant finds relevant actions as it works across enabled packs. With approval on, review its filled-in action directly in the answer and apply it when ready. Source previews and paged note reads respect the side chat’s privacy settings.
+- Capture a meeting decision, question, agenda item or assigned task through the assistant. When meeting names match, choose the exact source. Full record paths distinguish entries with the same name.
+
 ## 2.0.23 — 2026-11-27
 
 - Schedule a meeting from its project. Capture questions, decisions and assigned tasks from the meeting page, including during a recording.
