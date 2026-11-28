@@ -90,7 +90,7 @@ const OWN_HEADER = new Set<W.ViewType>(['note', 'canvas', 'media', 'notebook', '
 // Abilities draws none so the frame's bar is its only one).
 // An empty page showing Home is Home too (3 Nov 2026: the vault's first page drew two top bars, the frame's and
 // Home's own), so it draws no frame bar either (the condition below).
-const SELF_HEADER = new Set<W.ViewType>(['settings', 'versions', 'bin', 'secrets', 'private', 'locked', 'import', 'projects', 'tasks', 'inbox', 'tidy', 'today', 'home', 'shared-spaces', 'shared-space', 'meetings']);
+const SELF_HEADER = new Set<W.ViewType>(['settings', 'versions', 'bin', 'secrets', 'private', 'locked', 'import', 'projects', 'tasks', 'inbox', 'tidy', 'today', 'home', 'shared-spaces', 'shared-space', 'meetings', 'module']);
 
 interface Edges {
   top: boolean;

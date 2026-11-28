@@ -392,6 +392,18 @@ export function ChatPanel({ tab }: { tab: TabState }) {
   const input = useRef<HTMLTextAreaElement>(null);
   const picker = useRef<HTMLInputElement>(null);
   const [packActionsOpen, setPackActionsOpen] = useState(false);
+  const packPanel = useRef<HTMLDetailsElement>(null);
+  const shownPackRequest = useRef(chat.packActionsRequest);
+  useEffect(() => {
+    const panel = packPanel.current;
+    if (!panel || !chat.packActionsRequest) return;
+    // When the chat mounts from a pack, handle its request even if the disclosure was closed.
+    if (shownPackRequest.current === chat.packActionsRequest && panel.open) return;
+    shownPackRequest.current = chat.packActionsRequest;
+    panel.open = true;
+    setPackActionsOpen(true);
+    panel.scrollIntoView({ block: 'nearest' });
+  }, [chat.packActionsRequest]);
   const vaultPath = useApp(s => s.vault?.path);
   // Files dragged over the chat: it shows where they go.
   const [dragging, setDragging] = useState(false);
@@ -598,9 +610,9 @@ export function ChatPanel({ tab }: { tab: TabState }) {
           stick.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48;
         }}
       >
-        {vaultPath && chat.scope !== 'chat' && told.chat == null && <details className="chat-pack-panel" onToggle={e => { if (e.currentTarget.open) setPackActionsOpen(true); }}>
+        {vaultPath && chat.scope !== 'chat' && told.chat == null && <details ref={packPanel} className="chat-pack-panel" onToggle={e => { if (e.currentTarget.open) setPackActionsOpen(true); }}>
           <summary>Pack actions</summary>
-          {packActionsOpen && <Suspense fallback={<p>Loading actions…</p>}><PackActions key={vaultPath} root={vaultPath} /></Suspense>}
+          {packActionsOpen && <Suspense fallback={<p>Loading actions…</p>}><PackActions key={vaultPath} root={vaultPath} request={chat.packActionsRequest} /></Suspense>}
         </details>}
         {notReady && <AiSetup why={settings.ai.note} />}
         {!chat.messages.length && !notReady && (

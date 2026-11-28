@@ -190,13 +190,12 @@ test('N1: one bar per page — the frame sets decide it once, and every page obe
   // A file's top-level components that draw a bar themselves (WeeklyReview imports only Pill from ProjectPage,
   // so the walk follows an import only into a component the importer actually renders).
   const headerComps = (f) => {
-    if (!f.endsWith('.tsx')) return new Set();
     const src = noComments(read(f));
     const defs = [...src.matchAll(/^(?:export\s+)?(?:function|const)\s+([A-Z][A-Za-z0-9]*)/gm)].map((m) => ({ name: m[1], at: m.index }));
     const out = new Set();
     defs.forEach((d, i) => {
       const slice = src.slice(d.at, i + 1 < defs.length ? defs[i + 1].at : src.length);
-      if (slice.includes('<ViewHeader')) out.add(d.name);
+      if (/<ViewHeader\b|\bcreateElement\(ViewHeader,/.test(slice)) out.add(d.name);
     });
     return out;
   };

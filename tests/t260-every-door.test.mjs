@@ -398,7 +398,11 @@ test('every room in the side bar opens, reads its title, and Back returns (t260)
   const fold = await h.browser.ev(`document.querySelector('nav.places-list')?.dataset.fold`);
   assert.equal(fold, '0', 'nothing folds away at this size: every room shows');
   const rows = await h.browser.ev(`[...document.querySelectorAll('nav.places-list .srow .clip')].map((e) => e.innerText.trim())`);
-  assert.deepEqual(rows, ['Today', 'Inbox', 'Projects', 'Tasks', 'Meetings', 'Notes', 'People', 'More'], `the side bar's rooms (${rows.join(', ')})`);
+  assert.deepEqual(rows, [
+    'Today', 'Inbox', 'Projects', 'Tasks', 'Meetings', 'Notes', 'People',
+    'Health', 'Family', 'Money', 'Papers', 'House', 'Cars', 'Career', 'Trips', 'Weekly',
+    'Sites', 'Suppliers', 'Business', 'Systems', 'Goals', 'Lists', 'Publications', 'More',
+  ], `the side bar's rooms (${rows.join(', ')})`);
   for (const room of rows.filter((r) => r !== 'More')) {
     const base = await goBase(h, room === 'Today');
     const before = { ...(await snap(h)), baseTitle: await h.browser.ev('document.title') };

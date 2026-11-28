@@ -56,7 +56,10 @@ export interface ProposalCard extends ChatProposal {
   turnId?: string;
 }
 
+export interface PackActionsRequest { pack: string }
+
 interface ChatStore {
+  packActionsRequest?: PackActionsRequest;
   messages: ChatMessage[];
   requestId: string | null;
   scope: 'all' | 'note' | 'chat';
@@ -167,6 +170,11 @@ export function onChatDraft(fn: (text: string) => void): () => void {
  */
 /** Whether the assistant can answer now (a connection, a model and its key are there). */
 const aiReady = (): boolean => getState().settings?.ai.ready !== false;
+
+export function openPackActions(pack: string): void {
+  set({ scope: 'all', packActionsRequest: { pack } });
+  showSide('right', 'chat');
+}
 
 export function askInChat(text: string, note?: string): void {
   // No AI connection yet: the chat opens on its calm "Add an AI connection", with the words kept in the box for after.

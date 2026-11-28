@@ -16,18 +16,20 @@ export function useWork<T>(module: string, name = 'model', args: unknown[] = [],
   const filesRevision = useApp((s) => s.filesRevision);
   const vault = useApp((s) => s.vault?.path);
   const tick = useModuleTick();
-  const [data, setData] = useState<T | null>(null);
-  const [error, setError] = useState('');
+  const key = JSON.stringify([vault, module, name, args]);
+  const [result, setResult] = useState<{ key: string; data: T | null; error: string } | null>(null);
   const [again, setAgain] = useState(0);
-  const key = JSON.stringify(args);
+  // A failed or slow load may retain the last result for this request only.
+  const data = on && result?.key === key ? result.data : null;
+  const error = on && result?.key === key ? result.error : '';
   useEffect(() => {
     if (!on || !vault) return;
     let live = true;
     const t = window.setTimeout(
       () =>
         void workCall<T>(module, name, ...args).then(
-          (d) => live && (setData(d), setError('')),
-          (e) => live && setError(plainWords(e)),
+          (d) => live && setResult({ key, data: d, error: '' }),
+          (e) => live && setResult({ key, data, error: plainWords(e) }),
         ),
       data ? 120 : 0,
     );

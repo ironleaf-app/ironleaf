@@ -77,7 +77,7 @@ function moreMenu(el: HTMLElement, state: FamilyState | null, mem: MemoriesView 
     { separator: true },
     { label: 'Open the family calendar note', icon: 'calendar', disabled: !state, run: () => state && A.openPath(state.calendarPath) },
     { label: 'Who reads Family-private…', icon: 'lock', run: () => openModal({ kind: 'settings', section: 'privacy' }) },
-    { label: 'Family’s parts (Settings › Packs)…', icon: 'settings', run: () => openModal({ kind: 'settings', section: 'modules' }) },
+    { label: 'Family’s parts (Settings › Packs)…', icon: 'settings', run: () => A.openSettings('packs', 'current', 'Family') },
     { label: 'Show me around Family', icon: 'sparkle', run: () => openTour('family') },
     { separator: true },
     { label: FULL_DETAILS_LABEL, icon: 'history', run: () => openModule('family', 'classic') },

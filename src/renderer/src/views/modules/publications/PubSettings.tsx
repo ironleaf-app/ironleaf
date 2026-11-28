@@ -10,7 +10,6 @@ import { readSchedule, scheduleText, scheduleWords, TEMPLATES, type Section } fr
 import { Icon } from '../../../components/Icon';
 import { fileUrl } from '../../../lib/resolve';
 import * as A from '../../../state/actions';
-import { openModal } from '../../../state/modals';
 import { showError, useApp } from '../../../state/store';
 import { act, SEND_BLOCKED_SUFFIX, SEND_BLOCKED_WORDS } from './usePub';
 
@@ -225,7 +224,7 @@ export function PubSettings({ state, cur }: { state: PubState; cur: Cur }) {
         {!state.deliveryOn && (
           <p className="pb-note">
             <Icon name="info" size={13} /> Printing and sending on a schedule is switched off.{' '}
-            <button type="button" className="link-button" onClick={() => openModal({ kind: 'settings', section: 'modules' })}>
+            <button type="button" className="link-button" onClick={() => A.openSettings('packs', 'current', 'Publications')}>
               Settings › Packs
             </button>
             . Send or print from the edition builder whenever you like.

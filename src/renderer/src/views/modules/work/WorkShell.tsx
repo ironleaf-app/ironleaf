@@ -103,7 +103,7 @@ export function WorkShell({ tab: _tab, module, sections, here, actions, more, de
             )}
             {actions}
             {sharePath && <DesignButton path={sharePath} className="sv-tool" />}
-            {sharePath && <DesignButton path={sharePath} />}{sharePath && <ShareButton path={sharePath} className="sv-tool" />}
+            {sharePath && <ShareButton path={sharePath} className="sv-tool" />}
             {more && (
               <button type="button" className="sv-tool sv-tool-icon" aria-label={`More for ${module.name}`} title="More" onClick={(e) => openMenu(e.currentTarget, more())}>
                 <Icon name="more" size={15} />

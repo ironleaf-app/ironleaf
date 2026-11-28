@@ -44,7 +44,6 @@ export function PackShell({ glyph, tint, title, sub, facts, actions, menu, wide,
         actions={
           <>
             {actions}
-            {sharePath && <DesignButton path={sharePath} />}
             {sharePath && <DesignButton path={sharePath} />}{sharePath && <ShareButton path={sharePath} />}
             {menu && (
               <button type="button" className="btn iconbtn" aria-label={`More for ${typeof title === 'string' ? title : 'this page'}`} title="More" onClick={(e) => openMenu(e.currentTarget, menu())}>

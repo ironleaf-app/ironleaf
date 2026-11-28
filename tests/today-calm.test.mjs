@@ -426,4 +426,9 @@ test('pack offers live in Settings › Packs, never on Today', { timeout: 420000
   await clickWords(h, 'Hide suggestion', 'section[data-setting="Sites"]');
   await sleep(500);
   assert.equal(await ev(`document.querySelector('section[data-setting="Sites"] .ms-offer')`), null, 'Hide suggestion puts the offer away');
+  const sitesRow = `[...document.querySelectorAll('.places-list .srow')].find(row => row.textContent.trim() === 'Sites')`;
+  await ev(`document.querySelector('input[aria-label="Sites on"]').click()`);
+  await waitFor(h, `Boolean(${sitesRow})`);
+  await ev(`document.querySelector('input[aria-label="Sites on"]').click()`);
+  await waitFor(h, `!(${sitesRow})`);
 });

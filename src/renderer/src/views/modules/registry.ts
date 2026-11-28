@@ -24,6 +24,7 @@ import { PublicationsToday } from './PublicationsToday';
 import { LIFE_RECORD_PAGES, LIFE_RECORD_TODAY } from './life/registry';
 import { ModuleTour } from './ModuleTour';
 import { ModuleFills } from '../../state/moduleFills';
+import { ViewHeader } from '../ViewHeader';
 
 export type ModulePageProps = { tab: W.TabState };
 
@@ -64,7 +65,9 @@ export function ModulePage({ tab }: ModulePageProps) {
   const on = moduleOn(useModules(), id);
   const info = moduleInfo(id);
   const Page = MODULE_PAGES[id];
-  if (!info || !on) return createElement(EmptyState, { icon: 'layers', title: info ? `${info.name} is switched off` : 'This module isn’t here', line: info ? 'Switch it on in Settings › Packs. Everything it holds is kept.' : 'It may have been removed.' });
+  const header = id === 'meetings' && on ? null : createElement(ViewHeader, { tab });
+  if (!info || !on) return createElement(Fragment, null, header,
+    createElement(EmptyState, { icon: 'layers', title: info ? `${info.name} is switched off` : 'This module isn’t here', line: info ? 'Open Pack settings to switch it on. Everything it holds is kept.' : 'It may have been removed.' }));
   if (!Page) return createElement(EmptyState, { icon: info.icon as IconName, title: info.name, line: 'Its page is coming in a later version.' });
   // Inside its page: empty places lead with how it fills itself. The pack's tour is mounted with no link (8.7 round 2):
   // its ⋯ menu, the command list and Settings open it (the classic shells keep their own link under the title).
@@ -75,5 +78,5 @@ export function ModulePage({ tab }: ModulePageProps) {
   const page = createElement(Page, { tab });
   const tour = createElement(ModuleTour, { module: info, link: false });
   const scrolled = id === 'meetings' ? page : createElement('div', { className: 'nv-page-scroll' }, page);
-  return createElement(ModuleFills.Provider, { value: { id, name: info.name, fills: info.fills } }, createElement(Fragment, null, scrolled, tour));
+  return createElement(ModuleFills.Provider, { value: { id, name: info.name, fills: info.fills } }, createElement(Fragment, null, header, scrolled, tour));
 }

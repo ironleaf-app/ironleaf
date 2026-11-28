@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { errorMessage } from '../lib/errors';
 import { LIFE_MODULES, moduleOn, partOn, resolveModule } from '../../../shared/life-modules';
 import '../../../shared/life-tools';
@@ -6,17 +6,18 @@ import { MODULE_TOOLS, partForTool } from '../../../shared/module-tools';
 import { levelLabel } from '../../../shared/sensitivity';
 import type { ChatResult, PackActionDraft } from '../../../shared/types';
 import { moduleChanged, setModule, useModules } from '../state/modules';
+import type { PackActionsRequest } from '../state/chat';
 import { openPath } from '../state/actions';
 import { loadNotes, useApp } from '../state/store';
 
 interface Field { type?: string; description?: string; enum?: string[]; items?: { type?: string } }
 
-export default function PackActions({ root, draft }: { root: string; draft?: PackActionDraft }) {
+export default function PackActions({ root, draft, request }: { root: string; draft?: PackActionDraft; request?: PackActionsRequest }) {
   const requested = draft && MODULE_TOOLS.find(t => t.name === draft.name);
   const [submitted, setSubmitted] = useState(false);
   const switches = useModules();
   const canEdit = useApp(s => s.canEdit);
-  const [pack, setPack] = useState(() => (requested && resolveModule(requested.module)) ?? LIFE_MODULES.find(p => moduleOn(switches, p.id))?.id ?? 'meetings');
+  const [pack, setPack] = useState(() => (requested && resolveModule(requested.module)) ?? request?.pack ?? LIFE_MODULES.find(p => moduleOn(switches, p.id))?.id ?? 'meetings');
   const [action, setAction] = useState(requested?.name ?? '');
   const [values, setValues] = useState<Record<string, string>>(() => {
     if (!requested || !draft) return {};
@@ -43,6 +44,20 @@ export default function PackActions({ root, draft }: { root: string; draft?: Pac
   const part = tool && partForTool(tool.name);
   const enabled = moduleOn(switches, pack);
   const partEnabled = !part || partOn(switches, pack, part);
+  const packPicker = useRef<HTMLSelectElement>(null);
+  const handled = useRef<PackActionsRequest | undefined>(undefined);
+  useEffect(() => {
+    if (draft || busy || !request || handled.current === request) return;
+    handled.current = request;
+    if (request.pack !== pack) {
+      setPack(request.pack);
+      setAction('');
+      setValues({});
+      setError('');
+      setPreview(null);
+    }
+    packPicker.current?.focus({ preventScroll: true });
+  }, [busy, draft, pack, request]);
   function reset(name: string) {
     setAction(name); setValues({}); setError(''); setPreview(null);
   }
@@ -80,7 +95,7 @@ export default function PackActions({ root, draft }: { root: string; draft?: Pac
   return <div className="chat-pack-actions">
     <form aria-label="Pack actions" onSubmit={e => { e.preventDefault(); void execute(); }}>
       <fieldset disabled={busy || submitted}>
-        <label>Pack<select disabled={!!draft} value={pack} onChange={e => { setPack(e.target.value); reset(''); }}>{LIFE_MODULES.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</select></label>
+        <label>Pack<select ref={packPicker} disabled={!!draft} value={pack} onChange={e => { setPack(e.target.value); reset(''); }}>{LIFE_MODULES.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</select></label>
         <label>Action<select disabled={!!draft} value={tool?.name ?? ''} onChange={e => reset(e.target.value)}>{actions.map(t => <option key={t.name} value={t.name}>{t.title}</option>)}</select></label>
         {tool && <p className="hint">{tool.description}</p>}
         {tool && Object.entries(tool.input).map(([key, schema]) => {
