@@ -671,6 +671,7 @@ export class RecordModules {
     this.need('documents');
     const number = input.number && secretIdsIn(input.number).length ? input.number : undefined;
     const kind = String(input.kind ?? 'Other').slice(0, 40) || 'Other';
+    if (![input.name, input.holder, input.issuer, input.issued, input.expires, input.version, number].some(v => typeof v === 'string' && v.trim())) throw new Error('Add a holder, issuer, date or another identifying detail.');
     const name = String(input.name ?? '').trim() || documentName({ kind, holder: input.holder, version: input.version });
     const folder = typeFolder('id-document', await this.areas());
     const at = this.clash(folder, name);
@@ -1485,7 +1486,7 @@ export function registerRecordModules(m: RecordModules, d: Pick<RecordModulesDep
   handle('recmod:undo-receipt', (id: unknown) => m.undoReceipt(str(id, 60)));
   handle('recmod:check', () => m.check());
   handle('recmod:offers', async (inbox: unknown) => {
-    const items = d.index.allMeta().slice(0, 20000).map((n) => ({ title: n.title, type: typeof n.props?.type === 'string' ? n.props.type.toLowerCase() : undefined }));
+    const items = d.index.allMeta().slice(0, 20000).map((n) => ({ path: n.path, title: n.title, type: typeof n.props?.type === 'string' ? n.props.type.toLowerCase() : undefined }));
     for (const w of Array.isArray(inbox) ? inbox.slice(0, 200) : []) if (typeof w === 'string') items.push({ title: '', words: w.slice(0, 400), inbox: true } as never);
     return moduleOffers(m.on(), await m.options(), items);
   });

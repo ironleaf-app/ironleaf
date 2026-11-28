@@ -500,6 +500,7 @@ export interface ModuleOffer {
   /** What switching it on does, in the module's own words (src/shared/life-modules.ts offer.does). */
   does: string;
   count: number;
+  matches?: string[];
 }
 
 /** What switching a module on does when its catalogue entry says nothing (never another module's words). */
@@ -512,7 +513,7 @@ const offerDoes = (name: string): string => `Switch it on to keep these in ${nam
  * switching it on does. At least two notes (or one Inbox item) before one is offered, so a single passing mention never
  * nags.
  */
-export function moduleOffers(on: readonly string[], options: ModuleOptionsFile | null | undefined, items: readonly { title: string; type?: string; words?: string; inbox?: boolean }[]): ModuleOffer[] {
+export function moduleOffers(on: readonly string[], options: ModuleOptionsFile | null | undefined, items: readonly { title: string; path?: string; type?: string; words?: string; inbox?: boolean }[]): ModuleOffer[] {
   const out: ModuleOffer[] = [];
   for (const life of LIFE_MODULES) {
     if (on.includes(life.id) || options?.[life.id]?.dismissed) continue;
@@ -521,6 +522,7 @@ export function moduleOffers(on: readonly string[], options: ModuleOptionsFile |
     const weak = WEAK_SIGNALS[life.id];
     const types = rec?.types ?? [];
     if (!re && !weak && !types.length) continue;
+    const matches: string[] = [];
     let notes = 0;
     let inbox = 0;
     for (const it of items) {
@@ -530,12 +532,15 @@ export function moduleOffers(on: readonly string[], options: ModuleOptionsFile |
       const said = typed || (!!re && (re.test(it.title) || re.test(it.words ?? ''))) || weakSaid;
       if (!said) continue;
       if (it.inbox) inbox++;
-      else notes++;
+      else {
+        notes++;
+        if (it.path) matches.push(it.path);
+      }
     }
     if (notes >= 2 || inbox >= 1) {
       const about = (life.offer?.about ?? rec?.holds ?? life.name).replace(/^./, (c) => c.toLowerCase());
       const parts = [notes ? `${notes} ${notes === 1 ? 'note' : 'notes'}` : '', inbox ? `${inbox} ${inbox === 1 ? 'thing' : 'things'} in your Inbox` : ''].filter(Boolean);
-      out.push({ module: life.id, why: `${parts.join(' and ')} ${notes + inbox === 1 ? 'is' : 'are'} about ${about}.`, does: life.offer?.does ?? offerDoes(life.name), count: notes + inbox });
+      out.push({ module: life.id, why: `${parts.join(' and ')} ${notes + inbox === 1 ? 'is' : 'are'} about ${about}.`, does: life.offer?.does ?? offerDoes(life.name), count: notes + inbox, ...(matches.length ? { matches } : {}) });
     }
   }
   return out.sort((a, b) => b.count - a.count);

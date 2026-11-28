@@ -134,13 +134,20 @@ function FormDialog({ spec }: { spec: RecordFormSpec }) {
   const [ownChoice, setOwnChoice] = useState<Record<string, boolean>>({});
   const first = useRef<HTMLInputElement | null>(null);
   useEscape(() => !busy && closeForm());
-  useEffect(() => first.current?.focus(), []);
+  useEffect(() => {
+    const opener = document.activeElement;
+    first.current?.focus();
+    return () => {
+      if (opener instanceof HTMLElement && opener.isConnected) opener.focus({ preventScroll: true });
+    };
+  }, []);
   const set = (key: string, v: string | boolean | string[]) => {
     setValues((x) => ({ ...x, [key]: v }));
     if (problem?.key === key) setProblem(null);
   };
   const visible = spec.fields.filter((f) => !f.show || f.show(values));
   const go = async () => {
+    if (busy) return;
     for (const f of visible) {
       const v = values[f.key];
       if (f.required && (typeof v === 'string' ? !v.trim() : Array.isArray(v) ? !v.length : false)) return setProblem({ key: f.key, words: `${f.label} is needed.` });

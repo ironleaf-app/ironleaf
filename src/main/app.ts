@@ -2283,6 +2283,7 @@ null. */
       filesChanged();
       return r;
     },
+    fileVersion: async (rel) => (await vaultFiles.info(rel)).version,
     copyIn: (paths, folder) => recordModulesImport(paths, folder),
     pickFiles: async (o) => {
       const testFiles = !app.isPackaged && host.kind === 'standalone' ? process.env.NV_TEST_PICK_FILES : '';

@@ -138,7 +138,7 @@ export function VehicleDetail({ path }: { path: string }) {
   return (
     <PackPage label={v.name}>
       <PackHead glyph="◉" tint="slate" title={title ? `${v.name}, ${title}` : v.name} lead={sub} sharePath={v.path}
-        actions={<>{canEdit && <button type="button" className="btn pri" onClick={() => logFill(m, v)}>Log a fill</button>}<MoreButton label={`More for ${v.name}`} onOpen={(el) => openMenu(el, [...vehicleMenu(v, m, canEdit), { label: 'Copy link', icon: 'link', run: copyLink }, { label: EDIT_DETAILS_LABEL, icon: 'table', run: () => openModule(MOD, `classic:vehicle:${encodeURIComponent(v.path)}`) }, { separator: true }, { label: deleteToBin('the car'), icon: 'trash', danger: true, disabled: !canEdit, run: () => void trashRecord(v.path).then((ok) => ok && openModule(MOD)) }])} /></>} />
+        actions={<>{canEdit && fuelOn && <button type="button" className="btn pri" onClick={() => logFill(m, v)}>Log a fill</button>}<MoreButton label={`More for ${v.name}`} onOpen={(el) => openMenu(el, [...vehicleMenu(v, m, canEdit), { label: 'Copy link', icon: 'link', run: copyLink }, { label: EDIT_DETAILS_LABEL, icon: 'table', run: () => openModule(MOD, `classic:vehicle:${encodeURIComponent(v.path)}`) }, { separator: true }, { label: deleteToBin('the car'), icon: 'trash', danger: true, disabled: !canEdit, run: () => void trashRecord(v.path).then((ok) => ok && openModule(MOD)) }])} /></>} />
       <PageProps facts={[
         { k: 'Rego', v: `${v.rego || 'No plate yet'}${v.regoDue ? ` · due ${dayText(v.regoDue)}` : ''}` },
         { k: 'Insurance', v: `${v.insurer || 'No insurer yet'}${v.insuranceDue ? ` · until ${dayText(v.insuranceDue)}` : ''}` },

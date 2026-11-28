@@ -117,6 +117,7 @@ export interface PublicationsDeps {
   files(): Promise<{ path: string; size: number }[]>;
   /** A file put beside its record with its versions kept (src/main/vault-files.ts place, moved in). */
   placeFile(o: { record: string; src: string; name: string; by: string; what: string }): Promise<{ rel: string; version: number }>;
+  fileVersion(rel: string): Promise<number>;
   copyIn(abs: string[], folder: string): Promise<string[]>;
   pickFiles(o: { title: string; filters: { name: string; extensions: string[] }[]; multi: boolean }): Promise<string[]>;
   pickSave(o: { title: string; name: string }): Promise<string | null>;
@@ -576,6 +577,7 @@ export class Publications {
     }
     const when = `${isoOf(this.now())} ${this.now().toTimeString().slice(0, 5)}`;
     const caption = `${pub.masthead} · ${editionLabel(edition)} · ${longDate(edition.date)}`;
+    const version = ways.some(w => ['telegram', 'email'].includes(w.toLowerCase())) && this.d.deliver ? await this.d.fileVersion(pdf) : null;
     const rows: DeliveryRow[] = [];
     let sent = false;
     let printed = false;
@@ -613,7 +615,10 @@ export class Publications {
       }
     }
     let text = this.d.index.content(rel) ?? (await fsp.readFile(this.abs(rel), 'utf8'));
-    for (const r of rows) text = withDeliveryRow(text, r);
+    for (const r of rows) {
+      const receipt = r.result === 'Sent' ? { ...r, result: r.result + ' · ' + pdf + ' · version ' + version } : r;
+      text = withDeliveryRow(text, receipt);
+    }
     if (printed) text = setNoteProp(text, 'status', 'Printed');
     else if (sent && edition.status !== 'Printed') text = setNoteProp(text, 'status', 'Delivered');
     await this.d.writeNote(rel, text, by);

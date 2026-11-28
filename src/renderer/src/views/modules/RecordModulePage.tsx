@@ -245,6 +245,7 @@ function FinanceMain({ f, canEdit }: { f: FinanceView; canEdit: boolean }) {
   // Bills due first (late, today, then by day), then what was just paid.
   const due = attentionOrder(f.dueSoon.map((b) => ({ title: b.name, due: b.next, bill: b })), f.today).map(({ bill }) => bill);
   const paid = f.bills.filter((b) => b.paid && b.paid >= daysAgo(f.today, 7) && !f.dueSoon.includes(b)).slice(0, 3);
+  const undated = f.bills.filter(b => !b.anchor && !b.paid && !/^(paused|cancelled|canceled|stopped|ended)$/i.test(b.status));
   const rows = [...due, ...paid].slice(0, 6);
   const facts: { k: string; v: ReactNode }[] = [];
   if (spending) facts.push({ k: `${fullMonth(f.thisMonth)} spend`, v: <span title="Added up from this month's spending.">{f.budgets.length ? `${moneyWords(now?.total ?? 0, cur)} of ${moneyWords(budgetTotal, cur)}` : moneyWords(now?.total ?? 0, cur)}</span> });
@@ -255,7 +256,7 @@ function FinanceMain({ f, canEdit }: { f: FinanceView; canEdit: boolean }) {
         <span title="Counted from your bills.">
           {overdue.length ? <span className="pill red">{`${overdue.length} late`}</span> : null}
           {week.length ? <span className="pill amber">{`${week.length} this week`}</span> : null}
-          {!overdue.length && !week.length ? <span className="pill green">{rows.length ? 'None this week' : 'All paid'}</span> : null}
+          {!overdue.length && !week.length ? <span className="pill green">{f.bills.length ? 'None scheduled this week' : 'No bills'}</span> : null}
         </span>
       ),
     });
@@ -288,7 +289,10 @@ function FinanceMain({ f, canEdit }: { f: FinanceView; canEdit: boolean }) {
           ))}
         </PackSection>
       )}
-      {bills && !rows.length && <PackSection label="Bills due" bare>{f.bills.length ? <p className="vsub">Nothing due in the next 14 days.</p> : <p className="vsub">Add your bills to see what is due here and on Today.</p>}</PackSection>}
+      {bills && undated.length > 0 && <PackSection label="Needs a due date">{undated.map(b =>
+        <BillRow key={b.path} b={b} currency={cur} today={f.today} tile brief accounts={f.accounts.map(a => a.name)} />
+      )}</PackSection>}
+      {bills && !rows.length && !undated.length && <PackSection label="Bills due" bare>{f.bills.length ? <p className="vsub">Nothing due in the next 14 days.</p> : <p className="vsub">Add your bills to see what is due here and on Today.</p>}</PackSection>}
       {bills && forecastHeadline(f.forecast, cur) && (
         <PackSection label="Looking ahead" bare>
           <p className="vsub">
@@ -961,7 +965,7 @@ function DocRow({ d, today, canEdit, fresh }: { d: IdDocument; today: string; ca
         {d.name}
       </button>
       <span className="end">
-        <span className="meta">{meta}</span>
+        {meta.toLowerCase() !== tag.toLowerCase() && <span className="meta">{meta}</span>}
         {d.status === 'Expired' ? (
           <button type="button" className={`tag ${tone}`} style={{ border: 0, cursor: 'pointer', font: 'inherit' }} disabled={!canEdit} onClick={() => renewDocument(d)} title={`Record that ${d.name} was renewed`}>
             {tag}

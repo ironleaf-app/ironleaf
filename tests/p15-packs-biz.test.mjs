@@ -65,7 +65,8 @@ test('goals overview: the Home preview shows only once habits exist', () => {
 test('lists overview: zeroes and just-done states stay quiet', () => {
   const page = src(`${W3B}/Lists87.tsx`);
   assert.match(page, /\{m && !!kinds\.length && <PageProps/, 'no counts until something is under way');
-  assert.match(page, /m\.lists\.length \? 'Everything on every list is done\.'/, 'done lists do not read as no lists');
+  assert.ok(page.includes('m.lists.some(list => list.items.length > 0)') && page.includes('Everything on every list is done.'), 'only lists with items can be all done');
+  assert.ok(page.includes('openList(list.path)'), 'every named list opens its own record');
   assert.match(page, /\{shopping && need\.length > 0 && <HomeCard/, 'the Home preview needs something still needed');
   assert.match(page, /more on the \{lists\.length > 1 \? 'lists' : 'list'\}/, 'one list reads as one list');
 });

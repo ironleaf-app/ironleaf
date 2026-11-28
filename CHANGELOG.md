@@ -6,6 +6,13 @@ the website. `tools/release.mjs` takes a release's notes from here when `--notes
 
 Format: one `## <version> — <YYYY-MM-DD>` heading a release, then one `- ` line a change.
 
+## 2.0.25 — 2026-11-28
+
+- Reopen a search with its filters and selected note. Preview the notes behind a pack suggestion and take its tour from Settings before switching it on.
+- Open empty lists by name. Cars respects the Fuel log switch on entry and filing. Money separates undated bills, and Papers and House ask for a detail before saving an empty record.
+- Open an empty Business or Systems section directly. Health counts completed check-ins, services show when their state was observed, and publication delivery receipts identify the PDF sent.
+- Review both versions of a sync conflict. If a copy changes during a merge, it stays available. A partial merge keeps unresolved copies visible.
+
 ## 2.0.24 — 2026-11-28
 
 - In the assistant, open Pack actions to choose a pack, review its fields and run an action locally, including when your model is offline. Enable a pack without losing the form. Review saved notes and undo note changes from the result.

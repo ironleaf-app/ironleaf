@@ -8,7 +8,7 @@ import { MACHINE_KINDS, MACHINE_STATUSES, RUN_RESULTS, RUNBOOK_EVERY, SERVICE_KI
 import type { LineContext } from '../../../../../shared/types';
 import { partOn } from '../../../../../shared/life-modules';
 import type { SecretView, SecretsStatus } from '../../../../../shared/secrets';
-import { alertsOf, historyOf, machineState, machineTone, SYSTEM_EDITABLE, systemRecords, systemSectionViews, type Credential, type HealthNote, type Machine, type Runbook, type Service, type SystemsModel } from '../../../../../shared/systems';
+import { alertsOf, historyOf, serviceObserved, machineState, machineTone, SYSTEM_EDITABLE, systemRecords, systemSectionViews, type Credential, type HealthNote, type Machine, type Runbook, type Service, type SystemsModel } from '../../../../../shared/systems';
 import { joinNames } from '../../../../../shared/words';
 import { splitRowPath } from '../../../../../shared/system-tables';
 import { EmptyState } from '../../../components/EmptyState';
@@ -1083,7 +1083,9 @@ function ServicePage({ s, m, canEdit }: { s: Service; m: SystemsView; canEdit: b
             <Fact label="Runbook">
               <Inline value={s.runbook} label="Runbook" kind="choice" options={['', ...m.runbooks.map((r) => r.name)]} placeholder="Choose" canEdit={canEdit} onSave={set('service', s.path, 'runbook')} />
             </Fact>
+            {s.runbookPath && <button type="button" className="text-button" onClick={() => openRunbook(s.runbookPath!, s.runbook)}>Open {s.runbook}</button>}
             <Fact label="Last checked">
+              <span>{serviceObserved(s, m.today)}</span>
               <Inline value={s.checked ?? ''} shown={s.checked ? dayText(s.checked) : undefined} label="Last checked" kind="date" placeholder="Add" canEdit={canEdit} onSave={set('service', s.path, 'checked')} />
             </Fact>
           </div>
@@ -1305,7 +1307,7 @@ export function SystemsPage({ tab }: { tab: W.TabState }) {
             </p>
           </PackShell>
         )
-      ) : empty ? (
+      ) : empty && section === 'overview' ? (
         <PackShell glyph="▣" tint="slate" title={packName('systems', 'Systems')} sub="Servers, PCs and services as a map, with runbooks and logins." menu={() => systemsMenu(m, canEdit)}>
           <EmptyState icon="computer" title="Your machines and services, on one map" line="Add a server, NAS or PC, then the services on it. Write runbooks for the jobs you do now and then, and keep every login in Secrets with only a locked link here." action={{ label: 'Add your first machine', icon: 'plus', run: () => newMachine(), disabled: !canEdit }} also={{ label: 'Add a service', icon: 'bolt', run: () => newService(m), disabled: !canEdit }} />
         </PackShell>

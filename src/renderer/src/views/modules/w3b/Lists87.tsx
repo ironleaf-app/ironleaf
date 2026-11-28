@@ -16,6 +16,7 @@ import { toast } from '../../../state/store';
 import { useWork } from '../../../state/workModules';
 import type * as W from '../../../state/workspace';
 import { moneyText } from '../../workspace/recordParts';
+import { plural } from '../personal/PersonalParts';
 import { dayText } from '../work/WorkShell';
 import { addItem, itemMenu, listMenu, newList, openList, setItem, type ListsView } from '../life/ListsPage';
 import { Inline, Stars } from '../life/parts';
@@ -64,7 +65,12 @@ export function ListsOverview({ tab }: { tab: W.TabState }) {
       {m && !!kinds.length && <PageProps facts={[{ k: 'In progress', v: `${doing} now watching or reading · ${toBuy} still to buy` }]} />}
       {error && <p className="vsub">{error}</p>}
       {!m && !error && <p className="vsub">Reading your lists…</p>}
-      {m && !kinds.length && <div className="card" style={{ marginTop: 14 }}><p className="vsub">{m.lists.length ? 'Everything on every list is done.' : 'No lists yet. Start one, then click an item’s status to move it on.'}</p>{!m.lists.length && <FillsLine id="lists" />}{!m.lists.length && canEdit && <p style={{ marginTop: 8 }}><button type="button" className="btn" onClick={() => newList()}>Start a list</button></p>}</div>}
+      {m && m.lists.length === 0 && <div className="card"><p className="vsub">No lists yet.</p><FillsLine id="lists" /></div>}
+      {m && !kinds.length && m.lists.some(list => list.items.length > 0) && <p className="vsub">Everything on every list is done.</p>}
+      {!!m?.lists.length && <Section label="Your lists"><div className="card">{m.lists.map(list =>
+        <button type="button" className="trow w2a-rowbtn" key={list.path} onClick={() => openList(list.path)}>
+          <span className="t">{list.name}</span><span>{plural(list.items.length, 'item')}</span>
+        </button>)}</div></Section>}
       {m && kinds.map(([kind, items]) => {
         const lists = m.lists.filter((l) => l.kind === kind);
         return (

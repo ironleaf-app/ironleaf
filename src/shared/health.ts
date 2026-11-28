@@ -818,12 +818,21 @@ export function measureStreak(db: HealthDb, measure: string, today = todayIso(),
   return streakOf(answers, today, milestones);
 }
 
-/** The check-in's streak: days with any check-in answer. */
+/** A completed check-in has an answer for each active question on that day. */
+function completedCheckins(db: HealthDb): Map<string, boolean> {
+  const asked = new Set(db.measures.filter(m => !m.archived && db.checkin.measures.includes(m.id)).map(m => m.id));
+  const answers = new Map<string, Set<string>>();
+  for (const e of db.entries) {
+    if (!asked.has(e.measure)) continue;
+    const day = answers.get(e.day) ?? new Set<string>();
+    day.add(e.measure);
+    answers.set(e.day, day);
+  }
+  return new Map([...answers].filter(([, measures]) => measures.size === asked.size).map(([day]) => [day, true]));
+}
+
 export function checkinStreak(db: HealthDb, today = todayIso()): Streak {
-  const asked = new Set(db.checkin.measures);
-  const answers = new Map<string, boolean>();
-  for (const e of db.entries) if (asked.has(e.measure)) answers.set(e.day, true);
-  return streakOf(answers, today);
+  return streakOf(completedCheckins(db), today);
 }
 
 // ── The daily check-in ───────────────────────────────────────────────────────────────────────────────────────────────
@@ -864,9 +873,8 @@ export function weekStart(iso: string): string {
  *  days a check-in was answered. Counts only; no figures, no medical words. */
 export function weekSessionSummary(db: HealthDb, iso: string): { done: number; target: number | null; checkinDays: number; start: string } {
   const done = sessionsInWeek(db, iso).length;
-  const asked = new Set(db.checkin.measures);
   const from = weekStart(iso);
-  const checkinDays = new Set(db.entries.filter((e) => asked.has(e.measure) && e.day >= from && e.day <= addDays(from, 6)).map((e) => e.day)).size;
+  const checkinDays = [...completedCheckins(db).keys()].filter(day => day >= from && day <= addDays(from, 6)).length;
   return { done, target: db.targets.sessionsPerWeek || null, checkinDays, start: from };
 }
 

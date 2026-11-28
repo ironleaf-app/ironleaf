@@ -534,7 +534,11 @@ export interface SystemToolInput {
 
 const logins = (c: Credential[]) => (c.length ? `; ${plural(c.length, 'login')} kept in Secrets (locked: the person copies it from Ironleaf)` : '');
 const machineLine = (x: Machine, today: string) => `- ${x.name} (${x.kind}${x.role ? `, ${x.role}` : ''}): ${machineState(x).words}${x.address ? `; ${x.address}` : ''}${x.os ? `; ${x.os}` : ''}${x.location ? `; in ${x.location}` : ''}${x.checked ? `; checked ${dayWords(x.checked, today)}` : '; not checked yet'}${logins(x.credentials)} [${x.path}]`;
-const serviceLine = (s: Service, today: string) => `- ${s.name} (${s.kind}): ${s.status}${s.runsOn ? ` on ${s.runsOn}` : ''}${s.port ? `, port ${s.port}` : ''}${s.url ? `, ${s.url}` : ''}${s.dependsOn.length ? `; needs ${s.dependsOn.map((d) => d.name).join(', ')}` : ''}${s.runbook ? `; runbook ${s.runbook}` : ''}${s.checked ? `; checked ${dayWords(s.checked, today)}` : ''}${logins(s.credentials)} [${s.path}]`;
+export function serviceObserved(s: Pick<Service, 'status' | 'checked'>, today: string): string {
+  if (!s.checked) return 'Not checked yet';
+  return s.checked < today ? `${s.status} when checked on ${s.checked}` : `${s.status} · checked ${s.checked}`;
+}
+const serviceLine = (s: Service, today: string) => `- ${s.name} (${s.kind}): ${serviceObserved(s, today)}${s.runsOn ? ` on ${s.runsOn}` : ''}${s.port ? `, port ${s.port}` : ''}${s.url ? `, ${s.url}` : ''}${s.dependsOn.length ? `; needs ${s.dependsOn.map((d) => d.name).join(', ')}` : ''}${s.runbook ? `; runbook ${s.runbook}` : ''}${logins(s.credentials)} [${s.path}]`;
 const healthLines = (h: HealthNote[], today: string) => [...h].sort((a, b) => (b.date ?? '').localeCompare(a.date ?? '')).slice(0, 3).map((x) => `  - ${x.date ? dayWords(x.date, today) : 'No date'}: ${x.status || 'note'}${x.note ? ` — ${x.note}` : ''}`);
 
 export function findRunbook(m: SystemsModel, words: unknown) {

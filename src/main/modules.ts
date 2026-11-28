@@ -653,6 +653,7 @@ export class Modules {
         return { text: `Measures kept: ${live.map((m) => `${m.name} (${kind(m)})`).join('; ') || 'none yet'}.\nThe daily check-in asks: ${db.checkin.measures.map((id) => db.measures.find((m) => m.id === id)?.name).filter(Boolean).join(', ') || 'nothing yet'}.` };
       }
       case 'health_trend': {
+        this.allow(asker, 'health', 'Health store: a measure', 'read');
         const db0 = await this.healthDb();
         const m = measureOf(db0, S(a.measure, 60));
         if (!m) throw new Error(`The health store doesn’t keep “${S(a.measure, 60)}”. It keeps: ${db0.measures.filter((x) => !x.archived).map((x) => x.name).join(', ')}.`);
@@ -662,7 +663,6 @@ export class Modules {
         if (from > to) from = to;
         if (from < addDays(to, -366)) from = addDays(to, -366);
         const item = `Health store: ${m.name}, ${dayWords(from)} to ${dayWords(to)}`;
-        this.allow(asker, 'health', item, 'read');
         const rows = rowsFor(db0, m, from, to);
         this.audit(asker, 'read', item, 'health', `${rows.rows.length} entries`);
         return { text: rowsWords(rows) };

@@ -8,7 +8,8 @@ import { DEFAULT_AREAS } from '../../../shared/areas';
 import { LIFE_MODULES, moduleOn, partOn, type LifeModule } from '../../../shared/life-modules';
 import { moduleById, moduleFolder, type ModuleOffer } from '../../../shared/module-records';
 import { useAreas } from '../state/areas';
-import { openTour, setTourSeen } from '../state/moduleFills';
+import { ModuleTour } from '../views/modules/ModuleTour';
+import { openPath } from '../state/actions';
 import { levelLabel } from '../../../shared/sensitivity';
 import { openModule, setModule, useModules } from '../state/modules';
 import { closeModal } from '../state/modals';
@@ -84,24 +85,12 @@ function PackRow({ m, areaName, folder, offer, onNotNow, reveal }: { m: LifeModu
                 <Icon name="forward" size={12} />
               </button>
             )}
-            {/* A tour from here works even when the pack is off (3 Nov 2026, audit f F3: it silently did
-                nothing, then fired uninvited later): the pack switches on first, so its page mounts. */}
-            <button
-              className="text-button"
-              disabled={!on && !canEdit}
-              onClick={() => {
-                setTourSeen(m.id, false);
-                closeModal();
-                const show = () => {
-                  openModule(m.id);
-                  openTour(m.id);
-                };
-                if (on) show();
-                else void setModule(m.id, true).then(show, showError);
-              }}
-            >
-              {on ? `Show me around ${m.name}` : `Enable ${m.name} and take the tour`}
-            </button>
+            {/* Show me around is a preview, including for a pack that is switched off. */}
+            <ModuleTour module={m} sep={false} />
+            {!!offer?.matches?.length && <details>
+              <summary>Preview matching notes ({offer.matches.length})</summary>
+              {offer.matches.map(path => <p key={path}><button type="button" className="text-button" onClick={() => { closeModal(); openPath(path); }}>{path}</button></p>)}
+            </details>}
             {offered && (
               <button type="button" className="text-button" onClick={onNotNow}>
                 Hide suggestion

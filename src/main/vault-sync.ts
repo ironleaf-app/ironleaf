@@ -255,6 +255,7 @@ export function createVaultSync(d: SyncDeps) {
         if (m.changed) await d.writeNote(c.original, m.text);
       }
     }
+    if (await d.readNote(c.copy) !== theirs) throw new Error('The conflict copy changed during the merge. Both files are still here. Review the latest changes.');
     await d.trash(c.copy);
     return true;
   }
@@ -321,8 +322,9 @@ export function createVaultSync(d: SyncDeps) {
       const notes = (v?.conflicts ?? []).filter((c) => c.note);
       let n = 0;
       for (const c of notes) if (await mergeOne(c).catch((err) => (d.log?.(`Merging ${c.copy}: ${err instanceof Error ? err.message : String(err)}`), false))) n++;
+      const failed = notes.length - n;
       const rest = (v?.conflicts.length ?? 0) - notes.length;
-      words = `${n === 1 ? '1 note' : `${n} notes`} merged, every line kept; the copies are in Recently deleted.${rest ? ` ${rest === 1 ? '1 file isn’t a note' : `${rest} files aren’t notes`}: keep both of ${rest === 1 ? 'it' : 'each'}.` : ''}`;
+      words = `${n === 1 ? '1 note' : `${n} notes`} merged, every line kept; the copies are in Recently deleted.${failed ? ` ${failed} still need review.` : ''}${rest ? ` ${rest === 1 ? '1 file isn’t a note' : `${rest} files aren’t notes`}: keep both of ${rest === 1 ? 'it' : 'each'}.` : ''}`;
     } else throw new Error('That can’t be fixed from here.');
     cache = null;
     if (id === 'merge' || id === 'keep-both' || id === 'merge-all') await d.rescan().catch(() => undefined);

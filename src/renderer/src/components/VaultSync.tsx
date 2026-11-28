@@ -281,7 +281,8 @@ function ConflictsDialog({ view, onClose }: { view: SyncView; onClose(): void })
     try {
       const r = await api().fix('merge-all');
       setDone(r.words);
-      setList((l) => l.filter((x) => !x.note));
+      const fresh = await api().status(true);
+      if (fresh) setList(fresh.conflicts);
       window.dispatchEvent(new Event(CHANGED));
     } catch (err) {
       setDone(errorMessage(err));
@@ -291,7 +292,7 @@ function ConflictsDialog({ view, onClose }: { view: SyncView; onClose(): void })
   };
   const notes = list.filter((c) => c.note).length;
   return (
-    <Shell title={list.length ? 'Conflict copies' : 'No conflict copies left'} icon={list.length ? 'copy' : 'check'} onClose={onClose} locked={busy === '*'}>
+    <Shell title={list.length ? 'Conflict copies' : 'No conflict copies left'} icon={list.length ? 'copy' : 'check'} onClose={onClose} locked={!!busy}>
       <p className="dialog-message">
         {list.length
           ? 'When a note is changed on two PCs before they sync, OneDrive keeps both: the second with the PC’s name added. Merge puts every line of the copy into the note (nothing is lost; the note keeps its own words at the top) and sends the copy to Recently deleted. Keep both gives the copy a name that says whose it is.'
@@ -318,6 +319,10 @@ function ConflictsDialog({ view, onClose }: { view: SyncView; onClose(): void })
                 </span>
               </div>
               <div className="vs-acts">
+                {c.note && <details><summary>Review versions</summary>
+                  <button type="button" className="text-button" onClick={() => { onClose(); A.openPath(c.original, { where: 'tab' }); }}>Open original</button>
+                  <button type="button" className="text-button" onClick={() => { onClose(); A.openPath(c.copy, { where: 'tab' }); }}>Open conflict copy</button>
+                </details>}
                 {c.note && (
                   <button className="button" disabled={!!busy} onClick={() => void one(c, 'merge')}>
                     Merge
@@ -332,7 +337,7 @@ function ConflictsDialog({ view, onClose }: { view: SyncView; onClose(): void })
         </div>
       )}
       <div className="dialog-actions">
-        <button className="button" onClick={onClose} disabled={busy === '*'}>
+        <button className="button" onClick={onClose} disabled={!!busy}>
           {list.length ? 'Close' : 'Done'}
         </button>
         {notes > 1 && (

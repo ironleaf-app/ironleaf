@@ -411,6 +411,21 @@ function core(files, switches) {
 }
 const ALL_ON = () => ({ now: { house: { on: true }, vehicles: { on: true }, career: { on: true }, travel: { on: true } } });
 
+test('Fuel log off holds edits and a previously offered Inbox fill until it is enabled', async () => {
+  const switches = ALL_ON();
+  const { part, read } = core(FILES(), switches);
+  const v = part('vehicles');
+  const path = 'Home/Vehicles/Family wagon.md';
+  const before = read(path);
+  switches.now.vehicles.off = ['fuel'];
+  const entry = { kind: 'line', words: 'Family wagon fuel 20L $40' };
+  assert.notEqual((await v.inbox(entry))?.target.type, 'fuel');
+  await assert.rejects(v.ops['add-fill'](path, { litres: 20 }), /Turn on Fuel log/);
+  await assert.rejects(v.fileInbox(entry, { path, type: 'fuel' }), /Turn on Fuel log/);
+  assert.throws(() => v.ops['remove-row'](path, 'fuel', 0, ''), /Turn on Fuel log/);
+  assert.equal(read(path), before);
+});
+
 test('main side: each change is one property or one cell of a hand-made table, every other character kept', async () => {
   const files = FILES();
   const { part, read } = core(files, ALL_ON());
