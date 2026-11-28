@@ -41,7 +41,12 @@ export function makeVehicles(w: WorkModules): PersonalPart {
   };
 
   /** A fill-up added from the page (the same checks as the tool's). */
+  const fuelEnabled = () => partOn(w.d.prefs().modules, 'vehicles', 'fuel');
+  const requireFuel = () => {
+    if (!fuelEnabled()) throw new Error('Turn on Fuel log in Settings › Packs › Cars to log fuel.');
+  };
   const addFill = async (rel: unknown, input: unknown): Promise<string> => {
+    requireFuel();
     const m = await model();
     const v = m.vehicles.find((x) => x.path === S(rel, 1000));
     if (!v) throw new Error('That vehicle isn’t there any more.');
@@ -71,6 +76,18 @@ export function makeVehicles(w: WorkModules): PersonalPart {
 
   const ops: PersonalPart['ops'] = {
     ...r.fileOps,
+    'add-row': (rel, table, values) => {
+      if (table === 'fuel') requireFuel();
+      return r.addRow(rel, table, values);
+    },
+    'set-field': (input) => {
+      if ((input as { kind?: unknown } | null)?.kind === 'fuel') requireFuel();
+      return r.setField(input);
+    },
+    'remove-row': (rel, table, row, shown) => {
+      if (table === 'fuel') requireFuel();
+      return r.removeRow(rel, table, row, shown);
+    },
     model: () => view(),
     'add-vehicle': (input) => addVehicle(input),
     'add-fill': (rel, input) => addFill(rel, input),
@@ -113,6 +130,7 @@ export function makeVehicles(w: WorkModules): PersonalPart {
       }));
     },
     async tool(name, args, ctx) {
+      if (name === 'vehicle_fuel_add' || name === 'vehicle_fuel_trend') requireFuel();
       const mine = await model(ctx.gated);
       const refused = await r.refused(ctx, mine.vehicles.length);
       const cur = await r.currency();
@@ -147,7 +165,7 @@ export function makeVehicles(w: WorkModules): PersonalPart {
       let v = namedIn(words, live, (x) => [x.name, x.rego, `${x.make} ${x.model}`, x.model]);
       // A fill-up: litres and money, and the vehicle named or fuel words said ("20L of paint $45" is paint, 9.2).
       const litresMoney = /\b\d+(?:\.\d+)?\s*(?:l|litres|liters|kwh)\b/i.test(words) && /\$\s?\d|\b\d+\.\d{2}\b/.test(words);
-      const fuelish = litresMoney && !/\bpaint\b/i.test(words) && (!!v || /\b(fuel|petrol|diesel|fill(?:ed|ing)?(?:\s+up)?|servo|service station|gas station|unleaded|e10|charge|charging|bp\b|shell|caltex|ampol|mobil|gull|\bz\b|waitomo|allied|gaspy)\b/i.test(words));
+      const fuelish = fuelEnabled() && litresMoney && !/\bpaint\b/i.test(words) && (!!v || /\b(fuel|petrol|diesel|fill(?:ed|ing)?(?:\s+up)?|servo|service station|gas station|unleaded|e10|charge|charging|bp\b|shell|caltex|ampol|mobil|gull|\bz\b|waitomo|allied|gaspy)\b/i.test(words));
       if (!v && fuelish && live.length === 1) v = live[0];
       if (!v) return null;
       if (item.kind === 'line' && fuelish) {
@@ -163,6 +181,7 @@ export function makeVehicles(w: WorkModules): PersonalPart {
       if (!v) throw new Error('That vehicle isn’t there any more.');
       if (item.kind !== 'line') return { words: `Kept ${item.path.split('/').pop()} with ${v.name}.`, paths: [v.path], keepWith: v.path };
       if (target.type === 'fuel') {
+        requireFuel();
         const words = item.words;
         const date = readDay(/\b(\d{4}-\d{2}-\d{2})\b/.exec(words)?.[1]) ?? (item.stamp ? readDay(item.stamp.replace(/\s+\d{1,2}:\d{2}.*$/, '')) : null) ?? m.today;
         const odo = readNumber(/(\d[\d,]{3,})\s*km\b/i.exec(words)?.[1]);

@@ -931,7 +931,7 @@ export function BusinessPage({ tab }: { tab: W.TabState }) {
             <WebsitePage w={rec as Website} m={m} canEdit={canEdit} />
           </DetailShell>
         )
-      ) : empty ? (
+      ) : empty && section === 'overview' ? (
         <PackShell glyph="◧" tint="blue" title={packName('business', 'Business')} sub="Releases, customers, campaigns, support and site health." menu={() => businessMenu(m, canEdit)}>
           <EmptyState icon="chart" title="Your business in one place" line="Log each release with what changed, keep customers with what they pay, plan campaigns on a board, follow support from new to solved, and keep an eye on your sites and their renewals." action={{ label: 'Log a release', icon: 'plus', run: () => newRelease(m), disabled: !canEdit }} also={{ label: 'Add a customer', icon: 'person', run: () => newCustomer(), disabled: !canEdit }} />
         </PackShell>

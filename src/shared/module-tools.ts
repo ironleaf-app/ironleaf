@@ -131,6 +131,6 @@ export const MODULE_TOOLS: ModuleToolDef[] = [
 export const moduleToolDef = (name: string): ModuleToolDef | undefined => MODULE_TOOLS.find((t) => t.name === name);
 
 export function partForTool(name: string): string | undefined {
-  const parts: Record<string, string> = { health_session_log: 'training', health_meal_log: 'food', health_appointments: 'appointments', health_appointment_add: 'appointments', family_milestone_add: 'milestones', family_reward_log: 'rewards', family_events: 'calendar', family_event_add: 'calendar', family_activity_add: 'calendar' };
+  const parts: Record<string, string> = { vehicle_fuel_add: 'fuel', vehicle_fuel_trend: 'fuel', health_session_log: 'training', health_meal_log: 'food', health_appointments: 'appointments', health_appointment_add: 'appointments', family_milestone_add: 'milestones', family_reward_log: 'rewards', family_events: 'calendar', family_event_add: 'calendar', family_activity_add: 'calendar' };
   return parts[name];
 }

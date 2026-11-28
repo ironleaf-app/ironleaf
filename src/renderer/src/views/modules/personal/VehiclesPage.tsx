@@ -16,7 +16,7 @@ import { Icon, type IconName } from '../../../components/Icon';
 import { openMenu, type MenuItem } from '../../../components/Menu';
 import { fileUrl } from '../../../lib/resolve';
 import * as A from '../../../state/actions';
-import { openModule, partOfTab, useModules } from '../../../state/modules';
+import { openModule, partOfTab, useModules, modulesNow } from '../../../state/modules';
 import { VehicleDetail, VehiclesOverview, vehiclePathOf, vehiclesPlace } from '../w3b/Vehicles87';
 import { useApp } from '../../../state/store';
 import { useWork, workDid } from '../../../state/workModules';
@@ -199,7 +199,7 @@ export function vehicleMenu(v: Vehicle, m: VehiclesView, canEdit: boolean): Menu
   return [
     { label: 'Open', icon: 'eye', run: () => openVehicle(v.path) },
     { separator: true },
-    { label: 'Log a fill-up…', icon: 'fuel', disabled: !canEdit, run: () => logFill(m, v) },
+    { label: 'Log a fill-up…', icon: 'fuel', disabled: !canEdit || !partOn(modulesNow(), MOD, 'fuel'), run: () => logFill(m, v) },
     { label: 'Record a service…', icon: 'settings', disabled: !canEdit, run: () => void recordService(m, v) },
     { label: 'Rego renewed…', icon: 'check', disabled: !canEdit, run: () => renewed(v, 'rego', m.today) },
     { label: 'Insurance renewed…', icon: 'check', disabled: !canEdit, run: () => renewed(v, 'insurance', m.today) },
@@ -614,19 +614,19 @@ export function VehiclesClassic({ tab }: { tab: W.TabState }) {
   const here = detail ? 'vehicles' : section;
   const more = (): MenuItem[] => [
     { label: 'New vehicle', icon: 'car', disabled: !canEdit, run: () => newVehicle() },
-    { label: 'Log a fill-up', icon: 'fuel', disabled: !canEdit || !m?.vehicles.length, run: () => logFill(m, v) },
+    { label: 'Log a fill-up', icon: 'fuel', disabled: !canEdit || !partOn(modules, MOD, 'fuel') || !m?.vehicles.length, run: () => logFill(m, v) },
     ...(v ? ([{ separator: true }, ...vehicleMenu(v, m!, canEdit).slice(2)] as MenuItem[]) : []),
     { separator: true },
     { label: 'Cars options…', icon: 'settings', disabled: !canEdit || !m, run: () => m && vehiclesOptions(m) },
     { label: 'Show the folder', icon: 'folder', disabled: !m, run: () => m && A.revealInExplorer(m.folder) },
   ];
-  const actions = v ? (
+  const actions = v && partOn(modules, MOD, 'fuel') ? (
     <button type="button" className="sv-tool nt-new" disabled={!canEdit} onClick={() => logFill(m, v)}>
       <Icon name="fuel" size={14} /> Log a fill-up
     </button>
   ) : (
     <>
-      {m && m.vehicles.length > 0 && (
+      {m && m.vehicles.length > 0 && partOn(modules, MOD, 'fuel') && (
         <button type="button" className="sv-tool" disabled={!canEdit} onClick={() => logFill(m)}>
           <Icon name="fuel" size={14} /> Log a fill-up
         </button>

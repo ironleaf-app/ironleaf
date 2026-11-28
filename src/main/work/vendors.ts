@@ -108,12 +108,11 @@ export function makeVendors(w: WorkModules): WorkPart {
       if (o.quotePath) {
         const m = await model();
         const q = m.quotes.find((x) => x.path === o.quotePath);
-        if (q) {
-          vendor ||= q.vendor;
-          project ||= q.project;
-          if (amount === null) amount = q.amount;
-          quote ||= q.name;
-        }
+        if (!q) throw new Error('That quote is no longer here. Choose the quote again.');
+        vendor ||= q.vendor;
+        project ||= q.project;
+        if (amount === null) amount = q.amount;
+        quote ||= q.name;
       }
       if (!vendor) throw new Error('Say who the order is with.');
       if (str(o.number, 60)) {

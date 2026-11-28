@@ -363,8 +363,9 @@ function service({ dir, index, put }, switches, extra = {}) {
       mkdirSync(path.dirname(path.join(dir, rel)), { recursive: true });
       writeFileSync(path.join(dir, rel), readFileSync(o.src));
       placed.push(rel);
-      return { rel, version: 1 };
+      return { rel, version: placed.filter(p => p === rel).length };
     },
+    fileVersion: async rel => placed.filter(p => p === rel).length || 1,
     copyIn: async () => [],
     pickFiles: async () => [],
     pickSave: async () => null,
@@ -906,7 +907,11 @@ test('9.5 batch 13: building again after delivery starts it over at Built (F136)
   await p.setEdition(e, { sections: [{ name: 'News', items: [s1.replace(/\.md$/, '')] }] });
   await p.deliver(e, ['telegram']);
   assert.match(readFileSync(path.join(v.dir, e), 'utf8'), /\nstatus: Delivered\n/);
-  await p.build(e);
+  const receipt = readFileSync(path.join(v.dir, e), 'utf8').split('\n').find(row => row.includes('Sent ·') && row.includes('.pdf · version 1'));
+  assert.ok(receipt);
+  const rebuilt = await p.build(e);
+  assert.match(rebuilt.words, /version 2/);
+  assert.ok(readFileSync(path.join(v.dir, e), 'utf8').includes(receipt), 'the receipt still names the delivered proof version');
   assert.match(readFileSync(path.join(v.dir, e), 'utf8'), /\nstatus: Built\n/, 'a rebuild after delivery is Built, never silently Delivered');
   await p.deliver(e, ['print']);
   assert.match(readFileSync(path.join(v.dir, e), 'utf8'), /\nstatus: Printed\n/);

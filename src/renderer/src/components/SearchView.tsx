@@ -201,12 +201,29 @@ function MeaningLine() {
   );
 }
 
+interface SearchReturn {
+  vault: string;
+  query: string;
+  path: string;
+  filters: SearchFilters;
+  library: boolean;
+  capitals: boolean;
+  sort: Sort;
+}
+const lastResult: Partial<Record<'modal' | 'panel', SearchReturn>> = {};
+
 export function SearchView({ host, initialQuery = '', active, autoFocus, onOpenResult }: { host: 'modal' | 'panel'; initialQuery?: string; active: boolean; autoFocus: boolean; onOpenResult(): void }) {
   const revision = useApp((s) => s.revision);
   const aiReady = useApp((s) => !!s.settings?.ai.ready);
   const noteCount = useApp((s) => s.notes.length);
-  const [query, setQuery] = useState(initialQuery);
-  const [caseSensitive, setCaseSensitive] = useState(false);
+  const vault = useApp(s => s.vault?.path ?? '');
+  const [resume] = useState(() => {
+    const last = lastResult[host];
+    return last && last.vault === vault && (!initialQuery || initialQuery === last.query) ? last : undefined;
+  });
+  const pendingRow = useRef(resume?.path);
+  const [query, setQuery] = useState(initialQuery || resume?.query || '');
+  const [caseSensitive, setCaseSensitive] = useState(resume?.capitals ?? false);
   const [rawHits, setHits] = useState<SearchHit[]>([]);
   // The shared loading and error states (8.7 wave 2 round 3, the search-loading and search-error mock-ups; w4b round
   // 4 joined them onto the one search window): rows in their shape while the index answers, and another try when not.
@@ -217,8 +234,8 @@ export function SearchView({ host, initialQuery = '', active, autoFocus, onOpenR
   const pick = usePick('search');
   const byPath = useApp((s) => s.byPath);
   const metaOf = (hit: SearchHit) => metaForSearch(hit.path, hit.title, typeOfPath(hit.path)?.id, byPath.get(hit.path)?.props);
-  const [libraryToo, setLibraryToo] = useState(false);
-  const [filters, setFilters] = useState<SearchFilters>(NO_FILTERS);
+  const [libraryToo, setLibraryToo] = useState(resume?.library ?? false);
+  const [filters, setFilters] = useState<SearchFilters>(resume?.filters ?? NO_FILTERS);
   const hits = useMemo(
     () => filterHits(rawHits.filter((h) => wanted({ path: h.path, props: byPath.get(h.path)?.props }, areas ? pick : 'all', areas?.areas ?? [], areaPlaces(), libraryToo)), metaOf, (p) => typeOfPath(p)?.id, filters, Date.now(), query),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- metaOf reads the notes beside the hits
@@ -226,7 +243,7 @@ export function SearchView({ host, initialQuery = '', active, autoFocus, onOpenR
   );
   const leftOut = libraryToo ? 0 : rawHits.filter((h) => quietPath(h.path)).length;
   const [busy, setBusy] = useState(false);
-  const [sort, setSort] = useState<Sort>('relevance');
+  const [sort, setSort] = useState<Sort>(resume?.sort ?? 'relevance');
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [allCollapsed, setAllCollapsed] = useState(false);
   const [help, setHelp] = useState(false);
@@ -433,8 +450,7 @@ export function SearchView({ host, initialQuery = '', active, autoFocus, onOpenR
       onOpenResult();
       runCommand(exact.id);
     } else if (sorted[0]) {
-      A.openPath(sorted[0].path);
-      onOpenResult();
+      openHit(sorted[0].path);
     } else if (fileSorted[0]) {
       showFileHit(fileSorted[0], fileSorted, query);
       onOpenResult();
@@ -445,6 +461,8 @@ export function SearchView({ host, initialQuery = '', active, autoFocus, onOpenR
   };
   const openHit = (path: string, line?: number, newTab = false) => {
     if (!path) return onOpenResult();
+    lastResult[host] = { vault, query, path, filters, library: libraryToo, capitals: caseSensitive, sort };
+    setArrow(commandHits.length + sorted.findIndex(h => h.path === path));
     // Ctrl+click (Cmd on a Mac) opens beside the page, as the old panel did.
     A.openPath(path, line === undefined ? (newTab ? { where: 'tab' } : {}) : { line, where: newTab ? 'tab' : 'current' });
     onOpenResult();
@@ -474,6 +492,14 @@ export function SearchView({ host, initialQuery = '', active, autoFocus, onOpenR
       ),
     [commandHits, sorted, navFiles, navPics],
   );
+  useEffect(() => {
+    if (!pendingRow.current || !resume || resume.query !== query || resume.vault !== vault) return;
+    const at = nav.findIndex(row => row.kind === 'note' && row.id === pendingRow.current);
+    if (at >= 0) {
+      pendingRow.current = undefined;
+      setArrow(at);
+    }
+  }, [nav, query, resume, vault]);
   // The arrowed row stays drawn and in sight: rows past the chunk grow the list to meet the keys.
   // A list that shrank under the keys lets go of them.
   useEffect(() => {
@@ -496,8 +522,7 @@ export function SearchView({ host, initialQuery = '', active, autoFocus, onOpenR
       onOpenResult();
       runCommand(row.id);
     } else if (row.kind === 'note') {
-      A.openPath(row.id);
-      onOpenResult();
+      openHit(row.id);
     } else if (row.kind === 'file') {
       const hit = filesShown.find((f) => `${f.project}|${f.rel}` === row.id);
       if (hit) showFileHit(hit, fileSorted, query);

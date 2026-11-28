@@ -42,7 +42,8 @@ test('F2 Meetings off really hides Meetings', () => {
 
 test('F3 tour on a switched-off pack works and never fires late', () => {
   const ms = read('src/renderer/src/components/ModulesSettings.tsx');
-  assert.ok(ms.includes('setModule') && ms.includes('openTour'), 'tour switches the pack on first');
+  assert.ok(ms.includes('<ModuleTour module={m} sep={false} />'), 'Settings hosts an independent preview');
+  assert.ok(!ms.includes('setModule(m.id, true)'), 'previewing a tour keeps the pack switched off');
   const fills = read('src/renderer/src/state/moduleFills.ts');
   assert.ok(fills.includes('Date.now') || fills.includes('expire') || fills.includes('pendingAt'), 'parked tours expire');
 });

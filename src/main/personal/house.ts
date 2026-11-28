@@ -46,6 +46,7 @@ export function makeHouse(w: WorkModules): PersonalPart {
     for (const k of ['purchased', 'warranty'] as const) if (S(i[k]) && !readDay(i[k])) throw new Error('Give days like 2027-03-31.');
     const clean: ApplianceInput = { kind: S(i.kind, 40) || 'Other', room: S(i.room, 60), make: S(i.make, 60), model: S(i.model, 60), serial: S(i.serial, 60), purchased: readDay(i.purchased), price: readAmount(i.price), supplier: S(i.supplier, 80), warranty: readDay(i.warranty) };
     const m = await model();
+    if (!S(i.name) && clean.kind === 'Other' && !clean.room && !clean.make && !clean.model && !clean.serial && !clean.warranty && !clean.purchased && !clean.supplier && clean.price == null) throw new Error('Give the appliance a name, kind, room or identifying detail.');
     if (clean.serial && m.appliances.some((a) => a.serial.toLowerCase() === clean.serial!.toLowerCase())) throw new Error(`An appliance with serial ${clean.serial} is already here.`);
     return w.newNote(await w.folderOf('appliance'), S(i.name, 80) || applianceName(clean), newApplianceText(clean));
   };

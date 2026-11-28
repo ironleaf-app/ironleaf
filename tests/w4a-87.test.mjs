@@ -108,7 +108,7 @@ test('packs: seventeen rows from the catalogue, one switch each, details under t
   assert.ok(src.includes('<Toggle value={on}') && src.includes('setModule(m.id, v)'), 'one switch per pack');
   assert.ok(src.includes('setModule(m.id, e.target.checked, p.id)'), 'each part keeps its switch');
   assert.ok(src.includes('openModule(m.id)'), 'a pack still opens');
-  assert.ok(src.includes('setTourSeen(m.id, false)'), 'its tour still shows');
+  assert.ok(src.includes('<ModuleTour module={m}'), 'its tour still shows');
   const css = read('src/renderer/src/styles/settings-87.css');
   assert.ok(css.includes('.packrow-words .nm { display: block;'), 'the name sits over its line, never run into it');
   assert.ok(css.includes('.packrow-ctl { margin-left: auto;'), 'the switch sits at the right edge, off the words');

@@ -209,6 +209,7 @@ test('an assistant gets only the rows it asked for, only with the Health level; 
   const chat = M.makeGate(h.sensitivity, 'side-chat', 'The side chat');
   // Not allowed Health (the default): refused in words, nothing given.
   await assert.rejects(() => h.modules.call({ gate: chat }, 'health_trend', { measure: 'Weight', days: 7 }), /marked Health and The side chat isn’t allowed Health items/);
+  await assert.rejects(() => h.modules.call({ gate: chat }, 'health_trend', { measure: 'unspecified measure' }), /marked Health and The side chat isn’t allowed Health items/);
   // Allowed Health: one measure, the days asked for, nothing else.
   await h.sensitivity.update((s) => {
     s.access['side-chat'] = ['open', 'work', 'personal', 'health'];
@@ -351,6 +352,9 @@ test('the check-in: due after its time until every question is answered; estimat
   const at = (h) => new Date(2026, 9, 24, h, 0);
   assert.equal(M.HL.checkinState(db, at(6)).due, false, 'not before its time');
   assert.equal(M.HL.checkinState(db, at(8)).due, true);
+  db = M.HL.setEntry(db, 'water', '2026-10-24', { n: 1 });
+  assert.equal(M.HL.checkinState(db, at(8)).streak.current, 0, 'one water entry is not a completed check-in');
+  assert.equal(M.HL.weekSessionSummary(db, '2026-10-24').checkinDays, 0);
   for (const id of db.checkin.measures) db = M.HL.setEntry(db, id, '2026-10-24', { n: 7 });
   const st = M.HL.checkinState(db, at(8));
   assert.equal(st.done, true);
