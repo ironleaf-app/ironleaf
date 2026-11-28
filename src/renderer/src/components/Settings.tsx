@@ -1297,6 +1297,9 @@ function showFound(body: HTMLElement | null, title: string, command: boolean): b
   const target = rows[0] ?? [...body.querySelectorAll<HTMLElement>('h3')].find((h) => h.textContent?.trim() === title) ?? [...body.querySelectorAll<HTMLElement>('h1')].find((h) => h.textContent?.trim() === title);
   if (!target) return false;
   const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (target.classList.contains('packrow')) {
+    target.querySelector<HTMLButtonElement>('.packrow-words')?.focus({ preventScroll: true });
+  }
   if (target.classList.contains('ms-part')) {
     (target.querySelector<HTMLInputElement>('input:enabled') ?? target).focus({ preventScroll: true });
   }
@@ -1492,7 +1495,7 @@ export function SettingsPage({ tab }: { tab: W.TabState }) {
               {current === 'general' && <General onShow={showTitle} reveal={found && !found.command ? found.title : null} />}
               {current === 'look' && <Look prefs={prefs} set={set} />}
               {current === 'home' && <HomeGroup prefs={prefs} set={set} />}
-              {current === 'packs' && <ModulesSettings reveal={found?.title} />}
+              {current === 'packs' && <ModulesSettings reveal={found?.title} revealAt={found?.n} />}
               {current === 'quick-add' && <QuickAddGroup prefs={prefs} set={set} />}
               {current === 'backups' && <BackupsGroup prefs={prefs} set={set} />}
               {current === 'keys' && <Keys prefs={prefs} set={set} find={keysFind} />}

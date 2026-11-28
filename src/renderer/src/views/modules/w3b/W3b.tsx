@@ -29,6 +29,15 @@ export function PackPage({ label, children }: { label: string; children: ReactNo
   );
 }
 
+export function PackReadState({ label, error, reload, children }: { label: string; error: string; reload(): void; children: ReactNode }) {
+  return (
+    <PackPage label={label}>
+      {error ? <EmptyState icon="warning" title={`Couldn’t read ${label}`} line={error}
+        action={{ label: 'Try again', run: reload }} /> : <p className="vsub" role="status">{children}</p>}
+    </PackPage>
+  );
+}
+
 /** A glyph tile in a kit tint, as the mock-ups draw each pack's mark. */
 export function Glyph({ tint, children, size }: { tint: 'slate' | 'green' | 'amber' | 'red' | 'blue'; children: ReactNode; size?: 'sm' | 'xs' }) {
   return (
@@ -41,8 +50,7 @@ export function Glyph({ tint, children, size }: { tint: 'slate' | 'green' | 'amb
 /** A pack's head in the one page shape: tinted tile, 32 px title, one sub line, actions right. A record's own screen
  *  passes its note as sharePath (8.8): Share on its top bar shares a clean copy of that note. */
 export function PackHead({ glyph, tint, title, lead, actions, icon, sharePath }: { glyph?: ReactNode; tint: 'slate' | 'green' | 'amber' | 'red' | 'blue'; title: ReactNode; lead?: ReactNode; actions?: ReactNode; icon?: ReactNode; sharePath?: string }) {
-  return <PageHead icon={icon ?? <Glyph tint={tint}>{glyph}</Glyph>} title={title} lead={lead} actions={<>{actions}{sharePath && <DesignButton path={sharePath} />}
-            {sharePath && <DesignButton path={sharePath} />}{sharePath && <ShareButton path={sharePath} />}</>} />;
+  return <PageHead icon={icon ?? <Glyph tint={tint}>{glyph}</Glyph>} title={title} lead={lead} actions={<>{actions}{sharePath && <DesignButton path={sharePath} />}{sharePath && <ShareButton path={sharePath} />}</>} />;
 }
 
 /** A section: its small grey label, then its content. No divider lines inside pages. */

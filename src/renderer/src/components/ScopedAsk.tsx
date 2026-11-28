@@ -19,7 +19,7 @@ export function ScopedAsk({ hint, scope, question }: { hint?: string; scope?: st
   };
   return (
     <div className="ask float" style={{ marginTop: 18 }} role="search" aria-label={label}>
-      <input className="ask-text" value={words} placeholder={label} aria-label={label} onChange={(e) => setWords(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && send()} />
+      <input className="ask-text" value={words} placeholder={label} aria-label={label} onChange={(e) => setWords(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) send(); }} />
       <button type="button" className="send send-words" title="Send" aria-label="Send" disabled={!words.trim()} onClick={send}>
         Send
       </button>

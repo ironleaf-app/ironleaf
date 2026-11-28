@@ -18,7 +18,7 @@ import type * as W from '../../../state/workspace';
 import { dayText } from '../work/WorkShell';
 import { logFill, logTrip, newVehicle, openVehicle, recordService, renewed, saveProp, vehicleMenu, vehiclesOptions, type VehiclesView } from '../personal/VehiclesPage';
 import { caller, Inline, money, plural } from '../personal/PersonalParts';
-import { AskFloat, FillsLine, HomeCard, MoreButton, PackHead, PackPage, PageProps, RowsCard, Section, trashRecord, useCanEdit, FULL_DETAILS_LABEL , EDIT_DETAILS_LABEL } from './W3b';
+import { PackReadState, AskFloat, FillsLine, HomeCard, MoreButton, PackHead, PackPage, PageProps, RowsCard, Section, trashRecord, useCanEdit, FULL_DETAILS_LABEL , EDIT_DETAILS_LABEL } from './W3b';
 import { deleteToBin } from '../../../lib/removeWords';
 
 const MOD = 'vehicles';
@@ -119,9 +119,9 @@ export function VehicleDetail({ path }: { path: string }) {
   const canEdit = useCanEdit();
   const modules = useModules();
   const fuelOn = partOn(modules, MOD, 'fuel');
-  const { data: m } = useWork<VehiclesView>(MOD);
+  const { data: m, error, reload } = useWork<VehiclesView>(MOD);
   const v = m?.vehicles.find((x) => x.path === path);
-  if (!m) return <PackPage label="Cars"><p className="vsub">Reading your vehicles…</p></PackPage>;
+  if (!m) return <PackReadState label="Cars" error={error} reload={reload}>Reading your vehicles…</PackReadState>;
   if (!v) return <PackPage label="Cars"><div className="card" style={{ marginTop: 14 }}><p className="vsub">That vehicle isn’t here any more.</p><p style={{ marginTop: 8 }}><button type="button" className="btn" onClick={() => openModule(MOD)}>Cars</button></p></div></PackPage>;
   const prop = (field: string) => (x: string) => saveProp(v, field, x);
   const fills = [...v.fills].sort((a, b) => (b.date ?? '').localeCompare(a.date ?? '') || (b.odometer ?? 0) - (a.odometer ?? 0));

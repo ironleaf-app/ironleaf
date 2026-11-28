@@ -19,7 +19,7 @@ import type * as W from '../../../state/workspace';
 import { dayText } from '../work/WorkShell';
 import { addHistory, houseOptions, jobTone, markDone, newAppliance, newHome, newJob, openAppliance, openJob, save, warrantyTone, type HouseView } from '../personal/HousePage';
 import { caller, fileName, Inline, keepFiles, money, plural } from '../personal/PersonalParts';
-import { AskFloat, FillsLine, HomeCard, MoreButton, PackHead, PackPage, PageProps, RowsCard, Section, trashRecord, useCanEdit, FULL_DETAILS_LABEL , EDIT_DETAILS_LABEL } from './W3b';
+import { PackReadState, AskFloat, FillsLine, HomeCard, MoreButton, PackHead, PackPage, PageProps, RowsCard, Section, trashRecord, useCanEdit, FULL_DETAILS_LABEL , EDIT_DETAILS_LABEL } from './W3b';
 import { deleteToBin } from '../../../lib/removeWords';
 
 const MOD = 'house';
@@ -146,9 +146,9 @@ export function HouseOverview({ tab }: { tab: W.TabState }) {
 
 export function ApplianceDetail({ path }: { path: string }) {
   const canEdit = useCanEdit();
-  const { data: m } = useWork<HouseView>(MOD);
+  const { data: m, error, reload } = useWork<HouseView>(MOD);
   const a = m?.appliances.find((x) => x.path === path);
-  if (!m) return <PackPage label="House"><p className="vsub">Reading your home…</p></PackPage>;
+  if (!m) return <PackReadState label="House" error={error} reload={reload}>Reading your home…</PackReadState>;
   if (!a) return <PackPage label="House"><div className="card" style={{ marginTop: 14 }}><p className="vsub">That appliance isn’t here any more.</p><p style={{ marginTop: 8 }}><button type="button" className="btn" onClick={() => openModule(MOD)}>House</button></p></div></PackPage>;
   const prop = (field: string) => (v: string) => save('appliance', a.path, field, v);
   const jobs = m.jobs.filter((j) => a.jobs.includes(j.path));

@@ -17,7 +17,7 @@ import type * as W from '../../../state/workspace';
 import { dayText } from '../work/WorkShell';
 import { newBooking, newExpense, newTrip, openTrip, save, travelOptions, tripMenu, type TravelView } from '../personal/TravelPage';
 import { caller, fileName, Inline, money, plural } from '../personal/PersonalParts';
-import { AskFloat, FillsLine, HomeCard, Meter, MoreButton, PackHead, PackPage, PageProps, RowsCard, Section, Tick, trashRecord, useCanEdit, FULL_DETAILS_LABEL , EDIT_DETAILS_LABEL } from './W3b';
+import { PackReadState, AskFloat, FillsLine, HomeCard, Meter, MoreButton, PackHead, PackPage, PageProps, RowsCard, Section, Tick, trashRecord, useCanEdit, FULL_DETAILS_LABEL , EDIT_DETAILS_LABEL } from './W3b';
 import { TAKE_OFF_BUTTON, deleteToBin, takeOffAria } from '../../../lib/removeWords';
 
 const MOD = 'travel';
@@ -124,9 +124,9 @@ export function TravelOverview({ tab }: { tab: W.TabState }) {
 
 export function TripDetail({ path }: { path: string }) {
   const canEdit = useCanEdit();
-  const { data: m } = useWork<TravelView>(MOD);
+  const { data: m, error, reload } = useWork<TravelView>(MOD);
   const x = m?.trips.find((t) => t.path === path);
-  if (!m) return <PackPage label="Trips"><p className="vsub">Reading your trips…</p></PackPage>;
+  if (!m) return <PackReadState label="Trips" error={error} reload={reload}>Reading your trips…</PackReadState>;
   if (!x) return <PackPage label="Trips"><div className="card" style={{ marginTop: 14 }}><p className="vsub">That trip isn’t here any more.</p><p style={{ marginTop: 8 }}><button type="button" className="btn" onClick={() => openModule(MOD)}>Trips</button></p></div></PackPage>;
   const prop = (field: string) => (v: string) => save('trip', x.path, field, v);
   const done = x.bookings.filter((b) => b.paid).length;

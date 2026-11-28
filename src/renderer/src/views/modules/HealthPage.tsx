@@ -3,6 +3,7 @@
 // Appointments, Trends — and Settings. Everything comes from the encrypted health store on this PC
 // (src/main/health-store.ts) and every value shown changes where it is.
 
+import { openSettings } from '../../state/actions';
 import { checkinState, remindersDue, todayIso } from '../../../../shared/health';
 import { moduleInfo, partOn } from '../../../../shared/life-modules';
 import { EmptyState } from '../../components/EmptyState';
@@ -67,7 +68,7 @@ export function HealthClassic({ tab }: { tab: W.TabState }) {
                     { label: 'Bring back an export…', icon: 'history', run: () => void H().importFile().then((w) => { if (w) { toast(w); moduleChanged(); } }, showError) },
                     { separator: true },
                     { label: 'Who may read Health…', icon: 'lock', run: () => openModal({ kind: 'settings', section: 'privacy' }) },
-                    { label: 'Health’s parts (Settings › Packs)…', icon: 'settings', run: () => openModal({ kind: 'settings', section: 'modules' }) },
+                    { label: 'Health’s parts (Settings › Packs)…', icon: 'settings', run: () => openSettings('packs', 'current', 'Health') },
                   ])
                 }
               >

@@ -14,15 +14,17 @@ import { clearHeaderOverflow, layoutHeaderOverflow } from '../lib/headerOverflow
 import { formatHotkey } from '../lib/hotkeys';
 import { inVaultView } from '../lib/inWindow';
 import { moduleInfo } from '../../../shared/life-modules';
+import { moduleById } from '../../../shared/module-records';
 import { pathParts } from '../../../shared/paths';
 import { splitRowPath } from '../../../shared/system-tables';
 import { splitBillRow } from '../../../shared/bills-table';
 import { isPrivatePath } from '../../../shared/private';
-import { openPrivate, revealInExplorer, titleOf } from '../state/actions';
+import { openPrivate, openSettings, revealInExplorer, titleOf } from '../state/actions';
 import { rightShown, showSide, toggleSide, useFit } from '../state/fit';
 import { placeName } from '../state/tabSync';
 import { setWorkspace, useWorkspace } from '../state/layout';
 import { openModal } from '../state/modals';
+import { openPackActions } from '../state/chat';
 import { openModule } from '../state/modules';
 import { moduleOfTab } from '../state/module-tabs';
 import { openNewDoor } from '../state/noteTypes';
@@ -173,7 +175,7 @@ export function ViewHeader({ tab, title, children, menu, crumb, hideName }: Prop
   const name = title ?? (tab.path ? titleOf(tab.path) : '');
   // A pack's pages (8.7 round 2, the mock-ups' top bar): Packs / <pack> on an overview, Packs / <pack> / <record> on a
   // record's own page (its own back link above the title is gone).
-  const mod = tab.type === 'module' ? moduleOfTab(tab) : null;
+  const mod = moduleOfTab(tab);
   const info = mod ? moduleInfo(mod) : null;
   const part = tab.path && tab.path.includes('#') ? tab.path.slice(tab.path.indexOf('#') + 1) : '';
   const packDetail = (() => {
@@ -182,6 +184,9 @@ export function ViewHeader({ tab, title, children, menu, crumb, hideName }: Prop
     if (part === 'checkin') return "Today's check-in";
     if (part === 'draft') return 'Draft from projects';
     if (part === 'review') return 'Weekly look-back';
+    const section = moduleById(info.id)?.sections.find(({ id }) => id === part);
+    if (section) return section.label;
+    if (part === 'settings') return 'Options';
     const m = /^([a-z]+):(.+)$/.exec(part);
     if (!m) return null;
     try {
@@ -204,7 +209,7 @@ export function ViewHeader({ tab, title, children, menu, crumb, hideName }: Prop
   const crumbNode = crumb ?? (info ? (
     <Crumbs
       trail={[
-        { key: 'packs', label: 'Packs', onClick: () => openModal({ kind: 'settings', section: 'modules' }) },
+        { key: 'packs', label: 'Pack settings', onClick: () => openSettings('packs', 'current', info.name) },
         ...(packDetail ? [{ key: 'pack', label: info.name, onClick: () => openModule(mod!) }] : []),
       ]}
       here={<b>{packDetail ?? info.name}</b>}
@@ -231,7 +236,7 @@ export function ViewHeader({ tab, title, children, menu, crumb, hideName }: Prop
   if (inVaultView()) {
     const childList = Array.isArray(children) ? children : [children];
     const hasChildren = childList.some((c) => c !== undefined && c !== null && c !== false);
-    const hasPageRow = hasChildren || menu != null || crumb != null || (!repeatsTitle && (shownParts.length > 0 || (!hideName && name !== '')));
+    const hasPageRow = hasChildren || menu != null || info != null || crumb != null || (!repeatsTitle && (shownParts.length > 0 || (!hideName && name !== '')));
     if (!hasPageRow) return null;
     // A page's own row names the page (one window, 9 Nov 2026: Today's row held only Start from a template,
     // alone at the right — and Projects', Tasks' and the Inbox's rows stood as bare). A file keeps its crumb;
@@ -287,7 +292,10 @@ export function ViewHeader({ tab, title, children, menu, crumb, hideName }: Prop
         <kbd>{formatHotkey('Mod+K')}</kbd>
       </button>
       <div className="right">
-        {children}
+              {info && <button className="navbtn" type="button" title="Pack actions" aria-label={`Pack actions for ${info.name}`} onClick={() => openPackActions(info.id)}>
+            <Icon name="sparkle" size={16} />
+          </button>}
+          {children}
         {menu && (
           <button className="navbtn" title="More" aria-label="More" onClick={(e) => openMenu(e.currentTarget, menu())}>
             <Icon name="more" size={16} />

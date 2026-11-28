@@ -17,13 +17,13 @@ import { showError, useApp } from '../state/store';
 import { Icon, type IconName } from './Icon';
 import { Toggle } from './Settings';
 
-function PackRow({ m, areaName, folder, offer, onNotNow, reveal }: { m: LifeModule; areaName: string; folder: string; offer?: ModuleOffer; onNotNow(): void; reveal?: string }) {
+function PackRow({ m, areaName, folder, offer, onNotNow, reveal, revealAt }: { m: LifeModule; areaName: string; folder: string; offer?: ModuleOffer; onNotNow(): void; reveal?: string; revealAt?: number }) {
   const switches = useModules();
   const canEdit = useApp((s) => s.canEdit);
   const [open, setOpen] = useState(false);
   useEffect(() => {
-    setOpen(m.parts.some((part) => part.name === reveal));
-  }, [m, reveal]);
+    if (reveal === m.name || m.parts.some((part) => part.name === reveal)) setOpen(true);
+  }, [m, reveal, revealAt]);
   const on = moduleOn(switches, m.id);
   // A pack the vault shows it would use says so under its line (8 Nov 2026, calm Today: the "switch on a
   // pack" offers moved here from Today). The switch beside it takes it; Not now puts it away.
@@ -103,12 +103,12 @@ function PackRow({ m, areaName, folder, offer, onNotNow, reveal }: { m: LifeModu
   );
 }
 
-export function ModulesSettings({ reveal }: { reveal?: string }) {
+export function ModulesSettings({ reveal, revealAt }: { reveal?: string; revealAt?: number }) {
   const switches = useModules();
   const revision = useApp((s) => s.revision);
   const vault = useApp((s) => s.vault?.path);
   const [filter, setFilter] = useState<'all' | 'enabled' | 'available'>('all');
-  useEffect(() => { if (reveal) setFilter('all'); }, [reveal]);
+  useEffect(() => { if (reveal) setFilter('all'); }, [reveal, revealAt]);
   const enabled = LIFE_MODULES.filter((m) => moduleOn(switches, m.id)).length;
   const filters = [
     { id: 'all', label: 'All packs', count: LIFE_MODULES.length },
@@ -150,7 +150,7 @@ export function ModulesSettings({ reveal }: { reveal?: string }) {
       <div className="ms-list">
         {LIFE_MODULES.map((m) => {
           if (filter !== 'all' && moduleOn(switches, m.id) !== (filter === 'enabled')) return null;
-          return <PackRow key={m.id} m={m} reveal={reveal} areaName={areaName(m)} folder={folderOf(m)} offer={offers.find((o) => o.module === m.id)} onNotNow={() => notNow(m.id)} />;
+          return <PackRow key={m.id} m={m} reveal={reveal} revealAt={revealAt} areaName={areaName(m)} folder={folderOf(m)} offer={offers.find((o) => o.module === m.id)} onNotNow={() => notNow(m.id)} />;
         })}
         {filter === 'enabled' && enabled === 0 && <p>No packs enabled. Choose Available to explore your packs.</p>}
         {filter === 'available' && enabled === LIFE_MODULES.length && <p>All packs are enabled.</p>}

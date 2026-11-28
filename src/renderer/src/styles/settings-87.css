@@ -85,15 +85,20 @@
   font: inherit; color: inherit; text-align: left;
 }
 .packrow-words .nm { display: block; font-size: var(--fs-body); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: clip; }
-.packrow-words .ds { display: block; font-size: var(--fs-small); color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: clip; }
+.packrow-words .ds { display: block; font-size: var(--fs-small); color: var(--text-muted); overflow-wrap: anywhere; }
 .packrow-ctl { margin-left: auto; flex: none; display: flex; align-items: center; }
 /* A pack the vault shows it would use says why under its line (8 Nov 2026, calm Today: the offers moved here
    from Today). Quiet, wrapping whole: never cut off. */
 .packrow-words .ms-offer { display: block; margin-top: var(--space-0); font-size: var(--fs-small); color: var(--text-muted); }
-.packrow-open { flex-basis: 100%; padding: var(--space-1) 0 var(--space-2) var(--space-6); min-width: 0; }
+.packrow-open { flex-basis: 100%; padding: var(--space-1) 0 var(--space-2); min-width: 0; }
 .packrow-open .ms-where, .packrow-open .ms-kept { margin: var(--space-1) 0; }
 .packrow-open .ms-parts { margin-top: var(--space-2); }
-.packrow-open .ms-actions { margin-top: var(--space-2); }
+.packrow-open .ms-actions {
+  margin-top: var(--space-2); flex-wrap: wrap; justify-content: flex-start;
+  align-items: center; gap: var(--space-2) var(--space-3);
+}
+.packrow-open .ms-actions details { flex-basis: 100%; min-width: 0; }
+.packrow-open .ms-actions details button { text-align: left; overflow-wrap: anywhere; }
 
 /* ---------- keys ---------- */
 .keys-filter { width: 100%; margin: var(--space-1) 0 var(--space-0); }
@@ -419,10 +424,12 @@ h2.vprev-title { margin: 0; font: 650 var(--fs-section) / 1.25 var(--font-ui); l
   .settings-page .settings-card[data-section='privacy'] > .ps > :is(p, .ps-folders, .ps-suggest, .ps-access, .ps-counts) {
     break-before: avoid;
   }
-  /* Packs: one row each, in as many columns as fit (was one 760 px column in a 1,900 px card). */
+  /* Two readable columns at desktop widths, aligned at the top when a neighbour is expanded. */
+  .settings-page .settings-card[data-section='packs'] { max-inline-size: 1160px; }
   .settings-page .settings-card[data-section='packs'] .ms-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
+    align-items: start;
     column-gap: var(--space-6);
     row-gap: 0;
     max-width: none;

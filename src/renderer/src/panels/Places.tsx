@@ -202,8 +202,8 @@ export function foldFor(room: number, rowH: number, labelH: number, b: BarRows):
   }
   return 3;
 }
-function useFold(nav: RefObject<HTMLElement | null>, b: BarRows): number {
-  const [level, setLevel] = useState(0);
+function useFold(nav: RefObject<HTMLElement | null>, { today, tasks, meetings }: BarRows) {
+  const [fit, setFit] = useState({ fold: 0, packSlots: 0 });
   useLayoutEffect(() => {
     const el = nav.current;
     if (!el) return;
@@ -212,14 +212,17 @@ function useFold(nav: RefObject<HTMLElement | null>, b: BarRows): number {
       if (!row) return;
       const gap = parseFloat(getComputedStyle(el).rowGap) || 0;
       const rowH = row.offsetHeight + gap;
-      setLevel(foldFor(el.clientHeight, rowH, rowH, b));
+      const base = { today, tasks, meetings };
+      const fold = foldFor(el.clientHeight, rowH, rowH, base);
+      const packSlots = Math.max(0, Math.floor((el.clientHeight + gap) / rowH) - rowsAt(fold, base).rows);
+      setFit({ fold, packSlots });
     };
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [nav, b.today, b.tasks, b.meetings]);
-  return level;
+  }, [nav, today, tasks, meetings]);
+  return fit;
 }
 
 function Row({ row }: { row: FrameRow }) {
@@ -238,26 +241,31 @@ export function Places({ drawer = false }: { drawer?: boolean } = {}) {
   const canEdit = useApp((s) => s.canEdit);
   const bookmarks = useBookmarks();
   const pinned: MenuItem[] = bookmarks.filter((b): b is Extract<(typeof bookmarks)[number], { type: 'file' | 'folder' }> => b.type === 'file' || b.type === 'folder').slice(0, 5).map((b) => ({ label: b.title ?? (b.type === 'file' ? A.titleOf(b.path) : A.nameOf(b.path)), icon: b.type === 'folder' ? 'folder' as const : 'pin' as const, run: () => A.openPath(b.path) }));
-  // The packs switched on (each one row in More, Meetings left out for its own bar row) and the place open now.
+  // Meetings already has its own row. Other packs switched on share the space left by the core places.
   const packsOn = modulesOn(useModules()).filter((m) => m.id !== 'meetings');
   const hereTab = activeTab(useWorkspace());
   const hereModule = hereTab.type === 'meetings' ? 'meetings' : moduleOfTab(hereTab);
-  const packItems: MenuItem[] = packsOn.map((m): MenuItem => ({ label: m.name, icon: m.icon as IconName, checked: hereModule === m.id || undefined, run: () => openModule(m.id) }));
   // Every other kind (the bar's own Projects, Meetings, People and Notes left out) in one submenu, full or empty.
   const otherKinds = useShellTypes().filter((t) => !['project', 'meeting', 'person', 'note'].includes(t.id));
   const kindSubmenu: MenuItem[] = otherKinds.map((t): MenuItem => ({ label: t.plural, icon: t.icon, hint: t.count > 0 ? String(t.count) : undefined, run: t.open }));
   const showToday = shows(prefs, 'ribbon:today');
   const showTasks = shows(prefs, 'ribbon:tasks');
   const navRef = useRef<HTMLElement>(null);
-  const fold = useFold(navRef, { today: showToday, tasks: showTasks, meetings: f.meetingsOn });
+  const { fold, packSlots } = useFold(navRef, { today: showToday, tasks: showTasks, meetings: f.meetingsOn });
+  const packRows: FrameRow[] = packsOn.map((m) => ({
+    id: m.id, label: m.name, icon: m.icon as IconName, title: m.words,
+    current: hereModule === m.id, open: () => openModule(m.id),
+  }));
   // What folded away, as More's first rows, in the bar's order; the place the person is on shows as More on.
   const asItem = (r: FrameRow): MenuItem => ({ label: r.label, icon: r.icon, hint: r.count ? String(r.count) : undefined, checked: r.current || undefined, run: r.open });
+  const overflow = packRows.slice(packSlots);
+  const packItems = packRows.map(asItem);
   const folded: MenuItem[] = [
     ...(fold >= 3 ? [asItem(f.projects)] : []),
     ...(fold >= 2 ? [...(showTasks ? [asItem(f.tasks)] : []), ...(f.meetingsOn ? [asItem(f.meetings)] : [])] : []),
     ...(fold >= 1 ? [asItem(f.notes), asItem(f.people)] : []),
   ];
-  const foldedHere = (fold >= 3 && f.projects.current) || (fold >= 2 && ((showTasks && f.tasks.current) || (f.meetingsOn && f.meetings.current))) || (fold >= 1 && (f.notes.current || f.people.current));
+  const foldedHere = overflow.some((p) => p.current) || (fold >= 3 && f.projects.current) || (fold >= 2 && ((showTasks && f.tasks.current) || (f.meetingsOn && f.meetings.current))) || (fold >= 1 && (f.notes.current || f.people.current));
   // What More shows (visible rows only): the eight, then the four quiet groups for the fold math to count.
   const eightShown = 3 + (shows(prefs, 'ribbon:graph') ? 1 : 0) + (shows(prefs, 'ribbon:template') ? 1 : 0) + (shows(prefs, 'ribbon:assets') ? 1 : 0) + (shows(prefs, 'ribbon:private') ? 1 : 0) + (shows(prefs, 'ribbon:commands') ? 1 : 0);
   const pagesShown = 5 + (shows(prefs, 'ribbon:timeline') ? 1 : 0);
@@ -316,6 +324,7 @@ export function Places({ drawer = false }: { drawer?: boolean } = {}) {
         {f.meetingsOn && fold < 2 && <Row row={f.meetings} />}
         {fold < 1 && <Row row={f.notes} />}
         {fold < 1 && <Row row={f.people} />}
+        {packRows.slice(0, packSlots).map((row) => <Row key={row.id} row={row} />)}
         {/* More is a plain row (9 Nov 2026, the rows back): the eight on top, the quiet groups behind them. */}
         <button className={`srow${foldedHere ? ' on' : ''}`} aria-haspopup="menu" title="Graph, Templates, Files and assets, Bookmarks, Locked, Bin, Import, Commands and more" onClick={(e) => openMore(e.currentTarget)}>
           <Icon name="more" size={16} />
@@ -332,6 +341,8 @@ export function Rail() {
   const f = useFrame();
   const vault = useApp((s) => s.vault);
   const showTasks = shows(usePrefs(), 'ribbon:tasks');
+  const hereModule = moduleOfTab(activeTab(useWorkspace()));
+  const packs = modulesOn(useModules()).filter((m) => m.id !== 'meetings');
   const rows = [f.today, f.inbox, f.projects, ...(showTasks ? [f.tasks] : []), ...(f.meetingsOn ? [f.meetings] : []), f.notes, f.people];
   // The hover tip names the row (8.7 wave 1 polish, 30 Oct 2026, frame-collapsed.png's "Inbox · 3 waiting").
   const tipOf = (row: FrameRow) => (row.count ? `${row.label} · ${row.count}${row.id === 'inbox' ? ' waiting' : ''}` : row.label);
@@ -347,6 +358,15 @@ export function Rail() {
           <span className="tip" aria-hidden="true">{tipOf(row)}</span>
         </button>
       ))}
+      {packs.length > 0 && (
+        <button className={packs.some((m) => m.id === hereModule) ? 'rrow on' : 'rrow'} aria-label="Packs" aria-haspopup="menu"
+          onClick={(e) => openMenu(e.currentTarget, packs.map((m) => ({
+            label: m.name, icon: m.icon as IconName, checked: m.id === hereModule || undefined, run: () => openModule(m.id),
+          })))}>
+          <Icon name="layers" size={18} />
+          <span className="tip" aria-hidden="true">Packs</span>
+        </button>
+      )}
       <div className="sp" />
       <AccountChip variant="rail" />
       <NoticeBell />

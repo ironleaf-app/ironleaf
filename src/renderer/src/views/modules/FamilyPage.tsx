@@ -1074,7 +1074,7 @@ export function FamilyClassic({ tab }: { tab: W.TabState }) {
                   openMenu(e.currentTarget, [
                     { label: 'Open the family calendar note', icon: 'calendar', disabled: !state, run: () => state && A.openPath(state.calendarPath) },
                     { label: 'Who reads Family-private…', icon: 'lock', run: () => openModal({ kind: 'settings', section: 'privacy' }) },
-                    { label: 'Family’s parts (Settings › Packs)…', icon: 'settings', run: () => openModal({ kind: 'settings', section: 'modules' }) },
+                    { label: 'Family’s parts (Settings › Packs)…', icon: 'settings', run: () => A.openSettings('packs', 'current', 'Family') },
                   ])
                 }
               >

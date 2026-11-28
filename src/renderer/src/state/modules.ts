@@ -46,15 +46,21 @@ export function openModule(id: string, part?: string, where: W.Where = 'current'
   setWorkspace((ws) => withModuleOpen(ws, id, part, where));
 }
 
-/** A module (or one of its parts) switched on or off; off, its open tabs close. */
-export async function setModule(id: string, on: boolean, part?: string): Promise<void> {
-  if (!moduleInfo(id)) return;
-  await savePrefs({ modules: withSwitch(modulesNow(), id, on, part) });
-  if (!on && !part) {
-    const tabs = W.groups(getWorkspace().root).flatMap((g) => g.tabs).filter((t) => moduleOfTab(t) === id);
-    for (const t of tabs) setWorkspace((ws) => W.closeTab(ws, t.id));
-  }
-  moduleChanged();
+let switchSave = Promise.resolve();
+
+/** Apply each switch to the latest settings, including when two are clicked before the first save returns. */
+export function setModule(id: string, on: boolean, part?: string): Promise<void> {
+  if (!moduleInfo(id)) return Promise.resolve();
+  const next = switchSave.then(async () => {
+    await savePrefs({ modules: withSwitch(modulesNow(), id, on, part) });
+    if (!on && !part) {
+      const tabs = W.groups(getWorkspace().root).flatMap((g) => g.tabs).filter((t) => moduleOfTab(t) === id);
+      for (const t of tabs) setWorkspace((ws) => W.closeTab(ws, t.id));
+    }
+    moduleChanged();
+  });
+  switchSave = next.catch(() => {});
+  return next;
 }
 
 /** Something a module holds changed (an entry logged, an event added): its parts read again. */

@@ -20,7 +20,7 @@ import { plural } from '../personal/PersonalParts';
 import { dayText } from '../work/WorkShell';
 import { addItem, itemMenu, listMenu, newList, openList, setItem, type ListsView } from '../life/ListsPage';
 import { Inline, Stars } from '../life/parts';
-import { FillsLine, HomeCard, MoreButton, PackHead, PackPage, PageProps, RowsCard, Section, trashRecord, useCanEdit, FULL_DETAILS_LABEL } from './W3b';
+import { PackReadState, FillsLine, HomeCard, MoreButton, PackHead, PackPage, PageProps, RowsCard, Section, trashRecord, useCanEdit, FULL_DETAILS_LABEL } from './W3b';
 import { deleteToBin } from '../../../lib/removeWords';
 
 type Tint = 'slate' | 'green' | 'amber' | 'red' | 'blue';
@@ -101,11 +101,11 @@ export function ListsOverview({ tab }: { tab: W.TabState }) {
 
 export function ListDetail({ path }: { path: string }) {
   const canEdit = useCanEdit();
-  const { data: m } = useWork<ListsView>('lists');
+  const { data: m, error, reload } = useWork<ListsView>('lists');
   const [show, setShow] = useState<'todo' | 'done' | 'dropped' | 'all'>('todo');
   const [adding, setAdding] = useState('');
   const l = m?.lists.find((x) => x.path === path);
-  if (!m) return <PackPage label="Lists"><p className="vsub">Reading your lists…</p></PackPage>;
+  if (!m) return <PackReadState label="Lists" error={error} reload={reload}>Reading your lists…</PackReadState>;
   if (!l) return <PackPage label="Lists"><div className="card" style={{ marginTop: 14 }}><p className="vsub">That list isn’t here any more.</p><p style={{ marginTop: 8 }}><button type="button" className="btn" onClick={() => openModule('lists')}>All lists</button></p></div></PackPage>;
   const f = LIST_FLOW[l.kind];
   const todo = [...l.items.filter((i) => i.state === 'doing'), ...l.items.filter((i) => i.state === 'open')];

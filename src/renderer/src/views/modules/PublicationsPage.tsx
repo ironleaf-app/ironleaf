@@ -351,7 +351,7 @@ function publicationsMenu(state: PubState | null, cur: Cur | null, canEdit: bool
     { label: 'Show its folder', icon: 'folder', disabled: !cur, run: () => cur && A.revealInExplorer(cur.pub.folder) },
     { separator: true },
     { label: `Who may read ${name}…`, icon: 'lock', run: () => openModal({ kind: 'settings', section: 'privacy' }) },
-    { label: `${name}’ parts (Settings › Packs)…`, icon: 'settings', run: () => openModal({ kind: 'settings', section: 'modules' }) },
+    { label: `${name}’ parts (Settings › Packs)…`, icon: 'settings', run: () => A.openSettings('packs', 'current', 'Publications') },
     { separator: true },
     { label: `Show me around ${name}`, icon: 'help', run: () => openTour('publications') },
   ];

@@ -6,6 +6,13 @@ the website. `tools/release.mjs` takes a release's notes from here when `--notes
 
 Format: one `## <version> — <YYYY-MM-DD>` heading a release, then one `- ` line a change.
 
+## 2.0.26 — 2026-11-28
+
+- Enabled packs appear in the sidebar as soon as they are switched on. Use More in a short window or Packs in the collapsed sidebar.
+- Open each pack’s exact Settings row from its page. Pack actions opens the assistant on the pack you are using, including local actions without a model.
+- Packs settings use a more compact two-column layout on wide screens. Pack descriptions and actions wrap on smaller screens, and quick switch changes save in order.
+- Record pages show one Design button. Lists, Cars, Trips and House offer a retry when a record can’t be loaded. Pack data refreshes for the current vault when switching libraries.
+
 ## 2.0.25 — 2026-11-28
 
 - Reopen a search with its filters and selected note. Preview the notes behind a pack suggestion and take its tour from Settings before switching it on.
